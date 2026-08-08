@@ -1,0 +1,22 @@
+bridge 2 benchmark — finbenchl1 on bolt://localhost:7687 / http://localhost:7474/db/finbenchl1/query/v2, repeat=20
+host: same box as DozerDB (graphstack/dozerdb:5.26.3.0), seocho venv (neo4j 6.1.0, pure-python packstream)
+caveat: the http path uses urllib without keep-alive, so every call pays TCP+auth setup;
+        that inflates [connect] http and adds a constant to per-call http numbers.
+
+[connect]
+  bolt fresh driver+handshake  median     0.79 ms   p95     1.59 ms
+  bolt pooled RETURN 1         median     0.34 ms   p95     3.68 ms
+  http RETURN 1                median     6.91 ms   p95   160.75 ms
+[rows-50]
+  bolt                         median     3.15 ms   p95    16.47 ms   to-model     1,626 chars
+  http                         median     6.25 ms   p95    16.79 ms   wire       818 B
+[rows-200]
+  bolt                         median     5.69 ms   p95     8.39 ms   to-model     6,912 chars
+  http                         median     6.68 ms   p95     7.53 ms   wire     3,404 B
+[rows-1000]
+  bolt                         median    19.36 ms   p95    34.00 ms   to-model    36,048 chars
+  http                         median    10.09 ms   p95    12.39 ms   wire    18,140 B
+[runaway] 100,000 rows produced, 50 wanted
+  bolt stop after 50           median    12.24 ms   p95    14.89 ms   rows kept 50
+  http full body               median   397.65 ms   p95   413.38 ms   wire   2,403,812 B, rows kept 100000
+  either, LIMIT in query       median     1.44 ms   p95     9.18 ms   the fix is stage 3, not the transport

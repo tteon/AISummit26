@@ -1,0 +1,73 @@
+driver memory benchmark — finbenchl1, neo4j driver 6.1.0, same box as DozerDB.
+Two runs of the identical script, differing only in the installed PackStream decoder:
+  pure-python   ~/.venvs/neo4j-pure
+  rust          ~/.venvs/neo4j-rust (neo4j-rust-ext 6.1.0.0)
+
+=== decoder=pure-python  database=finbenchl1  repeat=10 ===
+
+[rows=1,000] (pure-python)
+  fetch      median     22.5 ms
+  py-alloc   peak      0.3 MiB      356 B/row
+  rss        delta     0.1 MiB   gc collections +1
+  payload    json     2.4 ms peak    0.5 MiB      36,058 chars
+             csv      2.7 ms peak    0.2 MiB      15,055 chars
+[rows=10,000] (pure-python)
+  fetch      median    214.4 ms
+  py-alloc   peak      3.3 MiB      347 B/row
+  rss        delta     3.3 MiB   gc collections +15
+  payload    json    24.3 ms peak    3.2 MiB     390,394 chars
+             csv     25.1 ms peak    1.0 MiB     180,391 chars
+[rows=100,000] (pure-python)
+  fetch      median   2186.9 ms
+  py-alloc   peak     33.0 MiB      346 B/row
+  rss        delta    28.4 MiB   gc collections +147
+  payload    json   239.4 ms peak    8.0 MiB   4,203,730 chars
+             csv    267.6 ms peak    9.6 MiB   2,103,727 chars
+
+[concurrency] 2,000 rows/call, 25 calls/worker, one shared driver
+  workers=1  (pure-python)  p50    45.2 ms   p99    50.8 ms   x1.1
+  workers=2  (pure-python)  p50    95.0 ms   p99   129.0 ms   x1.4
+  workers=4  (pure-python)  p50   292.1 ms   p99   408.9 ms   x1.4
+  workers=8  (pure-python)  p50   775.4 ms   p99   900.9 ms   x1.2
+
+=== decoder=rust  database=finbenchl1  repeat=10 ===
+
+[rows=1,000] (rust)
+  fetch      median     16.7 ms
+  py-alloc   peak      0.3 MiB      355 B/row
+  rss        delta     0.0 MiB   gc collections +1
+  payload    json     2.4 ms peak    0.5 MiB      36,058 chars
+             csv      2.9 ms peak    0.2 MiB      15,055 chars
+[rows=10,000] (rust)
+  fetch      median    161.9 ms
+  py-alloc   peak      3.3 MiB      346 B/row
+  rss        delta     3.3 MiB   gc collections +15
+  payload    json    24.8 ms peak    3.2 MiB     390,394 chars
+             csv     25.2 ms peak    1.0 MiB     180,391 chars
+[rows=100,000] (rust)
+  fetch      median   1620.8 ms
+  py-alloc   peak     33.0 MiB      346 B/row
+  rss        delta    31.5 MiB   gc collections +147
+  payload    json   243.9 ms peak    8.0 MiB   4,203,730 chars
+             csv    253.4 ms peak    9.6 MiB   2,103,727 chars
+
+[concurrency] 2,000 rows/call, 25 calls/worker, one shared driver
+  workers=1  (rust)  p50    32.9 ms   p99    38.8 ms   x1.2
+  workers=2  (rust)  p50    69.9 ms   p99   100.9 ms   x1.4
+  workers=4  (rust)  p50   246.8 ms   p99   331.8 ms   x1.3
+  workers=8  (rust)  p50   667.3 ms   p99   732.0 ms   x1.1
+
+What the pair shows:
+  - fetch: rust is a constant-factor win, 1.26-1.35x at every row count.
+  - py-alloc is IDENTICAL (346 B/row) in both builds, ~10x the ~30 B the values themselves
+    occupy — because both builds materialize rows as Python dicts of boxed values. The codec
+    is not where the memory lives; the representation is.
+  - gc pressure identical (+147 collections at 100k rows) for the same reason.
+  - concurrency: rust shifts the whole latency curve down ~20-25% but the shape is unchanged —
+    p50 roughly doubles with each doubling of workers in both builds (one shared box, GIL-held
+    decode + server contention). The codec swap buys a prefactor, not a different curve.
+  - conclusion for the storyline: "Python leaves little tuning room" is TRUE but not where the
+    draft claimed. It is not data races and not fixable by a faster codec: the binding cost is
+    the PyObject representation itself (346 B/row, identical across builds). Changing the
+    curve requires changing the representation — rows landing in a non-Python buffer (Arrow /
+    native driver), which is exactly the deferred handle-arm experiment (beads AIsummit26-zda).
