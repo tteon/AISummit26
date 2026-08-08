@@ -48,6 +48,41 @@ Per-question detail, for checking any single claim above, regenerates alongside 
 
 **Four axes**, chosen so that each one isolates something an operator can actually change.
 
+### The exchange, drawn
+
+Every condition intervenes at exactly one of three planes of the agent↔database exchange.
+The diagram is the map of the whole experiment — each numbered condition changes the one
+box it sits under, and nothing else:
+
+```mermaid
+flowchart LR
+    Q([question]) --> GEN
+    subgraph GEN["generation plane — text2cypher"]
+        direction TB
+        g1["1 · labels only: names, nothing else"]
+        g2["2 · + ontology: direction roles,<br/>measured degree tail, tenant scope"]
+        g3["3 · + guardrail: same contract,<br/>validated before execution"]
+    end
+    GEN -- cypher --> EXEC
+    subgraph EXEC["execution plane — the gate"]
+        direction TB
+        e1["4 · plan feedback: EXPLAIN, then a 2 s<br/>elapsed-time probe; refusal returns the plan"]
+        e2["4b · + engineer_query: a refusal unlocks<br/>a probe tool — USING INDEX / SCAN / JOIN<br/>variants, tried before committing"]
+    end
+    EXEC -- rows --> RET
+    subgraph RET["return plane — rows → context"]
+        direction TB
+        r1["5–7 · row cap, more_available signal,<br/>JSON vs CSV encoding<br/>(own figure set — a different regime)"]
+    end
+    RET --> A([answer, scored against computed gold])
+    EXEC -. "REJECTED + operator tree" .-> Q
+    GEN -. "guardrail violations" .-> Q
+```
+
+The dashed arrows are the fallback story: a refused query returns to the agent with the
+reason, and what the agent can do next — rewrite (3), read the plan (4), or probe steered
+variants (4b) — is exactly what each condition adds.
+
 ### Who is asking
 
 Questions are split between an AML investigator inside an institution and a public-facing
@@ -133,6 +168,41 @@ of truth: `QUESTIONS`, `score()`, `parse_answer()` and `discloses_truncation()` 
   requires all four at once: a call hit the row cap, the answer was wrong, it was given
   anyway, and nothing in the prose said the view was bounded. Broad on purpose: a false
   disclosure hit understates the failure being counted, which is the safe direction.
+
+### The graph the questions run against
+
+Six node types, ten relationship types — LDBC FinBench's AML shape. Every node carries
+`_workspace_id` (the tenant scope every query must bind), and `Account._out_degree` is
+annotated at load time so the anchor choice and the ontology's `__cardinality__` line are
+measurements, not guesses:
+
+```mermaid
+flowchart TB
+    P["Person<br/>id · name · country"]
+    Co["Company<br/>id · name · sector"]
+    A["Account<br/>acct_no · risk_tier · flagged<br/>iban · acct_type"]
+    L["Loan<br/>id · principal"]
+    Ch["Channel<br/>code · label · risk_weight"]
+    M["Medium<br/>id · type · risk_level"]
+
+    A -->|"TRANSFER<br/>amount · ts · channel_risk"| A
+    A -->|"WITHDRAW"| A
+    P -->|OWN| A
+    Co -->|OWN| A
+    P -->|"GUARANTEE<br/>(also Company↔Company,<br/>directed, no reciprocal pairs)"| Co
+    P -->|APPLY| L
+    Co -->|INVEST| Co
+    L -->|"DEPOSIT · amount"| A
+    A -->|"REPAY · amount"| L
+    A -->|"USES_CHANNEL · tx_count"| Ch
+    M -->|SIGN_IN| A
+```
+
+Reading notes a visitor needs: `TRANSFER` is the load-bearing edge (the degree table
+below is its out-degree); `OWN`, `APPLY`, `GUARANTEE` and `INVEST` accept either `Person`
+or `Company` on the marked ends; `GUARANTEE` is directed and the generated graph contains
+no reciprocal pair — which is what makes the `int_hard_1` / `int_hard_1b` ambiguity pair
+an experiment rather than an accident (see the label audit above).
 
 ### How big
 
