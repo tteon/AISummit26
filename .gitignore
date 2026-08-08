@@ -22,3 +22,4 @@ figures/*
 !figures/overview-p50.svg
 !figures/overview-p99.svg
 !figures/engineering-detail.svg
+!figures/slo-tradeoff.svg

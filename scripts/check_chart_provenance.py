@@ -100,6 +100,15 @@ def main() -> None:
           f"{sorted(round(c['client_p99']) for c in spot)} ms "
           f"(chart cell = geometric mean)")
 
+    print("[slo-tradeoff chart] <- agent_interaction.json + replay_p99.json")
+    worst = max((c for c in rep["cells"] if c["arm"] == "labels" and c["sf"] == 10
+                 and c.get("ok")), key=lambda c: c["client_p99"])
+    check("labels SF10 worst-question p99 (ms)", 10897, round(worst["client_p99"]),
+          "replay_p99.json", 1)
+    acc = sum(1 for e in eps if e["arm"] == "labels" and e["sf"] == 10
+              and e["score_correct"])
+    check("labels SF10 correct episodes", 30, acc, "agent_interaction.json", 0)
+
     print()
     if FAIL:
         print(f"FAILED: {len(FAIL)} mismatches -> {FAIL}")
