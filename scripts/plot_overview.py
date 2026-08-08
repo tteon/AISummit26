@@ -28,6 +28,11 @@ import matplotlib.pyplot as plt
 
 ARMS = ["labels", "ontology", "guardrail", "plan", "in_context", "in_context_blind",
         "in_context_csv"]
+# The overview draws only the cumulative contract chain. Conditions 5-7 are a different
+# regime (the database stops aggregating) plus its two ablations — not designs anyone
+# ships — and they have their own figure set (plot_in_context.py). Overlaying them here
+# compared one expensive call against five cheap pages and called it one axis.
+CHAIN = ARMS[:4]
 ARM_LABEL = {"labels": "1 · labels only", "ontology": "2 · + ontology",
              "guardrail": "3 · + guardrail", "plan": "4 · + plan feedback",
              "in_context": "5 · in-context (JSON)", "in_context_blind": "6 · blind control",
@@ -68,7 +73,7 @@ def overview(eps, *, q, tag, out: Path) -> None:
     for ax, diff in zip(axes, DIFFICULTIES):
         ax.axhline(slo_ms, color="#b91c1c", linewidth=1.1, linestyle=(0, (5, 4)),
                    zorder=1, alpha=0.75)
-        for arm in ARMS:
+        for arm in CHAIN:
             xs, ys, fills = [], [], []
             for i, sf in enumerate(SFS):
                 cell = [e for e in eps if e["arm"] == arm and e["sf"] == sf
@@ -102,16 +107,86 @@ def overview(eps, *, q, tag, out: Path) -> None:
                      fontsize=7.6, color="#b91c1c", va="bottom", ha="left")
     handles = [plt.Line2D([], [], marker=ARM_MARKER[a], linestyle="-",
                           color=ARM_COLOR[a], markersize=5.6, label=ARM_LABEL[a])
-               for a in ARMS]
+               for a in CHAIN]
     fig.legend(handles=handles, frameon=False, fontsize=8.2, ncol=4,
                loc="upper left", bbox_to_anchor=(0.045, 0.87))
     fig.suptitle(f"Query latency against scale, by difficulty — {tag} of every executed "
-                 f"call, all seven designs", fontsize=13, weight="bold",
+                 f"call, the contract chain (1–4)", fontsize=13, weight="bold",
                  x=0.028, ha="left", y=0.965, color=INK)
     fig.text(0.028, 0.90,
              "Questions within a difficulty pooled (easy 4 · medium 4 · hard 5, ×3 repeats). "
              "Marker fill: filled = every episode in the cell matched gold, hollow = none, "
-             "grey = some.",
+             "grey = some. The in-context regime (5–7) has its own figure set.",
+             fontsize=8.4, color=MUTED, ha="left", va="top")
+    fig.savefig(out)
+    plt.close(fig)
+    print(f"wrote {out}")
+
+
+def overview_p99_replay(cells, eps, out: Path) -> None:
+    """The p99 chart, from the stage-two replays instead of live episode calls.
+
+    A cell's live calls number as few as a dozen, and the 99th percentile of twelve
+    samples is the maximum wearing a costume. The replay runs the query each design
+    settled on 100 times without a model (first execution discarded), so every condition
+    gets the same n and the tail is an estimate rather than an anecdote. Client-observed
+    ms, same measurement plane as the p50 chart. The panel value is the geometric mean
+    over the difficulty's questions — on a log axis an arithmetic mean would report the
+    expensive question's cost and call it the cell's. Marker fill still carries
+    live-episode correctness.
+    """
+    import math
+    fig, axes = plt.subplots(1, 3, figsize=(11.6, 4.0), sharey=True)
+    fig.subplots_adjust(left=0.07, right=0.985, top=0.665, bottom=0.115, wspace=0.14)
+    slo_ms, slo_label = SLO["p99"]
+    for ax, diff in zip(axes, DIFFICULTIES):
+        ax.axhline(slo_ms, color="#b91c1c", linewidth=1.1, linestyle=(0, (5, 4)),
+                   zorder=1, alpha=0.75)
+        for arm in CHAIN:
+            xs, ys, fills = [], [], []
+            for i, sf in enumerate(SFS):
+                vals = [max(float(c["client_p99"]), 0.5) for c in cells
+                        if c["arm"] == arm and c["sf"] == sf
+                        and c["difficulty"] == diff and c.get("ok")]
+                if not vals:
+                    continue
+                xs.append(i)
+                ys.append(math.exp(sum(math.log(v) for v in vals) / len(vals)))
+                cell = [e for e in eps if e["arm"] == arm and e["sf"] == sf
+                        and e["difficulty"] == diff]
+                fills.append(sum(1 for e in cell if e.get("score_correct")) / len(cell)
+                             if cell else 0.0)
+            ax.plot(xs, ys, "-", color=ARM_COLOR[arm], linewidth=1.5, zorder=2)
+            for x, y, ok in zip(xs, ys, fills):
+                face = (ARM_COLOR[arm] if ok >= 1.0
+                        else "white" if ok <= 0.0 else "#c3c8d2")
+                ax.plot([x], [y], marker=ARM_MARKER[arm], markersize=6,
+                        markerfacecolor=face, markeredgecolor=ARM_COLOR[arm],
+                        markeredgewidth=1.2, linestyle="", zorder=3)
+        ax.set_yscale("log")
+        ax.set_xticks(range(len(SFS)))
+        ax.set_xticklabels(["SF1", "SF10", "SF100"], fontsize=8.6)
+        ax.set_title(f"{diff}", fontsize=10.5, weight="bold", color=INK, loc="left", pad=6)
+        ax.grid(axis="y", color=GRID, linewidth=0.6)
+        ax.set_axisbelow(True)
+        for side in ("top", "right"):
+            ax.spines[side].set_visible(False)
+        ax.tick_params(length=0, labelsize=7.6)
+    axes[0].set_ylabel("settled-query p99, replayed (ms, log)", fontsize=8.4, color=MUTED)
+    axes[0].annotate(slo_label, xy=(0.03, slo_ms), xycoords=("axes fraction", "data"),
+                     fontsize=7.6, color="#b91c1c", va="bottom", ha="left")
+    handles = [plt.Line2D([], [], marker=ARM_MARKER[a], linestyle="-",
+                          color=ARM_COLOR[a], markersize=5.6, label=ARM_LABEL[a])
+               for a in CHAIN]
+    fig.legend(handles=handles, frameon=False, fontsize=8.2, ncol=4,
+               loc="upper left", bbox_to_anchor=(0.045, 0.87))
+    fig.suptitle("Query latency against scale, by difficulty — p99 of each design's "
+                 "settled query, 100 replays", fontsize=13, weight="bold",
+                 x=0.028, ha="left", y=0.965, color=INK)
+    fig.text(0.028, 0.90,
+             "Stage two: the query each design settled on, replayed 100× without a model "
+             "(first run discarded). Geometric mean over the difficulty's questions; "
+             "marker fill = live-episode correctness, as on the p50 chart.",
              fontsize=8.4, color=MUTED, ha="left", va="top")
     fig.savefig(out)
     plt.close(fig)
@@ -177,6 +252,7 @@ def by_question(eps, out: Path) -> None:
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--episodes", default="results/agent_interaction.json")
+    p.add_argument("--replay", default="results/replay_p99.json")
     p.add_argument("--figures", default="figures")
     p.add_argument("--by-question", action="store_true",
                    help="also write the 13-panel db-hits backup chart")
@@ -185,7 +261,8 @@ def main() -> None:
     figs = Path(args.figures)
     figs.mkdir(exist_ok=True)
     overview(eps, q=0.50, tag="p50", out=figs / "overview-p50.svg")
-    overview(eps, q=0.99, tag="p99", out=figs / "overview-p99.svg")
+    cells = json.loads(Path(args.replay).read_text())["cells"]
+    overview_p99_replay(cells, eps, figs / "overview-p99.svg")
     if args.by_question:
         by_question(eps, figs / "overview-by-question.svg")
 

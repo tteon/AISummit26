@@ -7,28 +7,38 @@ deck, regenerates on demand, and gets pulled up only if a question asks for it.
 
 ## 1 · The big frame — `figures/overview-p50.svg` and `figures/overview-p99.svg`
 
-**The sentence: query latency against scale, easy/medium/hard pooled, all seven designs
-labelled — p50 is what a user usually feels, p99 is what breaks the SLO.**
+**The sentence: query latency against scale for the contract chain (conditions 1–4) —
+p50 is what a user usually feels, p99 is what breaks the SLO. The in-context regime
+(5–7) is a different question and lives in its own figure set.**
 
 - Three panels per chart (easy · medium · hard — the category's questions pooled,
-  4/4/5 questions × 3 repeats), SF across, per-call DB latency up (log).
-- Marker fill carries correctness: filled = every episode in the cell matched gold,
-  hollow = none, grey = some.
-- Each chart carries a dashed SLO reference: **200 ms** (interactive per-call budget) on
-  p50, **1 s** (a common request p99 SLO) on p99 — say out loud that these are industry
-  conventions for orientation, not measurements of this system.
+  4/4/5 questions × 3 repeats), SF across, latency up (log). Four lines per panel: the
+  cumulative chain only. Controls are not designs — overlaying 5–7 here compared one
+  expensive call against five cheap pages on one axis, and the blind control is an
+  experimental instrument, not something anyone ships.
+- **p50** = every executed live call's measured ms.
+- **p99** = the stage-two replays: the query each design settled on, run **100× without
+  a model**, first execution discarded, geometric mean over the difficulty's questions.
+  Say out loud why: a live cell has as few as a dozen calls, and a p99 of twelve samples
+  is the maximum wearing a costume; the replay gives every condition the same n. It also
+  removes the plan arm's probe-warm bias — a query that passed the 2 s probe runs its
+  live full execution cache-warm, so live tails are not comparable across arms.
+- Marker fill carries live-episode correctness on both charts: filled = every episode in
+  the cell matched gold, hollow = none, grey = some.
+- Dashed SLO references: **200 ms** (interactive per-call budget) on p50, **1 s** (a
+  common request p99 SLO) on p99 — industry conventions for orientation, not
+  measurements of this system.
 - Reading order for the talk:
-  1. **easy, p50** — the designs bunch; what you tell the agent barely matters per call.
-  2. **easy, p99** — labels-only (orange ○) crosses the 1 s line by SF10 and ends near
-     10 s; every informed design holds under it until SF100. The tail punishes the
-     uninformed design first — and now the chart says when.
-  3. **medium/hard, both charts** — the spread widens with SF; the in-context page
-     queries (violet/pink) are cheap *per call* while their cost lives in call count and
-     tokens — which is the hand-off to the engineering chart.
-  4. **The blind control** (light violet +) is cheap and hollow — one page, wrong.
-- Both charts compute from `results/agent_interaction.json` at render time — every
-  executed call's measured ms, nothing hardcoded
-  (`python scripts/check_chart_provenance.py` verifies).
+  1. **easy, p50** — the chain bunches; per call, what you tell the agent barely matters.
+  2. **easy, p99** — labels-only (orange ○) breaks the 1 s line while every informed
+     design holds. The tail punishes the uninformed design first.
+  3. **medium/hard** — the spread widens with SF; plan feedback (green ◇) is the p99
+     lever, and the chart now measures that claim with equal n.
+- Provenance: p50 computes from `results/agent_interaction.json` at render; p99 from
+  `results/replay_p99.json`; `python scripts/check_chart_provenance.py` verifies both.
+- The in-context trio (5 JSON · 6 blind · 7 CSV) appears only in its own set
+  (`python scripts/plot_in_context.py` — the outcomes stack where the blind control IS
+  the point), keeping regime and ablations out of the design ladder.
 
 ## 2 · The engineering detail — `figures/engineering-detail.svg`
 

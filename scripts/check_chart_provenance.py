@@ -75,18 +75,30 @@ def main() -> None:
                        neo["series_p50_ms"]["neo4rs_single_process"], (1, 2, 4, 8)):
         check(f"neo4rs p50 w={w}", c, a, "neo4rs_native json", 0)
 
-    print("[overview p50/p99 charts] <- results/agent_interaction.json (computed at render)")
+    print("[overview p50 chart] <- results/agent_interaction.json (computed at render)")
     eps = json.loads(Path("results/agent_interaction.json").read_text())["episodes"]
-    check("episode count", 819, len(eps), "agent_interaction.json", 0)
-    check("arm count", 7, len({e["arm"] for e in eps}), "agent_interaction.json", 0)
-    calls = sorted(c["ms"] for e in eps for c in e.get("calls", [])
+    check("episode count (file)", 819, len(eps), "agent_interaction.json", 0)
+    chain = [e for e in eps if e["arm"] in ("labels", "ontology", "guardrail", "plan")]
+    check("chain episode count", 468, len(chain), "agent_interaction.json", 0)
+    check("chain arm count", 4, len({e["arm"] for e in chain}), "agent_interaction.json", 0)
+    calls = sorted(c["ms"] for e in chain for c in e.get("calls", [])
                    if e["arm"] == "labels" and e["sf"] == 100 and e["difficulty"] == "easy"
                    and c.get("outcome") == "ok" and c.get("ms") is not None)
     p50 = calls[len(calls) // 2]
-    p99 = calls[min(len(calls) - 1, int(len(calls) * 0.99))]
     print(f"  [info] spot recompute labels/easy/SF100 per-call latency: "
-          f"p50={p50:,.0f} ms, p99={p99:,.0f} ms over {len(calls)} calls "
-          f"(rendered directly, nothing hardcoded)")
+          f"p50={p50:,.0f} ms over {len(calls)} calls (rendered directly)")
+
+    print("[overview p99 chart] <- results/replay_p99.json (stage-two replays)")
+    rep = json.loads(Path("results/replay_p99.json").read_text())
+    check("replay cells", 156, len(rep["cells"]), "replay_p99.json", 0)
+    check("replay iterations", 100, rep["iterations"], "replay_p99.json", 0)
+    check("replay arm count", 4, len({c["arm"] for c in rep["cells"]}),
+          "replay_p99.json", 0)
+    spot = [c for c in rep["cells"] if c["arm"] == "labels" and c["sf"] == 100
+            and c["difficulty"] == "easy" and c.get("ok")]
+    print(f"  [info] labels/easy/SF100 replayed client_p99 per question: "
+          f"{sorted(round(c['client_p99']) for c in spot)} ms "
+          f"(chart cell = geometric mean)")
 
     print()
     if FAIL:
