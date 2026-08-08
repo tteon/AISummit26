@@ -5,28 +5,25 @@ deck, regenerates on demand, and gets pulled up only if a question asks for it.
 
 ---
 
-## 1 · The big frame — `figures/overview-by-question.svg`
+## 1 · The big frame — `figures/overview-p50.svg` and `figures/overview-p99.svg`
 
-**The sentence: this is the whole experiment — 13 questions × SF1→100 × 7 designs,
-819 episodes, and the designs pull apart as the graph grows.**
+**The sentence: query latency against scale, easy/medium/hard pooled, all seven designs
+labelled — p50 is what a user usually feels, p99 is what breaks the SLO.**
 
-- y-axis is median db hits per episode (log) — the one cost unit unaffected by whatever
-  else runs on the box.
-- Marker fill carries correctness: filled = all three repeats matched gold, hollow = none,
-  grey = some.
+- Three panels per chart (easy · medium · hard — the category's questions pooled,
+  4/4/5 questions × 3 repeats), SF across, per-call DB latency up (log).
+- Marker fill carries correctness: filled = every episode in the cell matched gold,
+  hollow = none, grey = some.
 - Reading order for the talk:
-  1. **The easy panels** — every design sits on top of the others. For a one-hop question,
-     nothing you tell the agent matters.
-  2. **ext_hard / int_med** — labels-only (orange ○) floats to the top and goes hollow:
-     wrong and expensive at once as scale grows.
-  3. **The blind control's flat, hollow line** (light violet +) — one page fetched,
-     cheapest on the panel, wrong at every scale. Silent failure, drawn.
-  4. **int_hard_2** — the in-context lines reach 10⁸ db hits: the top-end price of taking
-     aggregation away from the database.
-- The legend is the story: designs 1–4 let the database aggregate; 5–7 pull the rows into
-  the model's context. Seven colors + seven marker shapes, CVD-validated.
-- Nothing on this chart is hardcoded — every point is computed from
-  `results/agent_interaction.json` at render time
+  1. **easy, p50** — the designs bunch; what you tell the agent barely matters per call.
+  2. **easy, p99** — labels-only (orange ○) sits an order of magnitude above everything
+     at every scale: the tail punishes the uninformed design first.
+  3. **medium/hard, both charts** — the spread widens with SF; the in-context page
+     queries (violet/pink) are cheap *per call* while their cost lives in call count and
+     tokens — which is the hand-off to the engineering chart.
+  4. **The blind control** (light violet +) is cheap and hollow — one page, wrong.
+- Both charts compute from `results/agent_interaction.json` at render time — every
+  executed call's measured ms, nothing hardcoded
   (`python scripts/check_chart_provenance.py` verifies).
 
 ## 2 · The engineering detail — `figures/engineering-detail.svg`
@@ -51,7 +48,8 @@ transport, runtime, concurrency. Every number is measured.**
 | Regenerate with | What you get | The question it defends |
 |---|---|---|
 | `python scripts/dump_conditions.py` | the conditions matrix | "exactly one thing differs between adjacent conditions" |
-| `python scripts/plot_interaction.py` | p99 by difficulty/question, accuracy, cost | the replay-based p99 results for designs 1–4 |
+| `python scripts/plot_interaction.py` | replay-based p99 by difficulty/question | the model-free p99 for designs 1–4 (100 replays/query) |
+| `python scripts/plot_overview.py --by-question` | the 13-panel per-question db-hits detail | any single question's scaling |
 | `python scripts/plot_in_context.py` | outcomes (71 vs 11), per-question db hits for the trio | the causal claim about `more_available`, with its control |
 | `python scripts/plot_depth.py` | full-size versions of each engineering panel | any single panel, in depth |
 | `python scripts/plot_levers.py` | the eight levers in two labelled blocks | the closing line: "two kinds of fix, neither substitutes for the other" |

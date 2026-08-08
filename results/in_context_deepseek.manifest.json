@@ -1,0 +1,27 @@
+{
+ "timestamp_utc": "2026-08-08T07:55:25+00:00",
+ "git_commit": "0bb8ebbf9a25da125c06ce37a90b35d1eb2c4568",
+ "git_dirty": false,
+ "argv": [
+  "-c"
+ ],
+ "python": "3.11.14",
+ "venv": "/home/hadry/lab/seocho/.venv",
+ "kernel": "6.8.0-134-generic",
+ "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+ "cpu_count": 16,
+ "neo4j_driver": "6.1.0",
+ "neo4j_rust_ext": null,
+ "packstream_decoder": "pure-python",
+ "db_container_image": "graphstack/dozerdb:5.26.3.0",
+ "db_container_id": "04a4cfa2d073",
+ "experiment": "agent_interaction-replication",
+ "model": "DeepSeek-V3.2",
+ "arms": [
+  "in_context",
+  "in_context_blind"
+ ],
+ "max_tokens": 16384,
+ "repeats": 3,
+ "purpose": "does the more_available disclosure effect (71 vs 11 on gpt-oss-120b) replicate on a second model family"
+}

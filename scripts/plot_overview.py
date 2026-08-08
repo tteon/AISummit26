@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
-"""THE chart: every question, every scale, every design, labelled — one figure.
+"""The overview pair: per-call DB latency p50 and p99, by difficulty, scale and design.
 
-Thirteen panels (one per question), SF across, median db hits per episode up (log), one
-line per agent design across all seven conditions. Marker fill carries correctness: filled
-= all three repeats matched gold, hollow = none did, grey = some. Db hits rather than
-milliseconds because it is the one cost unit unaffected by what else runs on the box.
+Two charts, one per percentile. Three panels each (easy / medium / hard — the questions in
+a category pooled), SF across, per-tool-call database latency up (log), one labelled line
+per design across all seven conditions. Marker fill carries the cell's correctness share:
+filled = every episode matched gold, hollow = none, grey = some.
 
-This is the deck's overview chart — the whole 819-episode experiment in one image — next
-to figures/engineering-detail.svg, which is the layer underneath it.
+The latency is the measured `ms` of every executed tool call in the cell's episodes —
+per-call, so an agent that answers in one round trip and one that pages eight times are
+compared on what each trip cost, while the paging itself is visible in db-hits and
+round-trip charts (`--by-question` regenerates the 13-panel db-hits detail).
 
-Usage:
-  python scripts/plot_overview.py --episodes results/agent_interaction.json
+  python scripts/plot_overview.py                 # figures/overview-p50.svg + overview-p99.svg
+  python scripts/plot_overview.py --by-question   # the 13-panel db-hits backup
 """
 from __future__ import annotations
 
@@ -24,8 +26,6 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-# Seven designs, colours validated as a set (guardrail moved off teal so plan's green
-# stays separable); marker shape is the secondary encoding the 6-8 CVD band asks for.
 ARMS = ["labels", "ontology", "guardrail", "plan", "in_context", "in_context_blind",
         "in_context_csv"]
 ARM_LABEL = {"labels": "1 · labels only", "ontology": "2 · + ontology",
@@ -34,12 +34,10 @@ ARM_LABEL = {"labels": "1 · labels only", "ontology": "2 · + ontology",
              "in_context_csv": "7 · in-context (CSV)"}
 ARM_COLOR = {"labels": "#c2410c", "ontology": "#ca8a04", "guardrail": "#2a78d6",
              "plan": "#15803d", "in_context": "#6d28d9", "in_context_blind": "#9f7aea",
-             "in_context_csv": "#be185d"}
+             "in_context_csv": "#be185d"}   # validated as a set; markers are the backup
 ARM_MARKER = {"labels": "o", "ontology": "s", "guardrail": "^", "plan": "D",
               "in_context": "v", "in_context_blind": "P", "in_context_csv": "X"}
-QIDS = ["ext_easy_1", "ext_easy_2", "ext_med_1", "ext_med_2", "ext_hard_1", "ext_hard_2",
-        "int_easy_1", "int_easy_2", "int_med_1", "int_med_2", "int_hard_1", "int_hard_1b",
-        "int_hard_2"]
+DIFFICULTIES = ["easy", "medium", "hard"]
 SFS = [1, 10, 100]
 INK, MUTED, GRID = "#12151a", "#6b7684", "#e5e8ec"
 
@@ -49,21 +47,77 @@ plt.rcParams.update({
 })
 
 
-def main() -> None:
-    p = argparse.ArgumentParser()
-    p.add_argument("--episodes", default="results/agent_interaction.json")
-    p.add_argument("--out", default="figures/overview-by-question.svg")
-    args = p.parse_args()
-    eps = json.loads(Path(args.episodes).read_text())["episodes"]
+def _pct(xs, q):
+    if not xs:
+        return None
+    xs = sorted(xs)
+    return xs[min(len(xs) - 1, int(len(xs) * q))]
 
+
+def overview(eps, *, q, tag, out: Path) -> None:
+    fig, axes = plt.subplots(1, 3, figsize=(11.6, 4.0), sharey=True)
+    fig.subplots_adjust(left=0.07, right=0.985, top=0.665, bottom=0.115, wspace=0.14)
+    for ax, diff in zip(axes, DIFFICULTIES):
+        for arm in ARMS:
+            xs, ys, fills = [], [], []
+            for i, sf in enumerate(SFS):
+                cell = [e for e in eps if e["arm"] == arm and e["sf"] == sf
+                        and e["difficulty"] == diff]
+                calls = [c["ms"] for e in cell for c in e.get("calls", [])
+                         if c.get("outcome") == "ok" and c.get("ms") is not None]
+                v = _pct(calls, q)
+                if v is None:
+                    continue
+                xs.append(i)
+                ys.append(max(v, 0.5))
+                fills.append(sum(1 for e in cell if e.get("score_correct")) / len(cell))
+            ax.plot(xs, ys, "-", color=ARM_COLOR[arm], linewidth=1.5, zorder=2)
+            for x, y, ok in zip(xs, ys, fills):
+                face = (ARM_COLOR[arm] if ok >= 1.0
+                        else "white" if ok <= 0.0 else "#c3c8d2")
+                ax.plot([x], [y], marker=ARM_MARKER[arm], markersize=6,
+                        markerfacecolor=face, markeredgecolor=ARM_COLOR[arm],
+                        markeredgewidth=1.2, linestyle="", zorder=3)
+        ax.set_yscale("log")
+        ax.set_xticks(range(len(SFS)))
+        ax.set_xticklabels(["SF1", "SF10", "SF100"], fontsize=8.6)
+        ax.set_title(f"{diff}", fontsize=10.5, weight="bold", color=INK, loc="left", pad=6)
+        ax.grid(axis="y", color=GRID, linewidth=0.6)
+        ax.set_axisbelow(True)
+        for side in ("top", "right"):
+            ax.spines[side].set_visible(False)
+        ax.tick_params(length=0, labelsize=7.6)
+    axes[0].set_ylabel(f"per-call DB latency, {tag} (ms, log)", fontsize=8.4, color=MUTED)
+    handles = [plt.Line2D([], [], marker=ARM_MARKER[a], linestyle="-",
+                          color=ARM_COLOR[a], markersize=5.6, label=ARM_LABEL[a])
+               for a in ARMS]
+    fig.legend(handles=handles, frameon=False, fontsize=8.2, ncol=4,
+               loc="upper left", bbox_to_anchor=(0.045, 0.87))
+    fig.suptitle(f"Query latency against scale, by difficulty — {tag} of every executed "
+                 f"call, all seven designs", fontsize=13, weight="bold",
+                 x=0.028, ha="left", y=0.965, color=INK)
+    fig.text(0.028, 0.90,
+             "Questions within a difficulty pooled (easy 4 · medium 4 · hard 5, ×3 repeats). "
+             "Marker fill: filled = every episode in the cell matched gold, hollow = none, "
+             "grey = some.",
+             fontsize=8.4, color=MUTED, ha="left", va="top")
+    fig.savefig(out)
+    plt.close(fig)
+    print(f"wrote {out}")
+
+
+def by_question(eps, out: Path) -> None:
+    """The 13-panel db-hits detail, kept as a regenerable backup."""
+    qids = ["ext_easy_1", "ext_easy_2", "ext_med_1", "ext_med_2", "ext_hard_1",
+            "ext_hard_2", "int_easy_1", "int_easy_2", "int_med_1", "int_med_2",
+            "int_hard_1", "int_hard_1b", "int_hard_2"]
     fig, axes = plt.subplots(4, 4, figsize=(12.6, 10.4), sharex=True)
     fig.subplots_adjust(left=0.06, right=0.985, top=0.845, bottom=0.045,
                         hspace=0.44, wspace=0.30)
     flat = axes.flatten()
-    for ax in flat[len(QIDS):]:
+    for ax in flat[len(qids):]:
         ax.set_visible(False)
-
-    for ax, qid in zip(flat, QIDS):
+    for ax, qid in zip(flat, qids):
         for arm in ARMS:
             xs, ys, fills = [], [], []
             for i, sf in enumerate(SFS):
@@ -91,7 +145,6 @@ def main() -> None:
         for side in ("top", "right"):
             ax.spines[side].set_visible(False)
         ax.tick_params(length=0)
-
     handles = [plt.Line2D([], [], marker=ARM_MARKER[a], linestyle="-",
                           color=ARM_COLOR[a], markersize=5.6, label=ARM_LABEL[a])
                for a in ARMS]
@@ -102,14 +155,27 @@ def main() -> None:
     fig.text(0.028, 0.955,
              "819 episodes, three repeats per point (log scale). Marker fill: filled = all "
              "repeats matched gold, hollow = none, grey = some.\nDesigns 1–4 let the "
-             "database aggregate; 5–7 pull the rows into context. Db hits, not milliseconds "
-             "— the one cost unit\nunaffected by what else runs on the box.",
+             "database aggregate; 5–7 pull the rows into context.",
              fontsize=8.8, color=MUTED, ha="left", va="top")
-    out = Path(args.out)
-    out.parent.mkdir(exist_ok=True)
     fig.savefig(out)
     plt.close(fig)
     print(f"wrote {out}")
+
+
+def main() -> None:
+    p = argparse.ArgumentParser()
+    p.add_argument("--episodes", default="results/agent_interaction.json")
+    p.add_argument("--figures", default="figures")
+    p.add_argument("--by-question", action="store_true",
+                   help="also write the 13-panel db-hits backup chart")
+    args = p.parse_args()
+    eps = json.loads(Path(args.episodes).read_text())["episodes"]
+    figs = Path(args.figures)
+    figs.mkdir(exist_ok=True)
+    overview(eps, q=0.50, tag="p50", out=figs / "overview-p50.svg")
+    overview(eps, q=0.99, tag="p99", out=figs / "overview-p99.svg")
+    if args.by_question:
+        by_question(eps, figs / "overview-by-question.svg")
 
 
 if __name__ == "__main__":

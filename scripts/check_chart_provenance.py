@@ -75,14 +75,17 @@ def main() -> None:
                        neo["series_p50_ms"]["neo4rs_single_process"], (1, 2, 4, 8)):
         check(f"neo4rs p50 w={w}", c, a, "neo4rs_native json", 0)
 
-    print("[overview chart] <- results/agent_interaction.json (computed at render time)")
+    print("[overview p50/p99 charts] <- results/agent_interaction.json (computed at render)")
     eps = json.loads(Path("results/agent_interaction.json").read_text())["episodes"]
     check("episode count", 819, len(eps), "agent_interaction.json", 0)
     check("arm count", 7, len({e["arm"] for e in eps}), "agent_interaction.json", 0)
-    spot = statistics.median([e["db_hits"] for e in eps
-                              if e["arm"] == "in_context_csv" and e["sf"] == 100
-                              and e["question_id"] == "int_hard_2"])
-    print(f"  [info] spot recompute int_hard_2/csv/SF100 median db_hits = {spot:,.0f} "
+    calls = sorted(c["ms"] for e in eps for c in e.get("calls", [])
+                   if e["arm"] == "labels" and e["sf"] == 100 and e["difficulty"] == "easy"
+                   and c.get("outcome") == "ok" and c.get("ms") is not None)
+    p50 = calls[len(calls) // 2]
+    p99 = calls[min(len(calls) - 1, int(len(calls) * 0.99))]
+    print(f"  [info] spot recompute labels/easy/SF100 per-call latency: "
+          f"p50={p50:,.0f} ms, p99={p99:,.0f} ms over {len(calls)} calls "
           f"(rendered directly, nothing hardcoded)")
 
     print()
