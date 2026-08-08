@@ -48,5 +48,6 @@ What the hardware counters add to the story:
    Python objects — Arrow buffer / native driver) or multiprocess fan-out changes the curve.
    That is the quantitative case for the deferred handle-arm experiment (beads AIsummit26-zda).
 
-note: rust w=8 server 15.3 ms/call is an outlier vs ~7 ms elsewhere; likely background
-activity in the shared container during that window — re-measure before quoting it.
+note: rust w=8 server 15.3 ms/call was an outlier vs ~7 ms elsewhere; re-measured
+2026-08-08 (same day, idle DB): 7.2 ms/call — the 15.3 was transient background activity
+in the shared container. No chart quotes it.

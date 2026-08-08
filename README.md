@@ -392,9 +392,11 @@ Stated plainly, because a result without its limits is a claim.
 - **One model.** `gpt-oss-120b` at temperature 0. The design differences are large, but
   whether they hold across model families is untested — the endpoint also serves
   DeepSeek-V3.x and MiniMax, so the model axis is one flag away.
-- **Three repeats per cell.** Enough to see the in-context arms' failure-mode gap (71 vs 11
-  is not noise), thin for small accuracy differences — the 35-vs-39 CSV comparison needs
-  bootstrap intervals before it is quoted as anything but "indistinguishable".
+- **Three repeats per cell.** The failure-mode gap is not noise — bootstrapped over
+  episodes, the blind arm's silent-failure excess is +51 pp with a 95% CI of [+41, +62].
+  The CSV-vs-JSON accuracy difference is −3.4 pp with a 95% CI of [−15, +9]: no detectable
+  difference, but intervals this wide cannot rule out a real one either way — which is the
+  honest reading of 117 episodes per arm.
 - **Synthetic data.** The graph is generated to LDBC FinBench's shape and its typologies come
   from FATF and FinCEN guidance, but it is not a real institution's data. Validation against
   the LDBC FinBench reference dataset is open.
