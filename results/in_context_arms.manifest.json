@@ -1,0 +1,32 @@
+{
+ "timestamp_utc": "2026-08-08T05:59:52+00:00",
+ "git_commit": "6e7e44011e078d8e82c0d225169852cf7f19e39a",
+ "git_dirty": true,
+ "argv": [
+  "-c"
+ ],
+ "python": "3.11.14",
+ "venv": "/home/hadry/lab/seocho/.venv",
+ "kernel": "6.8.0-134-generic",
+ "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+ "cpu_count": 16,
+ "neo4j_driver": "6.1.0",
+ "neo4j_rust_ext": null,
+ "packstream_decoder": "pure-python",
+ "db_container_image": "graphstack/dozerdb:5.26.3.0",
+ "db_container_id": "04a4cfa2d073",
+ "experiment": "agent_interaction",
+ "arms": [
+  "in_context",
+  "in_context_blind",
+  "in_context_csv"
+ ],
+ "model": "gpt-oss-120b",
+ "databases": [
+  "finbenchl1:1",
+  "finbenchl10:10",
+  "finbenchl100:100"
+ ],
+ "repeats": 3,
+ "note": "nudge repair active (empty-final retry, recorded per episode as nudged)"
+}
