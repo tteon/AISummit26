@@ -55,6 +55,7 @@ transport, runtime, concurrency. Every number is measured.**
 | `python scripts/plot_interaction.py` | replay-based p99 by difficulty/question | the model-free p99 for designs 1–4 (100 replays/query) |
 | `python scripts/plot_overview.py --by-question` | the 13-panel per-question db-hits detail | any single question's scaling |
 | `python scripts/plot_in_context.py` | outcomes (71 vs 11), per-question db hits for the trio | the causal claim about `more_available`, with its control |
+| `results/in_context_deepseek.json` | the DeepSeek-V3.2 replication (234 episodes) | "is 71→11 model-general?" — no: DeepSeek pages regardless (11.6 trips blind) and burns the turn budget instead; the failure mode, not the field, is model-specific |
 | `python scripts/plot_depth.py` | full-size versions of each engineering panel | any single panel, in depth |
 | `python scripts/plot_levers.py` | the eight levers in two labelled blocks | the closing line: "two kinds of fix, neither substitutes for the other" |
 

@@ -276,6 +276,18 @@ These arms also surfaced a serving artifact worth knowing about: on long multi-p
 empty content. The harness repairs it with one recorded nudge (`nudged` per episode; 6 of 351
 fired) so the arms are measured, not the artifact.
 
+**The disclosure effect was then tested on a second model family** — conditions 5 and 6
+re-run on DeepSeek-V3.2, same questions, caps and budgets (234 episodes,
+`results/in_context_deepseek.json`). The gap does not transfer, and the reason is the
+finding: DeepSeek pages whether or not it is told the view is bounded (11.6 round trips in
+the *blind* arm, against gpt-oss's 2.3) and instead exhausts its 16-turn budget in 54–64%
+of episodes — the failure moves from *silently wrong* to *no answer*. So `more_available`
+repairs a failure mode gpt-oss has and DeepSeek does not; what is model-general is that
+neither model manages boundedness well unaided — one under-fetches silently, the other
+over-fetches into the budget — and the contract lever that fixes it differs by model.
+(DeepSeek also never triggered the empty-final nudge, confirming that artifact as
+gpt-oss-specific.)
+
 ### The three boundaries of bridge 2
 
 What a returned row costs, measured at each layer with client CPU, the DB container's cgroup
@@ -389,9 +401,11 @@ each one cost. None of them was visible by inspecting the schema.
 
 Stated plainly, because a result without its limits is a claim.
 
-- **One model.** `gpt-oss-120b` at temperature 0. The design differences are large, but
-  whether they hold across model families is untested — the endpoint also serves
-  DeepSeek-V3.x and MiniMax, so the model axis is one flag away.
+- **Mostly one model.** The scale-axis results are `gpt-oss-120b` at temperature 0 only.
+  The disclosure pair was additionally run on DeepSeek-V3.2, where its effect did not
+  transfer (see conditions 5–7) — evidence that arm effects interact with the model family,
+  and a reason not to generalize the other arms' numbers beyond gpt-oss without the same
+  check.
 - **Three repeats per cell.** The failure-mode gap is not noise — bootstrapped over
   episodes, the blind arm's silent-failure excess is +51 pp with a 95% CI of [+41, +62].
   The CSV-vs-JSON accuracy difference is −3.4 pp with a 95% CI of [−15, +9]: no detectable
