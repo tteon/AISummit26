@@ -1,9 +1,12 @@
 # How an agent's use of a graph database changes as the graph grows
 
 An LDBC-FinBench-shaped anti-money-laundering graph, generated at three scales, with six
-money-laundering typologies planted in it at known positions. Thirteen questions, four agent
-designs, 468 measured episodes, and then every query the agents settled on replayed a hundred
-times without a model in the loop so the latency figures mean something.
+money-laundering typologies planted in it at known positions. Thirteen questions, seven agent
+designs, 819 measured episodes, and then every query the four scale-axis designs settled on
+replayed a hundred times without a model in the loop so the latency figures mean something.
+Below the episodes, the interface itself is measured — transport, decoder, runtime, and the
+encoding rows wear on their way into the model — so that "why does it get better" has
+numbers at every layer.
 
 The thing being measured is not the model and not the database. It is the **exchange** between
 them: one question in, an unknown number of Cypher round trips out, and what that shape does
@@ -232,9 +235,77 @@ layers the query can reach.**
 
 ---
 
+## One level down: the interface itself
+
+The four designs above vary what the agent is *told*. The second half of the work varies the
+**exchange** — who does the arithmetic, what encoding the rows wear, and what executes under
+the driver — and puts every lever on one scale, labelled by what kind of fix it is:
+
+![every lever measured, labelled ontology/contract vs engineering/runtime](figures/levers.svg)
+
+The positions are not a ranking — each row moves its own metric. The labels are the point:
+**contract-side fixes change what the agent does; runtime-side fixes change what the exchange
+costs; neither substitutes for the other.**
+
+### Conditions 5–7: the agent does the arithmetic
+
+Three more conditions ([exact prompt diffs](docs/conditions.md)) ban aggregate functions in
+Cypher, so the rows land in context and the model computes the answer itself — the measurement
+finding 4-as-planned called for. Condition 5 returns rows as JSON and *tells* the agent when a
+page was cut (`more_available`); condition 6 is the control that withholds exactly that;
+condition 7 is condition 5 with the rows encoded as CSV instead.
+
+![outcomes of 117 episodes per arm](figures/in-context-outcomes.svg)
+
+- **One tool-response field moves silent failures 71 → 11.** Denied `more_available`, the
+  blind control answered wrongly off a truncated view *without saying so* in 71 of 117
+  episodes; the told arms did that 11 and 16 times. Accuracy barely moves (39 vs 40 vs 35
+  correct) — the field does not make the model right, it makes the model honest, and the
+  honesty is the schema's doing, not the model's instinct.
+- **CSV carries the same episodes at a third of the context** (median 3.7k vs 11.0k input
+  tokens per episode at SF100) with accuracy statistically indistinguishable and *more*
+  disclosure, not less. The per-row keys JSON repeats are overhead, not signal — measured
+  directly: the same 200 rows are 9,017 tokens as JSON and 5,211 as CSV
+  ([the seven-encoding sweep](figures/depth-format-tokens.svg)).
+- **Telling the agent has a price**: the told arms page (up to 14 round trips) and ran out of
+  their 16-turn budget 47 times; the blind arm stops early, cheap and silently wrong.
+  ([by scale](figures/in-context-by-scale.svg), [tokens](figures/in-context-tokens.svg))
+
+These arms also surfaced a serving artifact worth knowing about: on long multi-page episodes
+`gpt-oss-120b` deterministically spends its closing turn in the reasoning channel and returns
+empty content. The harness repairs it with one recorded nudge (`nudged` per episode; 6 of 351
+fired) so the arms are measured, not the artifact.
+
+### The three boundaries of bridge 2
+
+What a returned row costs, measured at each layer with client CPU, the DB container's cgroup
+CPU, tracemalloc, and involuntary context switches (raw samples + a machine manifest per run
+in `results/bench/`):
+
+- **Transport** ([figure](figures/depth-runaway.svg)) — a query without LIMIT costs 12 ms on
+  Bolt (the client stops pulling), 398 ms on HTTP (the 2.4 MB body is already complete), and
+  1.4 ms with LIMIT in the query on either. The 276× spread is closed by the contract, not the
+  transport.
+- **Runtime** ([figure](figures/depth-driver-cpu.svg)) — consuming a row costs ~7× more CPU
+  than producing it (client 20.8 µs vs server 2.9 µs at 100k rows), and the cost is the
+  *representation*: a row materialized as a Python dict is 346 bytes against ~30 of data, in
+  both decoder builds. The rust codec is a −26% prefactor; the curve does not change.
+- **Concurrency** ([figure](figures/depth-scalability.svg)) — the same 8-worker load runs at
+  p50 **769 ms** on Python threads (1.3 cores used, the GIL), **81 ms** on eight Python
+  processes (7.2 cores — the control that convicts the runtime), and **7.7 ms in one native
+  process** (`bench/neo4rs-bench`, tokio) at 2.5 ms CPU per call, because the rows never
+  become Python objects. Control plane in Python, data plane native, is the architecture this
+  measures its way toward.
+
+---
+
 ## Reproducing it
 
-Requires Docker, Python 3.10+, and an OpenAI-compatible endpoint.
+**Everything semantic in this experiment is [SEOCHO](https://github.com/tteon/seocho)** — the
+ontology object, the prompt schema, and the guardrail are `seocho.ontology` and
+`seocho.query`, installed straight from the seocho repository by the first command below. To
+rerun anything here, you set up seocho; that is the intended door. Requires Docker, Python
+3.10+, and an OpenAI-compatible endpoint.
 
 ```bash
 pip install -r requirements.txt
@@ -248,11 +319,11 @@ for SF in 1 10 100; do
       --database finbenchl${SF} --password "$NEO4J_PASSWORD"
 done
 
-# 2. Run the agents (468 episodes)
+# 2. Run the agents (819 episodes across the seven conditions)
 python scripts/agent_interaction.py --password "$NEO4J_PASSWORD" \
     --databases finbenchl1:1 finbenchl10:10 finbenchl100:100 \
-    --arms labels ontology guardrail plan --repeats 3 \
-    --ontology ontology/finbench.ontology.yaml \
+    --arms labels ontology guardrail plan in_context in_context_blind in_context_csv \
+    --repeats 3 --ontology ontology/finbench.ontology.yaml \
     --out results/agent_interaction.json
 
 # 3. Replay each settled query for a p99 (no model in the loop)
@@ -262,8 +333,21 @@ python scripts/replay_p99.py --password "$NEO4J_PASSWORD" \
 
 # 4. Charts and tables
 python scripts/plot_interaction.py --figures figures
+python scripts/plot_in_context.py --episodes results/agent_interaction.json
 python scripts/report_interaction.py > docs/finbench-agent-interaction.md
+
+# 5. The interface benchmarks (idle DB — they contend with the episodes otherwise)
+python scripts/bench_bridge2.py --password "$NEO4J_PASSWORD" --database finbenchl1
+python scripts/bench_driver_memory.py --password "$NEO4J_PASSWORD" --database finbenchl1
+( cd bench/neo4rs-bench && NEO4J_PASSWORD=$NEO4J_PASSWORD cargo run --release -- finbenchl1 )
+python scripts/plot_depth.py && python scripts/plot_levers.py
 ```
+
+Every benchmark writes machine-readable results to `results/bench/` with per-iteration
+samples and a manifest (git commit, decoder, driver versions, container image, CPU) via
+`scripts/runmeta.py`, so any number in the figures can be traced to the machine state that
+produced it. Run `bench_driver_memory.py` once in a plain-`neo4j` environment and once with
+`neo4j-rust-ext` installed to reproduce the decoder comparison.
 
 The generator is deterministic — a fixed seed gives byte-identical row counts and planted
 patterns — so step 1 reproduces the same graph. Steps 2 onward involve a language model and
@@ -278,10 +362,11 @@ provider.
 
 ```
 ontology/finbench.ontology.yaml   the schema, and the subject of finding 1 and 2
-scripts/                          generator, loader, experiment runner, replay, plots
-results/                          468 episodes, 156 replayed cells, detection sweeps
-figures/                          the four charts
-docs/                             generated tables, and the defect log
+scripts/                          generator, loader, runner, replay, benches, plots
+bench/neo4rs-bench/               the native end of the driver spectrum (Rust, tokio)
+results/                          819 episodes, 156 replayed cells, bench JSONs + manifests
+figures/                          thirteen charts
+docs/                             conditions.md (generated prompt diffs), tables, defect log
 ```
 
 `docs/finbench-ontology-defects.md` is worth reading on its own: it records four defects the
@@ -294,17 +379,18 @@ each one cost. None of them was visible by inspecting the schema.
 
 Stated plainly, because a result without its limits is a claim.
 
-- **The agent's own numeric judgement is not measured.** Every scalar question here is
-  aggregated by the database; the agent relays the number. Measuring whether an agent reads
-  values correctly out of a large candidate set needs a fifth design where the rows land in
-  context and the agent does the aggregation itself.
 - **One model.** `gpt-oss-120b` at temperature 0. The design differences are large, but
-  whether they hold across model families is untested.
+  whether they hold across model families is untested — the endpoint also serves
+  DeepSeek-V3.x and MiniMax, so the model axis is one flag away.
+- **Three repeats per cell.** Enough to see the in-context arms' failure-mode gap (71 vs 11
+  is not noise), thin for small accuracy differences — the 35-vs-39 CSV comparison needs
+  bootstrap intervals before it is quoted as anything but "indistinguishable".
 - **Synthetic data.** The graph is generated to LDBC FinBench's shape and its typologies come
   from FATF and FinCEN guidance, but it is not a real institution's data. Validation against
   the LDBC FinBench reference dataset is open.
-- **Truncation disclosure is not scored.** Whether an agent says its answer was cut off at the
-  row cap was measured in earlier work (0 disclosures out of 20) and is not part of this run.
+- **The interface benchmarks share one box with the database.** Client and server CPU are
+  charged separately (process rusage vs container cgroup), but a cross-machine run would
+  add the network back into bridge 2; the runaway asymmetry only widens there.
 - **`int_hard_1` at SF100 has no in-run gold.** The hand-written reference query takes **777
   seconds** at that scale, past the run's gold timeout; it was computed separately and the
   affected episodes re-scored. That number is itself a result — the optimal query for the
@@ -323,3 +409,12 @@ request merges and a squash merge lands a different commit on main. This reposit
 experiment. Three functions do the work that findings 1 and 2 are about —
 `policy_from_ontology`, `schema_for_prompt` and `validate_text2cypher_fallback` — and they are
 169 lines between them, which is worth knowing before assuming the result requires a framework.
+
+The pin is for reproducing the published results; tracking upstream is CI's job. The
+[`seocho upstream`](.github/workflows/seocho-upstream.yml) workflow installs seocho at `main`
+(`requirements-upstream.txt`) daily — and on `repository_dispatch`, so seocho's CI can trigger
+it the moment main moves — and runs [`scripts/smoke_seocho.py`](scripts/smoke_seocho.py), which
+exercises exactly the three functions above against this repo's ontology: the schema still
+renders the facts findings 1 and 2 rest on, the guardrail still accepts a conforming query and
+still refuses an unscoped one. A second job runs the same smoke test against the tag, so "the
+results no longer reproduce" and "upstream drifted" fail as different jobs.
