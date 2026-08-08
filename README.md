@@ -239,13 +239,7 @@ layers the query can reach.**
 
 The four designs above vary what the agent is *told*. The second half of the work varies the
 **exchange** — who does the arithmetic, what encoding the rows wear, and what executes under
-the driver — and puts every lever on one scale, labelled by what kind of fix it is:
-
-![every lever measured, labelled ontology/contract vs engineering/runtime](figures/levers.svg)
-
-The positions are not a ranking — each row moves its own metric. The labels are the point:
-**contract-side fixes change what the agent does; runtime-side fixes change what the exchange
-costs; neither substitutes for the other.**
+the driver.
 
 ### Conditions 5–7: the agent does the arithmetic
 
@@ -270,6 +264,16 @@ condition 7 is condition 5 with the rows encoded as CSV instead.
 - **Telling the agent has a price**: the told arms page (up to 14 round trips) and ran out of
   their 16-turn budget 47 times; the blind arm stops early, cheap and silently wrong.
   ([by scale](figures/in-context-by-scale.svg), [tokens](figures/in-context-tokens.svg))
+
+Question by question, the same convention as the main figures — scale across, cost up,
+marker fill carrying correctness:
+
+![the trio question by question, db hits against scale](figures/in-context-by-question.svg)
+
+The blind arm's flat, hollow lines on the anchored questions are the failure mode drawn: one
+page fetched, cheapest cost on the panel, wrong at every scale. And `int_hard_2` is what the
+aggregate ban costs at the top end — 10⁸ db hits per episode where condition 4 answered the
+same question through one server-side aggregate.
 
 These arms also surfaced a serving artifact worth knowing about: on long multi-page episodes
 `gpt-oss-120b` deterministically spends its closing turn in the reasoning channel and returns
@@ -296,6 +300,18 @@ in `results/bench/`):
   process** (`bench/neo4rs-bench`, tokio) at 2.5 ms CPU per call, because the rows never
   become Python objects. Control plane in Python, data plane native, is the architecture this
   measures its way toward.
+
+### Eight levers, two kinds of fix
+
+Everything above on one closing chart, each lever against the metric it moved, grouped by
+what kind of fix it is:
+
+![eight levers, grouped ontology/contract vs engineering/runtime](figures/levers.svg)
+
+Compare within a block, not across. What the grouping says: **contract-side fixes changed
+what the agent does; runtime-side fixes changed what the exchange costs — and neither
+substitutes for the other.** No driver makes a model disclose truncation; no prompt makes a
+row cost less than 346 bytes in a Python dict.
 
 ---
 

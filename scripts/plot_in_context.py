@@ -179,6 +179,66 @@ def fig_by_scale(eps, out: Path) -> None:
     print(f"wrote {out}")
 
 
+def fig_by_question(eps, out: Path) -> None:
+    """Per-question scalability for the trio, in the repo's by-question convention:
+    SF across, median db hits per episode up (log), marker fill = correctness share."""
+    qids = ["ext_easy_1", "ext_easy_2", "ext_med_1", "ext_med_2", "ext_hard_1", "ext_hard_2",
+            "int_easy_1", "int_easy_2", "int_med_1", "int_med_2", "int_hard_1",
+            "int_hard_1b", "int_hard_2"]
+    sfs = [1, 10, 100]
+    fig, axes = plt.subplots(4, 4, figsize=(11.4, 9.2), sharex=True)
+    fig.subplots_adjust(left=0.065, right=0.985, top=0.865, bottom=0.05,
+                        hspace=0.42, wspace=0.28)
+    flat = axes.flatten()
+    for ax in flat[len(qids):]:
+        ax.set_visible(False)
+    for ax, qid in zip(flat, qids):
+        for arm in ARMS:
+            xs, ys, fills = [], [], []
+            for i, sf in enumerate(sfs):
+                sub = [e for e in eps if e["arm"] == arm and e["sf"] == sf
+                       and e["question_id"] == qid]
+                if not sub:
+                    continue
+                hits = statistics.median([max(e.get("db_hits") or 1, 1) for e in sub])
+                ok = sum(1 for e in sub if e.get("score_correct")) / len(sub)
+                xs.append(i)
+                ys.append(hits)
+                fills.append(ok)
+            ax.plot(xs, ys, "-", color=ARM_COLOR[arm], linewidth=1.4, zorder=2)
+            for x, y, ok in zip(xs, ys, fills):
+                face = (ARM_COLOR[arm] if ok >= 1.0
+                        else "white" if ok <= 0.0 else "#c3c8d2")
+                ax.plot([x], [y], "o", markersize=5.2, markerfacecolor=face,
+                        markeredgecolor=ARM_COLOR[arm], markeredgewidth=1.2, zorder=3)
+        ax.set_yscale("log")
+        ax.set_xticks(range(len(sfs)))
+        ax.set_xticklabels(["SF1", "SF10", "SF100"], fontsize=7.4)
+        ax.tick_params(axis="y", labelsize=7)
+        ax.set_title(qid, fontsize=8.4, color=INK, loc="left", pad=4)
+        ax.grid(axis="y", color=GRID, linewidth=0.6)
+        ax.set_axisbelow(True)
+        for side in ("top", "right"):
+            ax.spines[side].set_visible(False)
+        ax.tick_params(length=0)
+    handles = [plt.Line2D([], [], marker="o", linestyle="-", color=ARM_COLOR[a],
+                          markersize=5.5, label=ARM_LABEL[a]) for a in ARMS]
+    fig.legend(handles=handles, frameon=False, fontsize=8.4,
+               loc="upper right", bbox_to_anchor=(0.985, 0.985))
+    fig.suptitle("The in-context trio, question by question — db hits against scale",
+                 fontsize=13.5, weight="bold", x=0.028, ha="left", y=0.975, color=INK)
+    fig.text(0.028, 0.935,
+             "Median database hits per episode (log). Filled marker: all three repeats "
+             "matched gold; hollow: none did; grey: some. Db hits rather than\nmilliseconds "
+             "because it is the one cost unit unaffected by what else runs on the box. The "
+             "blind arm is often cheapest and hollow at once —\nit stops fetching before it "
+             "has the rows the answer needs.",
+             fontsize=8.6, color=MUTED, ha="left", va="top")
+    fig.savefig(out)
+    plt.close(fig)
+    print(f"wrote {out}")
+
+
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--episodes", default="results/agent_interaction.json")
@@ -191,6 +251,7 @@ def main() -> None:
     fig_outcomes(eps, figs / "in-context-outcomes.svg")
     fig_tokens(eps, figs / "in-context-tokens.svg")
     fig_by_scale(eps, figs / "in-context-by-scale.svg")
+    fig_by_question(eps, figs / "in-context-by-question.svg")
 
 
 if __name__ == "__main__":
