@@ -1,0 +1,10 @@
+# Generated graph snapshots: Parquet plus the CSV staging the bulk loader writes. 1.2 GB at
+# SF1000, and reproducible from the generator with a fixed seed, so it does not belong here.
+outputs/
+*.parquet
+*.duckdb
+
+__pycache__/
+*.py[cod]
+.venv/
+.env

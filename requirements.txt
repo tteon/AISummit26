@@ -1,0 +1,14 @@
+# The ontology, guardrail and Agents SDK adapter this experiment measures. Pinned to the
+# commit that produced the results in results/ — the numbers are only reproducible against
+# that revision, and the branch moves. Switch the ref to a tag on main once the upstream PR
+# lands, so the pin survives the branch being deleted.
+seocho @ git+https://github.com/tteon/seocho@b66382eb143d6f373ae2fb7868986c623f9559d4
+
+duckdb>=0.10          # deterministic graph generation
+pyarrow>=14           # Parquet snapshots the bulk loader reads
+neo4j>=5.20           # bolt driver
+openai-agents>=0.10   # the agent loop; also pulls openai
+openai>=1.40
+matplotlib>=3.8       # charts
+pyyaml>=6
+python-dotenv>=1.0

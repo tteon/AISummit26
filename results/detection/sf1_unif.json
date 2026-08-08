@@ -1,0 +1,81 @@
+{
+  "schema_version": "seocho.finbench.detection-workload.v1",
+  "source": "/tmp/claude-1000/-home-hadry-lab-btc/5db0bcb3-318a-4ca1-a0ed-3af966d70fb9/tmp/sf1-eunif",
+  "scale_factor": 1,
+  "structure": {
+    "hub_skew": 1.0,
+    "edges": null,
+    "max_degree": 421,
+    "avg_local_clustering": null,
+    "incidental_3_cycles": null
+  },
+  "results": [
+    {
+      "pattern": "nominee_structuring",
+      "requires": "aggregate over OWN \u2014 invisible per account",
+      "rule": "owner-level aggregate of sub-threshold legs, fragmented",
+      "found": 1,
+      "true_positives": 1,
+      "false_positives": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    {
+      "pattern": "layering_cycle",
+      "requires": "cycle detection with channel and time-window predicates",
+      "rule": "3-cycle, all hops on high-risk channels, closes within 24h",
+      "found": 1,
+      "true_positives": 1,
+      "false_positives": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "note": "cycles counted over nodes with out-degree <= 40; a lower bound, because the unbounded two-path join exhausts 10 GB here"
+    },
+    {
+      "pattern": "funnel_account",
+      "requires": "collection window followed by prompt onward movement",
+      "rule": "many senders, onward move of most of the total within hours",
+      "found": 1,
+      "true_positives": 1,
+      "false_positives": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    {
+      "pattern": "loan_integration",
+      "requires": "a value path across four heterogeneous edge types",
+      "rule": "TRANSFER -> REPAY -> DEPOSIT -> TRANSFER chain",
+      "found": 753,
+      "true_positives": 1,
+      "false_positives": 752,
+      "missed": 0,
+      "precision": 0.0013,
+      "recall": 1.0
+    },
+    {
+      "pattern": "common_control",
+      "requires": "conjunction across account, party and device layers",
+      "rule": "transfer + mutually guaranteeing owners + shared login device",
+      "found": 1,
+      "true_positives": 1,
+      "false_positives": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    {
+      "pattern": "equity_integration",
+      "requires": "TRANSFER -> OWN -> INVEST, leaving the account layer entirely",
+      "rule": "inbound transfer then an equity stake by the same owner within 30 days",
+      "found": 2,
+      "true_positives": 1,
+      "false_positives": 1,
+      "missed": 0,
+      "precision": 0.5,
+      "recall": 1.0
+    }
+  ]
+}
