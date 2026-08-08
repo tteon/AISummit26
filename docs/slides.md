@@ -39,15 +39,14 @@
 
 ---
 
-## 백업 (Q&A용, 슬라이드엔 미포함)
+## 백업 (Q&A용 — 리포엔 위 2장만 커밋, 아래는 필요할 때 재생성)
 
-- `conditions.svg` — 조건 7개의 설계 ("정확히 한 가지만 다르다"는 주장 방어)
-- `agent-p99-by-difficulty.svg` / `agent-p99-by-question.svg` — 스케일 축 원결과
-- `agent-accuracy-by-cell.svg`, `agent-cost-by-arm.svg` — 정확도·비용 분해
-- `in-context-outcomes.svg` — 71 vs 11 (필드 하나의 인과, 대조군 포함)
-- `in-context-by-question.svg` — 트리오의 질문별 db hits 스케일
-- `depth-format-tokens.svg`, `depth-runaway.svg`, `depth-driver-cpu.svg`,
-  `depth-scalability.svg` — engineering-detail 4패널의 각 확대판
+| 재생성 명령 | 나오는 차트 | 방어하는 질문 |
+|---|---|---|
+| `python scripts/dump_conditions.py` | conditions 매트릭스 | "정확히 한 가지만 다르다"는 설계 주장 |
+| `python scripts/plot_interaction.py` | p99 by difficulty/question, 정확도·비용 | 스케일 축 원결과 전부 |
+| `python scripts/plot_in_context.py` | outcomes (71 vs 11), 질문별 db hits | 필드 하나의 인과, 트리오 스케일 |
+| `python scripts/plot_depth.py` | 인코딩/runaway/CPU/스케일링 각 확대판 | engineering-detail 패널별 심화 |
 
 ## 한 줄 아크
 

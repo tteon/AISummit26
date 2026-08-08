@@ -16,7 +16,7 @@ when the graph gets a hundred times bigger.
 
 ## The headline
 
-![p99 query latency by difficulty, scale and agent design](figures/agent-p99-by-difficulty.svg)
+*(chart retired from the repo — regenerate with `python scripts/plot_interaction.py`)*
 
 Six panels — who is asking, by how hard the question is. Scale factor across, p99 latency up,
 one line per agent design, questions within a cell averaged geometrically. **A filled marker
@@ -36,8 +36,7 @@ What the six panels say:
 - **internal / hard** — grey markers everywhere. Nothing solves the three-layer conjunction
   reliably at any scale, and the reason is not what you would guess. See finding 2.
 
-Per-question detail, for checking any single claim above, is in
-[`figures/agent-p99-by-question.svg`](figures/agent-p99-by-question.svg).
+Per-question detail, for checking any single claim above, regenerates alongside it.
 
 ---
 
@@ -249,7 +248,7 @@ finding 4-as-planned called for. Condition 5 returns rows as JSON and *tells* th
 page was cut (`more_available`); condition 6 is the control that withholds exactly that;
 condition 7 is condition 5 with the rows encoded as CSV instead.
 
-![outcomes of 117 episodes per arm](figures/in-context-outcomes.svg)
+*(chart regenerates with `python scripts/plot_in_context.py`; its numbers are below)*
 
 - **One tool-response field moves silent failures 71 → 11.** Denied `more_available`, the
   blind control answered wrongly off a truncated view *without saying so* in 71 of 117
@@ -260,17 +259,14 @@ condition 7 is condition 5 with the rows encoded as CSV instead.
   tokens per episode at SF100) with accuracy statistically indistinguishable and *more*
   disclosure, not less. The per-row keys JSON repeats are overhead, not signal — measured
   directly: the same 200 rows are 9,017 tokens as JSON and 5,211 as CSV
-  ([the seven-encoding sweep](figures/depth-format-tokens.svg)).
+  (the seven-encoding sweep regenerates with `python scripts/plot_depth.py`).
 - **Telling the agent has a price**: the told arms page (up to 14 round trips) and ran out of
   their 16-turn budget 47 times; the blind arm stops early — median 5.8k input tokens per
   episode at SF100 against 11.0k for the told JSON arm — cheap and silently wrong.
 
-Question by question, the same convention as the main figures — scale across, cost up,
-marker fill carrying correctness:
-
-![the trio question by question, db hits against scale](figures/in-context-by-question.svg)
-
-The blind arm's flat, hollow lines on the anchored questions are the failure mode drawn: one
+Question by question (same convention as the main figures — scale across, db hits up,
+marker fill carrying correctness; `python scripts/plot_in_context.py` regenerates it), the
+blind arm's flat, hollow lines on the anchored questions are the failure mode drawn: one
 page fetched, cheapest cost on the panel, wrong at every scale. And `int_hard_2` is what the
 aggregate ban costs at the top end — 10⁸ db hits per episode where condition 4 answered the
 same question through one server-side aggregate.
@@ -286,15 +282,15 @@ What a returned row costs, measured at each layer with client CPU, the DB contai
 CPU, tracemalloc, and involuntary context switches (raw samples + a machine manifest per run
 in `results/bench/`):
 
-- **Transport** ([figure](figures/depth-runaway.svg)) — a query without LIMIT costs 12 ms on
+- **Transport** — a query without LIMIT costs 12 ms on
   Bolt (the client stops pulling), 398 ms on HTTP (the 2.4 MB body is already complete), and
   1.4 ms with LIMIT in the query on either. The 276× spread is closed by the contract, not the
   transport.
-- **Runtime** ([figure](figures/depth-driver-cpu.svg)) — consuming a row costs ~7× more CPU
+- **Runtime** — consuming a row costs ~7× more CPU
   than producing it (client 20.8 µs vs server 2.9 µs at 100k rows), and the cost is the
   *representation*: a row materialized as a Python dict is 346 bytes against ~30 of data, in
   both decoder builds. The rust codec is a −26% prefactor; the curve does not change.
-- **Concurrency** ([figure](figures/depth-scalability.svg)) — the same 8-worker load runs at
+- **Concurrency** — the same 8-worker load runs at
   p50 **769 ms** on Python threads (1.3 cores used, the GIL), **81 ms** on eight Python
   processes (7.2 cores — the control that convicts the runtime), and **7.7 ms in one native
   process** (`bench/neo4rs-bench`, tokio) at 2.5 ms CPU per call, because the rows never
@@ -381,7 +377,7 @@ ontology/finbench.ontology.yaml   the schema, and the subject of finding 1 and 2
 scripts/                          generator, loader, runner, replay, benches, plots
 bench/neo4rs-bench/               the native end of the driver spectrum (Rust, tokio)
 results/                          819 episodes, 156 replayed cells, bench JSONs + manifests
-figures/                          thirteen charts
+figures/                          the two talk charts; the rest regenerate from scripts/
 docs/                             conditions.md (generated prompt diffs), tables, defect log
 ```
 

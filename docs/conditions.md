@@ -14,7 +14,7 @@ Conditions 1–4 are cumulative: each adds one thing to the previous, so the mea
 | 6 | `in_context_blind` | 2,725 chars | 866 chars | 200 | 16 |
 | 7 | `in_context_csv` | 2,725 chars | 1,263 chars | 200 | 16 |
 
-![how the conditions differ](../figures/conditions.svg)
+_The matrix figure regenerates alongside this file:_ `python scripts/dump_conditions.py`
 
 ---
 

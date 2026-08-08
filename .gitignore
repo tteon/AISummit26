@@ -15,3 +15,8 @@ __pycache__/
 
 # Rust build artifacts for the native driver bench (330 MB; cargo rebuilds them)
 bench/*/target/
+
+# The repo tracks exactly the two talk charts; everything else regenerates from scripts/.
+figures/*
+!figures/levers.svg
+!figures/engineering-detail.svg

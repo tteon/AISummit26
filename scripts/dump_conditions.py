@@ -174,7 +174,8 @@ def write_markdown(texts: Dict[str, str], out: Path) -> None:
         turns = IN_CONTEXT_MAX_TURNS if a.startswith("in_context") else MAX_TURNS
         lines.append(f"| {TITLE[a].split(' · ')[0]} | `{a}` | {schema_chars:,} chars "
                      f"| {len(rules_of(texts[a])):,} chars | {cap} | {turns} |")
-    lines += ["", "![how the conditions differ](../figures/conditions.svg)", ""]
+    lines += ["", "_The matrix figure regenerates alongside this file:_ "
+                  "`python scripts/dump_conditions.py`", ""]
 
     for a in ARMS:
         lines += ["---", "", f"## {TITLE[a]}", "", SUMMARY[a], ""]
