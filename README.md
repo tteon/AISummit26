@@ -300,11 +300,8 @@ in `results/bench/`):
 ### Eight levers, two kinds of fix
 
 Everything above on one closing chart, each lever against the metric it moved, grouped by
-what kind of fix it is:
-
-![eight levers, grouped ontology/contract vs engineering/runtime](figures/levers.svg)
-
-Compare within a block, not across. What the grouping says: **contract-side fixes changed
+what kind of fix it is (`python scripts/plot_levers.py` regenerates it). Compare within a
+block, not across. What the grouping says: **contract-side fixes changed
 what the agent does; runtime-side fixes changed what the exchange costs — and neither
 substitutes for the other.** No driver makes a model disclose truncation; no prompt makes a
 row cost less than 346 bytes in a Python dict.
@@ -377,7 +374,8 @@ ontology/finbench.ontology.yaml   the schema, and the subject of finding 1 and 2
 scripts/                          generator, loader, runner, replay, benches, plots
 bench/neo4rs-bench/               the native end of the driver spectrum (Rust, tokio)
 results/                          819 episodes, 156 replayed cells, bench JSONs + manifests
-figures/                          the two talk charts; the rest regenerate from scripts/
+figures/                          the two talk charts (overview, engineering detail);
+                                  the rest regenerate from scripts/
 docs/                             conditions.md (generated prompt diffs), tables, defect log
 ```
 

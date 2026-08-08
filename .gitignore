@@ -18,5 +18,5 @@ bench/*/target/
 
 # The repo tracks exactly the two talk charts; everything else regenerates from scripts/.
 figures/*
-!figures/levers.svg
+!figures/overview-by-question.svg
 !figures/engineering-detail.svg

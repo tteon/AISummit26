@@ -1,0 +1,33 @@
+{
+ "manifest": {
+  "timestamp_utc": "2026-08-08T07:44:44+00:00",
+  "git_commit": "b4122c9605a54a816e6da7fcb062da4a40a1551b",
+  "git_dirty": true,
+  "argv": [
+   "measure_format_tokens.py"
+  ],
+  "python": "3.11.14",
+  "venv": "/home/hadry/lab/seocho/.venv",
+  "kernel": "6.8.0-134-generic",
+  "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+  "cpu_count": 16,
+  "neo4j_driver": "6.1.0",
+  "neo4j_rust_ext": null,
+  "packstream_decoder": "pure-python",
+  "db_container_image": "graphstack/dozerdb:5.26.3.0",
+  "db_container_id": "04a4cfa2d073",
+  "tokenizer": "o200k_base",
+  "seed": 7,
+  "n_rows": 200,
+  "tiktoken": "0.12.0"
+ },
+ "tokens": {
+  "json": 9017,
+  "json_compact": 7405,
+  "csv": 5211,
+  "tsv": 5208,
+  "markdown_table": 6221,
+  "columnar_json": 6035,
+  "toon": 5620
+ }
+}

@@ -159,7 +159,7 @@ def scalability(out: str) -> None:
     workers = [1, 2, 4, 8]
     series = [
         ("Python threads · pure", [43.8, 91.4, 265.9, 769.3], BLUE),
-        ("Python threads · rust-ext", [33.9, 73.5, 214.8, 678.7], ORANGE),
+        ("Python threads · rust-ext", [33.1, 68.3, 214.8, 678.7], ORANGE),
         ("Python, process per worker", [45.3, 48.2, 61.4, 81.2], "#1baf7a"),
         ("neo4rs, one process (tokio)", [4.6, 5.6, 6.1, 7.7], "#4a3aa7"),
     ]
@@ -252,7 +252,7 @@ def engineering_summary(out: str) -> None:
     workers = [1, 2, 4, 8]
     for label, ys, c in [
             ("threads · pure", [43.8, 91.4, 265.9, 769.3], BLUE),
-            ("threads · rust-ext", [33.9, 73.5, 214.8, 678.7], ORANGE),
+            ("threads · rust-ext", [33.1, 68.3, 214.8, 678.7], ORANGE),
             ("process/worker", [45.3, 48.2, 61.4, 81.2], "#1baf7a"),
             ("neo4rs, one process", [4.6, 5.6, 6.1, 7.7], "#4a3aa7")]:
         ax_sc.plot(workers, ys, "-o", color=c, linewidth=1.8, markersize=5, label=label)

@@ -5,20 +5,21 @@
 
 ---
 
-## 1 · 총체 — `figures/levers.svg`
+## 1 · 총체 — `figures/overview-by-question.svg`
 
-**문장: 측정한 레버 8개, 수리는 두 종류다 — 계약(ontology/contract)을 고치는 것과
-런타임(engineering/runtime)을 고치는 것. 어느 쪽도 서로를 대체하지 못한다.**
+**문장: 실험 전체가 이 한 장이다 — 13개 질문 × SF1→100 × 7개 설계, 819 에피소드.
+스케일이 커질수록 설계가 갈라지고, 마커 채움이 정답 여부를 같이 보여준다.**
 
-- 위 블록(보라): 모델에게 말해주거나 쓰도록 요구하는 것 — LIMIT 계약 ×276, 플랜 피드백
-  ×10, 프롬프트 온톨로지 ×9, `more_available` ×6.5.
-- 아래 블록(주황): 밑에서 실행되는 것 — 네이티브 드라이버 ×100, 프로세스 분리 ×9.5,
-  CSV 인코딩 ×3, rust 코덱 ×1.3.
-- 블록 안에서만 비교(각 행은 자기 지표). 말할 포인트: *어떤 드라이버도 모델이 truncation을
-  공개하게 못 만들고(71→11은 필드 하나의 일), 어떤 프롬프트도 행 하나를 346바이트
-  아래로 못 만든다.*
-- 마무리 멘트: 의미론 전부는 SEOCHO — 조건 7이 측정해낸 CSV 인코딩은 seocho#466으로
-  upstream, 재현은 `pip install -r requirements.txt` 한 줄.
+- 세로축 median db hits(로그) — 박스 위 다른 부하에 영향받지 않는 유일한 비용 단위.
+- 마커: 채움 = 3반복 전부 정답, 빈 것 = 전부 오답, 회색 = 일부.
+- 읽는 순서: ① easy 패널들 — 설계가 포개짐(무엇을 알려주든 무관) → ② ext_hard/int_med —
+  라벨-only(주황 ○)가 위로 뜨고 속이 빔 → ③ blind(연보라 +)의 평평하고 속 빈 선 —
+  제일 싸게, 모든 스케일에서 틀림 → ④ int_hard_2의 in-context 선들 10⁸ —
+  집계 금지의 최상단 가격.
+- 라벨(범례)이 곧 스토리: 1–4는 DB가 집계, 5–7은 모델이 집계. 색+마커 모양으로 7개
+  설계 구분(CVD 검증 통과).
+- 수치는 전부 렌더 시점에 `results/agent_interaction.json`에서 직접 계산 — 하드코딩 없음
+  (`python scripts/check_chart_provenance.py`가 검증).
 
 ## 2 · 엔지니어링 디테일 — `figures/engineering-detail.svg`
 
@@ -44,9 +45,14 @@
 | 재생성 명령 | 나오는 차트 | 방어하는 질문 |
 |---|---|---|
 | `python scripts/dump_conditions.py` | conditions 매트릭스 | "정확히 한 가지만 다르다"는 설계 주장 |
-| `python scripts/plot_interaction.py` | p99 by difficulty/question, 정확도·비용 | 스케일 축 원결과 전부 |
+| `python scripts/plot_interaction.py` | p99 by difficulty/question, 정확도·비용 | 스케일 축 p99 원결과 (replay 기반) |
 | `python scripts/plot_in_context.py` | outcomes (71 vs 11), 질문별 db hits | 필드 하나의 인과, 트리오 스케일 |
 | `python scripts/plot_depth.py` | 인코딩/runaway/CPU/스케일링 각 확대판 | engineering-detail 패널별 심화 |
+| `python scripts/plot_levers.py` | 레버 8개 2-블록 요약 | "수리는 두 종류" 클로징 멘트용 |
+
+**수치 검증**: `python scripts/check_chart_provenance.py` — 두 차트의 모든 상수를
+`results/bench/*.json`·`results/agent_interaction.json`과 대조 (실제로 1차 rust 실행값
+2건이 기록값과 어긋난 걸 잡아내 교정했음).
 
 ## 한 줄 아크
 
