@@ -54,10 +54,20 @@ def _pct(xs, q):
     return xs[min(len(xs) - 1, int(len(xs) * q))]
 
 
+# The dashed reference each chart carries. Generic industry conventions, not measured
+# here: ~200 ms is the usual per-call budget inside an interactive request, and 1 s is
+# the common p99 SLO for the request itself — a DB call at 1 s has spent the whole budget.
+SLO = {"p50": (200, "200 ms — interactive per-call budget"),
+       "p99": (1000, "1 s — a common request p99 SLO")}
+
+
 def overview(eps, *, q, tag, out: Path) -> None:
     fig, axes = plt.subplots(1, 3, figsize=(11.6, 4.0), sharey=True)
     fig.subplots_adjust(left=0.07, right=0.985, top=0.665, bottom=0.115, wspace=0.14)
+    slo_ms, slo_label = SLO[tag]
     for ax, diff in zip(axes, DIFFICULTIES):
+        ax.axhline(slo_ms, color="#b91c1c", linewidth=1.1, linestyle=(0, (5, 4)),
+                   zorder=1, alpha=0.75)
         for arm in ARMS:
             xs, ys, fills = [], [], []
             for i, sf in enumerate(SFS):
@@ -88,6 +98,8 @@ def overview(eps, *, q, tag, out: Path) -> None:
             ax.spines[side].set_visible(False)
         ax.tick_params(length=0, labelsize=7.6)
     axes[0].set_ylabel(f"per-call DB latency, {tag} (ms, log)", fontsize=8.4, color=MUTED)
+    axes[0].annotate(slo_label, xy=(0.03, slo_ms), xycoords=("axes fraction", "data"),
+                     fontsize=7.6, color="#b91c1c", va="bottom", ha="left")
     handles = [plt.Line2D([], [], marker=ARM_MARKER[a], linestyle="-",
                           color=ARM_COLOR[a], markersize=5.6, label=ARM_LABEL[a])
                for a in ARMS]

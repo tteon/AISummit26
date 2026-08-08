@@ -14,10 +14,14 @@ labelled — p50 is what a user usually feels, p99 is what breaks the SLO.**
   4/4/5 questions × 3 repeats), SF across, per-call DB latency up (log).
 - Marker fill carries correctness: filled = every episode in the cell matched gold,
   hollow = none, grey = some.
+- Each chart carries a dashed SLO reference: **200 ms** (interactive per-call budget) on
+  p50, **1 s** (a common request p99 SLO) on p99 — say out loud that these are industry
+  conventions for orientation, not measurements of this system.
 - Reading order for the talk:
   1. **easy, p50** — the designs bunch; what you tell the agent barely matters per call.
-  2. **easy, p99** — labels-only (orange ○) sits an order of magnitude above everything
-     at every scale: the tail punishes the uninformed design first.
+  2. **easy, p99** — labels-only (orange ○) crosses the 1 s line by SF10 and ends near
+     10 s; every informed design holds under it until SF100. The tail punishes the
+     uninformed design first — and now the chart says when.
   3. **medium/hard, both charts** — the spread widens with SF; the in-context page
      queries (violet/pink) are cheap *per call* while their cost lives in call count and
      tokens — which is the hand-off to the engineering chart.
