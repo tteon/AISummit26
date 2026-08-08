@@ -16,7 +16,11 @@ when the graph gets a hundred times bigger.
 
 ## The headline
 
-*(chart retired from the repo — regenerate with `python scripts/plot_interaction.py`)*
+*(this six-panel chart is retired from the repo — regenerate with
+`python scripts/plot_interaction.py`. The committed deck is
+`figures/overview-p50.svg` / `overview-p99.svg` — the same contract chain, difficulty
+pooled, p50 from live calls and p99 from the stage-two replays — narrated in
+`docs/slides.md`.)*
 
 Six panels — who is asking, by how hard the question is. Scale factor across, p99 latency up,
 one line per agent design, questions within a cell averaged geometrically. **A filled marker
@@ -99,6 +103,36 @@ structural depth** (two of its three are four-relationship conjunctions). They a
 same kind of hard, which is why the plan-feedback design pulls away in one and not the other.
 Re-labelling would mean re-running all 468 episodes; publishing the audit costs nothing and
 lets a reader check the label instead of trusting it.
+
+### Gold, anchors, and what counts as correct
+
+Everything needed to audit a cell without reading the harness. (The code stays the source
+of truth: `QUESTIONS`, `score()`, `parse_answer()` and `discloses_truncation()` in
+`scripts/agent_interaction.py`.)
+
+- **The anchor** is chosen per database, deterministically: take the p99 of the annotated
+  `_out_degree`, then the smallest `acct_no` at or above it. A hub by construction — the
+  external questions are supposed to get harder with scale *through the anchor's degree*.
+  External questions bind it as `$a`; internal questions run unanchored.
+- **Gold is computed, never written.** Every question ships its reference Cypher (the
+  `ref` field beside the question text). At run start it executes against the same
+  database, anchor and workspace the episodes will use, and those rows are the gold.
+- **Scalar questions** are correct when every named key's value appears among the numbers
+  the answer carries, within 0.1% (or ±0.5 absolute) — tolerant of a model that rounds a
+  sum, not of one that computed a different sum.
+- **List questions** are correct only at recall 1.0 against the gold set, with F1 and
+  precision reported beside the verdict. A partial list is a partial answer — and the
+  questions are shaped as top-5 under a total order precisely so the gold answer does not
+  grow with the graph, which would make "correct" mean something different at each scale.
+- **Unparseable replies** (no `ANSWER:` line that parses as JSON or a bare number) score
+  wrong. Episodes that died on the turn budget carry the error instead and are excluded
+  from silent-truncation accounting — running out of turns is the harness's limit, not
+  the model's silence.
+- **Truncation disclosure** is a deliberately broad regex over the reply's prose, never
+  over its numbers (a bare `50` is not a disclosure). `silent_truncation_failure`
+  requires all four at once: a call hit the row cap, the answer was wrong, it was given
+  anyway, and nothing in the prose said the view was bounded. Broad on purpose: a false
+  disclosure hit understates the failure being counted, which is the safe direction.
 
 ### How big
 
