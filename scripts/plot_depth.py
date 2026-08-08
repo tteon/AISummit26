@@ -189,8 +189,97 @@ def scalability(out: str) -> None:
     print(f"wrote {out}")
 
 
+def engineering_summary(out: str) -> None:
+    """The whole engineering ledger on one slide: encoding, transport, runtime, concurrency.
+
+    Four measured panels, each carrying its own numbers, so the talk needs exactly one
+    detail chart next to the levers overview.
+    """
+    fig, axes = plt.subplots(2, 2, figsize=(11.2, 6.4))
+    fig.subplots_adjust(left=0.13, right=0.965, top=0.82, bottom=0.075,
+                        hspace=0.62, wspace=0.42)
+    (ax_tok, ax_run), (ax_cpu, ax_sc) = axes
+
+    # (a) encoding — tokens the model reads for the same 200 rows
+    for y, (label, v, hot) in enumerate(
+            [("CSV", 5211, True), ("markdown", 6221, False), ("JSON", 9017, True)], start=1):
+        ax_tok.barh(y, v, height=0.6, color=BLUE if hot else BLUE_DIM, zorder=2)
+        ax_tok.text(v + 150, y, f"{v:,}", va="center", fontsize=8.6, color=INK)
+        ax_tok.text(-250, y, label, va="center", ha="right", fontsize=8.6, color=INK)
+    ax_tok.set_xlim(0, 11500)
+    ax_tok.set_xticks([])
+    ax_tok.set_yticks([])
+    _strip(ax_tok, keep_x=False)
+    ax_tok.set_title("Encoding — o200k tokens, same 200 rows\n(the data itself is ~2,100 in "
+                     "every encoding)", fontsize=9.2, color=INK, loc="left", pad=6)
+
+    # (b) transport — the runaway query, who is protected from a missing LIMIT
+    for y, (label, v, c) in enumerate(
+            [("HTTP, full 2.4 MB body", 397.65, ORANGE),
+             ("Bolt, client stops at 50", 12.24, BLUE),
+             ("LIMIT in the query", 1.44, BLUE)], start=1):
+        ax_run.plot([v], [y], "o", markersize=8.5, color=c, zorder=3)
+        ax_run.hlines(y, 0.9, v, color=GRID, linewidth=1.3, zorder=1)
+        ax_run.text(v * 1.3, y, f"{v:,.1f} ms", va="center", fontsize=8.6, color=INK)
+        ax_run.text(0.8, y, label, va="center", ha="right", fontsize=8.4, color=INK)
+    ax_run.set_xscale("log")
+    ax_run.set_xlim(0.9, 3000)
+    ax_run.set_xticks([1, 10, 100, 1000])
+    ax_run.set_xticklabels(["1", "10", "100", "1000 ms"], fontsize=7.8)
+    ax_run.set_yticks([])
+    ax_run.set_ylim(0.4, 3.6)
+    _strip(ax_run)
+    ax_run.set_title("Transport — 100k rows produced, 50 wanted\n(the fix is the contract, "
+                     "not the transport)", fontsize=9.2, color=INK, loc="left", pad=6)
+
+    # (c) runtime — CPU to move one row, client vs server
+    for y, (label, v, c) in enumerate(
+            [("server produces", 2.9, MUTED),
+             ("decode — rust codec", 15.5, ORANGE),
+             ("decode — pure python", 20.8, BLUE)], start=1):
+        ax_cpu.barh(y, v, height=0.6, color=c, zorder=2)
+        ax_cpu.text(v + 0.4, y, f"{v:.1f} µs", va="center", fontsize=8.6, color=INK)
+        ax_cpu.text(-0.6, y, label, va="center", ha="right", fontsize=8.4, color=INK)
+    ax_cpu.set_xlim(0, 25)
+    ax_cpu.set_xticks([])
+    ax_cpu.set_yticks([])
+    _strip(ax_cpu, keep_x=False)
+    ax_cpu.set_title("Runtime — CPU per row, 100k-row fetch\n(346 B/row as Python dicts in "
+                     "BOTH builds: the cost is the representation)",
+                     fontsize=9.2, color=INK, loc="left", pad=6)
+
+    # (d) concurrency — the same 8-worker load, four data planes
+    workers = [1, 2, 4, 8]
+    for label, ys, c in [
+            ("threads · pure", [43.8, 91.4, 265.9, 769.3], BLUE),
+            ("threads · rust-ext", [33.9, 73.5, 214.8, 678.7], ORANGE),
+            ("process/worker", [45.3, 48.2, 61.4, 81.2], "#1baf7a"),
+            ("neo4rs, one process", [4.6, 5.6, 6.1, 7.7], "#4a3aa7")]:
+        ax_sc.plot(workers, ys, "-o", color=c, linewidth=1.8, markersize=5, label=label)
+        ax_sc.text(8.25, ys[-1], f"{ys[-1]:,.0f}", fontsize=8.2, color=c, va="center")
+    ax_sc.set_yscale("log")
+    ax_sc.set_xticks(workers)
+    ax_sc.tick_params(labelsize=7.8)
+    ax_sc.grid(axis="y", color=GRID, linewidth=0.6)
+    ax_sc.set_axisbelow(True)
+    _strip(ax_sc)
+    ax_sc.legend(frameon=False, fontsize=7.4, loc="lower right")
+    ax_sc.set_title("Concurrency — p50 ms vs workers, 2,000-row calls\n(the ceiling was the GIL)",
+                    fontsize=9.2, color=INK, loc="left", pad=6)
+
+    fig.suptitle("The exchange, measured — encoding, transport, runtime, concurrency",
+                 fontsize=13.5, weight="bold", x=0.028, ha="left", y=0.975, color=INK)
+    fig.text(0.028, 0.925,
+             "One box, same DozerDB, per-iteration samples and machine manifests in "
+             "results/bench/.", fontsize=8.6, color=MUTED, ha="left", va="top")
+    fig.savefig(out)
+    plt.close(fig)
+    print(f"wrote {out}")
+
+
 if __name__ == "__main__":
     format_tokens("figures/depth-format-tokens.svg")
     runaway("figures/depth-runaway.svg")
     driver_cpu("figures/depth-driver-cpu.svg")
     scalability("figures/depth-scalability.svg")
+    engineering_summary("figures/engineering-detail.svg")
