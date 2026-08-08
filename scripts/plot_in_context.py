@@ -8,9 +8,6 @@ set. Three figures, written to figures/:
                             wrong off a full view, no answer, or the failure that matters:
                             wrong off a truncated view WITHOUT saying so. The blind control
                             is the point of the figure.
-  in-context-tokens.svg     median input tokens per episode, by arm and scale — what the
-                            encoding and the truncation signal each cost or save in context.
-  in-context-by-scale.svg   correct-rate and silent-failure-rate against SF, per arm.
 
 Colors match figures/conditions.svg for the arms; outcome segments use a validated
 status-like set, silent failure deliberately in red and stacked last.
@@ -108,75 +105,6 @@ def fig_outcomes(eps, out: Path) -> None:
     print(f"wrote {out}")
 
 
-def fig_tokens(eps, out: Path) -> None:
-    fig, ax = plt.subplots(figsize=(7.8, 3.2))
-    fig.subplots_adjust(left=0.145, right=0.97, top=0.70, bottom=0.14)
-    sfs = [1, 10, 100]
-    width = 0.24
-    for i, arm in enumerate(ARMS):
-        xs = [j + (i - 1) * width for j in range(len(sfs))]
-        ys = [statistics.median([e.get("input_tokens") or 0 for e in eps
-                                 if e["arm"] == arm and e["sf"] == sf]) / 1000
-              for sf in sfs]
-        ax.bar(xs, ys, width=width * 0.92, color=ARM_COLOR[arm],
-               label=ARM_LABEL[arm], zorder=2)
-        for x, y in zip(xs, ys):
-            ax.text(x, y + 0.4, f"{y:.1f}k", ha="center", fontsize=7.8, color=MUTED)
-    ax.set_xticks(range(len(sfs)))
-    ax.set_xticklabels([f"SF{sf}" for sf in sfs], fontsize=9)
-    ax.set_ylabel("median input tokens per episode (thousands)", fontsize=8.2, color=MUTED)
-    ax.grid(axis="y", color=GRID, linewidth=0.7)
-    ax.set_axisbelow(True)
-    for side in ("top", "right"):
-        ax.spines[side].set_visible(False)
-    ax.tick_params(length=0, colors=MUTED)
-    ax.legend(frameon=False, fontsize=7.8, loc="upper left")
-    fig.suptitle("What the exchange costs in context, by arm and scale",
-                 fontsize=12.5, weight="bold", x=0.028, ha="left", y=0.955, color=INK)
-    fig.text(0.028, 0.85,
-             "Median input tokens per episode. The blind arm is cheap because it stops early "
-             "— it does not know there is more to fetch;\nCSV carries the same paging as JSON "
-             "for less context — a third of it at SF100.",
-             fontsize=8.4, color=MUTED, ha="left", va="top")
-    fig.savefig(out)
-    plt.close(fig)
-    print(f"wrote {out}")
-
-
-def fig_by_scale(eps, out: Path) -> None:
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9.2, 3.1), sharex=True)
-    fig.subplots_adjust(left=0.09, right=0.975, top=0.68, bottom=0.16, wspace=0.24)
-    sfs = [1, 10, 100]
-    for ax, key, title in ((ax1, "correct", "answered correctly"),
-                           (ax2, "silent_fail", "wrong off a truncated view, silent")):
-        for arm in ARMS:
-            ys = []
-            for sf in sfs:
-                sub = [e for e in eps if e["arm"] == arm and e["sf"] == sf]
-                ys.append(sum(1 for e in sub if outcome(e) == key) / len(sub) * 100)
-            ax.plot(range(len(sfs)), ys, "-o", color=ARM_COLOR[arm], linewidth=1.8,
-                    markersize=5.5, label=ARM_LABEL[arm])
-        ax.set_xticks(range(len(sfs)))
-        ax.set_xticklabels([f"SF{sf}" for sf in sfs], fontsize=8.6)
-        ax.set_ylim(0, 80)
-        ax.grid(axis="y", color=GRID, linewidth=0.7)
-        ax.set_axisbelow(True)
-        for side in ("top", "right"):
-            ax.spines[side].set_visible(False)
-        ax.tick_params(length=0, colors=MUTED)
-        ax.set_title(title, fontsize=9.4, color=INK, loc="left", pad=7)
-        ax.set_ylabel("% of episodes", fontsize=8, color=MUTED)
-    ax1.legend(frameon=False, fontsize=7.6, loc="upper right")
-    fig.suptitle("The in-context trio against scale", fontsize=12.5, weight="bold",
-                 x=0.028, ha="left", y=0.96, color=INK)
-    fig.text(0.028, 0.85,
-             "36-39 episodes per point. Accuracy is flat-to-falling with scale in every arm — "
-             "the arithmetic burden does not shrink — while the silent-failure\ngap between "
-             "the told arms and the blind control holds at every SF.",
-             fontsize=8.4, color=MUTED, ha="left", va="top")
-    fig.savefig(out)
-    plt.close(fig)
-    print(f"wrote {out}")
 
 
 def fig_by_question(eps, out: Path) -> None:
@@ -249,8 +177,6 @@ def main() -> None:
     figs = Path(args.figures)
     figs.mkdir(exist_ok=True)
     fig_outcomes(eps, figs / "in-context-outcomes.svg")
-    fig_tokens(eps, figs / "in-context-tokens.svg")
-    fig_by_scale(eps, figs / "in-context-by-scale.svg")
     fig_by_question(eps, figs / "in-context-by-question.svg")
 
 

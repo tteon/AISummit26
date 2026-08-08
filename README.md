@@ -262,8 +262,8 @@ condition 7 is condition 5 with the rows encoded as CSV instead.
   directly: the same 200 rows are 9,017 tokens as JSON and 5,211 as CSV
   ([the seven-encoding sweep](figures/depth-format-tokens.svg)).
 - **Telling the agent has a price**: the told arms page (up to 14 round trips) and ran out of
-  their 16-turn budget 47 times; the blind arm stops early, cheap and silently wrong.
-  ([by scale](figures/in-context-by-scale.svg), [tokens](figures/in-context-tokens.svg))
+  their 16-turn budget 47 times; the blind arm stops early — median 5.8k input tokens per
+  episode at SF100 against 11.0k for the told JSON arm — cheap and silently wrong.
 
 Question by question, the same convention as the main figures — scale across, cost up,
 marker fill carrying correctness:
