@@ -316,7 +316,10 @@ Stated plainly, because a result without its limits is a claim.
 ## Provenance
 
 The ontology, guardrail and OpenAI Agents SDK adapter live upstream in
-[tteon/seocho](https://github.com/tteon/seocho); this repository pins a commit of it and holds
-the experiment. Three functions do the work that findings 1 and 2 are about —
+[tteon/seocho](https://github.com/tteon/seocho), pinned by the tag
+[`finbench-agent-scale-v1`](https://github.com/tteon/seocho/releases/tag/finbench-agent-scale-v1)
+in `requirements.txt` — a tag rather than a branch, because the branch goes away when its pull
+request merges and a squash merge lands a different commit on main. This repository holds the
+experiment. Three functions do the work that findings 1 and 2 are about —
 `policy_from_ontology`, `schema_for_prompt` and `validate_text2cypher_fallback` — and they are
 169 lines between them, which is worth knowing before assuming the result requires a framework.
