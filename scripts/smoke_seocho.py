@@ -2,8 +2,8 @@
 """Does the installed seocho still run this experiment? No database, no model — just the
 surface agent_interaction.py actually imports, exercised the way main_async() exercises it.
 
-Run by CI against seocho@main (requirements-upstream.txt) so an upstream change that would
-break the harness surfaces on the day it lands, and runnable locally against either pin:
+Run it after installing seocho — the pinned tag from requirements.txt, or any newer one —
+before spending an episode budget on an environment that would have failed at import:
 
     python scripts/smoke_seocho.py
 """
