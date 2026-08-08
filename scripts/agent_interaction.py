@@ -727,7 +727,7 @@ def mara_model(model: str):
 async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dict[str, Any],
                       anchor: Optional[int], gold_rows: List[Dict[str, Any]],
                       schema: Dict[str, Any], guardrail_fn, model_name: str,
-                      repeat: int = 0) -> Dict[str, Any]:
+                      repeat: int = 0, max_tokens: Optional[int] = None) -> Dict[str, Any]:
     calls: List[Dict[str, Any]] = []
     # The in-context arm pays for its rows twice — in context and in turns — so it gets its
     # own budget. The other four arms share one, because between them the database does the
@@ -741,7 +741,10 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
         name=f"analyst_{arm}",
         instructions=build_instructions(schema, arm=arm),
         model=mara_model(model_name),
-        model_settings=ModelSettings(temperature=0.0),
+        # max_tokens stays None for the published gpt-oss runs (the server default was
+        # enough); reasoning-heavy models on the same endpoint (DeepSeek-V3.2) hit the
+        # default's ceiling mid-thought and 400 out, so replication runs raise it.
+        model_settings=ModelSettings(temperature=0.0, max_tokens=max_tokens),
         tools=[tool],
     )
     prompt = question["question"].format(a=anchor)
@@ -892,7 +895,8 @@ async def main_async(args) -> None:
                 anchor=ctx["anchor"] if q["audience"] == "external" else None,
                 gold_rows=ctx["gold"][q["id"]],
                 schema=thin_schema if arm == "labels" else full_schema,
-                guardrail_fn=guardrail_fn, model_name=args.model, repeat=repeat)
+                guardrail_fn=guardrail_fn, model_name=args.model, repeat=repeat,
+                max_tokens=args.max_tokens)
         results.append(r)
         print(f"  {db:14s} {arm:9s} {q['id']:11s} r{repeat} trips={r['round_trips']} "
               f"hits={r['db_hits']:>10,} ok={r['score_correct']} "
@@ -932,6 +936,8 @@ def main() -> None:
                                                       "finbenchl100:100"])
     p.add_argument("--arms", nargs="+", default=ARMS, choices=ARMS)
     p.add_argument("--model", default="gpt-oss-120b")
+    p.add_argument("--max-tokens", type=int, default=None,
+                   help="per-turn output cap; None keeps the endpoint default")
     p.add_argument("--ontology", default="ontology/finbench.ontology.yaml")
     p.add_argument("--concurrency", type=int, default=4)
     p.add_argument("--repeats", type=int, default=3,
