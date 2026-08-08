@@ -426,11 +426,11 @@ experiment. Three functions do the work that findings 1 and 2 are about —
 `policy_from_ontology`, `schema_for_prompt` and `validate_text2cypher_fallback` — and they are
 169 lines between them, which is worth knowing before assuming the result requires a framework.
 
-The pin is for reproducing the published results; tracking upstream is CI's job. The
-[`seocho upstream`](.github/workflows/seocho-upstream.yml) workflow installs seocho at `main`
-(`requirements-upstream.txt`) daily — and on `repository_dispatch`, so seocho's CI can trigger
-it the moment main moves — and runs [`scripts/smoke_seocho.py`](scripts/smoke_seocho.py), which
+The pin is for reproducing the published results. To check that an installed seocho — the
+tag, or any newer one — still runs this experiment, `python scripts/smoke_seocho.py`
 exercises exactly the three functions above against this repo's ontology: the schema still
-renders the facts findings 1 and 2 rest on, the guardrail still accepts a conforming query and
-still refuses an unscoped one. A second job runs the same smoke test against the tag, so "the
-results no longer reproduce" and "upstream drifted" fail as different jobs.
+renders the facts findings 1 and 2 rest on, the guardrail still accepts a conforming query
+and still refuses an unscoped one. The CSV row encoding condition 7 measures here was
+upstreamed as seocho's `row_format` option
+([tteon/seocho#466](https://github.com/tteon/seocho/pull/466)) — the experiment fed the
+middleware, which is the direction the pin is meant to point.
