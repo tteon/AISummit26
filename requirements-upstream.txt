@@ -1,0 +1,6 @@
+# seocho at upstream main, for the CI job that answers "does the current seocho still run this
+# experiment?" — the published results stay reproducible against the tag in requirements.txt;
+# this file is how updates to seocho are reflected here automatically instead of via manual
+# version bumps.
+-r requirements-base.txt
+seocho @ git+https://github.com/tteon/seocho@main

@@ -2,12 +2,8 @@
 # not a branch: the branch disappears when its pull request merges, and a squash merge puts a
 # different commit on main, so a branch reference would silently stop resolving to the tree
 # these results were produced against.
+#
+# To test against seocho upstream instead, install requirements-upstream.txt — CI does exactly
+# that on a schedule and whenever seocho dispatches an update event.
+-r requirements-base.txt
 seocho @ git+https://github.com/tteon/seocho@finbench-agent-scale-v1
-duckdb>=0.10          # deterministic graph generation
-pyarrow>=14           # Parquet snapshots the bulk loader reads
-neo4j>=5.20           # bolt driver
-openai-agents>=0.10   # the agent loop; also pulls openai
-openai>=1.40
-matplotlib>=3.8       # charts
-pyyaml>=6
-python-dotenv>=1.0

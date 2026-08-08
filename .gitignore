@@ -12,3 +12,6 @@ __pycache__/
 # Dolt database files (added by bd init)
 .dolt/
 *.db
+
+# Rust build artifacts for the native driver bench (330 MB; cargo rebuilds them)
+bench/*/target/
