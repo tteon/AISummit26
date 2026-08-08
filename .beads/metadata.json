@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "server",
+  "dolt_database": "AIsummit26",
+  "project_id": "2faa6eaf-1743-4cb3-8e81-aaf3f606c6f7"
+}

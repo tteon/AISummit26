@@ -8,3 +8,7 @@ __pycache__/
 *.py[cod]
 .venv/
 .env
+
+# Dolt database files (added by bd init)
+.dolt/
+*.db
