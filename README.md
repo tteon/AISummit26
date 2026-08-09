@@ -139,6 +139,16 @@ same kind of hard, which is why the plan-feedback design pulls away in one and n
 Re-labelling would mean re-running all 468 episodes; publishing the audit costs nothing and
 lets a reader check the label instead of trusting it.
 
+### Four real episodes, end to end
+
+`docs/walkthroughs.md` (regenerate with `python scripts/dump_walkthroughs.py`) prints
+the runs underneath the charts: the complete prompt each design carries, then
+`ext_med_1` solved four ways at SF10 — including the one where a list of label names
+sends the model to the wrong property and it answers a different question plausibly —
+and the eight-round-trip episode where the plan gate refuses, the agent overrides with
+`accept-cost`, times out, and still cannot answer, because the question itself was
+ambiguous.
+
 ### Gold, anchors, and what counts as correct
 
 Everything needed to audit a cell without reading the harness. (The code stays the source
