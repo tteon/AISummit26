@@ -23,3 +23,4 @@ figures/*
 !figures/overview-p99.svg
 !figures/engineering-detail.svg
 !figures/slo-tradeoff.svg
+!figures/plan-hints-ab.svg

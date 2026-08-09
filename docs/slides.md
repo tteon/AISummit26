@@ -1,6 +1,6 @@
-# The deck — two charts
+# The deck — the charts
 
-Two charts go on slides. Everything else in this repo is evidence: it stays out of the
+The committed figures go on slides. Everything else in this repo is evidence: it stays out of the
 deck, regenerates on demand, and gets pulled up only if a question asks for it.
 
 ---
@@ -54,6 +54,32 @@ transport, runtime, concurrency. Every number is measured.**
 
 - If asked for evidence: per-iteration samples and machine manifests live in
   `results/bench/`, the 819 episodes in `results/agent_interaction.json`.
+
+## 3 · The fallback's last rung — `figures/plan-hints-ab.svg`
+
+**The sentence: give the agent the planner's steering wheel and it drives differently —
+faster, and not more correct.**
+
+- Condition 4b keeps everything from 4 and adds one thing: a refusal unlocks
+  `engineer_query`, which probes a candidate (plan + the same 2 s elapsed budget)
+  without committing, and planner hints (`USING INDEX / SCAN / JOIN`) are allowed.
+  Hints are the one channel through which what the ontology knows about the data — the
+  degree tail the planner's statistics miss by up to 4.6M× — reaches the execution plan.
+- **Panel A** — 156 episodes at SF100 and SF1000. Latency falls hard (median episode
+  96 s → 26 s at SF1000; median db hits 3.8M → 722k at SF100) and accuracy falls too
+  (33→31, 23→18). The cost is 22 `max_turns_exceeded`: a new option to try is also a
+  new way to spend the turn budget.
+- **Panel B** — inside 4b, split by whether the settled query actually carried a hint:
+  36/40 correct at a 4.6 s median where a hint landed, 13/38 at 80 s where none did.
+  Say out loud that this is descriptive, not controlled — adoption concentrates on the
+  anchored external questions where an index seek is the obvious steer.
+- **The surprise worth telling**: the gate fired 93 times but only 13 episodes ever
+  probed. The agent read the hint vocabulary in its rules and used it *before* being
+  refused — 40 settled queries carry a real `USING` clause. Design consequence: the
+  fallback's value here was the vocabulary, not the tool.
+- One texture detail for the room: some probes tried `/*+ USING INDEX … */`, Oracle's
+  hint syntax, which Cypher takes as a comment. Conventions travel across databases
+  with the model.
 
 ---
 

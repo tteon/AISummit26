@@ -116,6 +116,19 @@ def main() -> None:
               sum(1 for x in ex if x["arm"] == arm and x["query_exact"]),
               "rescore_execution.json", 0)
 
+    print("[plan-hints-ab chart] <- results/plan_hints_ab.json")
+    ab = json.loads(Path("results/plan_hints_ab.json").read_text())["episodes"]
+    hinted = [e for e in ab if e["arm"] == "plan_hints" and e.get("hint_in_settled")]
+    plain = [e for e in ab if e["arm"] == "plan_hints" and not e.get("hint_in_settled")]
+    check("4b settled queries carrying USING", 40, len(hinted), "plan_hints_ab.json", 0)
+    check("  of those, correct", 36, sum(1 for e in hinted if e["score_correct"]),
+          "plan_hints_ab.json", 0)
+    check("4b without a hint, correct", 13,
+          sum(1 for e in plain if e["score_correct"]), "plan_hints_ab.json", 0)
+    check("4b episodes that probed engineer_query", 13,
+          sum(1 for e in ab if e.get("engineering_probes", 0) > 0),
+          "plan_hints_ab.json", 0)
+
     print()
     if FAIL:
         print(f"FAILED: {len(FAIL)} mismatches -> {FAIL}")
