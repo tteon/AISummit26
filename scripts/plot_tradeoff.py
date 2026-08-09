@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
-"""The trade-off, on one canvas: accuracy against tail latency, inside the SLO.
+"""The trade-off page: latency and accuracy side by side, against scale, inside the SLO.
 
-The overview pair shows each axis separately; this chart is where they meet. One point
-per (design, scale): y is the share of the cell's 39 episodes that matched gold, x is the
-**slowest question's** replayed p99 (client-observed, 100 model-free executions, first
-discarded — same source as the overview p99 chart). Worst-question, not an average,
-because an SLO breaks on the worst path: the geometric mean over 13 questions never
-crosses 1 s and would report a safety that production does not have. The dashed vertical
-is the 1 s request-p99 SLO. Lines connect SF1 → SF10 → SF100 per design: scale drags
-every design rightward; the chain delays the SLO breach by an order of scale (labels
-exits at SF10, the informed designs at SF100) and narrows it (7.6 s vs 3.3 s) — it does
-not repeal it, which is the hand-off to the data-plane chart.
+One grammar, two panels, shared x (SF1 / SF10 / SF100). Left: the slowest question's
+replayed p99 per design (log y) with the 1 s request-p99 SLO as a horizontal line —
+worst-question rather than an average, because an SLO breaks on the worst path, and the
+geometric mean over 13 questions never crosses 1 s at all. Right: the share of the
+cell's 39 live episodes matching gold. Reading the trade-off is comparing the two
+panels at the same x: labels-only breaches the SLO at SF10 *and* drops to 77% there;
+the informed designs hold both lines until SF100, where every design breaches — the
+chain delays the breach by an order of scale (and narrows it, 7.6 s vs 3.3 s), it does
+not repeal it.
 
-gpt-oss-120b only — the chain arms were measured on one model family; the model-facet
-companion (AIEngineerNY26 figures/model-tradeoff.svg) carries the second family.
+gpt-oss-120b only; the model facet lives in AIEngineerNY26 figures/tradeoff-onepage.svg.
 
   python scripts/plot_tradeoff.py   # figures/slo-tradeoff.svg
 """
@@ -21,7 +19,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 from pathlib import Path
 
 import matplotlib
@@ -33,7 +30,7 @@ CHAIN = ["labels", "ontology", "guardrail", "plan"]
 ARM_LABEL = {"labels": "1 · labels only", "ontology": "2 · + ontology",
              "guardrail": "3 · + guardrail", "plan": "4 · + plan feedback"}
 ARM_COLOR = {"labels": "#c2410c", "ontology": "#ca8a04", "guardrail": "#2a78d6",
-             "plan": "#15803d"}                     # the deck's validated set
+             "plan": "#15803d"}
 ARM_MARKER = {"labels": "o", "ontology": "s", "guardrail": "^", "plan": "D"}
 SFS = [1, 10, 100]
 INK, MUTED, GRID = "#12151a", "#6b7684", "#e5e8ec"
@@ -55,76 +52,61 @@ def main() -> None:
     eps = json.loads(Path(args.episodes).read_text())["episodes"]
     cells = json.loads(Path(args.replay).read_text())["cells"]
 
-    fig, ax = plt.subplots(figsize=(8.6, 5.4))
-    fig.subplots_adjust(left=0.09, right=0.975, top=0.775, bottom=0.11)
-
-    ax.axvline(SLO_MS, color="#b91c1c", linewidth=1.1, linestyle=(0, (5, 4)),
-               zorder=1, alpha=0.75)
-    ax.annotate("1 s — request p99 SLO", xy=(SLO_MS, 0.735), fontsize=7.8,
-                color="#b91c1c", ha="right", va="bottom", rotation=90,
-                xytext=(-4, 0), textcoords="offset points")
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(11.6, 4.5))
+    fig.subplots_adjust(left=0.075, right=0.985, top=0.72, bottom=0.12, wspace=0.24)
 
     for arm in CHAIN:
-        xs, ys = [], []
+        lat, acc = [], []
         for sf in SFS:
             vals = [max(float(c["client_p99"]), 0.5) for c in cells
                     if c["arm"] == arm and c["sf"] == sf and c.get("ok")]
             cell = [e for e in eps if e["arm"] == arm and e["sf"] == sf]
-            if not vals or not cell:
-                continue
-            xs.append(max(vals))
-            ys.append(sum(1 for e in cell if e["score_correct"]) / len(cell))
-        ax.plot(xs, ys, "-", color=ARM_COLOR[arm], linewidth=1.4, alpha=0.85, zorder=2)
-        for (x, y, sf, size) in zip(xs, ys, SFS, (5.2, 6.8, 8.6)):
-            ax.plot([x], [y], marker=ARM_MARKER[arm], markersize=size,
+            lat.append(max(vals))
+            acc.append(sum(1 for e in cell if e["score_correct"]) / len(cell))
+        for ax, ys in ((axL, lat), (axR, acc)):
+            ax.plot(range(3), ys, "-", color=ARM_COLOR[arm], linewidth=1.6, zorder=2)
+            ax.plot(range(3), ys, marker=ARM_MARKER[arm], markersize=6,
                     markerfacecolor=ARM_COLOR[arm], markeredgecolor="white",
-                    markeredgewidth=1.2, linestyle="", zorder=3)
-        if arm == "labels":
-            # the zigzag needs naming: SF10 sits RIGHT of SF100 for this arm
-            ax.annotate("SF10", xy=(xs[1], ys[1]), xytext=(6, -12),
-                        textcoords="offset points", fontsize=7.4, color=MUTED)
-            ax.annotate("SF100", xy=(xs[2], ys[2]), xytext=(6, 8),
-                        textcoords="offset points", fontsize=7.4, color=MUTED)
-        # selective direct labels: only the extremes; the legend carries the rest
-        # (ontology and guardrail settle on nearly identical queries, so their SF100
-        # points overlap by construction)
-        if arm == "labels":
-            ax.annotate(ARM_LABEL[arm], xy=(xs[-1], ys[-1]),
-                        xytext=(10, 20), textcoords="offset points",
-                        fontsize=8.4, color=ARM_COLOR[arm], va="center", weight="bold")
-        if arm == "plan":
-            ax.annotate(ARM_LABEL[arm], xy=(xs[-1], ys[-1]),
-                        xytext=(-14, -20), textcoords="offset points", ha="right",
-                        fontsize=8.4, color=ARM_COLOR[arm], va="center", weight="bold")
+                    markeredgewidth=1.1, linestyle="", zorder=3)
+
+    axL.axhline(SLO_MS, color="#b91c1c", linewidth=1.1, linestyle=(0, (5, 4)),
+                zorder=1, alpha=0.75)
+    axL.annotate("1 s — request p99 SLO", xy=(0.02, SLO_MS),
+                 xycoords=("axes fraction", "data"), fontsize=7.8, color="#b91c1c",
+                 va="bottom", ha="left")
+    axL.set_yscale("log")
+    axL.set_title("Slowest question's replayed p99", fontsize=10, weight="bold",
+                  color=INK, loc="left", pad=6)
+    axL.set_ylabel("ms (log) — 100 model-free runs each", fontsize=8.4, color=MUTED)
+    axR.set_title("Accuracy — episodes matching gold", fontsize=10, weight="bold",
+                  color=INK, loc="left", pad=6)
+    axR.set_ylim(0.70, 1.01)
+    axR.set_yticks([0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.0])
+    axR.set_yticklabels(["70%", "75%", "80%", "85%", "90%", "95%", "100%"])
+    axR.set_ylabel("share of the cell's 39 episodes", fontsize=8.4, color=MUTED)
+
+    for ax in (axL, axR):
+        ax.set_xticks(range(3))
+        ax.set_xticklabels(["SF1", "SF10", "SF100"], fontsize=8.8)
+        ax.grid(axis="y", color=GRID, linewidth=0.6)
+        ax.set_axisbelow(True)
+        for side in ("top", "right"):
+            ax.spines[side].set_visible(False)
+        ax.tick_params(length=0, labelsize=8)
 
     handles = [plt.Line2D([], [], marker=ARM_MARKER[a], linestyle="-",
                           color=ARM_COLOR[a], markersize=5.6, label=ARM_LABEL[a])
                for a in CHAIN]
-    ax.legend(handles=handles, frameon=False, fontsize=8.2, loc="lower left")
-    ax.set_xscale("log")
-    ax.set_xlim(15, 40000)
-    ax.set_ylim(0.72, 1.005)
-    ax.set_xlabel("slowest question's replayed p99 (ms, log)",
-                  fontsize=8.6, color=MUTED)
-    ax.set_ylabel("episodes matching gold (share of 39 per cell)", fontsize=8.6, color=MUTED)
-    ax.grid(color=GRID, linewidth=0.6)
-    ax.set_axisbelow(True)
-    for side in ("top", "right"):
-        ax.spines[side].set_visible(False)
-    ax.tick_params(length=0, labelsize=8)
-    ax.set_yticks([0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.0])
-    ax.set_yticklabels(["70%", "75%", "80%", "85%", "90%", "95%", "100%"])
-
-    fig.suptitle("Accuracy against tail latency, inside the SLO — the contract chain, "
-                 "SF1 → SF100", fontsize=13, weight="bold", x=0.03, ha="left", y=0.965,
+    fig.legend(handles=handles, frameon=False, fontsize=8.4, ncol=4,
+               loc="upper left", bbox_to_anchor=(0.06, 0.845))
+    fig.suptitle("Latency and accuracy against scale, inside the SLO — the contract "
+                 "chain", fontsize=13, weight="bold", x=0.03, ha="left", y=0.96,
                  color=INK)
-    fig.text(0.03, 0.905,
-             "One trajectory per design; marker grows with scale (SF1 · SF10 · SF100).\n"
-             "y: share of the cell's 39 live episodes matching gold. x: the slowest "
-             "question's replayed p99 (100 model-free runs) — an SLO breaks on the\n"
-             "worst path, not the average. Designs 2 and 3 overlap at SF100 (nearly "
-             "identical settled queries). gpt-oss-120b only.",
-             fontsize=8.0, color=MUTED, ha="left", va="top")
+    fig.text(0.03, 0.885,
+             "Same designs, both panels: read the trade-off at a fixed scale. Left is "
+             "the tail an SLO actually breaks on (the slowest question); right is live "
+             "accuracy. gpt-oss-120b only.",
+             fontsize=8.2, color=MUTED, ha="left", va="top")
     Path(args.out).parent.mkdir(exist_ok=True)
     fig.savefig(args.out)
     fig.savefig("/tmp/claude-1000/-home-hadry-lab-AIsummit26/e438afef-9ffb-42c3-ae19-f7273ba469ed/scratchpad/slo-tradeoff.png", dpi=110)
