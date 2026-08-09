@@ -267,8 +267,18 @@ QUESTIONS: List[Dict[str, Any]] = [
     },
 ]
 
-ARMS = ["labels", "ontology", "guardrail", "plan", "in_context", "in_context_blind",
-        "in_context_csv"]
+ARMS = ["labels", "ontology", "guardrail", "plan", "plan_hints", "in_context",
+        "in_context_blind", "in_context_csv"]
+
+# Condition 4b. Identical to `plan` in what gets refused; different in what the agent can
+# do about it. A refusal unlocks a second tool, engineer_query, which probes a candidate
+# (EXPLAIN plan + the same 2 s elapsed-time budget) without committing — and the agent may
+# steer the planner with USING hints, which is the one channel through which what the
+# ontology says about the data (the degree tail the planner's statistics miss by up to
+# 4.6M×) can flow into the execution plan. The gate is a design decision, not a
+# convenience: the DBA steering wheel appears only after the need for it is demonstrated.
+_PLAN_ARMS = ("plan", "plan_hints")
+_HINT_RE = re.compile(r"\bUSING\s+(INDEX|SCAN|JOIN)\b", re.I)
 
 # `in_context_blind` is the control for `in_context`, differing in exactly one thing: the tool
 # response omits `more_available`, and the instructions never mention that a result can be
@@ -326,11 +336,19 @@ def build_instructions(schema: Dict[str, Any], *, arm: str) -> str:
         "- End every query with LIMIT $limit.",
         "- Call the tool as many times as you need, then answer.",
     ]
-    if arm == "plan":
+    if arm in _PLAN_ARMS:
         parts.append(
             "- The tool runs EXPLAIN before executing. If the plan scans all nodes or the "
             "planner estimates too many rows, the query is refused and you are given the plan. "
             "Rewrite it to start from an indexed lookup and to filter earlier.")
+    if arm == "plan_hints":
+        parts.append(
+            "- If a query of yours is refused, the engineer_query tool unlocks: it shows a "
+            "candidate query's plan and whether it finishes inside the probe budget, without "
+            "running it in full. You may steer the planner with hints placed directly after "
+            "a MATCH clause — USING INDEX var:Label(prop), USING SCAN var:Label, "
+            "USING JOIN ON var — when you judge its default plan wrong for this data. "
+            "Probe variants, then run the best one with run_cypher.")
     if arm in _IN_CONTEXT_ARMS:
         parts.append(
             "- You may NOT use aggregate functions in Cypher (count, sum, avg, min, max, "
@@ -399,7 +417,7 @@ def _estimated_rows(plan: Any) -> float:
 
 def make_instrumented_tool(driver, database: str, *, arm: str, anchor: Optional[int],
                            calls: List[Dict[str, Any]], guardrail_fn=None,
-                           row_cap: int = ROW_CAP):
+                           row_cap: int = ROW_CAP, gate: Optional[Dict[str, Any]] = None):
     """One tool, four behaviours, one record per call.
 
     The parameters the model must not be trusted with — the workspace scope, the row cap, and
@@ -457,7 +475,7 @@ def make_instrumented_tool(driver, database: str, *, arm: str, anchor: Optional[
         t0 = time.perf_counter()
         with driver.session(database=database) as session:
             budget = TX_TIMEOUT_S
-            if arm == "plan":
+            if arm in _PLAN_ARMS:
                 accepted = ACCEPT_COST_MARK in cypher
                 try:
                     explain = session.run("EXPLAIN " + cypher, **params).consume()
@@ -491,6 +509,11 @@ def make_instrumented_tool(driver, database: str, *, arm: str, anchor: Optional[
                                f"to filter before expanding. If you judge the cost unavoidable "
                                f"for this question, resend the same query with the comment "
                                f"/* {ACCEPT_COST_MARK} */ in it and it will be run in full.")
+                        if gate is not None:
+                            gate["unlocked"] = True
+                            msg += (" The engineer_query tool is now unlocked — probe "
+                                    "restructured or planner-hinted variants before "
+                                    "committing.")
                         record["chars"] = len(msg)
                         return msg
                     # It finished inside the probe, so the full run below is a cache-warm repeat
@@ -557,6 +580,73 @@ def make_instrumented_tool(driver, database: str, *, arm: str, anchor: Optional[
         return payload
 
     return run_cypher
+
+
+def make_engineering_tool(driver, database: str, *, anchor: Optional[int],
+                          eng_calls: List[Dict[str, Any]], gate: Dict[str, Any],
+                          row_cap: int = ROW_CAP):
+    """The tool a refusal unlocks: probe a candidate without committing to it.
+
+    Feedback is the same currency as the gate itself — elapsed time under the probe
+    budget — because the planner's row estimates are the thing this experiment measured
+    to be off by up to 4.6M×. The plan tree is reported for orientation; the number the
+    agent should act on is whether the probe finished.
+    """
+
+    @function_tool(
+        name_override="engineer_query",
+        description_override=(
+            "Probe a candidate Cypher query without committing to it: returns the "
+            "planner's operator tree and whether the query finishes inside the probe "
+            "budget. Accepts planner hints (USING INDEX / USING SCAN / USING JOIN ON). "
+            "Unlocks after run_cypher refuses a query."),
+    )
+    def engineer_query(cypher: str) -> str:
+        rec: Dict[str, Any] = {"cypher": cypher, "outcome": "probed", "ms": 0.0,
+                               "hinted": bool(_HINT_RE.search(cypher))}
+        eng_calls.append(rec)
+        if not gate["unlocked"]:
+            rec["outcome"] = "locked"
+            return ("LOCKED — engineer_query becomes available only after run_cypher "
+                    "refuses a query. Run your query normally first.")
+        params = {"workspace_id": WS, "ws": WS, "limit": row_cap}
+        if anchor is not None:
+            params["a"] = anchor
+            params["acct_no"] = anchor
+        t0 = time.perf_counter()
+        with driver.session(database=database) as session:
+            try:
+                explain = session.run("EXPLAIN " + cypher, **params).consume()
+                ops: Counter = Counter()
+                _operators(explain.plan, ops)
+                rec["operators_planned"] = dict(ops)
+                rec["estimated_rows"] = _estimated_rows(explain.plan)
+            except Neo4jError as exc:
+                rec["outcome"] = "syntax_error"
+                rec["error"] = exc.code
+                rec["ms"] = (time.perf_counter() - t0) * 1000
+                return f"ERROR — the candidate did not compile: {exc.code}: {str(exc)[:200]}"
+            probe = session.begin_transaction(timeout=PROBE_TIMEOUT_S)
+            try:
+                probe.run(cypher, **params).consume()
+                probe.commit()
+                rec["ms"] = (time.perf_counter() - t0) * 1000
+                rec["probe_finished"] = True
+                return (f"PROBE OK — finished in {rec['ms']:.0f} ms. Plan "
+                        f"{rec['operators_planned']}, planner estimate "
+                        f"{rec['estimated_rows']:,.0f} rows. Run it with run_cypher when "
+                        f"you are satisfied.")
+            except Exception:
+                probe.close()
+                rec["ms"] = (time.perf_counter() - t0) * 1000
+                rec["outcome"] = "probe_timeout"
+                rec["probe_finished"] = False
+                return (f"PROBE TIMEOUT — did not finish within {PROBE_TIMEOUT_S:.0f}s. "
+                        f"Plan {rec['operators_planned']}, planner estimate "
+                        f"{rec['estimated_rows']:,.0f} rows. Try another structure or "
+                        f"planner hint, or accept the cost on the real call.")
+
+    return engineer_query
 
 
 # --------------------------------------------------------------------------------------
@@ -734,9 +824,18 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
     # aggregating and a single call answers.
     row_cap = IN_CONTEXT_ROW_CAP if arm in _IN_CONTEXT_ARMS else ROW_CAP
     max_turns = IN_CONTEXT_MAX_TURNS if arm in _IN_CONTEXT_ARMS else MAX_TURNS
+    eng_calls: List[Dict[str, Any]] = []
+    gate = {"unlocked": False}
     tool = make_instrumented_tool(driver, database, arm=arm, anchor=anchor, calls=calls,
-                                  guardrail_fn=guardrail_fn if arm in ("guardrail", "plan") else None,
-                                  row_cap=row_cap)
+                                  guardrail_fn=(guardrail_fn if arm in
+                                                ("guardrail", "plan", "plan_hints") else None),
+                                  row_cap=row_cap,
+                                  gate=gate if arm == "plan_hints" else None)
+    tools = [tool]
+    if arm == "plan_hints":
+        tools.append(make_engineering_tool(driver, database, anchor=anchor,
+                                           eng_calls=eng_calls, gate=gate,
+                                           row_cap=row_cap))
     agent = Agent(
         name=f"analyst_{arm}",
         instructions=build_instructions(schema, arm=arm),
@@ -745,7 +844,7 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
         # enough); reasoning-heavy models on the same endpoint (DeepSeek-V3.2) hit the
         # default's ceiling mid-thought and 400 out, so replication runs raise it.
         model_settings=ModelSettings(temperature=0.0, max_tokens=max_tokens),
-        tools=[tool],
+        tools=tools,
     )
     prompt = question["question"].format(a=anchor)
     t0 = time.perf_counter()
@@ -814,6 +913,12 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
         "operators": dict(ops),
         "guardrail_rejections": sum(1 for c in calls if c["outcome"] == "guardrail_rejected"),
         "plan_rejections": sum(1 for c in calls if c["outcome"] == "plan_rejected"),
+        "engineering_probes": sum(1 for c in eng_calls if c["outcome"] != "locked"),
+        "engineering_locked_attempts": sum(1 for c in eng_calls if c["outcome"] == "locked"),
+        "hint_in_settled": bool(_HINT_RE.search(settled or "")),
+        "engineering_calls": [
+            {k: v for k, v in c.items() if k != "cypher"} | {"cypher": c["cypher"][:600]}
+            for c in eng_calls],
         "db_errors": sum(1 for c in calls if c["outcome"] in ("db_error", "syntax_error")),
         "timeouts": sum(1 for c in calls if c["outcome"] == "timeout"),
         "violations": [v for c in calls for v in (c.get("violations") or [])],

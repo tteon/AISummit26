@@ -3,10 +3,17 @@
 
 Every dimension of the experiment on a single canvas, per the deck's requirement: three
 difficulty panels, SF1/SF10/SF100 across, and both halves of the trade-off inside each
-panel — bars are accuracy (right axis, episodes answered correctly out of the cell) and
-lines are latency (left axis, log ms) with the 1 s request-p99 SLO as a horizontal rule.
-Each design keeps one x offset in a panel, so a design's bar and its latency marker sit
-in the same vertical slot: read a column, and the pair is the trade-off.
+panel — bars are correctness (right axis) and lines are latency (left axis, log ms) with
+the 1 s request-p99 SLO as a horizontal rule. Each design keeps one x offset in a panel,
+so a design's bar and its latency marker sit in the same vertical slot: read a column,
+and the pair is the trade-off.
+
+Correctness is drawn twice, and the gap between the two is the point. The **ghost bar**
+is answer accuracy — did the reply carry the gold values — which saturates near full
+marks and separates almost nothing. The **solid bar** is execution accuracy: the query
+the design settled on, re-run and compared against the golden query's own result
+(`scripts/rescore_execution.py`). Scoring the sentence says the four designs are the
+same; scoring the Cypher says they are not.
 
 Twin axes carry a known risk — two scales invite a correlation that is not there — so
 the encodings are deliberately different in kind (filled bars vs. marked lines) and each
@@ -23,6 +30,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from collections import defaultdict
 from pathlib import Path
 
 import matplotlib
@@ -54,14 +62,20 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--episodes", default="results/agent_interaction.json")
     p.add_argument("--replay", default="results/replay_p99.json")
+    p.add_argument("--execution", default="results/rescore_execution.json")
     p.add_argument("--out", default="figures/slo-tradeoff.svg")
     args = p.parse_args()
 
     eps = json.loads(Path(args.episodes).read_text())["episodes"]
     cells = json.loads(Path(args.replay).read_text())["cells"]
+    exec_rows = json.loads(Path(args.execution).read_text())["episodes"]
+    exact = defaultdict(int)
+    for r in exec_rows:
+        if r["query_exact"]:
+            exact[(r["arm"], r["sf"], r["difficulty"])] += 1
 
     fig, axes = plt.subplots(1, 3, figsize=(13.2, 5.2))
-    fig.subplots_adjust(left=0.055, right=0.945, top=0.70, bottom=0.105, wspace=0.34)
+    fig.subplots_adjust(left=0.055, right=0.945, top=0.695, bottom=0.105, wspace=0.34)
 
     for col, diff in enumerate(DIFFS):
         axL = axes[col]
@@ -70,7 +84,7 @@ def main() -> None:
                           and e["difficulty"] == diff]) for sf in SFS)
 
         for arm, off in zip(CHAIN, OFFSETS):
-            xs, lat, correct = [], [], []
+            xs, lat, correct, exec_ok = [], [], [], []
             for i, sf in enumerate(SFS):
                 vals = [max(float(c["client_p99"]), 0.5) for c in cells
                         if c["arm"] == arm and c["sf"] == sf
@@ -80,28 +94,32 @@ def main() -> None:
                 xs.append(i + off)
                 lat.append(max(vals))
                 correct.append(sum(1 for e in cell if e["score_correct"]))
-            # accuracy: bars, right axis, counted episodes. Most cells are at full
-            # marks, so the bars read as a floor and the shortfalls read as notches —
-            # which is the honest shape of this result. Only the shortfalls are
-            # labelled; a number on every bar would bury the three that matter.
-            axR.bar(xs, correct, width=BAR_W, color=ARM_COLOR[arm], alpha=0.30,
+                exec_ok.append(exact[(arm, sf, diff)])
+            # ghost bar: answer accuracy, which sits near full marks nearly everywhere
+            axR.bar(xs, correct, width=BAR_W, color=ARM_COLOR[arm], alpha=0.16,
                     edgecolor="white", linewidth=0.8, zorder=1)
-            for x, c in zip(xs, correct):
-                if c < n_cell:
+            # solid bar: execution accuracy against the golden query — the measure that
+            # actually separates the designs
+            axR.bar(xs, exec_ok, width=BAR_W, color=ARM_COLOR[arm], alpha=0.62,
+                    edgecolor="white", linewidth=0.8, zorder=2)
+            for x, c in zip(xs, exec_ok):
+                if True:
                     # drawn on the left axis (which sits above the bar axis) but
                     # positioned in the bar axis's data space, so a line crossing the
                     # bar top cannot bury the count
-                    axL.annotate(f"{c}", xy=(x, c), xycoords=axR.transData,
-                                 xytext=(0, 3), textcoords="offset points",
-                                 ha="center", va="bottom", fontsize=7.6,
+                    axL.annotate(f"{c}", xy=(x, 0), xycoords=axR.transData,
+                                 xytext=(0, 2), textcoords="offset points",
+                                 ha="center", va="bottom", fontsize=7.4,
                                  color=ARM_COLOR[arm], weight="bold", zorder=6,
-                                 path_effects=[pe.withStroke(linewidth=2.6,
+                                 path_effects=[pe.withStroke(linewidth=1.8,
                                                              foreground="white")])
             # latency: lines + markers, left axis, log ms
             axL.plot(xs, lat, "-", color=ARM_COLOR[arm], linewidth=1.7, zorder=3)
-            axL.plot(xs, lat, marker=ARM_MARKER[arm], markersize=6.4,
-                     markerfacecolor=ARM_COLOR[arm], markeredgecolor="white",
-                     markeredgewidth=1.1, linestyle="", zorder=4)
+            # dark edge, not white: a marker sitting inside its own bar shares the hue,
+            # and a white ring on that background reads as a hollow marker
+            axL.plot(xs, lat, marker=ARM_MARKER[arm], markersize=6.2,
+                     markerfacecolor=ARM_COLOR[arm], markeredgecolor=INK,
+                     markeredgewidth=0.9, linestyle="", zorder=4)
 
         axL.axhline(SLO_MS, color="#b91c1c", linewidth=1.1, linestyle=(0, (5, 4)),
                     zorder=2, alpha=0.8)
@@ -134,18 +152,25 @@ def main() -> None:
     handles = [plt.Line2D([], [], marker=ARM_MARKER[a], linestyle="-",
                           color=ARM_COLOR[a], markersize=6, label=ARM_LABEL[a])
                for a in CHAIN]
-    fig.legend(handles=handles, frameon=False, fontsize=9, ncol=4,
-               loc="upper left", bbox_to_anchor=(0.052, 0.845))
-    fig.suptitle("Latency and accuracy against scale, by difficulty — the contract "
-                 "chain, inside the SLO", fontsize=14, weight="bold", x=0.028,
-                 ha="left", y=0.965, color=INK)
-    fig.text(0.028, 0.912,
-             "Bars (right axis) = episodes answered correctly · lines (left axis, log) "
-             "= the slowest question's replayed p99, 100 model-free runs each — an SLO "
-             "breaks on the worst path, not the average.\n"
-             "Each design holds one slot per scale, so its bar and its latency marker "
-             "share a column. gpt-oss-120b.",
-             fontsize=8.4, color=MUTED, ha="left", va="top")
+    handles += [
+        plt.Rectangle((0, 0), 1, 1, color=INK, alpha=0.16,
+                      label="ghost bar · answer matched gold"),
+        plt.Rectangle((0, 0), 1, 1, color=INK, alpha=0.62,
+                      label="solid bar · query matched the golden query"),
+    ]
+    fig.legend(handles=handles, frameon=False, fontsize=8.6, ncol=3,
+               loc="upper left", bbox_to_anchor=(0.052, 0.875))
+    fig.suptitle("How much of the text2cypher was actually right, and what it cost — "
+                 "against the golden query", fontsize=13.5, weight="bold", x=0.028,
+                 ha="left", y=0.972, color=INK)
+    fig.text(0.028, 0.935,
+             "Right axis: the ghost bar is answers that carried the gold values; "
+             "the solid bar (labelled at its foot) is queries whose own execution "
+             "matched the golden query's\n"
+             "result — the gap is where answer-level scoring flatters a design. "
+             "Left axis (log): the slowest question's replayed p99, 100 model-free "
+             "runs. gpt-oss-120b.",
+             fontsize=8.3, color=MUTED, ha="left", va="top")
     Path(args.out).parent.mkdir(exist_ok=True)
     fig.savefig(args.out)
     fig.savefig("/tmp/claude-1000/-home-hadry-lab-AIsummit26/e438afef-9ffb-42c3-ae19-f7273ba469ed/scratchpad/slo-tradeoff.png", dpi=105)

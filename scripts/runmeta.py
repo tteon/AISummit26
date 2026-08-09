@@ -68,6 +68,16 @@ def manifest(db_container: str = "graphrag-neo4j", **extra: Any) -> Dict[str, An
         "packstream_decoder": _decoder(),
         "db_container_image": _cmd("docker", "inspect", "--format",
                                    "{{.Config.Image}}", db_container),
+        # Page cache size decides whether a graph query reads memory or disk, so a
+        # latency number that cannot name it is not reproducible. Read from the running
+        # container's effective config rather than from the compose file, which may have
+        # drifted from what is actually serving.
+        "db_pagecache": _cmd("docker", "exec", db_container, "sh", "-c",
+                             "grep -h '^server.memory.pagecache.size' "
+                             "/var/lib/neo4j/conf/neo4j.conf | cut -d= -f2"),
+        "db_heap_max": _cmd("docker", "exec", db_container, "sh", "-c",
+                            "grep -h '^server.memory.heap.max_size' "
+                            "/var/lib/neo4j/conf/neo4j.conf | cut -d= -f2"),
         "db_container_id": (_cmd("docker", "inspect", "--format", "{{.Id}}",
                                  db_container) or "")[:12] or None,
         **extra,

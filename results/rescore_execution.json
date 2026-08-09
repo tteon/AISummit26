@@ -1,0 +1,10501 @@
+{
+ "schema_version": "seocho.finbench.rescore-execution.v1",
+ "manifest": {
+  "timestamp_utc": "2026-08-09T00:40:07+00:00",
+  "git_commit": "868ef0685e8aa4832fe98ac4b30c9b83469c1b88",
+  "git_dirty": true,
+  "argv": [
+   "scripts/rescore_execution.py",
+   "--password",
+   "neo4jpassword",
+   "--sf",
+   "1",
+   "10",
+   "100",
+   "--timeout",
+   "30"
+  ],
+  "python": "3.11.14",
+  "venv": "/home/hadry/lab/seocho/.venv",
+  "kernel": "6.8.0-134-generic",
+  "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+  "cpu_count": 16,
+  "neo4j_driver": "6.1.0",
+  "neo4j_rust_ext": null,
+  "packstream_decoder": "pure-python",
+  "db_container_image": "graphstack/dozerdb:5.26.3.0",
+  "db_container_id": "2e35090cafe9",
+  "rescoring": "execution accuracy of the settled query",
+  "source": "results/agent_interaction.json",
+  "tx_timeout_s": 30.0,
+  "row_cap": 50,
+  "distinct_queries": 141
+ },
+ "queries": [
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "ext_easy_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 5.5,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "1704453187",
+    "800"
+   ],
+   "got_values": [
+    "1704453187",
+    "800"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 1.7,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "141644248",
+    "767"
+   ],
+   "got_values": [
+    "141644248",
+    "767"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "arms": [
+    "guardrail"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 54.2,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "1412",
+    "5"
+   ],
+   "got_values": [
+    "1412",
+    "5"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 53.8,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "1412",
+    "5"
+   ],
+   "got_values": [
+    "1412",
+    "5"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "ext_hard_2",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 3.3,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "1386"
+   ],
+   "got_values": [
+    "1385"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "arms": [
+    "guardrail"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 2.9,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "5"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "107",
+    "1096",
+    "1187",
+    "1320",
+    "1361",
+    "139",
+    "1434",
+    "146"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 5,
+   "ms": 1.8,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "5"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "5"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "arms": [
+    "guardrail"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 2.4,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "5"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "107",
+    "1096",
+    "1187",
+    "1320",
+    "1361",
+    "139",
+    "1434",
+    "146"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "ext_med_2",
+   "arms": [
+    "guardrail",
+    "ontology",
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 5,
+   "ms": 2.9,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "Company:1004",
+    "Company:1010",
+    "Company:1016",
+    "Company:1017",
+    "Company:1019"
+   ],
+   "got_values": [
+    "Company:1004",
+    "Company:1010",
+    "Company:1016",
+    "Company:1017",
+    "Company:1019"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "int_easy_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 2.5,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "2470",
+    "713"
+   ],
+   "got_values": [
+    "2470",
+    "713"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "int_easy_2",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 12,
+   "ms": 13.8,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "ATM_CD",
+    "AUTO_DEBIT",
+    "INTERNET_BANKING",
+    "MOBILE_BANKING",
+    "OPEN_BANKING"
+   ],
+   "got_values": [
+    "ATM_CD",
+    "AUTO_DEBIT",
+    "BRANCH_CASH",
+    "CARD_PAYMENT",
+    "INTERNET_BANKING",
+    "MOBILE_BANKING",
+    "MVTS_HAWALA",
+    "OPEN_BANKING",
+    "PREPAID_GIFT",
+    "TELE_BANKING"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 0,
+   "ms": 14.9,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "9000601"
+   ],
+   "got_values": []
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1",
+    "b"
+   ],
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 20.4,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "9000601"
+   ],
+   "got_values": [
+    "9000601",
+    "9000602"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "arms": [
+    "guardrail"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 38.3,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "int_med_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 15.0,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "37"
+   ],
+   "got_values": [
+    "37"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "int_med_2",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 4,
+   "ms": 11.4,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "9000100"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "2",
+    "9000100"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "ext_easy_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 2.2,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "1704453187",
+    "800"
+   ],
+   "got_values": [
+    "1704453187",
+    "800"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 1.5,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "141644248",
+    "767"
+   ],
+   "got_values": [
+    "141644248",
+    "767"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 56.5,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "1412",
+    "5"
+   ],
+   "got_values": [
+    "1412",
+    "5"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "ext_hard_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 3.7,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "1386"
+   ],
+   "got_values": [
+    "1385"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 6.5,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "5"
+   ],
+   "got_values": [
+    "1",
+    "10",
+    "11",
+    "12",
+    "13",
+    "16",
+    "17",
+    "19",
+    "2",
+    "20"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "ext_med_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 4.1,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Company:1004",
+    "Company:1010",
+    "Company:1016",
+    "Company:1017",
+    "Company:1019"
+   ],
+   "got_values": [
+    "Company:1004",
+    "Company:1010",
+    "Company:1016",
+    "Company:1017",
+    "Company:1019",
+    "Company:1021",
+    "Company:1024",
+    "Company:1030",
+    "Company:1031",
+    "Company:1032"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "int_easy_1",
+   "arms": [
+    "labels",
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 2.5,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "2470",
+    "713"
+   ],
+   "got_values": [
+    "2470",
+    "713"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "int_easy_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 12,
+   "ms": 42.3,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "ATM_CD",
+    "AUTO_DEBIT",
+    "INTERNET_BANKING",
+    "MOBILE_BANKING",
+    "OPEN_BANKING"
+   ],
+   "got_values": [
+    "2506",
+    "2747",
+    "3079",
+    "3905",
+    "3915",
+    "4093",
+    "4953",
+    "5845",
+    "6017",
+    "6302"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 23.2,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "9000601"
+   ],
+   "got_values": [
+    "9000601",
+    "9000602"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 23.3,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "9000601"
+   ],
+   "got_values": [
+    "9000601",
+    "9000602"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1",
+    "b"
+   ],
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 25.6,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "9000601"
+   ],
+   "got_values": [
+    "9000601",
+    "9000602"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1",
+    "b"
+   ],
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 24.9,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "9000601"
+   ],
+   "got_values": [
+    "9000601",
+    "9000602"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 34.5,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 28.9,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "int_med_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 31.1,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "37"
+   ],
+   "got_values": [
+    "37"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "int_med_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 4,
+   "ms": 11.1,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "9000100"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "2",
+    "9000100"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "arms": [
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 1.9,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "141644248",
+    "767"
+   ],
+   "got_values": [
+    "141644248",
+    "767"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "arms": [
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 36.6,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "arms": [
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 37.6,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "ext_easy_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 2.1,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "1704453187",
+    "800"
+   ],
+   "got_values": [
+    "1704453187",
+    "800"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 1.9,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "141644248",
+    "767"
+   ],
+   "got_values": [
+    "141644248",
+    "767"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 3.9,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "1412",
+    "5"
+   ],
+   "got_values": [
+    "1412",
+    "5"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "ext_hard_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 3.6,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "1386"
+   ],
+   "got_values": [
+    "1385"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 5,
+   "ms": 1.8,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "5"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "5"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "int_easy_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 5,
+   "ms": 8.8,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "ATM_CD",
+    "AUTO_DEBIT",
+    "INTERNET_BANKING",
+    "MOBILE_BANKING",
+    "OPEN_BANKING"
+   ],
+   "got_values": [
+    "ATM_CD",
+    "AUTO_DEBIT",
+    "INTERNET_BANKING",
+    "MOBILE_BANKING",
+    "OPEN_BANKING"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 0,
+   "ms": 15.7,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "9000601"
+   ],
+   "got_values": []
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1",
+    "b"
+   ],
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 23.6,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "9000601"
+   ],
+   "got_values": [
+    "9000601",
+    "9000602"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 32.7,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 31.6,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 1,
+   "question_id": "int_med_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 20.6,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "37"
+   ],
+   "got_values": [
+    "37"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 1,
+   "question_id": "int_med_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 4,
+   "ms": 11.0,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "9000100"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "2",
+    "9000100"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 236.5,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "3559",
+    "7044894175"
+   ],
+   "got_values": [
+    "3559",
+    "7044894175"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 28.5,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "3559",
+    "7044894175"
+   ],
+   "got_values": [
+    "3559",
+    "7044894175"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "arms": [
+    "guardrail",
+    "ontology",
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 27.0,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "171307998",
+    "3568"
+   ],
+   "got_values": [
+    "171307998",
+    "3568"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "arms": [
+    "guardrail"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 22.5,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "171307998",
+    "3568"
+   ],
+   "got_values": [
+    "171307998",
+    "3568"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "ext_hard_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 766.2,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "12093",
+    "5"
+   ],
+   "got_values": [
+    "12093",
+    "5"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "ext_hard_2",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 38.8,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "11925"
+   ],
+   "got_values": [
+    "11924"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "ext_med_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 28.1,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "4",
+    "5"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "107",
+    "114",
+    "12",
+    "120",
+    "123",
+    "127",
+    "13",
+    "139"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "ext_med_2",
+   "arms": [
+    "guardrail",
+    "ontology",
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 5,
+   "ms": 55.5,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "Company:10000",
+    "Company:10004",
+    "Company:10011",
+    "Company:10015",
+    "Company:10022"
+   ],
+   "got_values": [
+    "Company:10000",
+    "Company:10004",
+    "Company:10011",
+    "Company:10015",
+    "Company:10022"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "int_easy_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 33.0,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "20470",
+    "3000"
+   ],
+   "got_values": [
+    "20470",
+    "3000"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "int_easy_2",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 5,
+   "ms": 217.5,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "ATM_CD",
+    "AUTO_DEBIT",
+    "INTERNET_BANKING",
+    "MOBILE_BANKING",
+    "OPEN_BANKING"
+   ],
+   "got_values": [
+    "ATM_CD",
+    "AUTO_DEBIT",
+    "INTERNET_BANKING",
+    "MOBILE_BANKING",
+    "OPEN_BANKING"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 0,
+   "ms": 557.9,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "17",
+    "9000601"
+   ],
+   "got_values": []
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1",
+    "b"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 2,
+   "ms": 424.9,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "17",
+    "9000601"
+   ],
+   "got_values": [
+    "17",
+    "5985",
+    "9000601",
+    "9000602"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "arms": [
+    "guardrail"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 522.0,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "int_med_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 201.7,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "32"
+   ],
+   "got_values": [
+    "32"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "int_med_2",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 36,
+   "ms": 165.6,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 25.7,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "3559",
+    "7044894175"
+   ],
+   "got_values": [
+    "3559",
+    "7044894175"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 20.2,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "171307998",
+    "3568"
+   ],
+   "got_values": [
+    "171307998",
+    "3568"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "ext_hard_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 794.8,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "12093",
+    "5"
+   ],
+   "got_values": [
+    "12093",
+    "5"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "ext_hard_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 58.6,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "11925"
+   ],
+   "got_values": [
+    "11924"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "ext_med_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 66.6,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "4",
+    "5"
+   ],
+   "got_values": [
+    "1",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "ext_med_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 50.6,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Company:10000",
+    "Company:10004",
+    "Company:10011",
+    "Company:10015",
+    "Company:10022"
+   ],
+   "got_values": [
+    "Company:10000",
+    "Company:10004",
+    "Company:10011",
+    "Company:10015",
+    "Company:10022",
+    "Company:10027",
+    "Company:10030",
+    "Company:10037",
+    "Company:10048",
+    "Company:10049"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "int_easy_1",
+   "arms": [
+    "labels",
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 24.2,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "20470",
+    "3000"
+   ],
+   "got_values": [
+    "20470",
+    "3000"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "int_easy_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 12,
+   "ms": 481.0,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "ATM_CD",
+    "AUTO_DEBIT",
+    "INTERNET_BANKING",
+    "MOBILE_BANKING",
+    "OPEN_BANKING"
+   ],
+   "got_values": [
+    "28109",
+    "28143",
+    "29938",
+    "38169",
+    "39771",
+    "40842",
+    "48275",
+    "55440",
+    "56325",
+    "59324"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 2,
+   "ms": 414.8,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "17",
+    "9000601"
+   ],
+   "got_values": [
+    "17",
+    "5985",
+    "9000601",
+    "9000602"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 0,
+   "ms": 16607.0,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "17",
+    "9000601"
+   ],
+   "got_values": []
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1",
+    "b"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 2,
+   "ms": 541.1,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "17",
+    "9000601"
+   ],
+   "got_values": [
+    "17",
+    "5985",
+    "9000601",
+    "9000602"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 390.8,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 294.5,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "24",
+    "Person:21"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "int_med_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 456.9,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "32"
+   ],
+   "got_values": [
+    "32"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "int_med_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 479.9,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "32"
+   ],
+   "got_values": [
+    "32"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "int_med_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 36,
+   "ms": 183.8,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "arms": [
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 593.2,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 23.5,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "3559",
+    "7044894175"
+   ],
+   "got_values": [
+    "3559",
+    "7044894175"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 23.7,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "171307998",
+    "3568"
+   ],
+   "got_values": [
+    "171307998",
+    "3568"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "ext_hard_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 51.1,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "12093",
+    "5"
+   ],
+   "got_values": [
+    "12093",
+    "5"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "ext_hard_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 32.9,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "11925"
+   ],
+   "got_values": [
+    "11924"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "ext_med_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 5,
+   "ms": 29.2,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "4",
+    "5"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "2",
+    "4",
+    "5"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "int_easy_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 5,
+   "ms": 131.2,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "ATM_CD",
+    "AUTO_DEBIT",
+    "INTERNET_BANKING",
+    "MOBILE_BANKING",
+    "OPEN_BANKING"
+   ],
+   "got_values": [
+    "ATM_CD",
+    "AUTO_DEBIT",
+    "INTERNET_BANKING",
+    "MOBILE_BANKING",
+    "OPEN_BANKING"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 0,
+   "ms": 615.7,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "17",
+    "9000601"
+   ],
+   "got_values": []
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 0,
+   "ms": 574.1,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "17",
+    "9000601"
+   ],
+   "got_values": []
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1",
+    "b"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 2,
+   "ms": 459.8,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "17",
+    "9000601"
+   ],
+   "got_values": [
+    "17",
+    "5985",
+    "9000601",
+    "9000602"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1",
+    "b"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 2,
+   "ms": 474.1,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "17",
+    "9000601"
+   ],
+   "got_values": [
+    "17",
+    "5985",
+    "9000601",
+    "9000602"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 242.2,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 987.5,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 472.2,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 10,
+   "question_id": "int_med_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 235.4,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "32"
+   ],
+   "got_values": [
+    "32"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 10,
+   "question_id": "int_med_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 5,
+   "ms": 149.2,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 1863.0,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "16727",
+    "33298445900"
+   ],
+   "got_values": [
+    "16727",
+    "33298445900"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "arms": [
+    "guardrail"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 69.7,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "16727",
+    "33298445900"
+   ],
+   "got_values": [
+    "16727",
+    "33298445900"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "arms": [
+    "guardrail",
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 202.1,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "16787",
+    "240013914"
+   ],
+   "got_values": [
+    "16787",
+    "240013914"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 67.2,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "16787",
+    "240013914"
+   ],
+   "got_values": [
+    "16787",
+    "240013914"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 8733.5,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "100429",
+    "5"
+   ],
+   "got_values": [
+    "100429",
+    "5"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 299.8,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "99592"
+   ],
+   "got_values": [
+    "99591"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 57.9,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "10",
+    "104",
+    "11",
+    "12",
+    "16",
+    "17",
+    "18",
+    "19"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "ext_med_2",
+   "arms": [
+    "guardrail",
+    "ontology",
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 5,
+   "ms": 214.1,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "Company:100005",
+    "Company:100006",
+    "Company:100009",
+    "Company:100013",
+    "Company:100027"
+   ],
+   "got_values": [
+    "Company:100005",
+    "Company:100006",
+    "Company:100009",
+    "Company:100013",
+    "Company:100027"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "int_easy_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 157.7,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "200470",
+    "25479"
+   ],
+   "got_values": [
+    "200470",
+    "25479"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "int_easy_2",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 12,
+   "ms": 1979.2,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "ATM_CD",
+    "AUTO_DEBIT",
+    "INTERNET_BANKING",
+    "MOBILE_BANKING",
+    "OPEN_BANKING"
+   ],
+   "got_values": [
+    "ATM_CD",
+    "AUTO_DEBIT",
+    "BRANCH_CASH",
+    "CARD_PAYMENT",
+    "INTERNET_BANKING",
+    "MOBILE_BANKING",
+    "MVTS_HAWALA",
+    "OPEN_BANKING",
+    "PREPAID_GIFT",
+    "TELE_BANKING"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 0,
+   "ms": 4038.3,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "9000601"
+   ],
+   "got_values": []
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1",
+    "b"
+   ],
+   "sf": 100,
+   "question_id": "int_hard_1b",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 5288.5,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "9000601"
+   ],
+   "got_values": [
+    "9000601",
+    "9000602"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "arms": [
+    "guardrail"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 10163.9,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "int_med_1",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 2459.2,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "38"
+   ],
+   "got_values": [
+    "38"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "int_med_2",
+   "arms": [
+    "guardrail",
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 2622.6,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 78.3,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "16727",
+    "33298445900"
+   ],
+   "got_values": [
+    "16727",
+    "33298445900"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 54.0,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "16787",
+    "240013914"
+   ],
+   "got_values": [
+    "16787",
+    "240013914"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 50.1,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "16787",
+    "240013914"
+   ],
+   "got_values": [
+    "16787",
+    "240013914"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 15387.8,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "100429",
+    "5"
+   ],
+   "got_values": [
+    "100428",
+    "5"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 12051.0,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "100429",
+    "5"
+   ],
+   "got_values": [
+    "100429",
+    "5"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 396.8,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "99592"
+   ],
+   "got_values": [
+    "99591"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 437.1,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "99592"
+   ],
+   "got_values": [
+    "99591"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 264.2,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "got_values": [
+    "1",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 245.6,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "ext_med_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 5,
+   "ms": 195.3,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "Company:100005",
+    "Company:100006",
+    "Company:100009",
+    "Company:100013",
+    "Company:100027"
+   ],
+   "got_values": [
+    "Company:100005",
+    "Company:100006",
+    "Company:100009",
+    "Company:100013",
+    "Company:100027"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "ext_med_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 273.3,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Company:100005",
+    "Company:100006",
+    "Company:100009",
+    "Company:100013",
+    "Company:100027"
+   ],
+   "got_values": [
+    "Company:100005",
+    "Company:100006",
+    "Company:100009",
+    "Company:100013",
+    "Company:100027",
+    "Company:100029",
+    "Company:100036",
+    "Company:100036",
+    "Company:100043",
+    "Company:100047"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "int_easy_1",
+   "arms": [
+    "labels",
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 156.1,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "200470",
+    "25479"
+   ],
+   "got_values": [
+    "200470",
+    "25479"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "int_easy_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 12,
+   "ms": 7996.7,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "ATM_CD",
+    "AUTO_DEBIT",
+    "INTERNET_BANKING",
+    "MOBILE_BANKING",
+    "OPEN_BANKING"
+   ],
+   "got_values": [
+    "267792",
+    "288998",
+    "294356",
+    "370345",
+    "392221",
+    "408214",
+    "474835",
+    "548992",
+    "559507",
+    "592156"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 4832.0,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "9000601"
+   ],
+   "got_values": [
+    "9000601",
+    "9000602"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1",
+    "b"
+   ],
+   "sf": 100,
+   "question_id": "int_hard_1b",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 4752.8,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "9000601"
+   ],
+   "got_values": [
+    "9000601",
+    "9000602"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 11473.9,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 12315.2,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "int_med_1",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 6567.2,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "38"
+   ],
+   "got_values": [
+    "38"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "int_med_2",
+   "arms": [
+    "labels"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 2400.7,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "arms": [
+    "ontology"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 9488.0,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 78.9,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "16727",
+    "33298445900"
+   ],
+   "got_values": [
+    "16727",
+    "33298445900"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 62.5,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "16787",
+    "240013914"
+   ],
+   "got_values": [
+    "16787",
+    "240013914"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 769.3,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "100429",
+    "5"
+   ],
+   "got_values": [
+    "100429",
+    "5"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 237.7,
+   "exact": false,
+   "covers": false,
+   "gold_values": [
+    "99592"
+   ],
+   "got_values": [
+    "99591"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "e",
+    "x",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 68.0,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "10",
+    "104",
+    "11",
+    "12",
+    "16",
+    "17",
+    "18",
+    "19"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "e",
+    "a",
+    "s",
+    "y",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "int_easy_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 5,
+   "ms": 1667.7,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "ATM_CD",
+    "AUTO_DEBIT",
+    "INTERNET_BANKING",
+    "MOBILE_BANKING",
+    "OPEN_BANKING"
+   ],
+   "got_values": [
+    "ATM_CD",
+    "AUTO_DEBIT",
+    "INTERNET_BANKING",
+    "MOBILE_BANKING",
+    "OPEN_BANKING"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "no gold",
+   "rows": 0,
+   "ms": 349.0
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "no gold",
+   "rows": 0,
+   "ms": 3862.6
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "1",
+    "b"
+   ],
+   "sf": 100,
+   "question_id": "int_hard_1b",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 5480.9,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "9000601"
+   ],
+   "got_values": [
+    "9000601",
+    "9000602"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "h",
+    "a",
+    "r",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 50,
+   "ms": 6370.2,
+   "exact": false,
+   "covers": true,
+   "gold_values": [
+    "Person:21"
+   ],
+   "got_values": [
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2",
+    "2"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "1"
+   ],
+   "sf": 100,
+   "question_id": "int_med_1",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 1,
+   "ms": 2622.7,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "38"
+   ],
+   "got_values": [
+    "38"
+   ]
+  },
+  {
+   "k": [
+    "1",
+    "0",
+    "0",
+    "|",
+    "i",
+    "n",
+    "t",
+    "_",
+    "m",
+    "e",
+    "d",
+    "_",
+    "2"
+   ],
+   "sf": 100,
+   "question_id": "int_med_2",
+   "arms": [
+    "plan"
+   ],
+   "outcome": "ok",
+   "rows": 5,
+   "ms": 1823.7,
+   "exact": true,
+   "covers": true,
+   "gold_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "got_values": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ]
+  }
+ ],
+ "episodes": [
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "ext_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 1,
+   "question_id": "int_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "ext_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 1,
+   "question_id": "int_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "ext_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 1,
+   "question_id": "int_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "ext_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_hard_1b",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 1,
+   "question_id": "int_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "ext_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 10,
+   "question_id": "int_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "ext_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 10,
+   "question_id": "int_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "ext_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 10,
+   "question_id": "int_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "ext_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_hard_1b",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 10,
+   "question_id": "int_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "ext_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_hard_1b",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_hard_1b",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_hard_1b",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "guardrail",
+   "sf": 100,
+   "question_id": "int_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "ext_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_hard_1b",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_hard_1b",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_hard_1b",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "labels",
+   "sf": 100,
+   "question_id": "int_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "ext_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_hard_1b",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_hard_1b",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_hard_1b",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "ontology",
+   "sf": 100,
+   "question_id": "int_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": false
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "ext_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_easy_1",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_easy_1",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_easy_1",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_easy_2",
+   "repeat": 0,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_easy_2",
+   "repeat": 1,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_easy_2",
+   "repeat": 2,
+   "difficulty": "easy",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "no gold",
+   "query_exact": null,
+   "query_covers": null
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "no gold",
+   "query_exact": null,
+   "query_covers": null
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_hard_1",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": false,
+   "query_outcome": "no gold",
+   "query_exact": null,
+   "query_covers": null
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_hard_1b",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_hard_1b",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_hard_1b",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "repeat": 0,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "repeat": 1,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_hard_2",
+   "repeat": 2,
+   "difficulty": "hard",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": false,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_med_1",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_med_1",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_med_1",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_med_2",
+   "repeat": 0,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_med_2",
+   "repeat": 1,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  },
+  {
+   "arm": "plan",
+   "sf": 100,
+   "question_id": "int_med_2",
+   "repeat": 2,
+   "difficulty": "medium",
+   "answer_correct": true,
+   "query_outcome": "ok",
+   "query_exact": true,
+   "query_covers": true
+  }
+ ]
+}

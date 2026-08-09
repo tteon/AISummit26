@@ -109,6 +109,13 @@ def main() -> None:
               and e["score_correct"])
     check("labels SF10 correct episodes", 30, acc, "agent_interaction.json", 0)
 
+    print("[slo-tradeoff bars] <- results/rescore_execution.json (execution accuracy)")
+    ex = json.loads(Path("results/rescore_execution.json").read_text())["episodes"]
+    for arm, want in (("labels", 48), ("ontology", 63), ("guardrail", 61), ("plan", 78)):
+        check(f"{arm} queries matching golden", want,
+              sum(1 for x in ex if x["arm"] == arm and x["query_exact"]),
+              "rescore_execution.json", 0)
+
     print()
     if FAIL:
         print(f"FAILED: {len(FAIL)} mismatches -> {FAIL}")
