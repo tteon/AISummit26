@@ -77,6 +77,50 @@ its top-N is plan-dependent and both answers are correct for the query as writte
 rule is not at fault — the query has no total order. (Our own question set is shaped as
 top-N under a total order for exactly this reason; the model's query was not.)
 
+## Aiming the steering wheel at the paper's home turf — condition 4c
+
+4b's agent adopted 40 hints and every one was an index seek on an anchored question; the
+cyclic conjunctions were never touched. Condition 4c differs from 4b in one paragraph of
+rules text: it names the cyclic case, explains that the planner expands each path and
+joins the intermediates, tells the agent that `USING JOIN ON var` builds the join at a
+node it picks, and points at the schema's cardinality figures for choosing the smallest-
+degree node. 48 episodes over the four cyclic questions (`int_med_1`, `int_hard_1`,
+`int_hard_1b`, `int_hard_2`) at SF100 and SF1000, against 4b as the control
+(`results/join_hints_ab.json`).
+
+| | correct | round trips | probes | JOIN-hinted probes | JOIN in settled query | p50 wall | median db hits |
+|---|---|---|---|---|---|---|---|
+| SF100 · 4b | 8/12 | 3.7 | 0 | 0 | 0 | 21.6 s | 24.6M |
+| SF100 · 4c | 6/12 | 2.2 | 0 | 0 | 0 | 15.9 s | **9.0M** |
+| SF1000 · 4b | 3/12 | 5.8 | 15 | 0 | 0 | 84.8 s | — |
+| SF1000 · 4c | 2/12 | 4.6 | **34** | **22** | **0** | 85.5 s | — |
+
+**The agent took the wheel and then let go of it.** Aimed at the cyclic questions it
+probed 22 JOIN-hinted candidates at SF1000 — and not one reached a query it ran. The
+probe outcomes say why: **16 timed out, 6 did not compile, 0 finished inside the 2 s
+budget.** The hint was not ignored by the planner either; the probed plans carry
+`NodeHashJoin`, so `USING JOIN ON owner1` did force the join where the agent asked. The
+plan changed and the query still did not finish.
+
+So the honest result is not "the agent failed to try". We handed it the exact instrument
+the literature points at, aimed it precisely, and **it discovered by measurement that the
+instrument does not work here** — then correctly abandoned it. That is the behaviour you
+want from a fallback ladder, and it is only visible because the probe records what it
+tried.
+
+Two more things the run says. At SF100 the extra steering paragraph made the agent write
+**2.7× cheaper queries (9.0M vs 24.6M median db hits, 26% faster) and get fewer of them
+right (6/12 vs 8/12)** — cost-consciousness traded against correctness, again. And
+**24 of 61 probes across both arms did not compile**: the hint syntax itself is a
+reliability problem, with Oracle's `/*+ … */` form appearing where Cypher wants a clause
+after `MATCH`.
+
+**Where this leaves the boundary.** A `USING` clause can choose a join node. It cannot
+give the planner better cardinality estimates, a worst-case-optimal join, or operator
+fusion — which is where the paper's 19× on this exact query class comes from. The
+steering wheel has a turning radius: **agent-side query engineering buys the anchored
+half; the cyclic half is a database-engineering problem and no prompt reaches it.**
+
 ## What it means for the talk
 
 - **The ontology is either in the prompt or in the planner.** GOpt derives type
@@ -85,9 +129,10 @@ top-N under a total order for exactly this reason; the model's query was not.)
   places to spend it, and they are not exclusive.
 - **Condition 4b is a third placement — the agent as optimizer.** Hints bought
   96 s → 26 s at SF1000 and 3.8M → 722k median db hits at SF100, on the anchored questions
-  where an index seek is the obvious steer. The paper's 19× comes from the cyclic patterns
-  the agent never touched. Read together: an LLM steering an existing planner captures the
-  easy half; the hard half is a database-engineering problem.
+  where an index seek is the obvious steer. Condition 4c then aimed the same wheel at the
+  cyclic patterns and measured the limit: 22 JOIN-hinted probes, 0 survivors. An LLM
+  steering an existing planner captures the anchored half; the cyclic half needs a
+  different optimizer, not a better prompt.
 - **Our unanswerable question is the paper's home turf.** `int_hard_1` — a cyclic
   conjunction of TRANSFER, reciprocal GUARANTEE and a shared SIGN_IN device — is where our
   agent burned eight round trips, overrode the gate, timed out at 60 s and returned

@@ -140,6 +140,18 @@ def main() -> None:
     check("worst under-estimate (x)", 1067333, round(ratios[-1]),
           "agent_interaction.json", 1)
 
+    print("[4c JOIN-hint arm] <- results/join_hints_ab.json")
+    import re as _re
+    jab = json.loads(Path("results/join_hints_ab.json").read_text())["episodes"]
+    jc = [e for e in jab if e["arm"] == "plan_hints_join"]
+    probes = [c for e in jc for c in e.get("engineering_calls", [])
+              if _re.search(r"USING\s+JOIN\s+ON", c.get("cypher") or "", _re.I)]
+    check("4c JOIN-hinted probes", 22, len(probes), "join_hints_ab.json", 0)
+    check("4c JOIN hints surviving into a settled query", 0,
+          sum(1 for e in jc if e.get("join_hint_in_settled")), "join_hints_ab.json", 0)
+    check("4c JOIN probes that finished in budget", 0,
+          sum(1 for c in probes if c.get("probe_finished")), "join_hints_ab.json", 0)
+
     print()
     if FAIL:
         print(f"FAILED: {len(FAIL)} mismatches -> {FAIL}")

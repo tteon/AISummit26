@@ -267,8 +267,8 @@ QUESTIONS: List[Dict[str, Any]] = [
     },
 ]
 
-ARMS = ["labels", "ontology", "guardrail", "plan", "plan_hints", "in_context",
-        "in_context_blind", "in_context_csv"]
+ARMS = ["labels", "ontology", "guardrail", "plan", "plan_hints", "plan_hints_join",
+        "in_context", "in_context_blind", "in_context_csv"]
 
 # Condition 4b. Identical to `plan` in what gets refused; different in what the agent can
 # do about it. A refusal unlocks a second tool, engineer_query, which probes a candidate
@@ -277,8 +277,16 @@ ARMS = ["labels", "ontology", "guardrail", "plan", "plan_hints", "in_context",
 # ontology says about the data (the degree tail the planner's statistics miss by up to
 # 4.6M×) can flow into the execution plan. The gate is a design decision, not a
 # convenience: the DBA steering wheel appears only after the need for it is demonstrated.
-_PLAN_ARMS = ("plan", "plan_hints")
+_PLAN_ARMS = ("plan", "plan_hints", "plan_hints_join")
+_HINT_ARMS = ("plan_hints", "plan_hints_join")
 _HINT_RE = re.compile(r"\bUSING\s+(INDEX|SCAN|JOIN)\b", re.I)
+# Condition 4c aims the same steering wheel at the one query class 4b never reached.
+# Every hint 4b's agent adopted was an index seek on an anchored question; the cyclic
+# conjunctions — where Lyu et al. (VLDB 2024 LSGDA) report Neo4j compiling the pattern
+# into nested joins until the intermediate results blow up, and where our own int_hard_1
+# spent eight round trips and answered nothing — were never touched. 4c differs from 4b
+# in one paragraph of rules text: it names the cyclic case and USING JOIN ON.
+_JOIN_HINT_RE = re.compile(r"\bUSING\s+JOIN\s+ON\b", re.I)
 
 # `in_context_blind` is the control for `in_context`, differing in exactly one thing: the tool
 # response omits `more_available`, and the instructions never mention that a result can be
@@ -341,7 +349,7 @@ def build_instructions(schema: Dict[str, Any], *, arm: str) -> str:
             "- The tool runs EXPLAIN before executing. If the plan scans all nodes or the "
             "planner estimates too many rows, the query is refused and you are given the plan. "
             "Rewrite it to start from an indexed lookup and to filter earlier.")
-    if arm == "plan_hints":
+    if arm in _HINT_ARMS:
         parts.append(
             "- If a query of yours is refused, the engineer_query tool unlocks: it shows a "
             "candidate query's plan and whether it finishes inside the probe budget, without "
@@ -349,6 +357,17 @@ def build_instructions(schema: Dict[str, Any], *, arm: str) -> str:
             "a MATCH clause — USING INDEX var:Label(prop), USING SCAN var:Label, "
             "USING JOIN ON var — when you judge its default plan wrong for this data. "
             "Probe variants, then run the best one with run_cypher.")
+    if arm == "plan_hints_join":
+        parts.append(
+            "- Pay particular attention to patterns that close a cycle — where the same "
+            "two nodes are connected by more than one path, for example a transfer "
+            "between two accounts whose owners also relate to each other and which share "
+            "a login device. On those the planner tends to expand each path separately "
+            "and join the intermediate results, and the intermediate results are far "
+            "larger than the answer. `USING JOIN ON var` tells it to build the join at "
+            "the node you name instead: pick the node whose degree is smallest, and note "
+            "that the schema's cardinality figures tell you which that is. Probe two or "
+            "three different join nodes with engineer_query before committing.")
     if arm in _IN_CONTEXT_ARMS:
         parts.append(
             "- You may NOT use aggregate functions in Cypher (count, sum, avg, min, max, "
@@ -830,9 +849,9 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
                                   guardrail_fn=(guardrail_fn if arm in
                                                 ("guardrail", "plan", "plan_hints") else None),
                                   row_cap=row_cap,
-                                  gate=gate if arm == "plan_hints" else None)
+                                  gate=gate if arm in _HINT_ARMS else None)
     tools = [tool]
-    if arm == "plan_hints":
+    if arm in _HINT_ARMS:
         tools.append(make_engineering_tool(driver, database, anchor=anchor,
                                            eng_calls=eng_calls, gate=gate,
                                            row_cap=row_cap))
@@ -916,6 +935,9 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
         "engineering_probes": sum(1 for c in eng_calls if c["outcome"] != "locked"),
         "engineering_locked_attempts": sum(1 for c in eng_calls if c["outcome"] == "locked"),
         "hint_in_settled": bool(_HINT_RE.search(settled or "")),
+        "join_hint_in_settled": bool(_JOIN_HINT_RE.search(settled or "")),
+        "join_hint_probes": sum(1 for c in eng_calls
+                                if _JOIN_HINT_RE.search(c.get("cypher") or "")),
         "engineering_calls": [
             {k: v for k, v in c.items() if k != "cypher"} | {"cypher": c["cypher"][:600]}
             for c in eng_calls],
