@@ -24,3 +24,4 @@ figures/*
 !figures/engineering-detail.svg
 !figures/slo-tradeoff.svg
 !figures/plan-hints-ab.svg
+!figures/estimate-error.svg

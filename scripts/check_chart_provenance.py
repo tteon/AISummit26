@@ -129,6 +129,17 @@ def main() -> None:
           sum(1 for e in ab if e.get("engineering_probes", 0) > 0),
           "plan_hints_ab.json", 0)
 
+    print("[estimate-error chart] <- results/agent_interaction.json (plan arm EXPLAINs)")
+    pairs = [(c["estimated_rows"], c["db_hits"]) for e in eps if e["arm"] == "plan"
+             for c in e.get("calls", [])
+             if c.get("estimated_rows") and c.get("db_hits")
+             and c["estimated_rows"] > 0 and c["db_hits"] > 0]
+    check("plan-arm calls with estimate and measurement", 186, len(pairs),
+          "agent_interaction.json", 0)
+    ratios = sorted(h / e for e, h in pairs)
+    check("worst under-estimate (x)", 1067333, round(ratios[-1]),
+          "agent_interaction.json", 1)
+
     print()
     if FAIL:
         print(f"FAILED: {len(FAIL)} mismatches -> {FAIL}")
