@@ -1,0 +1,81 @@
+# Benchmark Evaluation Report: financial-aml-semantic-alignment-suite
+**Version**: 1.0.0 | **Model**: `gpt-oss-120b` | **Provider**: `mara`
+
+## Summary of Executed Suites
+
+| Suite Name | Execution Time (s) | Status |
+|:---|:---:|:---:|
+| `sql_vs_cypher` | 0.0s | ✅ PASSED |
+
+---
+
+## Detailed Results
+
+### Suite: `sql_vs_cypher`
+```json
+[
+  {
+    "id": "ext_easy_1",
+    "tier": "easy",
+    "sql_joins": 0,
+    "cypher_hops": 0,
+    "sql_len": 118,
+    "cypher_len": 137,
+    "ratio": 0.86
+  },
+  {
+    "id": "ext_easy_2",
+    "tier": "easy",
+    "sql_joins": 0,
+    "cypher_hops": 1,
+    "sql_len": 122,
+    "cypher_len": 139,
+    "ratio": 0.88
+  },
+  {
+    "id": "ext_med_1",
+    "tier": "medium",
+    "sql_joins": 1,
+    "cypher_hops": 1,
+    "sql_len": 196,
+    "cypher_len": 173,
+    "ratio": 1.13
+  },
+  {
+    "id": "ext_med_2",
+    "tier": "medium",
+    "sql_joins": 2,
+    "cypher_hops": 3,
+    "sql_len": 373,
+    "cypher_len": 157,
+    "ratio": 2.38
+  },
+  {
+    "id": "int_med_1",
+    "tier": "medium",
+    "sql_joins": 4,
+    "cypher_hops": 5,
+    "sql_len": 374,
+    "cypher_len": 187,
+    "ratio": 2.0
+  },
+  {
+    "id": "ext_hard_1",
+    "tier": "hard",
+    "sql_joins": 2,
+    "cypher_hops": 2,
+    "sql_len": 471,
+    "cypher_len": 164,
+    "ratio": 2.87
+  },
+  {
+    "id": "int_hard_1",
+    "tier": "hard",
+    "sql_joins": 7,
+    "cypher_hops": 10,
+    "sql_len": 617,
+    "cypher_len": 376,
+    "ratio": 1.64
+  }
+]
+```
