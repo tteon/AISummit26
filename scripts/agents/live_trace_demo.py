@@ -53,43 +53,17 @@ if not MARA_KEY and ENV_FILE.exists():
 MARA_BASE_URL = os.getenv("MARA_BASE_URL", "https://api.cloud.mara.com/v1")
 MODEL_NAME = "gpt-oss-120b"
 
-PRESET_QUESTIONS = {
-    "ext_easy_1": {
-        "title": "Incoming Transfers Aggregate",
-        "difficulty": "easy",
-        "question": "For account number {a}: how many incoming transfers has it received in total, and what is their total value?",
-    },
-    "ext_easy_2": {
-        "title": "Outgoing Transfers Aggregate",
-        "difficulty": "easy",
-        "question": "For account number {a}: how many outgoing transfers are there, and what is the single largest amount sent?",
-    },
-    "ext_med_1": {
-        "title": "High-Risk Channel Transfers (Finding 1)",
-        "difficulty": "medium",
-        "question": "Which accounts sent money to account number {a} on a transfer whose own channel_risk property is 5 or more? Give the five lowest such account numbers in ascending order.",
-    },
-    "ext_med_2": {
-        "title": "Destination Account Ownership (Polymorphic)",
-        "difficulty": "medium",
-        "question": "Who owns the accounts that account number {a} has sent money to? Give the five lowest owner ids in ascending order.",
-    },
-    "ext_hard_1": {
-        "title": "2-Hop Downstream Hub Traversal (Finding 1 / p99 SLO)",
-        "difficulty": "hard",
-        "question": "Starting from account number {a} and following transfers downstream, how many distinct accounts are reachable within two hops, and what is the highest risk_tier among them?",
-    },
-    "int_med_1": {
-        "title": "Self-Transfer Cycle by Same Owner",
-        "difficulty": "medium",
-        "question": "How many distinct ordered pairs of two different accounts owned by the same party have a direct transfer running from the first to the second?",
-    },
-    "int_hard_1": {
-        "title": "Three-Layer Mutual Guarantee Conjunction (Finding 2)",
-        "difficulty": "hard",
-        "question": "Find pairs of accounts where money moved between them by transfer, their owners are different parties who guarantee one another, and the same login device has signed in to both.",
-    },
-}
+QUESTIONS_REGISTRY_FILE = WORKSPACE_ROOT / "configs" / "questions.yaml"
+
+
+def load_master_questions() -> Dict[str, Dict[str, Any]]:
+    if not QUESTIONS_REGISTRY_FILE.exists():
+        return {}
+    data = yaml.safe_load(QUESTIONS_REGISTRY_FILE.read_text()) or []
+    return {q["id"]: q for q in data}
+
+
+PRESET_QUESTIONS = load_master_questions()
 
 
 def print_banner(title: str, color: str = C_CYAN):
@@ -121,11 +95,17 @@ async def trace_e2e(question_text: str, anchor_acct: int = 1001, ws: str = "ws_t
     # --------------------------------------------------------------------------
     print_substep(2, "Intent Extraction & SEOCHO Ontology Resolution", C_BLUE)
     t0 = time.perf_counter()
-    onto_data = yaml.safe_load(ONTOLOGY_FILE.read_text())
+    is_fibo = any(k in question_text for k in ["NaturalPerson", "FIBO", "UBO", "LoanFacility", "DISBURSED_TO", "GUARANTEES_PARTY", "자연인", "지주회사"])
+    onto_path = WORKSPACE_ROOT / "ontology" / ("fibo_finbench.ontology.yaml" if is_fibo else "finbench.ontology.yaml")
+    onto_data = yaml.safe_load(onto_path.read_text())
     
     print(f"📂 Loaded Ontology: {C_BOLD}{onto_data.get('name')}{C_RESET} (Version: {onto_data.get('version', '1.0.0')})")
-    print(f"🎯 Target Entities   : (Account), (Person), (Company), (Medium), (Channel), (Loan)")
-    print(f"🔍 Relationship Graph: [:TRANSFER], [:OWN], [:GUARANTEE], [:SIGN_IN], [:USES_CHANNEL]")
+    if is_fibo:
+        print(f"🎯 FIBO Standards   : (Account), (NaturalPerson), (LegalEntity), (LoanFacility), (LoginMedium)")
+        print(f"🔍 Relationship Graph: [:TRANSFER], [:BENEFICIAL_OWNER_OF], [:CONTROLS_ENTITY], [:GUARANTEES_PARTY], [:AUTHENTICATES_TO]")
+    else:
+        print(f"🎯 Target Entities   : (Account), (Person), (Company), (Medium), (Channel), (Loan)")
+        print(f"🔍 Relationship Graph: [:TRANSFER], [:OWN], [:GUARANTEE], [:SIGN_IN], [:USES_CHANNEL]")
     print(f"📊 Query Optimizer   : Degree Tail Guard Active (Anchor acct_no: {anchor_acct})")
     print(f"⏱️ Schema Resolution Latency: {(time.perf_counter() - t0)*1000:.2f} ms")
     time.sleep(0.2)
@@ -134,7 +114,30 @@ async def trace_e2e(question_text: str, anchor_acct: int = 1001, ws: str = "ws_t
     # [Step 3] Text2Cypher Generation via Live LLM (MARA API)
     # --------------------------------------------------------------------------
     print_substep(3, f"Text2Cypher Generation via LLM ({MODEL_NAME})", C_YELLOW)
-    system_prompt = f"""You are a Graph Database Cypher Analyst for Financial AML. Translate the user question into an optimal Neo4j Cypher query.
+    if is_fibo:
+        system_prompt = f"""You are a Graph Database Cypher Analyst for FIBO Financial AML. Translate the user question into an optimal Neo4j Cypher query.
+Schema:
+Nodes: 
+  Account(acct_no, risk_tier, flagged, _workspace_id), 
+  NaturalPerson(id, name, country, _workspace_id), 
+  LegalEntity(id, name, sector, _workspace_id),
+  LoanFacility(id, principal, _workspace_id),
+  LoginMedium(id, type, _workspace_id)
+Edges: 
+  (:Account)-[:TRANSFER {{amount, ts}}]->(:Account), 
+  (:NaturalPerson)-[:BENEFICIAL_OWNER_OF]->(:Account),
+  (:NaturalPerson)-[:CONTROLS_ENTITY]->(:LegalEntity),
+  (:NaturalPerson)-[:GUARANTEES_PARTY]->(:NaturalPerson),
+  (:LoanFacility)-[:DISBURSED_TO]->(:Account),
+  (:LoginMedium)-[:AUTHENTICATES_TO]->(:Account)
+
+Rules:
+- Filter with `_workspace_id: '{ws}'`.
+- If account anchor is referenced, use `{anchor_acct}`.
+- Return ONLY raw Cypher in ```cypher ... ``` code block.
+"""
+    else:
+        system_prompt = f"""You are a Graph Database Cypher Analyst for Financial AML. Translate the user question into an optimal Neo4j Cypher query.
 Schema:
 Nodes: 
   Account(acct_no, risk_tier, flagged, _workspace_id), 
@@ -163,15 +166,18 @@ Rules:
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": question_text}
         ],
-        max_tokens=800,
+        max_tokens=1500,
         temperature=0.0
     )
     llm_ms = (time.perf_counter() - t0) * 1000
     raw_content = resp.choices[0].message.content or ""
     
     # Extract Cypher
-    m = re.search(r"```(?:cypher)?\s*(.*?)\s*```", raw_content, re.DOTALL | re.IGNORECASE)
+    m = re.search(r"```(?:cypher)?\s*(.*?)(?:```|$)", raw_content, re.DOTALL | re.IGNORECASE)
     cypher_query = m.group(1).strip() if m else raw_content.strip()
+    if not cypher_query or cypher_query.startswith("```"):
+        m2 = re.search(r"(MATCH\s+.*)", raw_content, re.DOTALL | re.IGNORECASE)
+        cypher_query = m2.group(1).strip() if m2 else raw_content.strip()
 
     print(f"⚡ LLM Inference Completed in {llm_ms:.1f} ms (Tokens: {resp.usage.total_tokens if resp.usage else 'N/A'})")
     print(f"\n{C_GREEN}{C_BOLD}Generated Cypher Query:{C_RESET}")
@@ -187,8 +193,12 @@ Rules:
     if "_workspace_id" not in cypher_query:
         violations.append("missing_tenant_scope:_workspace_id")
     
-    valid_labels = {"Account", "Person", "Company", "Channel", "Medium", "Loan", 
-                    "TRANSFER", "OWN", "GUARANTEE", "USES_CHANNEL", "SIGN_IN", "DEPOSIT", "REPAY", "APPLY", "INVEST"}
+    valid_labels = {
+        "Account", "Person", "Company", "Channel", "Medium", "Loan", 
+        "NaturalPerson", "LegalEntity", "LoanFacility", "LoginMedium", "PaymentRail",
+        "TRANSFER", "OWN", "GUARANTEE", "USES_CHANNEL", "SIGN_IN", "DEPOSIT", "REPAY", "APPLY", "INVEST",
+        "BENEFICIAL_OWNER_OF", "CONTROLS_ENTITY", "SUBSIDIARY_OF", "GUARANTEES_PARTY", "DISBURSED_TO", "REPAID_BY", "AUTHENTICATES_TO"
+    }
     found_labels = re.findall(r":([A-Z][a-zA-Z0-9_]*)", cypher_query)
     for l in found_labels:
         if l not in valid_labels:
@@ -338,10 +348,13 @@ def main():
     args = parser.parse_args()
 
     if args.list:
-        print_banner("AVAILABLE PRESET AML QUESTIONS", C_CYAN)
+        print_banner("AVAILABLE PRESET AML QUESTIONS (from configs/questions.yaml)", C_CYAN)
         for qid, qdata in PRESET_QUESTIONS.items():
-            print(f"{C_YELLOW}{C_BOLD}[{qid}]{C_RESET} ({qdata['difficulty'].upper()}) - {qdata['title']}")
-            print(f"  Question: \"{qdata['question'].format(a='<N>')}\"\n")
+            diff = qdata.get("difficulty", "N/A").upper()
+            std = qdata.get("standard", "FinBench")
+            print(f"{C_YELLOW}{C_BOLD}[{qid}]{C_RESET} ({diff} | {std}) - {qdata.get('title', '')}")
+            q_display = qdata.get("question", "")
+            print(f"  Question: \"{q_display}\"\n")
         return
 
     question_items: List[Dict[str, Any]] = []
@@ -352,7 +365,10 @@ def main():
         for q in args.question:
             question_items.append({"question": q, "anchor": args.anchor})
     elif args.preset:
-        q_text = PRESET_QUESTIONS[args.preset]["question"].format(a=args.anchor)
+        preset_item = PRESET_QUESTIONS[args.preset]
+        q_text = preset_item.get("question", "")
+        if "{a}" in q_text:
+            q_text = q_text.format(a=args.anchor)
         question_items.append({"question": q_text, "anchor": args.anchor})
     else:
         # Default question

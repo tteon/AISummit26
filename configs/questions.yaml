@@ -1,0 +1,218 @@
+# ==============================================================================
+# Unified Master Question Registry for Financial AML Benchmark
+# Single Source of Truth for all FinBench & FIBO Standards Questions
+# ==============================================================================
+
+# --- [EASY TIER] ---
+- id: "ext_easy_1"
+  difficulty: "easy"
+  standard: "LDBC-FinBench"
+  audience: "external"
+  title: "Incoming Transfers Aggregate"
+  question: "내 계좌로 지금까지 들어온 이체는 몇 건이고 총액은 얼마인가요?"
+  question_en: "For account number {a}: how many incoming transfers has it received in total, and what is their total value?"
+  anchor: 1001
+  tags: ["smoke", "finbench", "easy", "aggregate"]
+  sql_ref: "SELECT count(*) AS n, coalesce(sum(amount), 0) AS total FROM transfer WHERE to_account_no = $a AND _workspace_id = $ws"
+  cypher_ref: "MATCH (:Account {acct_no:$a,_workspace_id:$ws})<-[t:TRANSFER]-(:Account {_workspace_id:$ws}) RETURN count(t) AS n, sum(t.amount) AS total"
+  sql_joins: 0
+  cypher_hops: 1
+
+- id: "ext_easy_2"
+  difficulty: "easy"
+  standard: "LDBC-FinBench"
+  audience: "external"
+  title: "Outgoing Transfers Aggregate"
+  question: "내 계좌에서 나간 이체 건수와 그 중 가장 큰 금액은?"
+  question_en: "For account number {a}: how many outgoing transfers are there, and what is the single largest amount sent?"
+  anchor: 1001
+  tags: ["finbench", "easy", "aggregate"]
+  sql_ref: "SELECT count(*) AS n, coalesce(max(amount), 0) AS biggest FROM transfer WHERE from_account_no = $a AND _workspace_id = $ws"
+  cypher_ref: "MATCH (:Account {acct_no:$a,_workspace_id:$ws})-[t:TRANSFER]->(:Account {_workspace_id:$ws}) RETURN count(t) AS n, max(t.amount) AS biggest"
+  sql_joins: 0
+  cypher_hops: 1
+
+- id: "int_easy_1"
+  difficulty: "easy"
+  standard: "LDBC-FinBench"
+  audience: "internal"
+  title: "Account Count & Risk Tier 5 Proportion"
+  question: "전체 계좌 수와 최고위험(등급 5) 계좌 수는?"
+  question_en: "How many accounts are there in total, and how many of them are at risk_tier 5?"
+  anchor: 1001
+  tags: ["finbench", "easy", "global"]
+  sql_ref: "SELECT count(*) AS total_accounts, count(*) FILTER (WHERE risk_tier = 5) AS risk_5 FROM account WHERE _workspace_id = $ws"
+  cypher_ref: "MATCH (a:Account {_workspace_id:$ws}) RETURN count(a) AS total_accounts, count(CASE WHEN a.risk_tier = 5 THEN 1 END) AS risk_5"
+  sql_joins: 0
+  cypher_hops: 0
+
+- id: "int_easy_2"
+  difficulty: "easy"
+  standard: "LDBC-FinBench"
+  audience: "internal"
+  title: "Top 5 Volume Channels"
+  question: "가장 많은 거래가 일어난 상위 5개 채널 코드는 무엇인가요?"
+  question_en: "Which five channels carry the most transactions? Give the channel codes in descending order of total transaction count."
+  anchor: 1001
+  tags: ["finbench", "easy", "group_by"]
+  sql_ref: "SELECT channel_code, sum(tx_count) AS total_tx FROM uses_channel WHERE _workspace_id = $ws GROUP BY channel_code ORDER BY total_tx DESC LIMIT 5"
+  cypher_ref: "MATCH (a:Account {_workspace_id:$ws})-[u:USES_CHANNEL]->(c:Channel {_workspace_id:$ws}) RETURN c.code AS channel_code, sum(u.tx_count) AS total_tx ORDER BY total_tx DESC LIMIT 5"
+  sql_joins: 1
+  cypher_hops: 1
+
+# --- [MEDIUM TIER] ---
+- id: "ext_med_1"
+  difficulty: "medium"
+  standard: "LDBC-FinBench"
+  audience: "external"
+  title: "High-Risk Channel Transfers (Finding 1: Attribute Ambiguity)"
+  question: "위험도 5 이상의 채널을 통해 계좌 1001번으로 송금한 계좌 상위 5개는?"
+  question_en: "Which accounts sent money to account number {a} on a transfer whose own channel_risk property is 5 or more? Give the five lowest such account numbers in ascending order."
+  anchor: 1001
+  tags: ["smoke", "finbench", "medium", "finding1"]
+  sql_ref: "SELECT DISTINCT from_account_no FROM transfer WHERE to_account_no = $a AND channel_risk >= 5 AND _workspace_id = $ws ORDER BY from_account_no ASC LIMIT 5"
+  cypher_ref: "MATCH (src:Account {_workspace_id:$ws})-[t:TRANSFER {channel_risk: r}]->(dst:Account {acct_no:$a, _workspace_id:$ws}) WHERE t.channel_risk >= 5 RETURN src.acct_no ORDER BY src.acct_no ASC LIMIT 5"
+  sql_joins: 1
+  cypher_hops: 1
+
+- id: "ext_med_2"
+  difficulty: "medium"
+  standard: "LDBC-FinBench"
+  audience: "external"
+  title: "Destination Account Ownership (Polymorphic Person | Company)"
+  question: "계좌 1001번이 송금한 목적지 계좌들의 실제 소유자 상위 5명은?"
+  question_en: "Who owns the accounts that account number {a} has sent money to? Give the five lowest owner ids in ascending order."
+  anchor: 1001
+  tags: ["finbench", "medium", "polymorphic"]
+  sql_ref: "SELECT DISTINCT o.src AS owner_id FROM transfer t JOIN own o ON t.to_account_no = o.dst WHERE t.from_account_no = $a AND t._workspace_id = $ws ORDER BY owner_id ASC LIMIT 5"
+  cypher_ref: "MATCH (src:Account {acct_no:$a, _workspace_id:$ws})-[:TRANSFER]->(dst:Account {_workspace_id:$ws})<-[:OWN]-(owner) WHERE owner._workspace_id = $ws RETURN DISTINCT owner.id ORDER BY owner.id ASC LIMIT 5"
+  sql_joins: 2
+  cypher_hops: 2
+
+- id: "int_med_1"
+  difficulty: "medium"
+  standard: "LDBC-FinBench"
+  audience: "internal"
+  title: "Self-Transfer Cycle by Same Owner (Triangular Motif)"
+  question: "동일한 소유자가 가진 서로 다른 두 계좌 간에 직접 송금이 발생한 고유 계좌 쌍의 수는?"
+  question_en: "How many distinct ordered pairs of two different accounts owned by the same party have a direct transfer running from the first to the second?"
+  anchor: 1001
+  tags: ["finbench", "medium", "motif"]
+  sql_ref: "SELECT count(DISTINCT (t.from_account_no, t.to_account_no)) FROM transfer t JOIN own o1 ON t.from_account_no = o1.dst JOIN own o2 ON t.to_account_no = o2.dst WHERE o1.src = o2.src AND t.from_account_no <> t.to_account_no AND t._workspace_id = $ws"
+  cypher_ref: "MATCH (owner)-[:OWN]->(a1:Account {_workspace_id:$ws})-[t:TRANSFER]->(a2:Account {_workspace_id:$ws})<-[:OWN]-(owner) WHERE a1 <> a2 RETURN count(DISTINCT [a1, a2])"
+  sql_joins: 4
+  cypher_hops: 3
+
+- id: "int_med_2"
+  difficulty: "medium"
+  standard: "LDBC-FinBench"
+  audience: "internal"
+  title: "Fan-in Structuring Accounts (>100 senders)"
+  question: "100개 이상의 서로 다른 계좌로부터 송금을 받은 계좌 상위 5개는?"
+  question_en: "Which accounts received transfers from more than 100 distinct sending accounts? Give the five lowest such account numbers in ascending order."
+  anchor: 1001
+  tags: ["finbench", "medium", "fan_in"]
+  sql_ref: "SELECT to_account_no, count(DISTINCT from_account_no) AS senders FROM transfer WHERE _workspace_id = $ws GROUP BY to_account_no HAVING count(DISTINCT from_account_no) > 100 ORDER BY to_account_no ASC LIMIT 5"
+  cypher_ref: "MATCH (src:Account {_workspace_id:$ws})-[:TRANSFER]->(dst:Account {_workspace_id:$ws}) WITH dst, count(DISTINCT src) AS senders WHERE senders > 100 RETURN dst.acct_no ORDER BY dst.acct_no ASC LIMIT 5"
+  sql_joins: 0
+  cypher_hops: 1
+
+# --- [HARD TIER] ---
+- id: "ext_hard_1"
+  difficulty: "hard"
+  standard: "LDBC-FinBench"
+  audience: "external"
+  title: "2-Hop Downstream Hub Traversal (Finding 1: Power-Law Expansion)"
+  question: "계좌 1001번에서 시작하여 다운스트림 2단계 이내로 도달 가능한 고유 계좌 수와 그 중 최고 위험 등급은?"
+  question_en: "Starting from account number {a} and following transfers downstream, how many distinct accounts are reachable within two hops, and what is the highest risk_tier among them?"
+  anchor: 1001
+  tags: ["smoke", "finbench", "hard", "hub_defense"]
+  sql_ref: "WITH RECURSIVE downstream(acct_no, depth) AS (SELECT to_account_no, 1 FROM transfer WHERE from_account_no = $a UNION SELECT t.to_account_no, d.depth + 1 FROM transfer t JOIN downstream d ON t.from_account_no = d.acct_no WHERE d.depth < 2) SELECT count(DISTINCT d.acct_no), max(a.risk_tier) FROM downstream d JOIN account a ON d.acct_no = a.acct_no"
+  cypher_ref: "MATCH (start:Account {acct_no:$a, _workspace_id:$ws})-[:TRANSFER*1..2]->(reach:Account {_workspace_id:$ws}) RETURN count(DISTINCT reach) AS reachable_accounts, max(reach.risk_tier) AS max_risk"
+  sql_joins: 3
+  cypher_hops: 2
+
+- id: "ext_hard_2"
+  difficulty: "hard"
+  standard: "LDBC-FinBench"
+  audience: "external"
+  title: "2-Hop Upstream Inflow Senders"
+  question: "계좌 1001번으로 2단계 이내에 자금을 보낸 업스트림 계좌의 총 수는?"
+  question_en: "How many distinct accounts sit within two transfer hops upstream of account number {a}?"
+  anchor: 1001
+  tags: ["finbench", "hard", "upstream"]
+  sql_ref: "WITH RECURSIVE upstream(acct_no, depth) AS (SELECT from_account_no, 1 FROM transfer WHERE to_account_no = $a UNION SELECT t.from_account_no, u.depth + 1 FROM transfer t JOIN upstream u ON t.to_account_no = u.acct_no WHERE u.depth < 2) SELECT count(DISTINCT acct_no) FROM upstream"
+  cypher_ref: "MATCH (reach:Account {_workspace_id:$ws})-[:TRANSFER*1..2]->(target:Account {acct_no:$a, _workspace_id:$ws}) RETURN count(DISTINCT reach) AS upstream_accounts"
+  sql_joins: 2
+  cypher_hops: 2
+
+- id: "int_hard_1"
+  difficulty: "hard"
+  standard: "LDBC-FinBench"
+  audience: "internal"
+  title: "Three-Layer Conjunction with Mutual Guarantee Trap (Finding 2)"
+  question: "서로 송금이 오가고, 소유자들끼리 상호 보증(guarantee one another)을 섰으며, 동일한 단말기(Medium)로 로그인된 계좌 쌍을 찾아라."
+  question_en: "Find pairs of accounts where money moved between them by transfer, their owners are different parties who guarantee one another, and the same login device has signed in to both."
+  anchor: 1001
+  tags: ["finbench", "hard", "finding2", "mutual_trap"]
+  sql_ref: "SELECT DISTINCT a1.acct_no, a2.acct_no FROM transfer t JOIN account a1 ON t.from_account_no = a1.acct_no JOIN account a2 ON t.to_account_no = a2.acct_no JOIN own o1 ON a1.id = o1.dst JOIN own o2 ON a2.id = o2.dst JOIN guarantee g ON o1.src = g.src AND o2.src = g.dst JOIN sign_in s1 ON a1.id = s1.dst JOIN sign_in s2 ON a2.id = s2.dst AND s1.src = s2.src WHERE a1.acct_no < a2.acct_no"
+  cypher_ref: "MATCH (a1:Account {_workspace_id:$ws})-[:TRANSFER]->(a2:Account {_workspace_id:$ws}) WHERE a1.acct_no < a2.acct_no MATCH (p1)-[:OWN]->(a1), (p2)-[:OWN]->(a2), (p1)-[:GUARANTEE]-(p2), (m:Medium)-[:SIGN_IN]->(a1), (m)-[:SIGN_IN]->(a2) RETURN a1.acct_no, a2.acct_no"
+  sql_joins: 7
+  cypher_hops: 5
+
+- id: "int_hard_1b"
+  difficulty: "hard"
+  standard: "LDBC-FinBench"
+  audience: "internal"
+  title: "Three-Layer Conjunction (Unambiguous Direction)"
+  question: "서로 어느 방향이든 송금이 오가고, 소유자 중 한 명이 다른 한 명을 보증하며, 동일 로그인 단말기를 공유하는 계좌 쌍을 찾아라."
+  question_en: "Find pairs of accounts where money moved between them in either direction, their owners are different parties and one guarantees the other in either direction, and same login device signed into both."
+  anchor: 1001
+  tags: ["finbench", "hard", "finding2"]
+  sql_ref: "SELECT DISTINCT a1.acct_no, a2.acct_no FROM transfer t JOIN account a1 ON (t.from_account_no = a1.acct_no OR t.to_account_no = a1.acct_no) JOIN account a2 ON (t.from_account_no = a2.acct_no OR t.to_account_no = a2.acct_no) AND a1.acct_no < a2.acct_no JOIN own o1 ON a1.id = o1.dst JOIN own o2 ON a2.id = o2.dst JOIN guarantee g ON (o1.src = g.src AND o2.src = g.dst) OR (o2.src = g.src AND o1.src = g.dst) JOIN sign_in s1 ON a1.id = s1.dst JOIN sign_in s2 ON a2.id = s2.dst AND s1.src = s2.src"
+  cypher_ref: "MATCH (a1:Account {_workspace_id:$ws})-[:TRANSFER]-(a2:Account {_workspace_id:$ws}) WHERE a1.acct_no < a2.acct_no MATCH (p1)-[:OWN]->(a1), (p2)-[:OWN]->(a2), (p1)-[:GUARANTEE]-(p2), (m:Medium)-[:SIGN_IN]->(a1), (m)-[:SIGN_IN]->(a2) RETURN a1.acct_no, a2.acct_no"
+  sql_joins: 7
+  cypher_hops: 5
+
+- id: "int_hard_2"
+  difficulty: "hard"
+  standard: "LDBC-FinBench"
+  audience: "internal"
+  title: "Smurfing Ring / Aggregation Below Threshold"
+  question: "1,000만원 미만의 소액으로 쪼개어 하나의 동일 계좌로 가장 많은 송금을 보낸 실소유자는 누구인가?"
+  question_en: "Which party owns the largest number of distinct accounts that all send money into one single common account, where every one of those transfers is below threshold?"
+  anchor: 1001
+  tags: ["finbench", "hard", "smurfing"]
+  sql_ref: "SELECT o.src AS owner_id, count(DISTINCT t.from_account_no) AS acct_count FROM transfer t JOIN own o ON t.from_account_no = o.dst WHERE t.amount < 10000000 AND t._workspace_id = $ws GROUP BY o.src, t.to_account_no ORDER BY acct_count DESC LIMIT 1"
+  cypher_ref: "MATCH (owner)-[:OWN]->(src:Account {_workspace_id:$ws})-[t:TRANSFER]->(dst:Account {_workspace_id:$ws}) WHERE t.amount < 10000000 RETURN owner.id AS owner_id, count(DISTINCT src) AS acct_count ORDER BY acct_count DESC LIMIT 1"
+  sql_joins: 2
+  cypher_hops: 2
+
+# --- [FIBO STANDARDS EXTENSIONS] ---
+- id: "FIBO_R1_UBO_Shell_Ring"
+  difficulty: "hard"
+  standard: "FIBO FBC (fibo-be-le-lp & fibo-be-le-cb)"
+  audience: "regulatory"
+  title: "Multi-tier Ultimate Beneficial Owner (UBO) Corporate Chain"
+  question: "동일한 자연인(NaturalPerson)이 지주회사/자회사를 거쳐 다단계(UBO)로 지배하는 계좌들 사이에서 직접 송금이 발생하고, 동일 단말기로 로그인된 자금세탁망을 찾아라."
+  question_en: "Identify accounts controlled by the same NaturalPerson through multi-tier corporate ownership where funds moved directly between those accounts and both signed in from a common device."
+  anchor: 1001
+  tags: ["fibo", "ubo", "hard", "multi_tier"]
+  sql_ref: "SELECT DISTINCT a.id AS acct1, b.id AS acct2, p.id AS ubo_person FROM transfer t JOIN account a ON t.src = a.id JOIN account b ON t.dst = b.id AND a.id < b.id JOIN own o1 ON a.id = o1.dst JOIN own o2 ON b.id = o2.dst AND o1.src = o2.src JOIN person p ON o1.src = p.id JOIN sign_in m1 ON a.id = m1.dst JOIN sign_in m2 ON b.id = m2.dst AND m1.src = m2.src LIMIT 5"
+  cypher_ref: "MATCH (p:NaturalPerson)-[:BENEFICIAL_OWNER_OF]->(a:Account)-[:TRANSFER]->(b:Account)<-[:BENEFICIAL_OWNER_OF]-(p) WHERE a.id < b.id MATCH (m:LoginMedium)-[:AUTHENTICATES_TO]->(a), (m)-[:AUTHENTICATES_TO]->(b) RETURN DISTINCT a.acct_no, b.acct_no, p.id LIMIT 5"
+  sql_joins: 7
+  cypher_hops: 4
+
+- id: "FIBO_R2_Loan_Guaranteed_Integration"
+  difficulty: "hard"
+  standard: "FIBO FBC (fibo-fbc-dae-dbt:ThirdPartyGuarantee)"
+  audience: "regulatory"
+  title: "Collateralized Loan Proceeds Layering & Guarantee Circle"
+  question: "대출금(LoanFacility)이 실행(DISBURSED_TO)되어 송금된 계좌의 소유자가, 해당 대출 상환인의 소유자로부터 연대보증(GUARANTEES_PARTY)을 받고 있는 자금세탁 통합 루프를 탐지하라."
+  question_en: "Detect value paths where loan proceeds were transferred onward, and destination account owner is guaranteed by the loan repayer owner."
+  anchor: 1001
+  tags: ["fibo", "credit", "hard", "integration"]
+  sql_ref: "SELECT DISTINCT d.src AS loan_id, t.src AS repayer_acct, t.dst AS beneficiary_acct FROM deposit d JOIN transfer t ON d.dst = t.src JOIN own o_rep ON t.src = o_rep.dst JOIN own o_ben ON t.dst = o_ben.dst JOIN guarantee g ON g.src = o_rep.src AND g.dst = o_ben.src LIMIT 5"
+  cypher_ref: "MATCH (l:LoanFacility)-[:DISBURSED_TO]->(src:Account)-[:TRANSFER]->(dst:Account) MATCH (p_rep:NaturalPerson)-[:BENEFICIAL_OWNER_OF]->(src) MATCH (p_ben:NaturalPerson)-[:BENEFICIAL_OWNER_OF]->(dst) MATCH (p_rep)-[:GUARANTEES_PARTY]->(p_ben) RETURN DISTINCT l.id, src.acct_no, dst.acct_no LIMIT 5"
+  sql_joins: 4
+  cypher_hops: 4
