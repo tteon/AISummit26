@@ -1,0 +1,6 @@
+# Example Custom Questions List File
+- question: "계좌 1001번에서 2단계 이내로 돈을 보낸 계좌를 찾아주세요"
+  anchor: 1001
+
+- question: "계좌 1001번의 입금 건수와 총액은 얼마인가요?"
+  anchor: 1001

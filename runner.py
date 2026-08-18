@@ -54,7 +54,8 @@ def main():
 
     # 3. 'demo' command
     demo_parser = subparsers.add_parser("demo", help="Run interactive live E2E pipeline visualizer")
-    demo_parser.add_argument("-q", "--question", type=str, help="Natural language question to test")
+    demo_parser.add_argument("-q", "--question", nargs="+", type=str, help="One or more natural language questions to test")
+    demo_parser.add_argument("-f", "--file", type=str, help="Path to file (.txt, .yaml, .json) containing a list of questions")
     demo_parser.add_argument("-p", "--preset", type=str, help="Preset question ID (e.g. ext_med_1)")
     demo_parser.add_argument("-a", "--anchor", type=int, default=1001, help="Anchor account number (default: 1001)")
     demo_parser.add_argument("-s", "--sf", type=int, default=10, help="Scale factor (default: 10)")
@@ -82,15 +83,26 @@ def main():
         print("-" * 80 + "\n")
 
     elif args.command == "demo":
-        from scripts.agents.live_trace_demo import trace_e2e, PRESET_QUESTIONS
-        if args.preset:
-            q_text = PRESET_QUESTIONS[args.preset]["question"].format(a=args.anchor)
+        from scripts.agents.live_trace_demo import trace_e2e, PRESET_QUESTIONS, load_questions_from_file
+        question_items = []
+        if args.file:
+            question_items = load_questions_from_file(args.file, default_anchor=args.anchor)
         elif args.question:
-            q_text = args.question
+            for q in args.question:
+                question_items.append({"question": q, "anchor": args.anchor})
+        elif args.preset:
+            q_text = PRESET_QUESTIONS[args.preset]["question"].format(a=args.anchor)
+            question_items.append({"question": q_text, "anchor": args.anchor})
         else:
-            q_text = "내가 송금한 계좌들의 실제 소유자(Person 또는 Company) 상위 5명은 누구인가요?"
-        
-        asyncio.run(trace_e2e(q_text, anchor_acct=args.anchor, sf=args.sf))
+            question_items.append({
+                "question": "내가 송금한 계좌들의 실제 소유자(Person 또는 Company) 상위 5명은 누구인가요?",
+                "anchor": args.anchor
+            })
+
+        for idx, item in enumerate(question_items, 1):
+            if len(question_items) > 1:
+                print(f"\n\033[95m\033[1m=== Running Question {idx}/{len(question_items)} ===\033[0m")
+            asyncio.run(trace_e2e(item["question"], anchor_acct=item["anchor"], sf=args.sf))
 
     else:
         parser.print_help()

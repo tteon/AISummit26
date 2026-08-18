@@ -289,9 +289,48 @@ If more_available=True, clearly state that results were truncated to top 5.
     print_banner("E2E TRACE EXECUTION COMPLETED SUCCESSFULLY", C_MAGENTA)
 
 
+def load_questions_from_file(file_path: str | Path, default_anchor: int = 1001) -> List[Dict[str, Any]]:
+    p = Path(file_path)
+    if not p.exists():
+        print(f"❌ Error: Question file '{file_path}' not found.")
+        sys.exit(1)
+
+    items = []
+    if p.suffix in (".yaml", ".yml"):
+        data = yaml.safe_load(p.read_text())
+        if isinstance(data, list):
+            for entry in data:
+                if isinstance(entry, dict):
+                    items.append({"question": entry.get("question", ""), "anchor": entry.get("anchor", default_anchor)})
+                elif isinstance(entry, str):
+                    items.append({"question": entry, "anchor": default_anchor})
+        elif isinstance(data, dict):
+            for entry in data.get("questions", []):
+                if isinstance(entry, dict):
+                    items.append({"question": entry.get("question", ""), "anchor": entry.get("anchor", default_anchor)})
+                elif isinstance(entry, str):
+                    items.append({"question": entry, "anchor": default_anchor})
+    elif p.suffix == ".json":
+        data = json.loads(p.read_text())
+        if isinstance(data, list):
+            for entry in data:
+                if isinstance(entry, dict):
+                    items.append({"question": entry.get("question", ""), "anchor": entry.get("anchor", default_anchor)})
+                elif isinstance(entry, str):
+                    items.append({"question": entry, "anchor": default_anchor})
+    else:
+        # Plain text (1 question per line)
+        for line in p.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#"):
+                items.append({"question": line, "anchor": default_anchor})
+    return items
+
+
 def main():
     parser = argparse.ArgumentParser(description="Real-Time Full E2E Pipeline Visualizer (SEOCHO + Live LLM)")
-    parser.add_argument("-q", "--question", type=str, help="Custom natural language user question to run")
+    parser.add_argument("-q", "--question", nargs="+", type=str, help="One or more custom natural language user questions to run")
+    parser.add_argument("-f", "--file", type=str, help="Path to file (.txt, .yaml, .json) containing a list of questions")
     parser.add_argument("-p", "--preset", type=str, choices=list(PRESET_QUESTIONS.keys()), help="Preset question ID (e.g. ext_med_1, ext_hard_1)")
     parser.add_argument("-a", "--anchor", type=int, default=1001, help="Anchor account number (default: 1001)")
     parser.add_argument("-s", "--sf", type=int, default=10, choices=[1, 10, 100], help="Scale factor dataset to query (default: 10)")
@@ -305,15 +344,27 @@ def main():
             print(f"  Question: \"{qdata['question'].format(a='<N>')}\"\n")
         return
 
-    if args.question:
-        q_text = args.question
+    question_items: List[Dict[str, Any]] = []
+
+    if args.file:
+        question_items = load_questions_from_file(args.file, default_anchor=args.anchor)
+    elif args.question:
+        for q in args.question:
+            question_items.append({"question": q, "anchor": args.anchor})
     elif args.preset:
         q_text = PRESET_QUESTIONS[args.preset]["question"].format(a=args.anchor)
+        question_items.append({"question": q_text, "anchor": args.anchor})
     else:
         # Default question
-        q_text = "내가 송금한 계좌들의 실제 소유자(Person 또는 Company) 상위 5명은 누구인가요?"
+        question_items.append({
+            "question": "내가 송금한 계좌들의 실제 소유자(Person 또는 Company) 상위 5명은 누구인가요?",
+            "anchor": args.anchor
+        })
 
-    asyncio.run(trace_e2e(q_text, anchor_acct=args.anchor, sf=args.sf))
+    for idx, item in enumerate(question_items, 1):
+        if len(question_items) > 1:
+            print(f"\n{C_MAGENTA}{C_BOLD}=== Running Question {idx}/{len(question_items)} ==={C_RESET}")
+        asyncio.run(trace_e2e(item["question"], anchor_acct=item["anchor"], sf=args.sf))
 
 
 if __name__ == "__main__":
