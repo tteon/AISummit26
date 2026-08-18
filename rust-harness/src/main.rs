@@ -46,8 +46,14 @@ const STREAM_Q: &str = "MATCH (a:Account {_workspace_id:$ws})-[t:TRANSFER]->\
                         t.channel_risk AS risk SKIP $skip LIMIT $limit";
 
 fn make_driver() -> Driver {
-    let address = Address::from(("127.0.0.1", 7687));
-    let auth = AuthToken::new_basic_auth("neo4j", "neo4jpassword");
+    // env-configurable so the same harness runs against dozerdb-h0 (17687/h0gatepass)
+    // for the SEOCHO bolt-rs I/O-plane organ measurement, not just the default.
+    let host = std::env::var("BOLT_HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
+    let port: u16 = std::env::var("BOLT_PORT").ok().and_then(|s| s.parse().ok()).unwrap_or(7687);
+    let user = std::env::var("BOLT_USER").unwrap_or_else(|_| "neo4j".to_string());
+    let pass = std::env::var("BOLT_PASS").unwrap_or_else(|_| "neo4jpassword".to_string());
+    let address = Address::from((host.as_str(), port));
+    let auth = AuthToken::new_basic_auth(&user, &pass);
     Driver::new(
         ConnectionConfig::new(address),
         DriverConfig::new().with_auth(Arc::new(auth)),

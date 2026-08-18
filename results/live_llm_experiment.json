@@ -1,0 +1,98 @@
+[
+  {
+    "id": "ext_easy_1",
+    "difficulty": "easy",
+    "arms": {
+      "sql_schema_only": {
+        "ok": true,
+        "latency_ms": 1842.771730000095,
+        "tokens": 604,
+        "query": "SELECT\n    COUNT(*) AS received_transfers,\n    COALESCE(SUM(amount), 0) AS total_received_amount\nFRO",
+        "result": "[(0, 0.0)]"
+      },
+      "sql_ontology": {
+        "ok": true,
+        "latency_ms": 710.736820999955,
+        "tokens": 480,
+        "query": "SELECT\n    COUNT(*)          AS transfer_count,\n    SUM(amount)       AS total_amount\nFROM transfer\n",
+        "result": "[(0, None)]"
+      },
+      "cypher_labels_only": {
+        "ok": true,
+        "latency_ms": 789.9017960007768,
+        "tokens": 432,
+        "query": "MATCH (a:Account {_workspace_id: 'ws_test', account_number: 1001})<- [r:TRANSFER]-()\nRETURN count(r)"
+      },
+      "cypher_ontology": {
+        "ok": true,
+        "latency_ms": 719.6550290009327,
+        "tokens": 493,
+        "query": "MATCH (a:Account {_workspace_id: 'ws_test', acct_no: 1001})<-[:TRANSFER {amount: r_amount}]-(:Accoun"
+      }
+    }
+  },
+  {
+    "id": "ext_med_2",
+    "difficulty": "medium",
+    "arms": {
+      "sql_schema_only": {
+        "ok": true,
+        "latency_ms": 1575.0562619996344,
+        "tokens": 1240,
+        "query": "WITH dest_accounts AS (\n    SELECT a.id\n    FROM transfer t\n    JOIN account a\n        ON a.acct_no ",
+        "result": "[('p_1',), ('p_2',)]"
+      },
+      "sql_ontology": {
+        "ok": false,
+        "latency_ms": 1415.8520479995786,
+        "tokens": 985,
+        "query": "SELECT owner_id\nFROM (\n    SELECT poa.person_id AS owner_id\n    FROM person_own_account poa\n    JOIN",
+        "result": "Conversion Error: Could not convert string 'acc_1' to INT64 "
+      },
+      "cypher_labels_only": {
+        "ok": true,
+        "latency_ms": 1876.6769000012573,
+        "tokens": 613,
+        "query": "MATCH (src:Account {_workspace_id: 'ws_test', account_number: 1001})-[:TRANSFER]->(dest:Account {_wo"
+      },
+      "cypher_ontology": {
+        "ok": true,
+        "latency_ms": 1298.5141150002164,
+        "tokens": 697,
+        "query": "MATCH (a:Account {acct_no: 1001, _workspace_id: 'ws_test'})\n      -[:TRANSFER]->(dest:Account {_work"
+      }
+    }
+  },
+  {
+    "id": "ext_hard_1",
+    "difficulty": "hard",
+    "arms": {
+      "sql_schema_only": {
+        "ok": true,
+        "latency_ms": 1525.1137349987403,
+        "tokens": 1212,
+        "query": "WITH first_hop AS (\n    SELECT DISTINCT t.to_account_no AS acct_no\n    FROM transfer t\n    JOIN acco",
+        "result": "[(3, 5)]"
+      },
+      "sql_ontology": {
+        "ok": true,
+        "latency_ms": 2319.9766790003196,
+        "tokens": 1055,
+        "query": "WITH first_hop AS (\n    SELECT DISTINCT to_account_no AS acct\n    FROM transfer\n    WHERE _workspace",
+        "result": "[(3, 5)]"
+      },
+      "cypher_labels_only": {
+        "ok": true,
+        "latency_ms": 2046.5871359992889,
+        "tokens": 675,
+        "query": "MATCH (start:Account {_workspace_id: 'ws_test', account_number: 1001})\nMATCH (start)-[:TRANSFER*1..2"
+      },
+      "cypher_ontology": {
+        "ok": true,
+        "latency_ms": 1849.3807329996343,
+        "tokens": 763,
+        "query": "MATCH (start:Account {acct_no: 1001, _workspace_id: 'ws_test'})\nMATCH (start)-[:TRANSFER*1..2]->(rea"
+      }
+    }
+  }
+]

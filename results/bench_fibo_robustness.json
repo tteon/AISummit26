@@ -1,0 +1,32 @@
+{
+  "schema_version": "seocho.fibo.robustness-benchmark.v1",
+  "scale_factor": 100,
+  "scenarios": [
+    {
+      "id": "FIBO_R1_UBO_Shell_Ring",
+      "name": "Multi-tier Ultimate Beneficial Owner (UBO) Smurfing",
+      "standard": "FIBO FBC (fibo-be-le-lp & fibo-be-le-cb)",
+      "sf100_duckdb_ms": 160.91,
+      "sql_joins": 7,
+      "cypher_hops": 4,
+      "llm_sql_chars": 0,
+      "llm_cypher_chars": 0,
+      "sample_rows": "[]",
+      "llm_sql_sample": "",
+      "llm_cypher_sample": ""
+    },
+    {
+      "id": "FIBO_R2_Loan_Guaranteed_Integration",
+      "name": "Collateralized Loan Proceeds Layering & Guarantee Circle",
+      "standard": "FIBO FBC (fibo-fbc-dae-dbt:ThirdPartyGuarantee)",
+      "sf100_duckdb_ms": 39.31,
+      "sql_joins": 4,
+      "cypher_hops": 4,
+      "llm_sql_chars": 613,
+      "llm_cypher_chars": 1065,
+      "sample_rows": "[]",
+      "llm_sql_sample": "SELECT DISTINCT\n    d.src AS loan_id,\n    t.src AS repayer_acct,\n    t.dst AS beneficiary_acct\nFROM   deposit   AS d\nJOI",
+      "llm_cypher_sample": "**Cypher \u2013 value\u2011path detection**\n\n```cypher\n// 1\ufe0f\u20e3  Loan proceeds are disbursed to a source account\nMATCH (lf:LoanFacil"
+    }
+  ]
+}

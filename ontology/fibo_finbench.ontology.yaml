@@ -1,0 +1,114 @@
+# FIBO-Aligned Financial AML Domain Ontology (EDM Council FBC & BP Mapping)
+# Maps LDBC-FinBench AML Graph to FIBO (Financial Industry Business Ontology) standards:
+# - FBC (Financial Business & Commerce): fibo-fbc-pas-caa (Accounts), fibo-fbc-dae-dbt (Loans/Guarantees)
+# - BP (Business Process & Context): fibo-bp-prc (Payment Execution, Correspondent Banking, Clearing)
+
+name: fibo_finbench_aml
+version: 2.0.0
+description: >
+  FIBO-aligned AML Graph Ontology modeling Multi-tier Corporate Control (UBO),
+  Payment Rails & Correspondent Banking (FIBO BP), and Collateralized Credit Facilities (FIBO FBC).
+
+nodes:
+  Account:
+    description: "FIBO FBC: Current / Deposit Account (fibo-fbc-pas-caa:CurrentAccount)"
+    properties:
+      id: { property_type: STRING, unique: true, required: true }
+      acct_no: { property_type: INTEGER, index: true, unique: true, required: true }
+      iban: { property_type: STRING }
+      risk_tier: { property_type: INTEGER, index: true }
+      flagged: { property_type: BOOLEAN, index: true }
+      _workspace_id: { property_type: STRING, required: true }
+
+  NaturalPerson:
+    description: "FIBO FBC: Individual Party / Ultimate Beneficial Owner (fibo-be-le-lp:NaturalPerson)"
+    properties:
+      id: { property_type: STRING, unique: true, required: true }
+      name: { property_type: STRING }
+      country: { property_type: STRING, index: true }
+      _workspace_id: { property_type: STRING, required: true }
+
+  LegalEntity:
+    description: "FIBO FBC: Incorporated Enterprise / Holding Company (fibo-be-le-cb:Corporation)"
+    properties:
+      id: { property_type: STRING, unique: true, required: true }
+      name: { property_type: STRING }
+      sector: { property_type: STRING }
+      jurisdiction: { property_type: STRING }
+      _workspace_id: { property_type: STRING, required: true }
+
+  LoanFacility:
+    description: "FIBO FBC: Credit Facility / Committed Loan (fibo-fbc-dae-dbt:CommittedCreditFacility)"
+    properties:
+      id: { property_type: STRING, unique: true, required: true }
+      principal: { property_type: FLOAT }
+      _workspace_id: { property_type: STRING, required: true }
+
+  PaymentRail:
+    description: "FIBO BP: Intermediary Clearing Rail / Channel (fibo-bp-prc:SettlementRail)"
+    properties:
+      code: { property_type: STRING, unique: true, required: true }
+      label: { property_type: STRING }
+      risk_weight: { property_type: FLOAT }
+      _workspace_id: { property_type: STRING, required: true }
+
+  LoginMedium:
+    description: "Digital Device / Authentication Medium (Shared Fingerprint)"
+    properties:
+      id: { property_type: STRING, unique: true, required: true }
+      type: { property_type: STRING }
+      risk_level: { property_type: INTEGER }
+      _workspace_id: { property_type: STRING, required: true }
+
+relationships:
+  TRANSFER:
+    source: Account
+    target: Account
+    cardinality: MANY_TO_MANY
+    description: "FIBO BP: Funds Transfer / Payment Execution (fibo-bp-prc:PaymentExecution)"
+    properties:
+      amount: { property_type: FLOAT, index: true }
+      ts: { property_type: TIMESTAMP, index: true }
+      channel_risk: { property_type: FLOAT }
+
+  BENEFICIAL_OWNER_OF:
+    source: NaturalPerson
+    target: Account
+    cardinality: ONE_TO_MANY
+    description: "FIBO FBC: Controlling Party / Direct or Indirect Account Ownership"
+
+  CONTROLS_ENTITY:
+    source: NaturalPerson
+    target: LegalEntity
+    cardinality: ONE_TO_MANY
+    description: "FIBO FBC: Corporate Ownership / Holding Stake (UBO Chain)"
+
+  SUBSIDIARY_OF:
+    source: LegalEntity
+    target: LegalEntity
+    cardinality: MANY_TO_ONE
+    description: "FIBO FBC: Multi-tier Corporate Hierarchy / Shell Company Chain"
+
+  GUARANTEES_PARTY:
+    source: NaturalPerson
+    target: NaturalPerson
+    cardinality: MANY_TO_MANY
+    description: "FIBO FBC: Credit Support / Third-Party Guarantee Agreement (fibo-fbc-dae-dbt:ThirdPartyGuarantee)"
+
+  DISBURSED_TO:
+    source: LoanFacility
+    target: Account
+    cardinality: ONE_TO_ONE
+    description: "FIBO FBC: Loan Proceeds Disbursement"
+
+  REPAID_BY:
+    source: Account
+    target: LoanFacility
+    cardinality: MANY_TO_ONE
+    description: "FIBO FBC: Debt Service / Loan Repayment Settlement"
+
+  AUTHENTICATES_TO:
+    source: LoginMedium
+    target: Account
+    cardinality: ONE_TO_MANY
+    description: "Device Sign-in Association"

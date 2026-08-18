@@ -1,0 +1,105 @@
+{
+  "schema_version": "seocho.finbench.scale-benchmark.v1",
+  "scale_factors": [
+    1,
+    10
+  ],
+  "scenarios": [
+    {
+      "id": "ext_easy_1",
+      "tier": "easy",
+      "name": "Incoming Transfers Aggregation",
+      "joins": 0,
+      "hops": 1,
+      "sf1_latency_ms": 0.724,
+      "sf10_latency_ms": 2.033,
+      "scale_latency_ratio": 2.81,
+      "sf1_result": "[(420, 10520230)]",
+      "sf10_result": "[(420, 10520230)]"
+    },
+    {
+      "id": "ext_easy_2",
+      "tier": "easy",
+      "name": "Outgoing Transfers Max Amount",
+      "joins": 0,
+      "hops": 1,
+      "sf1_latency_ms": 0.62,
+      "sf10_latency_ms": 2.019,
+      "scale_latency_ratio": 3.26,
+      "sf1_result": "[(1, 200000000)]",
+      "sf10_result": "[(1, 200000000)]"
+    },
+    {
+      "id": "int_easy_1",
+      "tier": "easy",
+      "name": "Account Risk Tier Distribution",
+      "joins": 0,
+      "hops": 0,
+      "sf1_latency_ms": 0.545,
+      "sf10_latency_ms": 0.54,
+      "scale_latency_ratio": 0.99,
+      "sf1_result": "[(2470, 713)]",
+      "sf10_result": "[(20470, 3000)]"
+    },
+    {
+      "id": "ext_med_1",
+      "tier": "medium",
+      "name": "High Channel Risk Inflow",
+      "joins": 0,
+      "hops": 1,
+      "sf1_latency_ms": 0.809,
+      "sf10_latency_ms": 2.156,
+      "scale_latency_ratio": 2.66,
+      "sf1_result": "[]",
+      "sf10_result": "[]"
+    },
+    {
+      "id": "ext_med_2",
+      "tier": "medium",
+      "name": "Beneficial Owner Lookup (2-Hop)",
+      "joins": 1,
+      "hops": 2,
+      "sf1_latency_ms": 1.344,
+      "sf10_latency_ms": 2.522,
+      "scale_latency_ratio": 1.88,
+      "sf1_result": "[]",
+      "sf10_result": "[]"
+    },
+    {
+      "id": "int_med_1",
+      "tier": "medium",
+      "name": "Direct Transfers Under Same Ownership (Triangle)",
+      "joins": 2,
+      "hops": 3,
+      "sf1_latency_ms": 2.864,
+      "sf10_latency_ms": 7.793,
+      "scale_latency_ratio": 2.72,
+      "sf1_result": "[(29,)]",
+      "sf10_result": "[(31,)]"
+    },
+    {
+      "id": "ext_hard_1",
+      "tier": "hard",
+      "name": "2-Hop Downstream Expansion (Recursive CTE)",
+      "joins": 3,
+      "hops": 2,
+      "sf1_latency_ms": 2.14,
+      "sf10_latency_ms": 3.866,
+      "scale_latency_ratio": 1.81,
+      "sf1_result": "[(1, 5)]",
+      "sf10_result": "[(1, 5)]"
+    },
+    {
+      "id": "int_hard_1",
+      "tier": "hard",
+      "name": "3-Layer Conjunction (Transfer + Guarantee + Device)",
+      "joins": 7,
+      "hops": 5,
+      "sf1_latency_ms": 9.372,
+      "sf10_latency_ms": 34.687,
+      "scale_latency_ratio": 3.7,
+      "sf1_result": "[(9000601, 9000602)]",
+      "sf10_result": "[(9000601, 9000602)]"
+    }
+  ]
+}

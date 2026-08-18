@@ -1,0 +1,20 @@
+[
+  {
+    "test_id": "int_hard_1 (Finding 2: Reciprocal Trap)",
+    "base_cypher": "// Find account pairs with a transfer, owners that mutually guarantee each other, and a common login device\nMATCH (a1:Account)-[:TRANSFER]-(a2:Account)\nWHERE a1._workspace_id = 'ws_test' \n  AND a2._workspace_id = 'ws_test'\n  AND id(a1) < id(a2)          // avoid duplicate pairs\n\n// owners must be persons (different parties)\nMATCH (p1:Person)-[:OWN]->(a1)\nWHERE p1._workspace_id = 'ws_test'\nMATCH (p2:Person)-[:OWN]->(a2)\nWHERE p2._workspace_id = 'ws_test' \n  AND p1 <> p2\n\n// mutual guarantee between the owners\nMATCH (p1)-[:GUARANTEE]->(p2)\nMATCH (p2)-[:GUARANTEE]->(p1)\n\n// same login device (Medium) signed into both accounts\nMATCH (m:Medium)-[:SIGN_IN]->(a1)\nWHERE m._workspace_id = 'ws_test'\nMATCH (m)-[:SIGN_IN]->(a2)\n\nRETURN \n    a1.acct_no   AS account1,\n    a2.acct_no   AS account2,\n    p1.id        AS owner1_id,\n    p2.id        AS owner2_id,\n    m.type       AS device_type\nORDER BY account1, account2;",
+    "optimized_cypher": "```cypher\nMATCH (a:Account {_workspace_id: 'ws_test'})-[:TRANSFER]-(b:Account {_workspace_id: 'ws_test'})\nWHERE a.acct_no < b.acct_no                                   // avoid duplicate pairs\nMATCH (owner1)-[:OWN]->(a) WHERE owner1._workspace_id = 'ws_test'\nMATCH (owner",
+    "pruned_cypher": "```cypher\nMATCH (a {_workspace_id: 'ws_test'})-[:TRANSFER]-(b:Account {_workspace_id: 'ws_test'})\nWHERE a.acct_no < b.acct_no                                   // avoid duplicate pairs\nMATCH (owner1)-[:OWN]->(a) WHERE owner1._workspace_id = 'ws_test'\nMATCH (owner",
+    "labels_pruned_count": 1,
+    "latency_base_ms": 3628.5,
+    "latency_opt_ms": 2568.7
+  },
+  {
+    "test_id": "ext_hard_1 (Finding 1: Power-law Hub Expansion)",
+    "base_cypher": "MATCH (start:Account {acct_no: 1001, _workspace_id: 'ws_test'})\nMATCH (start)-[:TRANSFER*1..2]->(reach:Account {_workspace_id: 'ws_test'})\nWITH DISTINCT reach\nRETURN count(reach) AS reachable_accounts,\n       max(reach.risk_tier) AS max_risk_tier;",
+    "optimized_cypher": "// Workspace filter and hub\u2011defense indexed start node\nMATCH (a:Account {_workspace_id: 'ws_test'})\nUSING INDEX a:Account(acct_no)\nWHERE a.acct_no = 1001\n\n// Follow outgoing TRANSFER relationships up to two hops\nMATCH (a)-[:TRANSFER*1..2]->(b:Account {_workspace_id: 'ws_test'})\n\n// Aggregate results\nRETURN \n    count(DISTINCT b)        AS reachable_accounts,\n    max(b.risk_tier)         AS max_risk_tier;",
+    "pruned_cypher": "// Workspace filter and hub\u2011defense indexed start node\nMATCH (a:Account {_workspace_id: 'ws_test'})\nUSING INDEX a:Account(acct_no)\nWHERE a.acct_no = 1001\n\n// Follow outgoing TRANSFER relationships up to two hops\nMATCH (a)-[:TRANSFER*1..2]->(b {_workspace_id: 'ws_test'})\n\n// Aggregate results\nRETURN \n    count(DISTINCT b)        AS reachable_accounts,\n    max(b.risk_tier)         AS max_risk_tier;",
+    "labels_pruned_count": 1,
+    "latency_base_ms": 1062.5,
+    "latency_opt_ms": 1017.4
+  }
+]

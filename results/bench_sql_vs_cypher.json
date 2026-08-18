@@ -1,0 +1,179 @@
+{
+  "schema_version": "seocho.finbench.sql-vs-cypher.v1",
+  "benchmark_arms": {
+    "sql_schema_only": {
+      "title": "SQL: Plain Relational DDL",
+      "description": "Standard CREATE TABLE definitions without semantic comments or relationship paths.",
+      "sample": "CREATE TABLE transfer (id VARCHAR, from_account_no BIGINT, to_account_no BIGINT, amount DOUBLE, channel_risk DOUBLE, _workspace_id VARCHAR);"
+    },
+    "sql_ontology": {
+      "title": "SQL: Annotated DDL with Foreign Keys & Semantics",
+      "description": "Relational DDL augmented with Foreign Key comments, entity roles, and cardinality notes.",
+      "sample": "-- transfer connects from_account_no (Account) -> to_account_no (Account). channel_risk indicates AML risk of the channel used."
+    },
+    "cypher_labels_only": {
+      "title": "Cypher: Bare Labels & Relationship Types",
+      "description": "Node labels (Account, Person, etc.) and relationship types (TRANSFER, OWN) with no direction or property placement.",
+      "sample": "Node labels: Account, Person, Company, Channel. Relationships: TRANSFER, OWN, GUARANTEE."
+    },
+    "cypher_ontology": {
+      "title": "Cypher: Full SEOCHO Graph Ontology",
+      "description": "Explicit endpoint roles, directional specifications (Person -[:OWN]-> Account), property ownership, and degree distribution.",
+      "sample": "(:Account)-[:TRANSFER {amount, channel_risk}]->(:Account), (:Person)-[:OWN]->(:Account), (:Person)-[:GUARANTEE]->(:Person)."
+    }
+  },
+  "scenarios": [
+    {
+      "id": "ext_easy_1",
+      "difficulty": "easy",
+      "pattern_type": "Single-table aggregation",
+      "sql_joins": 0,
+      "cypher_hops": 1,
+      "sql_len_chars": 118,
+      "cypher_len_chars": 137,
+      "duckdb_status": "\u2705 OK",
+      "sample_result": "[(0, 0.0)]"
+    },
+    {
+      "id": "ext_easy_2",
+      "difficulty": "easy",
+      "pattern_type": "Single-table aggregation",
+      "sql_joins": 0,
+      "cypher_hops": 1,
+      "sql_len_chars": 122,
+      "cypher_len_chars": 139,
+      "duckdb_status": "\u2705 OK",
+      "sample_result": "[(2, 1500000.0)]"
+    },
+    {
+      "id": "int_easy_1",
+      "difficulty": "easy",
+      "pattern_type": "Single-table predicate filter",
+      "sql_joins": 0,
+      "cypher_hops": 0,
+      "sql_len_chars": 121,
+      "cypher_len_chars": 122,
+      "duckdb_status": "\u2705 OK",
+      "sample_result": "[(4, 2)]"
+    },
+    {
+      "id": "int_easy_2",
+      "difficulty": "easy",
+      "pattern_type": "1-Join aggregation",
+      "sql_joins": 1,
+      "cypher_hops": 1,
+      "sql_len_chars": 183,
+      "cypher_len_chars": 161,
+      "duckdb_status": "\u2705 OK",
+      "sample_result": "[('CH_ONLINE', 150), ('CH_CRYPTO', 12)]"
+    },
+    {
+      "id": "ext_med_1",
+      "difficulty": "medium",
+      "pattern_type": "Referential ambiguity (channel_risk placement)",
+      "sql_joins": 1,
+      "cypher_hops": 1,
+      "sql_len_chars": 196,
+      "cypher_len_chars": 173,
+      "duckdb_status": "\u2705 OK",
+      "sample_result": "[]"
+    },
+    {
+      "id": "ext_med_2",
+      "difficulty": "medium",
+      "pattern_type": "2-hop traversal with polymorphic owner UNION",
+      "sql_joins": 3,
+      "cypher_hops": 2,
+      "sql_len_chars": 373,
+      "cypher_len_chars": 157,
+      "duckdb_status": "\u2705 OK",
+      "sample_result": "[('p_1',), ('p_2',)]"
+    },
+    {
+      "id": "int_med_1",
+      "difficulty": "medium",
+      "pattern_type": "Triangle motif (Common ownership transfer)",
+      "sql_joins": 4,
+      "cypher_hops": 3,
+      "sql_len_chars": 374,
+      "cypher_len_chars": 187,
+      "duckdb_status": "\u2705 OK",
+      "sample_result": "[(1,)]"
+    },
+    {
+      "id": "int_med_2",
+      "difficulty": "medium",
+      "pattern_type": "Fan-in aggregation with HAVING",
+      "sql_joins": 0,
+      "cypher_hops": 1,
+      "sql_len_chars": 158,
+      "cypher_len_chars": 176,
+      "duckdb_status": "\u2705 OK",
+      "sample_result": "[]"
+    },
+    {
+      "id": "ext_hard_1",
+      "difficulty": "hard",
+      "pattern_type": "Variable-length expansion (*1..2) / Recursive CTE",
+      "sql_joins": 3,
+      "cypher_hops": 2,
+      "sql_len_chars": 471,
+      "cypher_len_chars": 164,
+      "duckdb_status": "\u2705 OK",
+      "sample_result": "[(3, 5)]"
+    },
+    {
+      "id": "ext_hard_2",
+      "difficulty": "hard",
+      "pattern_type": "Upstream variable-length expansion (*1..2) / Recursive CTE",
+      "sql_joins": 2,
+      "cypher_hops": 2,
+      "sql_len_chars": 355,
+      "cypher_len_chars": 127,
+      "duckdb_status": "\u2705 OK",
+      "sample_result": "[(0,)]"
+    },
+    {
+      "id": "int_hard_1",
+      "difficulty": "hard",
+      "pattern_type": "3-layer conjunction (Transfer + Guarantee + Device) / 7 Table JOINs",
+      "sql_joins": 7,
+      "cypher_hops": 5,
+      "sql_len_chars": 617,
+      "cypher_len_chars": 376,
+      "duckdb_status": "\u2705 OK",
+      "sample_result": "[(1001, 1002)]"
+    },
+    {
+      "id": "int_hard_2",
+      "difficulty": "hard",
+      "pattern_type": "Nominee Structuring (\ucc28\uba85\uacc4\uc88c \uc1a1\uae08\ub9dd \uc9d1\uacc4)",
+      "sql_joins": 2,
+      "cypher_hops": 3,
+      "sql_len_chars": 382,
+      "cypher_len_chars": 333,
+      "duckdb_status": "\u2705 OK",
+      "sample_result": "[('p_1', 1, 1, 1500000.0)]"
+    }
+  ],
+  "tier_summary": {
+    "easy": {
+      "avg_sql_joins": 0.25,
+      "avg_cypher_hops": 0.75,
+      "avg_sql_chars": 136.0,
+      "avg_cypher_chars": 139.75
+    },
+    "medium": {
+      "avg_sql_joins": 2.0,
+      "avg_cypher_hops": 1.75,
+      "avg_sql_chars": 275.25,
+      "avg_cypher_chars": 173.25
+    },
+    "hard": {
+      "avg_sql_joins": 3.5,
+      "avg_cypher_hops": 3.0,
+      "avg_sql_chars": 456.25,
+      "avg_cypher_chars": 250.0
+    }
+  }
+}
