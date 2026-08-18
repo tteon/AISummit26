@@ -15,7 +15,7 @@ from pathlib import Path
 
 import yaml
 
-ONTOLOGY = Path(__file__).resolve().parent.parent / "ontology" / "finbench.ontology.yaml"
+ONTOLOGY = Path(__file__).resolve().parents[2] / "ontology" / "finbench.ontology.yaml"
 
 # A query shaped exactly as the experiment's rules demand: workspace scope on every node
 # pattern, anchor bound to $a, LIMIT $limit. The guardrail must wave it through.

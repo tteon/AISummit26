@@ -51,7 +51,7 @@ def _cpu_model() -> str | None:
 
 
 def manifest(db_container: str = "graphrag-neo4j", **extra: Any) -> Dict[str, Any]:
-    repo = Path(__file__).resolve().parent.parent
+    repo = Path(__file__).resolve().parents[2]
     return {
         "timestamp_utc": datetime.datetime.now(datetime.timezone.utc)
                                           .isoformat(timespec="seconds"),

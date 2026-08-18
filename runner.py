@@ -27,7 +27,10 @@ from pathlib import Path
 # Add scripts and repo root to sys.path for backward-compatible module resolution
 REPO_ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / "scripts"))
+for sub in ["scripts", "scripts/benchmarks", "scripts/agents", "scripts/analysis", "scripts/data", "scripts/plotting", "scripts/smoke"]:
+    p = str(REPO_ROOT / sub)
+    if p not in sys.path:
+        sys.path.insert(0, p)
 
 from harness.config import BenchmarkConfig
 from harness.runner import BenchmarkRunner
@@ -79,7 +82,7 @@ def main():
         print("-" * 80 + "\n")
 
     elif args.command == "demo":
-        from scripts.live_trace_demo import trace_e2e, PRESET_QUESTIONS
+        from scripts.agents.live_trace_demo import trace_e2e, PRESET_QUESTIONS
         if args.preset:
             q_text = PRESET_QUESTIONS[args.preset]["question"].format(a=args.anchor)
         elif args.question:

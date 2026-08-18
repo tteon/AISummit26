@@ -27,6 +27,14 @@ C_RESET = "\033[0m"
 class BenchmarkRunner:
     def __init__(self, config: BenchmarkConfig):
         self.config = config
+        
+        # Ensure categorized scripts subdirectories are in sys.path
+        repo_root = Path(__file__).resolve().parent.parent
+        for sub in ["scripts", "scripts/benchmarks", "scripts/agents", "scripts/analysis", "scripts/data", "scripts/plotting", "scripts/smoke"]:
+            p = str(repo_root / sub)
+            if p not in sys.path:
+                sys.path.insert(0, p)
+
         self.client = AsyncOpenAI(
             api_key=self.config.model.api_key,
             base_url=self.config.model.base_url

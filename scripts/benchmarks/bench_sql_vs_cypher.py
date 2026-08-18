@@ -469,7 +469,7 @@ def run_benchmark():
         print(f"{diff.upper():<8} | {avg_sql_j:<14.1f} | {avg_cyp_h:<15.1f} | {ratio:.2f}x ({avg_sql_len:.0f} vs {avg_cyp_len:.0f} chars)")
 
     # Save structured results
-    out_path = Path(__file__).resolve().parent.parent / "results" / "bench_sql_vs_cypher.json"
+    out_path = Path(__file__).resolve().parents[2] / "results" / "bench_sql_vs_cypher.json"
     out_data = {
         "schema_version": "seocho.finbench.sql-vs-cypher.v1",
         "benchmark_arms": PROMPT_ARMS,

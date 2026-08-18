@@ -19,7 +19,7 @@ import duckdb
 from openai import AsyncOpenAI
 
 # Load MARA_API_KEY from .env
-ENV_FILE = Path(__file__).resolve().parent.parent / ".env"
+ENV_FILE = Path(__file__).resolve().parents[2] / ".env"
 MARA_KEY = os.getenv("MARA_API_KEY")
 if not MARA_KEY and ENV_FILE.exists():
     for line in ENV_FILE.read_text().splitlines():
@@ -217,7 +217,7 @@ async def main():
         res = await run_live_episode(client, con, q)
         results.append(res)
 
-    out_file = Path(__file__).resolve().parent.parent / "results" / "live_llm_experiment.json"
+    out_file = Path(__file__).resolve().parents[2] / "results" / "live_llm_experiment.json"
     out_file.write_text(json.dumps(results, indent=2))
     print("\n" + "=" * 85)
     print(f"✅ Live LLM Experiment Completed! Saved results to {out_file}")

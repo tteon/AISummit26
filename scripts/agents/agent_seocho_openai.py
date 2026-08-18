@@ -39,7 +39,7 @@ trace.set_tracer_provider(tracer_provider)
 tracer = trace.get_tracer("seocho.agents.sdk", "0.2.0")
 
 # --- Configurations ---
-WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
+WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
 ONTOLOGY_FILE = WORKSPACE_ROOT / "ontology" / "finbench.ontology.yaml"
 ROW_CAP = 50
 PROBE_TIMEOUT_S = 2.0

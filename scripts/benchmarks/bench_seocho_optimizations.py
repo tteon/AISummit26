@@ -25,7 +25,7 @@ from seocho.prompt_strategy import QueryStrategy
 import duckdb
 
 # Load API key
-ENV_FILE = Path(__file__).resolve().parent.parent / ".env"
+ENV_FILE = Path(__file__).resolve().parents[2] / ".env"
 MARA_KEY = os.getenv("MARA_API_KEY")
 if not MARA_KEY and ENV_FILE.exists():
     for line in ENV_FILE.read_text().splitlines():
@@ -35,7 +35,7 @@ if not MARA_KEY and ENV_FILE.exists():
 MARA_BASE_URL = os.getenv("MARA_BASE_URL", "https://api.cloud.mara.com/v1")
 MODEL_NAME = "gpt-oss-120b"
 
-ONTOLOGY_PATH = Path(__file__).resolve().parent.parent / "ontology" / "finbench.ontology.yaml"
+ONTOLOGY_PATH = Path(__file__).resolve().parents[2] / "ontology" / "finbench.ontology.yaml"
 ontology = Ontology.from_dict(yaml.safe_load(ONTOLOGY_PATH.read_text()))
 
 # ------------------------------------------------------------------------------
@@ -183,7 +183,7 @@ async def run_optimization_experiment():
             "latency_opt_ms": round(ms_opt, 1),
         })
 
-    out_file = Path(__file__).resolve().parent.parent / "results" / "bench_seocho_optimizations.json"
+    out_file = Path(__file__).resolve().parents[2] / "results" / "bench_seocho_optimizations.json"
     out_file.write_text(json.dumps(results, indent=2))
     print("\n" + "=" * 95)
     print(f"✅ SEOCHO Optimizations Experiment Complete! Saved results to {out_file}")

@@ -19,7 +19,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from runmeta import manifest
 
-REPO = Path(__file__).resolve().parent.parent
+REPO = Path(__file__).resolve().parents[2]
 BIN = REPO / "rust-harness/target/release/rust-harness"
 
 SWEEPS: dict[str, list[list]] = {

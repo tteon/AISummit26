@@ -39,7 +39,7 @@ C_RED = "\033[91m"
 C_BOLD = "\033[1m"
 C_RESET = "\033[0m"
 
-WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
+WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
 ONTOLOGY_FILE = WORKSPACE_ROOT / "ontology" / "finbench.ontology.yaml"
 
 # Load MARA API Key

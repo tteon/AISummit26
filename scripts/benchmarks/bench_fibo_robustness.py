@@ -25,7 +25,7 @@ import yaml
 # Import SEOCHO
 from seocho.ontology import Ontology
 
-WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
+WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
 SF100_DIR = WORKSPACE_ROOT / "outputs" / "finbench" / "sf100"
 FIBO_ONTOLOGY_FILE = WORKSPACE_ROOT / "ontology" / "fibo_finbench.ontology.yaml"
 
