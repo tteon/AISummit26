@@ -1,0 +1,13 @@
+<svg width="700" height="300" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" style="background:#0d1117; font-family:-apple-system,sans-serif;">
+  <text x="30" y="35" fill="#f0f6fc" font-size="16" font-weight="600">Benchmark Execution Latency by Suite</text>
+  <text x="30" y="55" fill="#8b949e" font-size="12">Total suite runtime duration (seconds)</text>
+  <text x="30" y="106" fill="#c9d1d9" font-size="13" font-weight="500">sql_vs_cypher</text>
+  <rect x="200" y="90" width="4" height="22" rx="4" fill="#10b981" />
+  <text x="210.0" y="106" fill="#f0f6fc" font-size="12" font-weight="bold">0.00s</text>
+  <text x="30" y="161" fill="#c9d1d9" font-size="13" font-weight="500">seocho_optimizations</text>
+  <rect x="200" y="145" width="400.0" height="22" rx="4" fill="#10b981" />
+  <text x="610.0" y="161" fill="#f0f6fc" font-size="12" font-weight="bold">2.15s</text>
+  <text x="30" y="216" fill="#c9d1d9" font-size="13" font-weight="500">fibo_robustness</text>
+  <rect x="200" y="200" width="4" height="22" rx="4" fill="#10b981" />
+  <text x="211.86046511627907" y="216" fill="#f0f6fc" font-size="12" font-weight="bold">0.01s</text>
+</svg>

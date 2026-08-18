@@ -1,4 +1,4 @@
-"""Unified Benchmark Runner."""
+"""Unified Benchmark Runner with Structured Provenance, Hardware/Software Tracking, and Automated Plots."""
 from __future__ import annotations
 
 import os
@@ -13,6 +13,8 @@ from openai import AsyncOpenAI
 import yaml
 
 from harness.config import BenchmarkConfig, SuiteConfig
+from harness.environment import get_hardware_info, get_software_info
+from harness.plotter import generate_sql_vs_cypher_plot, generate_latency_plot
 
 # ANSI Colors
 C_CYAN = "\033[96m"
@@ -27,11 +29,11 @@ C_RESET = "\033[0m"
 class BenchmarkRunner:
     def __init__(self, config: BenchmarkConfig):
         self.config = config
+        self.repo_root = Path(__file__).resolve().parent.parent
         
         # Ensure categorized scripts subdirectories are in sys.path
-        repo_root = Path(__file__).resolve().parent.parent
         for sub in ["scripts", "scripts/benchmarks", "scripts/agents", "scripts/analysis", "scripts/data", "scripts/plotting", "scripts/smoke"]:
-            p = str(repo_root / sub)
+            p = str(self.repo_root / sub)
             if p not in sys.path:
                 sys.path.insert(0, p)
 
@@ -39,8 +41,9 @@ class BenchmarkRunner:
             api_key=self.config.model.api_key,
             base_url=self.config.model.base_url
         )
-        self.results_dir = Path(self.config.output.results_dir)
-        self.results_dir.mkdir(parents=True, exist_ok=True)
+        self.results_root = Path(self.config.output.results_dir)
+        self.runs_root = self.results_root / "runs"
+        self.runs_root.mkdir(parents=True, exist_ok=True)
 
     def print_banner(self, title: str):
         print(f"\n{C_MAGENTA}{C_BOLD}{'='*90}")
@@ -48,7 +51,22 @@ class BenchmarkRunner:
         print(f"{'='*90}{C_RESET}")
 
     async def run_all(self, target_suite: str | None = None) -> Dict[str, Any]:
+        timestamp = time.strftime("%Y-%m-%d_%H%M%S")
+        run_name = f"{timestamp}_{self.config.name}"
+        run_dir = self.runs_root / run_name
+        plots_dir = run_dir / "plots"
+        plots_dir.mkdir(parents=True, exist_ok=True)
+
         self.print_banner(f"Running Benchmark Suite: {self.config.name} (v{self.config.version})")
+        print(f"📁 Output Directory: {C_CYAN}{run_dir}{C_RESET}")
+
+        # 1. Collect Environment Metadata
+        hw_info = get_hardware_info()
+        sw_info = get_software_info(self.repo_root)
+
+        (run_dir / "hardware.json").write_text(json.dumps(hw_info, indent=2))
+        (run_dir / "software.json").write_text(json.dumps(sw_info, indent=2))
+
         suite_results = {}
 
         for suite in self.config.suites:
@@ -70,7 +88,7 @@ class BenchmarkRunner:
                 res = await self._run_fibo_robustness(suite)
             else:
                 print(f"  ⚠️ Unknown suite type: {suite.name}, skipping.")
-                res = {"status": "skipped"}
+                res = [{"status": "skipped"}]
 
             duration = time.perf_counter() - t0
             suite_results[suite.name] = {
@@ -78,16 +96,30 @@ class BenchmarkRunner:
                 "data": res
             }
 
-        # Save unified report
-        timestamp = time.strftime("%Y%m%d_%H%M%S")
-        report_file = self.results_dir / f"benchmark_run_{timestamp}.json"
-        report_file.write_text(json.dumps(suite_results, indent=2))
-        print(f"\n{C_GREEN}{C_BOLD}✅ All suites completed! Saved unified results to: {report_file}{C_RESET}")
+        # 2. Save Raw Metrics JSON
+        (run_dir / "metrics.json").write_text(json.dumps(suite_results, indent=2))
 
-        if self.config.output.generate_markdown_report:
-            md_file = self.results_dir / f"benchmark_report_{timestamp}.md"
-            self._generate_markdown_summary(suite_results, md_file)
-            print(f"{C_GREEN}{C_BOLD}📄 Markdown summary generated: {md_file}{C_RESET}")
+        # 3. Generate Standalone Visual Plots
+        if "sql_vs_cypher" in suite_results:
+            generate_sql_vs_cypher_plot(suite_results["sql_vs_cypher"]["data"], plots_dir / "sql_vs_cypher_complexity.svg")
+        generate_latency_plot(suite_results, plots_dir / "suite_latency.svg")
+
+        # 4. Generate Comprehensive Markdown Summary
+        summary_file = run_dir / "summary.md"
+        self._generate_markdown_summary(suite_results, hw_info, sw_info, run_dir, summary_file)
+
+        # 5. Maintain LATEST Pointer
+        latest_file = self.runs_root / "LATEST"
+        latest_file.write_text(f"{run_dir.resolve()}\n")
+
+        print(f"\n{C_GREEN}{C_BOLD}✅ Benchmark Run Completed Successfully!{C_RESET}")
+        print(f"📦 Run Artifacts Directory : {C_CYAN}{run_dir}{C_RESET}")
+        print(f"  ├─ 💻 hardware.json      : CPU ({hw_info.get('cpu_logical_cores')} cores), RAM ({hw_info.get('memory_total_gb')} GB)")
+        print(f"  ├─ 📦 software.json      : Python {sw_info.get('python_version')}, Commit {sw_info.get('git_commit', '')[:7]}")
+        print(f"  ├─ 📊 metrics.json       : Detailed numerical evaluation records")
+        print(f"  ├─ 📈 plots/             : SVG charts (sql_vs_cypher_complexity.svg, suite_latency.svg)")
+        print(f"  └─ 📄 summary.md         : Comprehensive human-readable report")
+        print(f"\n💡 View latest report directly with: {C_YELLOW}cat {summary_file}{C_RESET}\n")
 
         return suite_results
 
@@ -103,7 +135,7 @@ class BenchmarkRunner:
             sql_joins = case["sql_ref"].count("JOIN")
             cypher_hops = case["cypher_ref"].count("->") + case["cypher_ref"].count("-[:")
             records.append({
-                "id": case["id"],
+                "question_id": case["id"],
                 "tier": case["difficulty"],
                 "sql_joins": sql_joins,
                 "cypher_hops": cypher_hops,
@@ -170,7 +202,7 @@ class BenchmarkRunner:
             ms = (time.perf_counter() - t0) * 1000
 
             records.append({
-                "scenario": "SF100_UBO_Transfer_Join",
+                "scenario": f"SF{scale}_UBO_Transfer_Join",
                 "scale": scale,
                 "execution_ms": round(ms, 2),
                 "records_matched": rows[0] if rows else 0
@@ -179,19 +211,46 @@ class BenchmarkRunner:
 
         return records
 
-    def _generate_markdown_summary(self, suite_results: Dict[str, Any], out_path: Path):
+    def _generate_markdown_summary(
+        self,
+        suite_results: Dict[str, Any],
+        hw: Dict[str, Any],
+        sw: Dict[str, Any],
+        run_dir: Path,
+        out_path: Path
+    ):
         lines = [
-            f"# Benchmark Evaluation Report: {self.config.name}",
-            f"**Version**: {self.config.version} | **Model**: `{self.config.model.model_name}` | **Provider**: `{self.config.model.provider}`\n",
-            "## Summary of Executed Suites\n",
-            "| Suite Name | Execution Time (s) | Status |",
-            "|:---|:---:|:---:|"
+            f"# 🚀 Benchmark Run Report: {self.config.name}",
+            f"\n> **Generated At**: `{sw.get('timestamp_utc')}` | **Suite Version**: `{self.config.version}`\n",
+            "## 💻 Execution Environment Provenance\n",
+            "### Hardware Specifications",
+            f"- **CPU**: {hw.get('cpu_model')} ({hw.get('cpu_logical_cores')} Cores)",
+            f"- **Memory**: {hw.get('memory_available_gb')} GB Available / {hw.get('memory_total_gb')} GB Total",
+            f"- **Platform**: `{hw.get('platform')}` ({hw.get('architecture')})",
+            f"- **GPU**: `{hw.get('gpu')}`\n",
+            "### Software & Dependency Versions",
+            f"- **Python**: `{sw.get('python_version')}` (`{sw.get('virtual_env')}`)",
+            f"- **Git Commit**: `{sw.get('git_commit', 'N/A')}` (Branch: `{sw.get('git_branch')}`, Dirty: `{sw.get('git_dirty')}`)",
+            f"- **Key Packages**: `seocho={sw['packages'].get('seocho')}`, `duckdb={sw['packages'].get('duckdb')}`, `openai={sw['packages'].get('openai')}`",
+            f"- **Target Model**: `{self.config.model.model_name}` via `{self.config.model.provider}`\n",
+            "---\n",
+            "## 📊 Executed Benchmark Suites\n",
+            "| Suite Name | Execution Time (s) | Records / Questions | Status |",
+            "|:---|:---:|:---:|:---:|"
         ]
+
         for sname, sdata in suite_results.items():
-            lines.append(f"| `{sname}` | {sdata.get('duration_seconds', 0)}s | ✅ PASSED |")
+            cnt = len(sdata.get("data", []))
+            dur = sdata.get("duration_seconds", 0)
+            lines.append(f"| `{sname}` | **{dur}s** | {cnt} items | ✅ PASSED |")
 
         lines.append("\n---\n")
-        lines.append("## Detailed Results\n")
+        lines.append("## 📈 Generated Visualizations\n")
+        lines.append("- [Structural Complexity Plot (SQL vs Cypher)](plots/sql_vs_cypher_complexity.svg)")
+        lines.append("- [Suite Latency Breakdown Plot](plots/suite_latency.svg)\n")
+
+        lines.append("---\n")
+        lines.append("## 📝 Detailed Suite Metrics\n")
         for sname, sdata in suite_results.items():
             lines.append(f"### Suite: `{sname}`")
             lines.append("```json")

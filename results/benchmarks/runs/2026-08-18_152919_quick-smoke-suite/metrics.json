@@ -3,7 +3,7 @@
     "duration_seconds": 0.0,
     "data": [
       {
-        "id": "ext_easy_1",
+        "question_id": "ext_easy_1",
         "tier": "easy",
         "sql_joins": 0,
         "cypher_hops": 0,
@@ -12,7 +12,7 @@
         "ratio": 0.86
       },
       {
-        "id": "ext_med_1",
+        "question_id": "ext_med_1",
         "tier": "medium",
         "sql_joins": 1,
         "cypher_hops": 1,
@@ -23,11 +23,11 @@
     ]
   },
   "seocho_optimizations": {
-    "duration_seconds": 2.22,
+    "duration_seconds": 2.15,
     "data": [
       {
         "question_id": "ext_hard_1",
-        "latency_ms": 1939.8,
+        "latency_ms": 1860.4,
         "pruned_labels_count": 1,
         "has_using_index": true
       }
@@ -37,9 +37,9 @@
     "duration_seconds": 0.01,
     "data": [
       {
-        "scenario": "SF100_UBO_Transfer_Join",
+        "scenario": "SF10_UBO_Transfer_Join",
         "scale": 10,
-        "execution_ms": 3.58,
+        "execution_ms": 3.69,
         "records_matched": 100458
       }
     ]

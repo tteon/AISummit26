@@ -1,0 +1,10 @@
+{
+  "hostname": "hardy-lab",
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.35",
+  "architecture": "x86_64",
+  "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+  "cpu_logical_cores": 16,
+  "memory_total_gb": 62.55,
+  "memory_available_gb": 58.0,
+  "gpu": "NVIDIA GeForce RTX 3070, 8192 MiB, 595.84"
+}
