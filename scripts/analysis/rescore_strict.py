@@ -19,7 +19,7 @@ the answers and the gold are on the record, so this is arithmetic over a JSON fi
    The distinction is the point: an answer that looks right and is not is a different
    operational problem from an empty result, and in an AML setting a much worse one.
 
-  python scripts/rescore_strict.py   # -> results/rescore_strict.json
+  python scripts/rescore_strict.py   # -> results/analysis/rescore_strict.json
 """
 from __future__ import annotations
 
@@ -91,8 +91,8 @@ def list_f1(gold_list, answer):
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("--episodes", default="results/agent_interaction.json")
-    p.add_argument("--out", default="results/rescore_strict.json")
+    p.add_argument("--episodes", default="results/episodes/agent_interaction.json")
+    p.add_argument("--out", default="results/analysis/rescore_strict.json")
     args = p.parse_args()
 
     eps = json.loads(Path(args.episodes).read_text())["episodes"]

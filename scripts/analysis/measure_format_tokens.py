@@ -4,7 +4,7 @@
 The 9,017-vs-5,211 numbers were first measured interactively; a chart may not rest on a
 number that exists only in a conversation, so this script regenerates the measurement from
 its exact specification (seed 7, 200 rows of the graph's 4-column shape, o200k) and writes
-it to results/bench/ with a machine manifest.
+it to results/interface/ with a machine manifest.
 
   python scripts/measure_format_tokens.py
 """
@@ -58,7 +58,7 @@ def main() -> None:
                     + "\n".join("  " + ",".join(str(r[c]) for c in cols) for r in rows)
                     + "\nmore_available: true"),
     }
-    out = Path("results/bench/format_tokens.json")
+    out = Path("results/interface/format_tokens.json")
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({
         "manifest": manifest(tokenizer="o200k_base", seed=SEED, n_rows=N_ROWS,

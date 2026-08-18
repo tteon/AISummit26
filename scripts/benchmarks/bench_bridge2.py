@@ -75,7 +75,7 @@ def main():
     ap.add_argument("--repeat", type=int, default=20)
     ap.add_argument("--json", default=None,
                     help="machine-readable report path "
-                         "(default results/bench/bridge2_<utc>.json)")
+                         "(default results/interface/bridge2_<utc>.json)")
     args = ap.parse_args()
 
     auth = base64.b64encode(f"{args.user}:{args.password}".encode()).decode()
@@ -169,7 +169,7 @@ def main():
     driver.close()
     conn.close()
 
-    out = Path(args.json) if args.json else Path("results/bench") / (
+    out = Path(args.json) if args.json else Path("results/interface") / (
         "bridge2_{}.json".format(
             datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")))
     out.parent.mkdir(parents=True, exist_ok=True)

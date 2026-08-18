@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Every number on the deck's two charts, traced to the measurement file it came from.
 
-The overview chart computes straight from results/agent_interaction.json at render time, so
+The overview chart computes straight from results/episodes/agent_interaction.json at render time, so
 it cannot drift; this script spot-recomputes it anyway. The engineering-detail chart carries
 hardcoded constants, and a constant is a claim — each one is checked against the
 machine-readable result that produced it. Exit code 1 on any mismatch.
@@ -31,23 +31,23 @@ def check(name: str, chart_value, source_value, source: str, tol: float = 0.05) 
 
 
 def main() -> None:
-    bench = Path("results/bench")
+    bench = Path("results/interface")
 
-    print("[encoding panel] <- results/bench/format_tokens.json")
+    print("[encoding panel] <- results/interface/format_tokens.json")
     tokens = json.loads((bench / "format_tokens.json").read_text())["tokens"]
     check("JSON tokens, 200 rows", 9017, tokens["json"], "format_tokens.json", 0)
     check("markdown tokens", 6221, tokens["markdown_table"], "format_tokens.json", 0)
     check("CSV tokens", 5211, tokens["csv"], "format_tokens.json", 0)
 
-    print("[transport panel] <- results/bench_bridge2_20260808.txt")
-    txt = Path("results/bench_bridge2_20260808.txt").read_text()
+    print("[transport panel] <- results/interface_bridge2_20260808.txt")
+    txt = Path("results/interface_bridge2_20260808.txt").read_text()
     med = {m.group(1).strip(): float(m.group(2))
            for m in re.finditer(r"^\s{2}(\S.*?)\s{2,}median\s+([\d.]+) ms", txt, re.M)}
     check("HTTP full body ms", 397.65, med["http full body"], "bridge2 txt", 0)
     check("Bolt early-stop ms", 12.24, med["bolt stop after 50"], "bridge2 txt", 0)
     check("LIMIT in query ms", 1.44, med["either, LIMIT in query"], "bridge2 txt", 0)
 
-    print("[runtime panel] <- results/bench/driver_memory_*.json")
+    print("[runtime panel] <- results/interface/driver_memory_*.json")
     pure = json.loads(sorted(bench.glob("driver_memory_pure-python_*.json"))[-1].read_text())
     rust = json.loads(sorted(bench.glob("driver_memory_rust_*.json"))[-1].read_text())
     p100k = next(r for r in pure["row_sweep"] if r["rows"] == 100_000)
@@ -75,8 +75,8 @@ def main() -> None:
                        neo["series_p50_ms"]["neo4rs_single_process"], (1, 2, 4, 8)):
         check(f"neo4rs p50 w={w}", c, a, "neo4rs_native json", 0)
 
-    print("[overview p50 chart] <- results/agent_interaction.json (computed at render)")
-    eps = json.loads(Path("results/agent_interaction.json").read_text())["episodes"]
+    print("[overview p50 chart] <- results/episodes/agent_interaction.json (computed at render)")
+    eps = json.loads(Path("results/episodes/agent_interaction.json").read_text())["episodes"]
     check("episode count (file)", 819, len(eps), "agent_interaction.json", 0)
     chain = [e for e in eps if e["arm"] in ("labels", "ontology", "guardrail", "plan")]
     check("chain episode count", 468, len(chain), "agent_interaction.json", 0)
@@ -88,8 +88,8 @@ def main() -> None:
     print(f"  [info] spot recompute labels/easy/SF100 per-call latency: "
           f"p50={p50:,.0f} ms over {len(calls)} calls (rendered directly)")
 
-    print("[overview p99 chart] <- results/replay_p99.json (stage-two replays)")
-    rep = json.loads(Path("results/replay_p99.json").read_text())
+    print("[overview p99 chart] <- results/episodes/replay_p99.json (stage-two replays)")
+    rep = json.loads(Path("results/episodes/replay_p99.json").read_text())
     check("replay cells", 156, len(rep["cells"]), "replay_p99.json", 0)
     check("replay iterations", 100, rep["iterations"], "replay_p99.json", 0)
     check("replay arm count", 4, len({c["arm"] for c in rep["cells"]}),
@@ -109,15 +109,15 @@ def main() -> None:
               and e["score_correct"])
     check("labels SF10 correct episodes", 30, acc, "agent_interaction.json", 0)
 
-    print("[slo-tradeoff bars] <- results/rescore_execution.json (execution accuracy)")
-    ex = json.loads(Path("results/rescore_execution.json").read_text())["episodes"]
+    print("[slo-tradeoff bars] <- results/analysis/rescore_execution.json (execution accuracy)")
+    ex = json.loads(Path("results/analysis/rescore_execution.json").read_text())["episodes"]
     for arm, want in (("labels", 48), ("ontology", 63), ("guardrail", 61), ("plan", 78)):
         check(f"{arm} queries matching golden", want,
               sum(1 for x in ex if x["arm"] == arm and x["query_exact"]),
               "rescore_execution.json", 0)
 
-    print("[plan-hints-ab chart] <- results/plan_hints_ab.json")
-    ab = json.loads(Path("results/plan_hints_ab.json").read_text())["episodes"]
+    print("[plan-hints-ab chart] <- results/scenarios/plan_hints_ab.json")
+    ab = json.loads(Path("results/scenarios/plan_hints_ab.json").read_text())["episodes"]
     hinted = [e for e in ab if e["arm"] == "plan_hints" and e.get("hint_in_settled")]
     plain = [e for e in ab if e["arm"] == "plan_hints" and not e.get("hint_in_settled")]
     check("4b settled queries carrying USING", 40, len(hinted), "plan_hints_ab.json", 0)
@@ -129,7 +129,7 @@ def main() -> None:
           sum(1 for e in ab if e.get("engineering_probes", 0) > 0),
           "plan_hints_ab.json", 0)
 
-    print("[estimate-error chart] <- results/agent_interaction.json (plan arm EXPLAINs)")
+    print("[estimate-error chart] <- results/episodes/agent_interaction.json (plan arm EXPLAINs)")
     pairs = [(c["estimated_rows"], c["db_hits"]) for e in eps if e["arm"] == "plan"
              for c in e.get("calls", [])
              if c.get("estimated_rows") and c.get("db_hits")

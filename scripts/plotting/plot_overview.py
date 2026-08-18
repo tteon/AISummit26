@@ -251,8 +251,8 @@ def by_question(eps, out: Path) -> None:
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("--episodes", default="results/agent_interaction.json")
-    p.add_argument("--replay", default="results/replay_p99.json")
+    p.add_argument("--episodes", default="results/episodes/agent_interaction.json")
+    p.add_argument("--replay", default="results/episodes/replay_p99.json")
     p.add_argument("--figures", default="figures")
     p.add_argument("--by-question", action="store_true",
                    help="also write the 13-panel db-hits backup chart")

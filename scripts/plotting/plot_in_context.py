@@ -13,7 +13,7 @@ Colors match figures/conditions.svg for the arms; outcome segments use a validat
 status-like set, silent failure deliberately in red and stacked last.
 
 Usage:
-  python scripts/plot_in_context.py --episodes results/agent_interaction.json
+  python scripts/plot_in_context.py --episodes results/episodes/agent_interaction.json
 """
 from __future__ import annotations
 
@@ -169,7 +169,7 @@ def fig_by_question(eps, out: Path) -> None:
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("--episodes", default="results/agent_interaction.json")
+    p.add_argument("--episodes", default="results/episodes/agent_interaction.json")
     p.add_argument("--figures", default="figures")
     args = p.parse_args()
     eps = [e for e in json.loads(Path(args.episodes).read_text())["episodes"]

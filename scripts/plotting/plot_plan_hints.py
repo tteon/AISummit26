@@ -47,7 +47,7 @@ def med(rows, key):
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("--episodes", default="results/plan_hints_ab.json")
+    p.add_argument("--episodes", default="results/scenarios/plan_hints_ab.json")
     p.add_argument("--out", default="figures/plan-hints-ab.svg")
     args = p.parse_args()
     eps = json.loads(Path(args.episodes).read_text())["episodes"]

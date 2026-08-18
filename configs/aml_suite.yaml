@@ -68,7 +68,7 @@ suites:
       - "FIBO_R2_Loan_Guaranteed_Integration"
 
 output:
-  results_dir: "results/benchmarks"
+  results_dir: "results"
   save_json: true
   generate_markdown_report: true
   auto_plot: true

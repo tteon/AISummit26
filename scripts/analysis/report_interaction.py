@@ -118,8 +118,8 @@ def instability(cells: List[Dict[str, Any]]) -> str:
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--episodes", default="results/agent_interaction.json")
-    p.add_argument("--replay", default="results/replay_p99.json")
+    p.add_argument("--episodes", default="results/episodes/agent_interaction.json")
+    p.add_argument("--replay", default="results/episodes/replay_p99.json")
     args = p.parse_args()
 
     run = json.loads(Path(args.episodes).read_text())

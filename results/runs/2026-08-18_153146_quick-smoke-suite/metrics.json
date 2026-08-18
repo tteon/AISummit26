@@ -1,0 +1,47 @@
+{
+  "sql_vs_cypher": {
+    "duration_seconds": 0.0,
+    "data": [
+      {
+        "question_id": "ext_easy_1",
+        "tier": "easy",
+        "sql_joins": 0,
+        "cypher_hops": 0,
+        "sql_len": 118,
+        "cypher_len": 137,
+        "ratio": 0.86
+      },
+      {
+        "question_id": "ext_med_1",
+        "tier": "medium",
+        "sql_joins": 1,
+        "cypher_hops": 1,
+        "sql_len": 196,
+        "cypher_len": 173,
+        "ratio": 1.13
+      }
+    ]
+  },
+  "seocho_optimizations": {
+    "duration_seconds": 2.28,
+    "data": [
+      {
+        "question_id": "ext_hard_1",
+        "latency_ms": 1990.8,
+        "pruned_labels_count": 1,
+        "has_using_index": true
+      }
+    ]
+  },
+  "fibo_robustness": {
+    "duration_seconds": 0.01,
+    "data": [
+      {
+        "scenario": "SF10_UBO_Transfer_Join",
+        "scale": 10,
+        "execution_ms": 3.7,
+        "records_matched": 100458
+      }
+    ]
+  }
+}

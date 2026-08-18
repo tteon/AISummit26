@@ -12,7 +12,7 @@ record next to the answer.
 
 Usage:
   python scripts/rescore_interaction.py \
-      --episodes results/agent_interaction.json \
+      --episodes results/episodes/agent_interaction.json \
       --gold int_hard_1:100:/path/to/gold_int_hard_1_sf100.json
 """
 
@@ -29,7 +29,7 @@ from agent_interaction import QUESTIONS, parse_answer, score  # noqa: E402
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--episodes", default="results/agent_interaction.json")
+    p.add_argument("--episodes", default="results/episodes/agent_interaction.json")
     p.add_argument("--gold", nargs="+", required=True,
                    help="question_id:sf:path — the path holds {'seconds': float, 'rows': [...]}")
     p.add_argument("--out", default=None, help="defaults to overwriting --episodes")

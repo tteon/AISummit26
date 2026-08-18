@@ -25,8 +25,8 @@ cells look as variable as the expensive ones.
 
 Usage:
   python scripts/replay_p99.py --password "$PW" \
-      --episodes results/agent_interaction.json \
-      --iterations 100 --out results/replay_p99.json
+      --episodes results/episodes/agent_interaction.json \
+      --iterations 100 --out results/episodes/replay_p99.json
 """
 
 from __future__ import annotations
@@ -138,13 +138,13 @@ def main() -> None:
     p.add_argument("--uri", default="bolt://localhost:7687")
     p.add_argument("--user", default="neo4j")
     p.add_argument("--password", required=True)
-    p.add_argument("--episodes", default="results/agent_interaction.json")
+    p.add_argument("--episodes", default="results/episodes/agent_interaction.json")
     p.add_argument("--iterations", type=int, default=100)
     p.add_argument("--timeout", type=float, default=60.0)
     p.add_argument("--cell-budget", type=float, default=90.0,
                    help="wall-clock seconds per cell; a cell stops early once this is spent, "
                         "and the sample count it reached is reported on the row")
-    p.add_argument("--out", default="results/replay_p99.json")
+    p.add_argument("--out", default="results/episodes/replay_p99.json")
     args = p.parse_args()
 
     run = json.loads(Path(args.episodes).read_text())

@@ -54,7 +54,7 @@ class SuiteConfig:
 
 @dataclass
 class OutputConfig:
-    results_dir: str = "results/benchmarks"
+    results_dir: str = "results"
     save_json: bool = True
     generate_markdown_report: bool = True
     auto_plot: bool = False

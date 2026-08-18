@@ -33,7 +33,7 @@ suites:
     scenarios: ["FIBO_R1_UBO_Shell_Ring"]
 
 output:
-  results_dir: "results/benchmarks"
+  results_dir: "results"
   save_json: true
   generate_markdown_report: true
   auto_plot: false

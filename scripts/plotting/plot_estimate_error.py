@@ -41,7 +41,7 @@ plt.rcParams.update({
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("--episodes", default="results/agent_interaction.json")
+    p.add_argument("--episodes", default="results/episodes/agent_interaction.json")
     p.add_argument("--out", default="figures/estimate-error.svg")
     args = p.parse_args()
 

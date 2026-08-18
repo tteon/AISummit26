@@ -21,8 +21,8 @@ scale for entirely different reasons.
 
 Usage:
   python scripts/plot_interaction.py \
-      --replay results/replay_p99.json \
-      --episodes results/agent_interaction.json
+      --replay results/episodes/replay_p99.json \
+      --episodes results/episodes/agent_interaction.json
 """
 
 from __future__ import annotations
@@ -386,8 +386,8 @@ def plot_accuracy(episodes: List[Dict[str, Any]], out: Path) -> None:
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--replay", default="results/replay_p99.json")
-    p.add_argument("--episodes", default="results/agent_interaction.json")
+    p.add_argument("--replay", default="results/episodes/replay_p99.json")
+    p.add_argument("--episodes", default="results/episodes/agent_interaction.json")
     p.add_argument("--figures", default="figures")
     args = p.parse_args()
 

@@ -47,7 +47,7 @@ concurrent load on the box.
 Usage:
   python scripts/agent_interaction.py --password "$PW" \
       --databases finbenchl1:1 finbenchl10:10 finbenchl100:100 \
-      --out results/agent_interaction.json
+      --out results/episodes/agent_interaction.json
 """
 
 from __future__ import annotations
@@ -1075,7 +1075,7 @@ def main() -> None:
     p.add_argument("--only", nargs="*", default=None,
                    help="restrict to these question ids, for re-running one cell without "
                         "disturbing the conditions the rest of the run shared")
-    p.add_argument("--out", default="results/agent_interaction.json")
+    p.add_argument("--out", default="results/episodes/agent_interaction.json")
     asyncio.run(main_async(p.parse_args()))
 
 

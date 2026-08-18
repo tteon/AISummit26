@@ -98,7 +98,7 @@ def rows_of(session, cypher, params, timeout):
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("--episodes", default="results/agent_interaction.json")
+    p.add_argument("--episodes", default="results/episodes/agent_interaction.json")
     p.add_argument("--password", required=True)
     p.add_argument("--uri", default="bolt://127.0.0.1:7687")
     p.add_argument("--user", default="neo4j")
@@ -173,7 +173,7 @@ def main() -> None:
     driver.close()
 
     ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    path = Path(f"results/bench/typefilter_sf{args.sf}_{ts}.json")
+    path = Path(f"results/interface/typefilter_sf{args.sf}_{ts}.json")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps({
         "manifest": manifest(bench="typefilter-removal",

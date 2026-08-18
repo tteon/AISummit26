@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The one-level-down figures: what a returned row costs at each layer of bridge 2.
 
-Three figures from the 2026-08-08 measurements (results/bench_*_20260808.txt and the
+Three figures from the 2026-08-08 measurements (results/interface_*_20260808.txt and the
 tokenizer sweep recorded in docs/conditions.md's condition-7 note):
 
   figures/depth-format-tokens.svg   the model boundary — same 200 rows, seven encodings
@@ -271,7 +271,7 @@ def engineering_summary(out: str) -> None:
                  fontsize=13.5, weight="bold", x=0.028, ha="left", y=0.975, color=INK)
     fig.text(0.028, 0.925,
              "One box, same DozerDB, per-iteration samples and machine manifests in "
-             "results/bench/.", fontsize=8.6, color=MUTED, ha="left", va="top")
+             "results/interface/.", fontsize=8.6, color=MUTED, ha="left", va="top")
     fig.savefig(out)
     plt.close(fig)
     print(f"wrote {out}")

@@ -5,8 +5,8 @@ Two blocks, not one sorted list — the grouping IS the argument. Within a block
 comparable (same kind of intervention); across blocks they are not, and the layout says so
 without a disclaimer. Each row names the metric it moved.
 
-Sources: results/agent_interaction.json (conditions 1-7), results/bench_*_20260808.txt and
-results/bench/*.json. Usage:  python scripts/plot_levers.py
+Sources: results/episodes/agent_interaction.json (conditions 1-7), results/interface_*_20260808.txt and
+results/interface/*.json. Usage:  python scripts/plot_levers.py
 """
 from __future__ import annotations
 

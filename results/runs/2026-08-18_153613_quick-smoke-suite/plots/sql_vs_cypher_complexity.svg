@@ -1,0 +1,36 @@
+<svg width="800" height="420" viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" style="background:#0d1117; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;">
+  <style>
+    .title { fill: #f0f6fc; font-size: 18px; font-weight: 600; }
+    .subtitle { fill: #8b949e; font-size: 12px; }
+    .label { fill: #c9d1d9; font-size: 11px; font-family: monospace; }
+    .val { fill: #f0f6fc; font-size: 10px; font-weight: bold; }
+    .grid { stroke: #30363d; stroke-width: 1; stroke-dasharray: 2,2; }
+    .legend { font-size: 12px; font-weight: 500; }
+  </style>
+  <!-- Header -->
+  <text x="130" y="30" class="title">Structural Complexity: SQL Joins vs Cypher Hops</text>
+  <text x="130" y="48" class="subtitle">Relational vs Property Graph Model Expressivity across Easy / Medium / Hard AML queries</text>
+  <!-- Legend -->
+  <rect x="560" y="20" width="12" height="12" rx="2" fill="#ef4444" />
+  <text x="578" y="30" fill="#ef4444" class="legend">SQL Joins</text>
+  <rect x="670" y="20" width="12" height="12" rx="2" fill="#3b82f6" />
+  <text x="688" y="30" fill="#3b82f6" class="legend">Cypher Hops</text>
+  <line x1="130.0" y1="60" x2="130.0" y2="360" class="grid" />
+  <text x="130.0" y="378" fill="#8b949e" font-size="11" text-anchor="middle">0</text>
+  <line x1="287.5" y1="60" x2="287.5" y2="360" class="grid" />
+  <text x="287.5" y="378" fill="#8b949e" font-size="11" text-anchor="middle">2</text>
+  <line x1="445.0" y1="60" x2="445.0" y2="360" class="grid" />
+  <text x="445.0" y="378" fill="#8b949e" font-size="11" text-anchor="middle">4</text>
+  <line x1="602.5" y1="60" x2="602.5" y2="360" class="grid" />
+  <text x="602.5" y="378" fill="#8b949e" font-size="11" text-anchor="middle">6</text>
+  <line x1="760.0" y1="60" x2="760.0" y2="360" class="grid" />
+  <text x="760.0" y="378" fill="#8b949e" font-size="11" text-anchor="middle">8</text>
+  <text x="118" y="139.0" class="label" text-anchor="end">ext_easy_1</text>
+  <rect x="130" y="120.0" width="2" height="14" rx="2" fill="#ef4444" opacity="0.9" />
+  <rect x="130" y="136.0" width="2" height="14" rx="2" fill="#3b82f6" opacity="0.9" />
+  <text x="118" y="289.0" class="label" text-anchor="end">ext_med_1</text>
+  <rect x="130" y="270.0" width="78.75" height="14" rx="2" fill="#ef4444" opacity="0.9" />
+  <text x="213.75" y="281.0" class="val">1</text>
+  <rect x="130" y="286.0" width="78.75" height="14" rx="2" fill="#3b82f6" opacity="0.9" />
+  <text x="213.75" y="297.0" class="val">1</text>
+</svg>

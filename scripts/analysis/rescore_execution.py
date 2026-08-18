@@ -21,7 +21,7 @@ Only distinct (scale, question, query) triples are executed — three repeats th
 on the same text are one execution — and each runs under a bounded transaction, with a
 timeout recorded as its own outcome rather than folded into "wrong".
 
-  python scripts/rescore_execution.py --password "$PW"   # -> results/rescore_execution.json
+  python scripts/rescore_execution.py --password "$PW"   # -> results/analysis/rescore_execution.json
 """
 from __future__ import annotations
 
@@ -56,8 +56,8 @@ def gold_values(gold):
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("--episodes", default="results/agent_interaction.json")
-    p.add_argument("--out", default="results/rescore_execution.json")
+    p.add_argument("--episodes", default="results/episodes/agent_interaction.json")
+    p.add_argument("--out", default="results/analysis/rescore_execution.json")
     p.add_argument("--uri", default="bolt://127.0.0.1:7687")
     p.add_argument("--user", default="neo4j")
     p.add_argument("--password", required=True)

@@ -147,7 +147,7 @@ def main() -> None:
                     help="docker container whose cgroup CPU is charged as server-side cost")
     ap.add_argument("--json", default=None,
                     help="where to write the machine-readable report "
-                         "(default results/bench/driver_memory_<decoder>_<utc>.json)")
+                         "(default results/interface/driver_memory_<decoder>_<utc>.json)")
     args = ap.parse_args()
 
     driver = GraphDatabase.driver(args.uri, auth=(args.user, args.password))
@@ -305,7 +305,7 @@ def main() -> None:
                                        if server_cpu else None),
         })
 
-    out = Path(args.json) if args.json else Path("results/bench") / (
+    out = Path(args.json) if args.json else Path("results/interface") / (
         "driver_memory_{}_{}.json".format(
             dec, datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")))
     out.parent.mkdir(parents=True, exist_ok=True)

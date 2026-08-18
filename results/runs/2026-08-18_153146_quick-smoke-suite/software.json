@@ -1,0 +1,18 @@
+{
+  "timestamp_utc": "2026-08-18T06:31:46+00:00",
+  "git_commit": "1975664a016f0e41c2424114a21f985b44a7478a",
+  "git_branch": "main",
+  "git_dirty": false,
+  "python_version": "3.10.12",
+  "python_executable": "/usr/bin/python3",
+  "virtual_env": "/usr",
+  "packages": {
+    "seocho": "0.2.0",
+    "duckdb": "1.5.3",
+    "openai": "2.41.0",
+    "neo4j": "6.1.0",
+    "pyyaml": "6.0.3",
+    "pydantic": "2.13.4"
+  },
+  "db_container_image": "graphstack/dozerdb:5.26.3.0"
+}

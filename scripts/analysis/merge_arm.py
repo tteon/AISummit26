@@ -11,7 +11,7 @@ The superseded episodes are kept in the output under ``superseded`` rather than 
 the negative result about EstimatedRows stays checkable against the data that produced it.
 
 Usage:
-  python scripts/merge_arm.py --base results/agent_interaction.json \
+  python scripts/merge_arm.py --base results/episodes/agent_interaction.json \
       --replacement /path/to/plan_arm.json --arm plan
 """
 

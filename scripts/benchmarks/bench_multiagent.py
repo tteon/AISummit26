@@ -2,7 +2,7 @@
 
 Each arm of rust-harness prints one JSON object (raw per-op samples included) to stdout;
 this wrapper runs the sweep grid, collects those objects, and writes one
-results/bench/multiagent_<arm>_<UTC>.json per arm with the runmeta manifest — same
+results/interface/multiagent_<arm>_<UTC>.json per arm with the runmeta manifest — same
 convention as the neo4rs_native results.
 
     python scripts/bench_multiagent.py            # all arms
