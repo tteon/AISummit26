@@ -54,48 +54,49 @@ SEOCHO operates as a specialized **Database-Agent Operating System (Middleware)*
 
 ```mermaid
 flowchart TD
-    UserReq["👤 1. User Natural Language Question<br/><i>('Which accounts sent money on channel_risk >= 5?')</i>"]
+    UserReq["User Question: High-Risk Channel Transfers"]
     
-    subgraph SEOCHO_OS["🛡️ SEOCHO Middleware / OS Runtime"]
+    subgraph SEOCHO_OS["SEOCHO Middleware and OS Runtime"]
         direction TB
         
-        subgraph PLANE_GEN["[Plane 1: Generation Plane]"]
-            OntoLoader["SEOCHO Ontology Loader & Schema Resolver<br/><i>(finbench.ontology.yaml / fibo_finbench.ontology.yaml)</i>"]
-            PromptSynth["Contextual Schema Synthesis<br/><i>(schema_for_prompt(): Entity props, Edge props, Degree tail, Tenant scope)</i>"]
+        subgraph PLANE_GEN["Plane 1: Generation Plane"]
+            OntoLoader["SEOCHO Ontology Loader"]
+            PromptSynth["Contextual Schema Synthesis: Entity and Edge Props, Degree Tail, Tenant Scope"]
             OntoLoader --> PromptSynth
         end
         
-        subgraph PLANE_EXEC["[Plane 2: Execution & Safety Plane]"]
-            GuardAST["SEOCHO Guardrail & AST Inspector<br/><i>(validate_text2cypher_fallback(): Whitelist, Tenant scope, Read-only)</i>"]
-            GOpt["SEOCHO GOpt AST Optimizer<br/><i>(TypeFilterRemovalRule & Hub IndexHook)</i>"]
-            PlanGate["SEOCHO Plan Gate & Cost Prober<br/><i>(EXPLAIN parser, Cartesian product detection, 2s execution probe)</i>"]
-            GuardAST --> GOpt --> PlanGate
+        subgraph PLANE_EXEC["Plane 2: Execution and Safety Plane"]
+            GuardAST["SEOCHO Guardrail and AST Inspector: Whitelist, Tenant Scope, Read-Only"]
+            GOpt["SEOCHO GOpt AST Optimizer: TypeFilterRemovalRule and Hub IndexHook"]
+            PlanGate["SEOCHO Plan Gate and Cost Prober: EXPLAIN Parser, Cartesian Check, 2s Probe"]
+            GuardAST --> GOpt
+            GOpt --> PlanGate
         end
         
-        subgraph PLANE_RET["[Plane 3: Return & Context Plane]"]
-            CSVEncoder["SEOCHO Return Plane Serializer<br/><i>(Zero-overhead CSV framing + # more_available signal)</i>"]
+        subgraph PLANE_RET["Plane 3: Return and Context Plane"]
+            CSVEncoder["SEOCHO Return Plane Serializer: Zero-Overhead CSV and Boundedness Signal"]
         end
     end
     
-    LLM_GEN["🤖 2. LLM Text2Cypher Generation<br/><i>(gpt-oss-120b via OpenAI SDK)</i>"]
-    LLM_SYNTH["🤖 5. Augmented RAG Synthesis<br/><i>(Final Natural Language Response)</i>"]
+    LLM_GEN["LLM Text2Cypher Generation: gpt-oss-120b"]
+    LLM_SYNTH["Augmented RAG Synthesis: Final Answer Generation"]
     
-    DRIVER["⚡ High-Performance Transport Layer<br/><i>(neo4j-rust-ext / neo4rs Zero-Copy PackStream Bolt v5)</i>"]
-    GDBMS[("🗄️ GDBMS Engine<br/><i>(Neo4j / DozerDB / DuckDB Parquet)</i>")]
+    DRIVER["High-Performance Transport: neo4j-rust-ext / neo4rs Zero-Copy Bolt v5"]
+    GDBMS[("GDBMS Engine: Neo4j / DozerDB / DuckDB")]
     
     UserReq --> PromptSynth
-    PromptSynth -- "Synthesized Prompt" --> LLM_GEN
-    LLM_GEN -- "Generated Cypher" --> GuardAST
+    PromptSynth -->|Synthesized Schema| LLM_GEN
+    LLM_GEN -->|Generated Cypher| GuardAST
     
-    PlanGate -- "Plan Rejection / Hint Feedback Loop" -.-> LLM_GEN
-    GuardAST -- "AST Violation Feedback Loop" -.-> LLM_GEN
+    GuardAST -.->|AST Violation Feedback Loop| LLM_GEN
+    PlanGate -.->|Plan Rejection and Hint Loop| LLM_GEN
     
-    PlanGate -- "Validated & Optimized Cypher" --> DRIVER
+    PlanGate -->|Validated and Optimized Cypher| DRIVER
     DRIVER --> GDBMS
-    GDBMS -- "Raw Records Stream" --> DRIVER
+    GDBMS -->|Raw Record Stream| DRIVER
     DRIVER --> CSVEncoder
-    CSVEncoder -- "Compressed Context (65% token savings)" --> LLM_SYNTH
-    LLM_SYNTH --> FinalAns["📋 6. User Final Answer Delivery"]
+    CSVEncoder -->|Compressed CSV Context: 65 percent Token Savings| LLM_SYNTH
+    LLM_SYNTH --> FinalAns["Final User Answer Delivery"]
 ```
 
 ---
