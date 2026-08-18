@@ -442,45 +442,60 @@ ontology object, the prompt schema, and the guardrail are `seocho.ontology` and
 rerun anything here, you set up seocho; that is the intended door. Requires Docker, Python
 3.10+, and an OpenAI-compatible endpoint.
 
+### 🚀 Unified Quickstart (AIPerf-Style Declarative Runner)
+
 ```bash
 pip install -r requirements.txt
 
+# 1. Run the unified benchmark suite via declarative YAML:
+python runner.py run --config configs/aml_suite.yaml
+
+# 2. Run a fast smoke test across all suites:
+python runner.py run --config configs/quick_smoke.yaml
+
+# 3. Launch the interactive live E2E pipeline trace demo:
+python runner.py demo -p ext_med_1 -a 1001
+```
+
+### 🔬 Step-by-Step Reproduction Pipeline
+
+```bash
 # 1. Generate and load three scales (all ten edge types, power-law degree)
 for SF in 1 10 100; do
-  python scripts/gen_duckdb.py --sf $SF --tag layers \
+  python scripts/data/gen_duckdb.py --sf $SF --tag layers \
       --hub-skew 3.0 --dup-share 0.12 --closure-share 0.1 --cycle-share 0.05 \
       --out outputs/finbench
-  python scripts/bulk_load.py --src outputs/finbench/sf${SF}-layers \
+  python scripts/data/bulk_load.py --src outputs/finbench/sf${SF}-layers \
       --database finbenchl${SF} --password "$NEO4J_PASSWORD"
 done
 
 # 2. Run the agents (819 episodes across the seven conditions)
-python scripts/agent_interaction.py --password "$NEO4J_PASSWORD" \
+python scripts/agents/agent_interaction.py --password "$NEO4J_PASSWORD" \
     --databases finbenchl1:1 finbenchl10:10 finbenchl100:100 \
     --arms labels ontology guardrail plan in_context in_context_blind in_context_csv \
     --repeats 3 --ontology ontology/finbench.ontology.yaml \
     --out results/agent_interaction.json
 
 # 3. Replay each settled query for a p99 (no model in the loop)
-python scripts/replay_p99.py --password "$NEO4J_PASSWORD" \
+python scripts/agents/replay_p99.py --password "$NEO4J_PASSWORD" \
     --episodes results/agent_interaction.json --iterations 100 --cell-budget 45 \
     --out results/replay_p99.json
 
 # 4. Charts and tables
-python scripts/plot_interaction.py --figures figures
-python scripts/plot_in_context.py --episodes results/agent_interaction.json
-python scripts/report_interaction.py > docs/finbench-agent-interaction.md
+python scripts/plotting/plot_interaction.py --figures figures
+python scripts/plotting/plot_in_context.py --episodes results/agent_interaction.json
+python scripts/analysis/report_interaction.py > docs/finbench-agent-interaction.md
 
 # 5. The interface benchmarks (idle DB — they contend with the episodes otherwise)
-python scripts/bench_bridge2.py --password "$NEO4J_PASSWORD" --database finbenchl1
-python scripts/bench_driver_memory.py --password "$NEO4J_PASSWORD" --database finbenchl1
+python scripts/benchmarks/bench_bridge2.py --password "$NEO4J_PASSWORD" --database finbenchl1
+python scripts/benchmarks/bench_driver_memory.py --password "$NEO4J_PASSWORD" --database finbenchl1
 ( cd bench/neo4rs-bench && NEO4J_PASSWORD=$NEO4J_PASSWORD cargo run --release -- finbenchl1 )
-python scripts/plot_depth.py && python scripts/plot_levers.py
+python scripts/plotting/plot_depth.py && python scripts/plotting/plot_levers.py
 ```
 
 Every benchmark writes machine-readable results to `results/bench/` with per-iteration
 samples and a manifest (git commit, decoder, driver versions, container image, CPU) via
-`scripts/runmeta.py`, so any number in the figures can be traced to the machine state that
+`scripts/analysis/runmeta.py`, so any number in the figures can be traced to the machine state that
 produced it. Run `bench_driver_memory.py` once in a plain-`neo4j` environment and once with
 `neo4j-rust-ext` installed to reproduce the decoder comparison.
 
@@ -496,13 +511,21 @@ provider.
 ### Layout
 
 ```
-ontology/finbench.ontology.yaml   the schema, and the subject of finding 1 and 2
-scripts/                          generator, loader, runner, replay, benches, plots
-bench/neo4rs-bench/               the native end of the driver spectrum (Rust, tokio)
+runner.py                         Unified AIPerf-style declarative benchmark CLI runner
+configs/                          YAML benchmark configurations (aml_suite.yaml, quick_smoke.yaml)
+harness/                          Core benchmark harness and reporting engine
+ontology/                         finbench.ontology.yaml and fibo_finbench.ontology.yaml
+scripts/                          Categorized subdirectories:
+  scripts/data/                   DuckDB generator, bulk loaders, degree annotator
+  scripts/benchmarks/             SQL vs Cypher, SEOCHO GOpt, FIBO SF100, Scale Factor
+  scripts/agents/                 Agent interaction harness, OpenAI Agents SDK adapter, live E2E demo
+  scripts/analysis/               Interaction reporting, rescorers, token measurements
+  scripts/plotting/               Talk and paper SVG chart generators
+  scripts/smoke/                  SEOCHO environment sanity check
+bench/neo4rs-bench/               The native end of the driver spectrum (Rust, tokio)
 results/                          819 episodes, 156 replayed cells, bench JSONs + manifests
-figures/                          the two talk charts (overview, engineering detail);
-                                  the rest regenerate from scripts/
-docs/                             conditions.md (generated prompt diffs), tables, defect log
+figures/                          The talk charts (overview, engineering detail, trade-offs)
+docs/                             Conditions, slides, GOpt comparisons, walkthroughs, defect log
 ```
 
 `docs/finbench-ontology-defects.md` is worth reading on its own: it records four defects the
