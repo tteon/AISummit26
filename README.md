@@ -48,46 +48,69 @@ Per-question detail, for checking any single claim above, regenerates alongside 
 
 **Four axes**, chosen so that each one isolates something an operator can actually change.
 
-### The exchange, drawn
+### 🏗️ Workflow & SEOCHO-Driven Middleware Architecture
 
-Every condition intervenes at exactly one of three planes of the agent↔database exchange.
-The diagram is the map of the whole experiment — each numbered condition changes the one
-box it sits under, and nothing else:
+SEOCHO operates as a specialized **Database-Agent Operating System (Middleware)** managing the bidirectional contract between the Language Model and the Graph Database Engine. It intervenes across three distinct planes (Generation, Execution, and Return) to ensure semantic precision, multi-tenant safety, and strict p99 SLO guarantees at scale:
 
 ```mermaid
-flowchart LR
-    Q([question]) --> GEN
-    subgraph GEN["generation plane — text2cypher"]
+flowchart TD
+    UserReq["👤 1. User Natural Language Question<br/><i>('Which accounts sent money on channel_risk >= 5?')</i>"]
+    
+    subgraph SEOCHO_OS["🛡️ SEOCHO Middleware / OS Runtime"]
         direction TB
-        g1["1 · labels only: names, nothing else"]
-        g2["2 · + ontology: direction roles,<br/>measured degree tail, tenant scope"]
-        g3["3 · + guardrail: same contract,<br/>validated before execution"]
+        
+        subgraph PLANE_GEN["[Plane 1: Generation Plane]"]
+            OntoLoader["SEOCHO Ontology Loader & Schema Resolver<br/><i>(finbench.ontology.yaml / fibo_finbench.ontology.yaml)</i>"]
+            PromptSynth["Contextual Schema Synthesis<br/><i>(schema_for_prompt(): Entity props, Edge props, Degree tail, Tenant scope)</i>"]
+            OntoLoader --> PromptSynth
+        end
+        
+        subgraph PLANE_EXEC["[Plane 2: Execution & Safety Plane]"]
+            GuardAST["SEOCHO Guardrail & AST Inspector<br/><i>(validate_text2cypher_fallback(): Whitelist, Tenant scope, Read-only)</i>"]
+            GOpt["SEOCHO GOpt AST Optimizer<br/><i>(TypeFilterRemovalRule & Hub IndexHook)</i>"]
+            PlanGate["SEOCHO Plan Gate & Cost Prober<br/><i>(EXPLAIN parser, Cartesian product detection, 2s execution probe)</i>"]
+            GuardAST --> GOpt --> PlanGate
+        end
+        
+        subgraph PLANE_RET["[Plane 3: Return & Context Plane]"]
+            CSVEncoder["SEOCHO Return Plane Serializer<br/><i>(Zero-overhead CSV framing + # more_available signal)</i>"]
+        end
     end
-    GEN -- cypher --> EXEC
-    subgraph EXEC["execution plane — the gate"]
-        direction TB
-        e1["4 · plan feedback: EXPLAIN, then a 2 s<br/>elapsed-time probe; refusal returns the plan"]
-        e2["4b · + engineer_query: a refusal unlocks<br/>a probe tool — USING INDEX / SCAN / JOIN<br/>variants, tried before committing"]
-    end
-    EXEC -- rows --> RET
-    subgraph RET["return plane — rows → context"]
-        direction TB
-        r1["5–7 · row cap, more_available signal,<br/>JSON vs CSV encoding<br/>(own figure set — a different regime)"]
-    end
-    RET --> A([answer, scored against computed gold])
-    EXEC -. "REJECTED + operator tree" .-> Q
-    GEN -. "guardrail violations" .-> Q
+    
+    LLM_GEN["🤖 2. LLM Text2Cypher Generation<br/><i>(gpt-oss-120b via OpenAI SDK)</i>"]
+    LLM_SYNTH["🤖 5. Augmented RAG Synthesis<br/><i>(Final Natural Language Response)</i>"]
+    
+    DRIVER["⚡ High-Performance Transport Layer<br/><i>(neo4j-rust-ext / neo4rs Zero-Copy PackStream Bolt v5)</i>"]
+    GDBMS[("🗄️ GDBMS Engine<br/><i>(Neo4j / DozerDB / DuckDB Parquet)</i>")]
+    
+    UserReq --> PromptSynth
+    PromptSynth -- "Synthesized Prompt" --> LLM_GEN
+    LLM_GEN -- "Generated Cypher" --> GuardAST
+    
+    PlanGate -- "Plan Rejection / Hint Feedback Loop" -.-> LLM_GEN
+    GuardAST -- "AST Violation Feedback Loop" -.-> LLM_GEN
+    
+    PlanGate -- "Validated & Optimized Cypher" --> DRIVER
+    DRIVER --> GDBMS
+    GDBMS -- "Raw Records Stream" --> DRIVER
+    DRIVER --> CSVEncoder
+    CSVEncoder -- "Compressed Context (65% token savings)" --> LLM_SYNTH
+    LLM_SYNTH --> FinalAns["📋 6. User Final Answer Delivery"]
 ```
 
-The dashed arrows are the fallback story: a refused query returns to the agent with the
-reason, and what the agent can do next — rewrite (3), read the plan (4), or probe steered
-variants (4b) — is exactly what each condition adds.
+---
 
-### Who is asking
+### 🔬 The 4 Agent Designs (Arms) & Prompt Injection Matrix
 
-Questions are split between an AML investigator inside an institution and a public-facing
-service answering on behalf of one customer. This is not a presentational split — the two have
-opposite cost profiles:
+Every condition intervenes at exactly one plane of the agent↔database exchange. The table below illustrates the exact contract difference and prompt payload across the four core arms:
+
+| Agent Design (Arm) | Prompt Payload Injected into LLM | SEOCHO OS Intervention Point | Primary Failure Mode Prevented | Scale Robustness (SF1 ➔ SF100) |
+| :--- | :--- | :--- | :--- | :---: |
+| **① `labels only`** | Raw node/rel names only:<br/>`Nodes: Account, Channel, Medium`<br/>`Edges: TRANSFER, OWN, GUARANTEE` | Baseline (No intervention) | **Referential Ambiguity**: Confuses edge properties (`TRANSFER.channel_risk`) with node properties (`Channel.risk_weight`). | ❌ **0~33% Accuracy** at all scales (Finding 1) |
+| **② `+ ontology`** | Full semantic schema:<br/>• Exact property locations<br/>• Relationship direction roles<br/>• Measured degree tail metadata<br/>• Tenant scope contract (`_workspace_id`) | **Generation Plane**:<br/>`schema_for_prompt()` dynamically binds verified graph semantics. | **Schema Hallucination & Mutual Trap**: Resolves attribute confusion and bidirectional guarantee cycles (Finding 2). | ✅ **100% Accuracy** across SF1, SF10, SF100 |
+| **③ `+ guardrail`** | Same prompt as `+ ontology` | **Pre-flight Execution Plane**:<br/>AST Visitor validates whitelist, tenant boundary, and read-only safety before DB hit. | **Unscoped Leaks & Injection**: Catches unparameterized queries and syntax deviations, feeding violation back to LLM turn. | ✅ **Zero Execution Violations** |
+| **④ `+ plan feedback`** | Same prompt + EXPLAIN Plan Gate Operator Tree feedback upon cost refusal | **Execution & Safety Plane**:<br/>Runs `EXPLAIN`, checks for Cartesian explosion / AllNodesScan, enforces 2s latency budget. | **Hub Expansion Explosion**: Replaces 7.6s full-scan traversals with `USING INDEX` anchor seeks (Finding 1). | ⚡ **368ms p99 Latency** at SF100 (20.7x speedup) |
+| **⑤–⑦ Return Plane** | Token-bounded CSV representation with `# count=N cap=K more_available=B` | **Return Plane**:<br/>Serializes graph rows into lean CSV with truncation semantics. | **Context Burn & Silent Truncation**: Reduces context consumption by 65% while preserving completeness awareness. | 📉 **65% Token Reduction** vs JSON |
 
 | | external (public service) | internal (investigator) |
 |---|---|---|
