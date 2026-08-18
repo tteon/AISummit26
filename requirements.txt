@@ -3,7 +3,7 @@
 # CSV encoding condition 7 measured here, upstreamed. Pinned to a tag, not a branch, so this
 # line keeps resolving to the same tree after upstream moves on. `python
 # scripts/smoke_seocho.py` verifies an installed seocho against this repo's ontology.
-seocho @ git+https://github.com/tteon/seocho@aisummit26-interface-v1
+seocho>=0.2.0           # SEOCHO Ontology, Guardrail, and Text2Cypher core
 duckdb>=0.10          # deterministic graph generation
 pyarrow>=14           # Parquet snapshots the bulk loader reads
 neo4j>=5.20           # bolt driver

@@ -1,0 +1,74 @@
+# ==============================================================================
+# AIPerf-style Declarative AML Benchmark Suite Configuration
+# ==============================================================================
+name: "financial-aml-semantic-alignment-suite"
+version: "1.0.0"
+description: >
+  Comprehensive evaluation suite measuring Semantic Alignment, Multi-tier Complexity,
+  Power-law Scale Factor robustness, and FIBO standards for Financial AML AI Agents.
+
+dataset:
+  engine: "duckdb"
+  scales: [1, 10, 100]
+  base_ontology: "ontology/finbench.ontology.yaml"
+  fibo_ontology: "ontology/fibo_finbench.ontology.yaml"
+  output_dir: "outputs/finbench"
+
+model:
+  provider: "mara"
+  model_name: "gpt-oss-120b"
+  temperature: 0.0
+  max_tokens: 1000
+
+suites:
+  # ----------------------------------------------------------------------------
+  # Suite 1: SQL vs Cypher 4-Arm Multi-Tier Benchmark
+  # ----------------------------------------------------------------------------
+  - name: "sql_vs_cypher"
+    description: "Evaluates SQL vs Cypher structural complexity across Easy/Medium/Hard AML questions"
+    enabled: true
+    difficulty_tiers: ["easy", "medium", "hard"]
+    questions:
+      - "ext_easy_1"
+      - "ext_easy_2"
+      - "ext_med_1"
+      - "ext_med_2"
+      - "ext_hard_1"
+      - "int_med_1"
+      - "int_hard_1"
+    arms:
+      - "sql_schema_only"
+      - "sql_ontology"
+      - "cypher_labels_only"
+      - "cypher_ontology"
+
+  # ----------------------------------------------------------------------------
+  # Suite 2: SEOCHO & GOpt 3-Pillar Optimization Suite
+  # ----------------------------------------------------------------------------
+  - name: "seocho_optimizations"
+    description: "Evaluates Hub Defense USING INDEX, Reciprocal Ambiguity, and GOpt AST Label Pruning"
+    enabled: true
+    proposals:
+      - "hub_defense_index"
+      - "reciprocal_ambiguity_guide"
+      - "gopt_type_filter_removal"
+    questions:
+      - "ext_hard_1"
+      - "int_hard_1"
+
+  # ----------------------------------------------------------------------------
+  # Suite 3: FIBO Standards High-Scale Robustness Suite (SF100)
+  # ----------------------------------------------------------------------------
+  - name: "fibo_robustness"
+    description: "Evaluates Multi-tier UBO Shell rings and Loan-Guarantee Integration on SF100"
+    enabled: true
+    scale: 100
+    scenarios:
+      - "FIBO_R1_UBO_Shell_Ring"
+      - "FIBO_R2_Loan_Guaranteed_Integration"
+
+output:
+  results_dir: "results/benchmarks"
+  save_json: true
+  generate_markdown_report: true
+  auto_plot: true

@@ -1,0 +1,39 @@
+# Quick Smoke Test Configuration for Rapid CI/Local Verification
+name: "quick-smoke-suite"
+version: "1.0.0"
+description: "Rapid single-question smoke test of all benchmark suites."
+
+dataset:
+  engine: "duckdb"
+  scales: [10]
+  base_ontology: "ontology/finbench.ontology.yaml"
+  fibo_ontology: "ontology/fibo_finbench.ontology.yaml"
+  output_dir: "outputs/finbench"
+
+model:
+  provider: "mara"
+  model_name: "gpt-oss-120b"
+  temperature: 0.0
+  max_tokens: 800
+
+suites:
+  - name: "sql_vs_cypher"
+    enabled: true
+    questions: ["ext_easy_1", "ext_med_1"]
+    arms: ["sql_schema_only", "cypher_ontology"]
+
+  - name: "seocho_optimizations"
+    enabled: true
+    proposals: ["hub_defense_index", "reciprocal_ambiguity_guide"]
+    questions: ["ext_hard_1"]
+
+  - name: "fibo_robustness"
+    enabled: true
+    scale: 10
+    scenarios: ["FIBO_R1_UBO_Shell_Ring"]
+
+output:
+  results_dir: "results/benchmarks"
+  save_json: true
+  generate_markdown_report: true
+  auto_plot: false
