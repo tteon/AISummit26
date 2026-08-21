@@ -62,7 +62,7 @@ RUN pip install --no-cache-dir -r requirements.txt -r testbed-requirements.txt
 # so the tag is pinned here and raising it is a deliberate act.
 ARG SEOCHO_SPEC="seocho @ git+https://github.com/tteon/seocho@aisummit26-interface-v1"
 RUN pip install --no-cache-dir --force-reinstall --no-deps "${SEOCHO_SPEC}" \
- && python -c "import seocho, seocho.query.hybrid_planner as h; \
+ && python3 -c "import seocho, seocho.query.hybrid_planner as h; \
 print('seocho', getattr(seocho, '__version__', '?')); \
 from seocho.query.hybrid_planner import policy_from_ontology, schema_for_prompt; \
 from seocho.query.workload_compiler import validate_text2cypher_fallback; \
@@ -70,7 +70,10 @@ print('interface symbols present')"
 
 # A pip resolve that quietly replaces the base image's torch/vllm would turn a rented hour
 # into a debugging session. Fail the build here instead.
-RUN python -c "\
+#
+# `python3`, never `python`: the vLLM base image has no `python` alias, so a bare `python`
+# passes on a slim/conda base and fails only in CI — which is where this was found.
+RUN python3 -c "\
 import importlib.util as u;\
 spec = u.find_spec('vllm');\
 print('vllm not in this base — skipping serving check') if spec is None else None;\
