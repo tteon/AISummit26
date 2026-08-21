@@ -1,0 +1,83 @@
+{
+  "schema_version": "seocho.finbench.sim-matrix.v1",
+  "question": "hold the simulated serving stack constant, vary the workload the model produced",
+  "simulator": {
+    "commit": "5daddb21a545658d5150b535712d0494584b5278",
+    "hardware_model": "RTXPRO6000 + Qwen/Qwen3-30B-A3B-Instruct-2507 (bundled profile)",
+    "note": "the simulated stack is NOT the model that produced the workload; that is the point \u2014 the variable under test is workload shape, not kernels"
+  },
+  "workloads": {
+    "single_gptoss": {
+      "episodes": 12,
+      "llm_calls": 28,
+      "tool_calls": 16,
+      "input_tokens_measured": 35385,
+      "max_trips_in_one_episode": 2,
+      "correct": 12,
+      "model": "gpt-oss-120b",
+      "context": {
+        "native": 131072,
+        "max_model_len": null,
+        "effective": 131072,
+        "position_interpolation_factor": null,
+        "rope_scaling": null
+      }
+    },
+    "multi_minimax": {
+      "episodes": 12,
+      "llm_calls": 32,
+      "tool_calls": 96,
+      "input_tokens_measured": 47590,
+      "max_trips_in_one_episode": 72,
+      "correct": 11,
+      "model": "MiniMax-M2.7",
+      "context": {
+        "native": 204800,
+        "max_model_len": null,
+        "effective": 204800,
+        "position_interpolation_factor": null,
+        "rope_scaling": null
+      }
+    }
+  },
+  "topologies": {
+    "single_gpu_moe": "1 instance, tp1 \u2014 mirrors the 1xH200 rental",
+    "four_gpu_moe_dp2_tp2": "2 instances x tp2 = 4 GPUs \u2014 mirrors the 4xH200 plan"
+  },
+  "results": {
+    "single_gptoss__1gpu": {
+      "prompt_tokens": 283080,
+      "prefix_hit_pct": 88.42,
+      "ttft_mean_ms": 73.23,
+      "ttft_p99_ms": 100.08,
+      "tpot_mean_ms": 42.53,
+      "throughput_tok_s": 2564.19
+    },
+    "single_gptoss__4gpu": {
+      "prompt_tokens": 283080,
+      "prefix_hit_pct": 86.35,
+      "ttft_mean_ms": [
+        59.43,
+        61.13
+      ],
+      "ttft_p99_ms": [
+        112.64,
+        115.82
+      ],
+      "tpot_mean_ms": [
+        46.6,
+        49.15
+      ],
+      "throughput_tok_s": 2530.12
+    },
+    "multi_minimax__1gpu": {
+      "prompt_tokens": 380720,
+      "prefix_hit_pct": 81.37,
+      "ttft_mean_ms": 83.53,
+      "ttft_p99_ms": 130.64,
+      "tpot_mean_ms": 46.16,
+      "throughput_tok_s": 1193.12
+    },
+    "multi_minimax__4gpu": "still running at archive time"
+  }
+}

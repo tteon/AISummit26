@@ -1,0 +1,2702 @@
+{
+ "schema_version": "seocho.finbench.agent-interaction.v1",
+ "model": "MiniMax-M2.7",
+ "endpoint": {
+  "provider": "mara",
+  "model_name": "MiniMax-M2.7",
+  "base_url": "https://api.cloud.mara.com/v1",
+  "temperature": 0.0,
+  "max_tokens": 8192,
+  "extra_body": null,
+  "api_key_present": true,
+  "context": {
+   "native": 204800,
+   "max_model_len": null,
+   "effective": 204800,
+   "position_interpolation_factor": null,
+   "rope_scaling": null
+  }
+ },
+ "arms": [
+  "ontology",
+  "guardrail",
+  "in_context"
+ ],
+ "row_cap": 50,
+ "row_cap_configured": 50,
+ "in_context_row_cap_configured": 200,
+ "tx_timeout_s": 60.0,
+ "probe_timeout_s": 2.0,
+ "max_turns": 8,
+ "context": {
+  "finbenchl1": {
+   "sf": 1,
+   "anchor": 108,
+   "p99_out_degree": 11
+  }
+ },
+ "questions": [
+  {
+   "id": "ext_easy_1",
+   "audience": "external",
+   "difficulty": "easy",
+   "ko": "\ub0b4 \uacc4\uc88c\ub85c \uc9c0\uae08\uae4c\uc9c0 \ub4e4\uc5b4\uc628 \uc774\uccb4\ub294 \uba87 \uac74\uc774\uace0 \ucd1d\uc561\uc740 \uc5bc\ub9c8\uc778\uac00\uc694?",
+   "question": "For account number {a}: how many transfers has it received in total, and what is the total amount received?",
+   "shape": "scalar"
+  },
+  {
+   "id": "ext_med_1",
+   "audience": "external",
+   "difficulty": "medium",
+   "ko": "\ub0b4 \uacc4\uc88c\ub85c \ub3c8\uc744 \ubcf4\ub0b8 \uacc4\uc88c \uc911 \uace0\uc704\ud5d8 \ucc44\ub110\uc744 \uc4f4 \uacf3\uc740 \uc5b4\ub514\uc778\uac00\uc694?",
+   "question": "Which accounts sent money to account number {a} on a transfer whose own channel_risk property is 5 or more? Give the five lowest such account numbers in ascending order.",
+   "shape": "list"
+  },
+  {
+   "id": "ext_hard_1",
+   "audience": "external",
+   "difficulty": "hard",
+   "ko": "\ub0b4 \ub3c8\uc774 \ub450 \ub2e8\uacc4 \uc548\uc5d0 \ub2ff\ub294 \uacc4\uc88c\ub294 \uba87 \uac1c\uc774\uace0, \uadf8 \uc911 \uac00\uc7a5 \uc704\ud5d8\ud55c \ub4f1\uae09\uc740?",
+   "question": "Starting from account number {a} and following transfers downstream, how many distinct accounts are reachable within two hops, and what is the highest risk_tier among them?",
+   "shape": "scalar"
+  },
+  {
+   "id": "int_med_1",
+   "audience": "internal",
+   "difficulty": "medium",
+   "ko": "\uac19\uc740 \uc0ac\ub78c\uc774 \uc18c\uc720\ud55c \uacc4\uc88c\ub07c\ub9ac \uc9c1\uc811 \uc1a1\uae08\uc774 \uc624\uac04 \uc0ac\ub840\ub294 \uba87 \uac74\uc778\uac00\uc694?",
+   "question": "How many distinct ordered pairs of two *different* accounts owned by the same party have a direct transfer running from the first to the second? Count each pair once however many transfers run between them.",
+   "shape": "scalar"
+  }
+ ],
+ "repeats": 1,
+ "episodes": [
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "guardrail",
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH (source:Account)-[r:TRANSFER]->(a:Account {acct_no: $a, _workspace_id: $workspace_id})\nRETURN count(r) AS transfer_count, sum(r.amount) AS total_amount\nLIMIT $limit",
+   "row_cap": 50,
+   "max_turns": 8,
+   "context_window": {
+    "native": 204800,
+    "max_model_len": null,
+    "effective": 204800,
+    "position_interpolation_factor": null,
+    "rope_scaling": null
+   },
+   "audience": "external",
+   "difficulty": "easy",
+   "anchor": 108,
+   "round_trips": 1,
+   "db_hits": 42,
+   "rows_into_context": 1,
+   "chars_into_context": 113,
+   "db_ms": 9.0,
+   "model_ms": 3706.7,
+   "wall_ms": 3715.7,
+   "input_tokens": 2381,
+   "output_tokens": 672,
+   "turns": [
+    {
+     "index": 0,
+     "input_tokens": 1126,
+     "output_tokens": 604,
+     "cached_tokens": 0
+    },
+    {
+     "index": 1,
+     "input_tokens": 1255,
+     "output_tokens": 68,
+     "cached_tokens": 0
+    }
+   ],
+   "operators": {
+    "ProduceResults": 1,
+    "Limit": 1,
+    "EagerAggregation": 1,
+    "Filter": 2,
+    "Expand(All)": 1,
+    "NodeIndexSeek": 1
+   },
+   "guardrail_rejections": 0,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 0,
+   "timeouts": 0,
+   "violations": [],
+   "parse": "parsed",
+   "error": null,
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": true,
+   "score_f1": 1.0,
+   "score_gold": {
+    "n": 5,
+    "total": 163488
+   },
+   "score_matched_keys": 2,
+   "calls": [
+    {
+     "outcome": "ok",
+     "db_hits": 42,
+     "rows": 1,
+     "ms": 8.968947004177608,
+     "operators": {
+      "ProduceResults": 1,
+      "Limit": 1,
+      "EagerAggregation": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 113,
+     "truncated": false,
+     "cypher": "MATCH (source:Account)-[r:TRANSFER]->(a:Account {acct_no: $a, _workspace_id: $workspace_id})\nRETURN count(r) AS transfer_count, sum(r.amount) AS total_amount\nLIMIT $limit"
+    }
+   ],
+   "final_output": "\n\nAccount 108 has received **5 transfers** in total, with a combined amount of **163,488**.\n\nANSWER: {\"transfer_count\": 5, \"total_amount\": 163488}"
+  },
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "guardrail",
+   "question_id": "ext_hard_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH (start:Account {acct_no: $a, _workspace_id: $workspace_id})-[:TRANSFER*1..2]->(reachable:Account {_workspace_id: $workspace_id})\nWITH DISTINCT reachable\nRETURN count(reachable) AS distinct_accounts, max(reachable.risk_tier) AS highest_risk_tier\nLIMIT $limit",
+   "row_cap": 50,
+   "max_turns": 8,
+   "context_window": {
+    "native": 204800,
+    "max_model_len": null,
+    "effective": 204800,
+    "position_interpolation_factor": null,
+    "rope_scaling": null
+   },
+   "audience": "external",
+   "difficulty": "hard",
+   "anchor": 108,
+   "round_trips": 1,
+   "db_hits": 537,
+   "rows_into_context": 1,
+   "chars_into_context": 117,
+   "db_ms": 17.1,
+   "model_ms": 4263.1,
+   "wall_ms": 4280.1,
+   "input_tokens": 2425,
+   "output_tokens": 673,
+   "turns": [
+    {
+     "index": 0,
+     "input_tokens": 1135,
+     "output_tokens": 595,
+     "cached_tokens": 0
+    },
+    {
+     "index": 1,
+     "input_tokens": 1290,
+     "output_tokens": 78,
+     "cached_tokens": 0
+    }
+   ],
+   "operators": {
+    "ProduceResults": 1,
+    "Limit": 1,
+    "EagerAggregation": 1,
+    "Distinct": 1,
+    "Filter": 2,
+    "VarLengthExpand(Pruning,BFS,All)": 1,
+    "NodeIndexSeek": 1
+   },
+   "guardrail_rejections": 0,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 0,
+   "timeouts": 0,
+   "violations": [],
+   "parse": "parsed",
+   "error": null,
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": true,
+   "score_f1": 1.0,
+   "score_gold": {
+    "n": 77,
+    "worst_risk_tier": 5
+   },
+   "score_matched_keys": 2,
+   "calls": [
+    {
+     "outcome": "ok",
+     "db_hits": 537,
+     "rows": 1,
+     "ms": 17.059806996257976,
+     "operators": {
+      "ProduceResults": 1,
+      "Limit": 1,
+      "EagerAggregation": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "VarLengthExpand(Pruning,BFS,All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 117,
+     "truncated": false,
+     "cypher": "MATCH (start:Account {acct_no: $a, _workspace_id: $workspace_id})-[:TRANSFER*1..2]->(reachable:Account {_workspace_id: $workspace_id})\nWITH DISTINCT reachable\nRETURN count(reachable) AS distinct_accounts, max(reachable.risk_tier) AS highest_risk_tier\nLIMIT $limit"
+    }
+   ],
+   "final_output": "\n\n77 distinct accounts are reachable within two hops from account 108, and the highest risk_tier among them is 5.\n\nANSWER: {\"distinct_accounts\": 77, \"highest_risk_tier\": 5}"
+  },
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "guardrail",
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit",
+   "row_cap": 50,
+   "max_turns": 8,
+   "context_window": {
+    "native": 204800,
+    "max_model_len": null,
+    "effective": 204800,
+    "position_interpolation_factor": null,
+    "rope_scaling": null
+   },
+   "audience": "external",
+   "difficulty": "medium",
+   "anchor": 108,
+   "round_trips": 72,
+   "db_hits": 3287,
+   "rows_into_context": 140,
+   "chars_into_context": 7883,
+   "db_ms": 3238.8,
+   "model_ms": 51208.3,
+   "wall_ms": 54447.1,
+   "input_tokens": 0,
+   "output_tokens": 0,
+   "turns": [],
+   "operators": {
+    "ProduceResults": 71,
+    "Top": 70,
+    "Distinct": 70,
+    "Filter": 141,
+    "Expand(All)": 70,
+    "NodeIndexSeek": 71,
+    "Projection": 1,
+    "CacheProperties": 1,
+    "Limit": 1
+   },
+   "guardrail_rejections": 1,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 0,
+   "timeouts": 0,
+   "violations": [
+    "missing_parameterized_limit",
+    "missing_parameter:limit"
+   ],
+   "parse": "unparseable",
+   "error": "BadRequestError: Error code: 400 - {'error': 'Could not finish the message because max_tokens or model output limit was reached. Please try again with higher max_tokens.', 'error_code': None, 'error_model_output': 'Th",
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": false,
+   "score_f1": 0.0,
+   "score_note": "BadRequestError: Error code: 400 - {'error': 'Could not finish the message because max_tokens or model output limit was reached. Please try again with higher max_tokens.', 'error_code': None, 'error_model_output': 'Th",
+   "calls": [
+    {
+     "outcome": "ok",
+     "db_hits": 42,
+     "rows": 0,
+     "ms": 6.283278999035247,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 68,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = $a AND t.channel_risk >= 5\nRETURN DISTINCT sender.acct_no AS acct_no\nORDER BY acct_no ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "guardrail_rejected",
+     "db_hits": 0,
+     "rows": 0,
+     "ms": 0.0,
+     "operators": {},
+     "chars": 213,
+     "violations": [
+      "missing_parameterized_limit",
+      "missing_parameter:limit"
+     ],
+     "cypher": "MATCH (a:Account {_workspace_id: $workspace_id})\nWHERE a.acct_no = '108' OR a.acct_no = 108\nRETURN a.acct_no, a.id, a.flagged, a.risk_tier\nLIMIT 10"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 7,
+     "rows": 1,
+     "ms": 32.32252100133337,
+     "operators": {
+      "ProduceResults": 1,
+      "Projection": 1,
+      "CacheProperties": 1,
+      "Limit": 1,
+      "Filter": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 139,
+     "truncated": false,
+     "cypher": "MATCH (a:Account {_workspace_id: $workspace_id})\nWHERE a.acct_no = '108' OR a.acct_no = 108\nRETURN a.acct_no, a.id, a.flagged, a.risk_tier\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 5,
+     "ms": 42.46767199947499,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 159,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT sender.acct_no AS acct_no\nORDER BY acct_no ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 42,
+     "rows": 0,
+     "ms": 47.675337991677225,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 68,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108 AND t.channel_risk >= 5\nRETURN DISTINCT sender.acct_no AS acct_no\nORDER BY acct_no ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 74.3193450034596,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 78.34541999909561,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 89.3519719975302,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 74.09507599368226,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 78.79479401162826,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 87.65301998937503,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 58.65870098932646,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 90.44805199664552,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 67.15201200859156,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 79.98095800576266,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 75.55934799893294,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 82.40546399611048,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 71.08873200195376,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 70.07740999688394,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 45.07763800211251,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 41.00359498988837,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 52.965656999731436,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 36.05183299805503,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 41.98219200770836,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 40.45353300170973,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 32.94500398624223,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 36.515651998342946,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 50.46275399217848,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 35.11589999834541,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 56.769410002743825,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 40.250698002637364,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 26.132013997994363,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 34.422330994857475,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 36.13220299303066,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 29.85569900192786,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 34.7448929969687,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 35.987586990813725,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 51.18520400719717,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 31.31928101356607,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 44.303129994659685,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 46.952136006439105,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 37.076941996929236,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 34.40922900335863,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 24.159966997103766,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 44.00824000185821,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 53.295530000468716,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 51.86305599636398,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 51.082467995001934,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 38.507824996486306,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 38.93475400400348,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 58.64823199226521,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 26.34010900510475,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 44.063356006518006,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 47.72396199405193,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 49.49410799599718,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 35.71162601292599,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 32.7576239942573,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 55.24495299323462,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 33.7429310020525,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 33.83646199654322,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 39.36409000016283,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 29.44082100293599,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 32.98784600337967,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 31.77085000788793,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 37.292006993084215,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 30.114756998955272,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 32.109659994603135,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 29.749742010608315,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 26.994840998668224,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 22.261453996179625,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 25.094523996813223,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 23.39304398628883,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 108,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN DISTINCT t.channel_risk AS channel_risk\nORDER BY channel_risk ASC\nLIMIT $limit"
+    }
+   ],
+   "final_output": ""
+  },
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "guardrail",
+   "question_id": "int_med_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH (owner)-[:OWN]->(a:Account {_workspace_id: $workspace_id})\nMATCH (owner)-[:OWN]->(b:Account {_workspace_id: $workspace_id})\nWHERE a <> b\nAND exists((a)-[:TRANSFER]->(b))\nRETURN count(DISTINCT [a.acct_no, b.acct_no]) AS pair_count\nLIMIT $limit",
+   "row_cap": 50,
+   "max_turns": 8,
+   "context_window": {
+    "native": 204800,
+    "max_model_len": null,
+    "effective": 204800,
+    "position_interpolation_factor": null,
+    "rope_scaling": null
+   },
+   "audience": "internal",
+   "difficulty": "medium",
+   "anchor": null,
+   "round_trips": 1,
+   "db_hits": 188250,
+   "rows_into_context": 1,
+   "chars_into_context": 86,
+   "db_ms": 44.6,
+   "model_ms": 3249.6,
+   "wall_ms": 3294.2,
+   "input_tokens": 2434,
+   "output_tokens": 654,
+   "turns": [
+    {
+     "index": 0,
+     "input_tokens": 1142,
+     "output_tokens": 613,
+     "cached_tokens": 0
+    },
+    {
+     "index": 1,
+     "input_tokens": 1292,
+     "output_tokens": 41,
+     "cached_tokens": 0
+    }
+   ],
+   "operators": {
+    "ProduceResults": 1,
+    "Limit": 1,
+    "EagerAggregation": 1,
+    "Filter": 1,
+    "CacheProperties": 1,
+    "SemiApply": 1,
+    "Expand(All)": 2,
+    "NodeIndexSeek": 1,
+    "Expand(Into)": 1,
+    "Argument": 1
+   },
+   "guardrail_rejections": 0,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 0,
+   "timeouts": 0,
+   "violations": [],
+   "parse": "parsed_bare",
+   "error": null,
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": true,
+   "score_f1": 1.0,
+   "score_gold": {
+    "n": 29
+   },
+   "score_matched_keys": 1,
+   "calls": [
+    {
+     "outcome": "ok",
+     "db_hits": 188250,
+     "rows": 1,
+     "ms": 44.63801901147235,
+     "operators": {
+      "ProduceResults": 1,
+      "Limit": 1,
+      "EagerAggregation": 1,
+      "Filter": 1,
+      "CacheProperties": 1,
+      "SemiApply": 1,
+      "Expand(All)": 2,
+      "NodeIndexSeek": 1,
+      "Expand(Into)": 1,
+      "Argument": 1
+     },
+     "chars": 86,
+     "truncated": false,
+     "cypher": "MATCH (owner)-[:OWN]->(a:Account {_workspace_id: $workspace_id})\nMATCH (owner)-[:OWN]->(b:Account {_workspace_id: $workspace_id})\nWHERE a <> b\nAND exists((a)-[:TRANSFER]->(b))\nRETURN count(DISTINCT [a.acct_no, b.acct_no]) AS pair_count\nLIMIT $limit"
+    }
+   ],
+   "final_output": "\n\nANSWER: 29"
+  },
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "in_context",
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH (a:Account {acct_no: $a, _workspace_id: $workspace_id})<-[t:TRANSFER]-(sender:Account)\nRETURN sender.acct_no AS sender_acct_no, t.amount AS amount\nORDER BY sender.acct_no\nLIMIT $limit",
+   "row_cap": 200,
+   "max_turns": 16,
+   "context_window": {
+    "native": 204800,
+    "max_model_len": null,
+    "effective": 204800,
+    "position_interpolation_factor": null,
+    "rope_scaling": null
+   },
+   "audience": "external",
+   "difficulty": "easy",
+   "anchor": 108,
+   "round_trips": 6,
+   "db_hits": 188,
+   "rows_into_context": 20,
+   "chars_into_context": 1531,
+   "db_ms": 137.7,
+   "model_ms": 26728.9,
+   "wall_ms": 26866.6,
+   "input_tokens": 8166,
+   "output_tokens": 8821,
+   "turns": [
+    {
+     "index": 0,
+     "input_tokens": 1228,
+     "output_tokens": 287,
+     "cached_tokens": 0
+    },
+    {
+     "index": 1,
+     "input_tokens": 1366,
+     "output_tokens": 116,
+     "cached_tokens": 0
+    },
+    {
+     "index": 2,
+     "input_tokens": 1552,
+     "output_tokens": 141,
+     "cached_tokens": 0
+    },
+    {
+     "index": 3,
+     "input_tokens": 1749,
+     "output_tokens": 8192,
+     "cached_tokens": 0
+    },
+    {
+     "index": 4,
+     "input_tokens": 2271,
+     "output_tokens": 85,
+     "cached_tokens": 0
+    }
+   ],
+   "operators": {
+    "ProduceResults": 4,
+    "Projection": 6,
+    "CacheProperties": 1,
+    "Limit": 2,
+    "Filter": 8,
+    "Expand(All)": 4,
+    "NodeIndexSeek": 4,
+    "Top": 2
+   },
+   "guardrail_rejections": 0,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 0,
+   "timeouts": 0,
+   "violations": [
+    "server_side_aggregate:count",
+    "server_side_aggregate:count"
+   ],
+   "parse": "parsed",
+   "error": null,
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": true,
+   "score_f1": 1.0,
+   "score_gold": {
+    "n": 5,
+    "total": 163488
+   },
+   "score_matched_keys": 2,
+   "calls": [
+    {
+     "outcome": "aggregate_rejected",
+     "db_hits": 0,
+     "rows": 0,
+     "ms": 0.0,
+     "operators": {},
+     "chars": 211,
+     "violations": [
+      "server_side_aggregate:count"
+     ],
+     "cypher": "MATCH (a:Account {acct_no: $a, _workspace_id: $workspace_id})<-[:TRANSFER]-(sender:Account)\nRETURN count(*) AS transfer_count, sum(senderacct.amount) AS total_amount\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 5,
+     "ms": 30.848329013679177,
+     "operators": {
+      "ProduceResults": 1,
+      "Projection": 1,
+      "CacheProperties": 1,
+      "Limit": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 275,
+     "truncated": false,
+     "cypher": "MATCH (a:Account {acct_no: $a, _workspace_id: $workspace_id})<-[:TRANSFER]-(sender:Account)\nRETURN sender.acct_no AS sender_acct_no, sender.amount AS amount\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 5,
+     "ms": 35.986261995276436,
+     "operators": {
+      "ProduceResults": 1,
+      "Projection": 1,
+      "Limit": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 278,
+     "truncated": false,
+     "cypher": "MATCH (a:Account {acct_no: $a, _workspace_id: $workspace_id})<-[t:TRANSFER]-(sender:Account)\nRETURN sender.acct_no AS sender_acct_no, t.amount AS amount\nLIMIT $limit"
+    },
+    {
+     "outcome": "aggregate_rejected",
+     "db_hits": 0,
+     "rows": 0,
+     "ms": 0.0,
+     "operators": {},
+     "chars": 211,
+     "violations": [
+      "server_side_aggregate:count"
+     ],
+     "cypher": "MATCH (a:Account {acct_no: $a, _workspace_id: $workspace_id})<-[t:TRANSFER]-(sender:Account)\nRETURN count(*) AS transfer_count, sum(t.amount) AS total_amount_received\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 5,
+     "ms": 35.30026400403585,
+     "operators": {
+      "ProduceResults": 1,
+      "Projection": 2,
+      "Top": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 278,
+     "truncated": false,
+     "cypher": "MATCH (a:Account {acct_no: $a, _workspace_id: $workspace_id})<-[t:TRANSFER]-(sender:Account)\nRETURN sender.acct_no AS sender_acct_no, t.amount AS amount\nORDER BY sender.acct_no\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 5,
+     "ms": 35.523828002624214,
+     "operators": {
+      "ProduceResults": 1,
+      "Projection": 2,
+      "Top": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 278,
+     "truncated": false,
+     "cypher": "MATCH (a:Account {acct_no: $a, _workspace_id: $workspace_id})<-[t:TRANSFER]-(sender:Account)\nRETURN sender.acct_no AS sender_acct_no, t.amount AS amount\nORDER BY sender.acct_no\nLIMIT $limit"
+    }
+   ],
+   "final_output": "\n\nANSWER: {\"transfer_count\": 5, \"total_amount_received\": 163488}"
+  },
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "in_context",
+   "question_id": "ext_hard_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH (start:Account {acct_no: $a, _workspace_id: $workspace_id})-[:TRANSFER*1..2]->(reachable:Account {_workspace_id: $workspace_id})\nRETURN DISTINCT reachable.id AS account_id, reachable.risk_tier AS risk_tier\nLIMIT $limit",
+   "row_cap": 200,
+   "max_turns": 16,
+   "context_window": {
+    "native": 204800,
+    "max_model_len": null,
+    "effective": 204800,
+    "position_interpolation_factor": null,
+    "rope_scaling": null
+   },
+   "audience": "external",
+   "difficulty": "hard",
+   "anchor": 108,
+   "round_trips": 1,
+   "db_hits": 614,
+   "rows_into_context": 77,
+   "chars_into_context": 3119,
+   "db_ms": 40.9,
+   "model_ms": 9094.7,
+   "wall_ms": 9135.7,
+   "input_tokens": 3800,
+   "output_tokens": 786,
+   "turns": [
+    {
+     "index": 0,
+     "input_tokens": 1237,
+     "output_tokens": 635,
+     "cached_tokens": 0
+    },
+    {
+     "index": 1,
+     "input_tokens": 2563,
+     "output_tokens": 151,
+     "cached_tokens": 0
+    }
+   ],
+   "operators": {
+    "ProduceResults": 1,
+    "Limit": 1,
+    "Distinct": 1,
+    "CacheProperties": 1,
+    "Filter": 2,
+    "VarLengthExpand(Pruning,BFS,All)": 1,
+    "NodeIndexSeek": 1
+   },
+   "guardrail_rejections": 0,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 0,
+   "timeouts": 0,
+   "violations": [],
+   "parse": "parsed",
+   "error": null,
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": true,
+   "score_f1": 1.0,
+   "score_gold": {
+    "n": 77,
+    "worst_risk_tier": 5
+   },
+   "score_matched_keys": 2,
+   "calls": [
+    {
+     "outcome": "ok",
+     "db_hits": 614,
+     "rows": 77,
+     "ms": 40.93084001215175,
+     "operators": {
+      "ProduceResults": 1,
+      "Limit": 1,
+      "Distinct": 1,
+      "CacheProperties": 1,
+      "Filter": 2,
+      "VarLengthExpand(Pruning,BFS,All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 3119,
+     "truncated": false,
+     "cypher": "MATCH (start:Account {acct_no: $a, _workspace_id: $workspace_id})-[:TRANSFER*1..2]->(reachable:Account {_workspace_id: $workspace_id})\nRETURN DISTINCT reachable.id AS account_id, reachable.risk_tier AS risk_tier\nLIMIT $limit"
+    }
+   ],
+   "final_output": "\n\nI found 77 distinct accounts reachable within two hops from account 108. Looking at the risk_tier values returned, the highest is **5**.\n\nANSWER: {\"distinct_accounts\": 77, \"highest_risk_tier\": 5}"
+  },
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "in_context",
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(receiver:Account {_workspace_id: $workspace_id})\nWHERE receiver.acct_no = $a AND t.channel_risk >= 5\nRETURN sender.acct_no\nORDER BY sender.acct_no ASC\nLIMIT $limit",
+   "row_cap": 200,
+   "max_turns": 16,
+   "context_window": {
+    "native": 204800,
+    "max_model_len": null,
+    "effective": 204800,
+    "position_interpolation_factor": null,
+    "rope_scaling": null
+   },
+   "audience": "external",
+   "difficulty": "medium",
+   "anchor": 108,
+   "round_trips": 1,
+   "db_hits": 42,
+   "rows_into_context": 0,
+   "chars_into_context": 69,
+   "db_ms": 44.5,
+   "model_ms": 5098.0,
+   "wall_ms": 5142.5,
+   "input_tokens": 2610,
+   "output_tokens": 1053,
+   "turns": [
+    {
+     "index": 0,
+     "input_tokens": 1240,
+     "output_tokens": 792,
+     "cached_tokens": 0
+    },
+    {
+     "index": 1,
+     "input_tokens": 1370,
+     "output_tokens": 261,
+     "cached_tokens": 0
+    }
+   ],
+   "operators": {
+    "ProduceResults": 1,
+    "Top": 1,
+    "Projection": 1,
+    "Filter": 2,
+    "Expand(All)": 1,
+    "NodeIndexSeek": 1
+   },
+   "guardrail_rejections": 0,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 0,
+   "timeouts": 0,
+   "violations": [],
+   "parse": "parsed",
+   "error": null,
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": true,
+   "score_f1": 1.0,
+   "score_gold": [],
+   "calls": [
+    {
+     "outcome": "ok",
+     "db_hits": 42,
+     "rows": 0,
+     "ms": 44.504948004032485,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Projection": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 69,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(receiver:Account {_workspace_id: $workspace_id})\nWHERE receiver.acct_no = $a AND t.channel_risk >= 5\nRETURN sender.acct_no\nORDER BY sender.acct_no ASC\nLIMIT $limit"
+    }
+   ],
+   "final_output": "\n\nThe query returned no results, meaning there are no accounts that sent money to account number 108 via a transfer with channel_risk of 5 or higher.\n\nANSWER: []"
+  },
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "in_context",
+   "question_id": "int_med_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH (owner)-[:OWN]->(a:Account {_workspace_id: $workspace_id})\nMATCH (owner)-[:OWN]->(b:Account {_workspace_id: $workspace_id})\nWHERE a <> b\nMATCH (a)-[:TRANSFER]->(b)\nRETURN DISTINCT a.acct_no AS from_account, b.acct_no AS to_account\nORDER BY from_account, to_account\nLIMIT $limit",
+   "row_cap": 200,
+   "max_turns": 16,
+   "context_window": {
+    "native": 204800,
+    "max_model_len": null,
+    "effective": 204800,
+    "position_interpolation_factor": null,
+    "rope_scaling": null
+   },
+   "audience": "internal",
+   "difficulty": "medium",
+   "anchor": null,
+   "round_trips": 4,
+   "db_hits": 465150,
+   "rows_into_context": 58,
+   "chars_into_context": 3244,
+   "db_ms": 207.1,
+   "model_ms": 40056.7,
+   "wall_ms": 40263.8,
+   "input_tokens": 7597,
+   "output_tokens": 9131,
+   "turns": [
+    {
+     "index": 0,
+     "input_tokens": 1244,
+     "output_tokens": 764,
+     "cached_tokens": 0
+    },
+    {
+     "index": 1,
+     "input_tokens": 1412,
+     "output_tokens": 148,
+     "cached_tokens": 0
+    },
+    {
+     "index": 2,
+     "input_tokens": 2070,
+     "output_tokens": 8192,
+     "cached_tokens": 0
+    },
+    {
+     "index": 3,
+     "input_tokens": 2871,
+     "output_tokens": 27,
+     "cached_tokens": 0
+    }
+   ],
+   "operators": {
+    "ProduceResults": 3,
+    "Top": 3,
+    "Distinct": 3,
+    "Expand(Into)": 3,
+    "Filter": 3,
+    "Expand(All)": 6,
+    "NodeIndexSeek": 3,
+    "Skip": 1
+   },
+   "guardrail_rejections": 0,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 0,
+   "timeouts": 0,
+   "violations": [
+    "server_side_aggregate:count"
+   ],
+   "parse": "parsed_bare",
+   "error": null,
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": true,
+   "score_f1": 1.0,
+   "score_gold": {
+    "n": 29
+   },
+   "score_matched_keys": 1,
+   "calls": [
+    {
+     "outcome": "aggregate_rejected",
+     "db_hits": 0,
+     "rows": 0,
+     "ms": 0.0,
+     "operators": {},
+     "chars": 211,
+     "violations": [
+      "server_side_aggregate:count"
+     ],
+     "cypher": "MATCH (owner)-[:OWN]->(a:Account {_workspace_id: $workspace_id})\nMATCH (owner)-[:OWN]->(b:Account {_workspace_id: $workspace_id})\nWHERE a <> b\nMATCH (a)-[:TRANSFER]->(b)\nRETURN count(DISTINCT [a.acct_no, b.acct_no]) AS pair_count\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 155050,
+     "rows": 29,
+     "ms": 78.85286399687175,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Expand(Into)": 1,
+      "Filter": 1,
+      "Expand(All)": 2,
+      "NodeIndexSeek": 1
+     },
+     "chars": 1482,
+     "truncated": false,
+     "cypher": "MATCH (owner)-[:OWN]->(a:Account {_workspace_id: $workspace_id})\nMATCH (owner)-[:OWN]->(b:Account {_workspace_id: $workspace_id})\nWHERE a <> b\nMATCH (a)-[:TRANSFER]->(b)\nRETURN DISTINCT a.acct_no AS from_account, b.acct_no AS to_account\nORDER BY from_account, to_account\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 155050,
+     "rows": 0,
+     "ms": 95.01619600632694,
+     "operators": {
+      "ProduceResults": 1,
+      "Skip": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Expand(Into)": 1,
+      "Filter": 1,
+      "Expand(All)": 2,
+      "NodeIndexSeek": 1
+     },
+     "chars": 69,
+     "truncated": false,
+     "cypher": "MATCH (owner)-[:OWN]->(a:Account {_workspace_id: $workspace_id})\nMATCH (owner)-[:OWN]->(b:Account {_workspace_id: $workspace_id})\nWHERE a <> b\nMATCH (a)-[:TRANSFER]->(b)\nRETURN DISTINCT a.acct_no AS from_account, b.acct_no AS to_account\nORDER BY from_account, to_account\nSKIP 200\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 155050,
+     "rows": 29,
+     "ms": 33.25378200679552,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Expand(Into)": 1,
+      "Filter": 1,
+      "Expand(All)": 2,
+      "NodeIndexSeek": 1
+     },
+     "chars": 1482,
+     "truncated": false,
+     "cypher": "MATCH (owner)-[:OWN]->(a:Account {_workspace_id: $workspace_id})\nMATCH (owner)-[:OWN]->(b:Account {_workspace_id: $workspace_id})\nWHERE a <> b\nMATCH (a)-[:TRANSFER]->(b)\nRETURN DISTINCT a.acct_no AS from_account, b.acct_no AS to_account\nORDER BY from_account, to_account\nLIMIT $limit"
+    }
+   ],
+   "final_output": "\n\nANSWER: 29"
+  },
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "ontology",
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH (source:Account)-[r:TRANSFER]->(a:Account {acct_no: $a, _workspace_id: $workspace_id})\nRETURN count(r) AS transfer_count, sum(r.amount) AS total_amount\nLIMIT $limit",
+   "row_cap": 50,
+   "max_turns": 8,
+   "context_window": {
+    "native": 204800,
+    "max_model_len": null,
+    "effective": 204800,
+    "position_interpolation_factor": null,
+    "rope_scaling": null
+   },
+   "audience": "external",
+   "difficulty": "easy",
+   "anchor": 108,
+   "round_trips": 1,
+   "db_hits": 42,
+   "rows_into_context": 1,
+   "chars_into_context": 113,
+   "db_ms": 43.4,
+   "model_ms": 3905.1,
+   "wall_ms": 3948.5,
+   "input_tokens": 2381,
+   "output_tokens": 672,
+   "turns": [
+    {
+     "index": 0,
+     "input_tokens": 1126,
+     "output_tokens": 604,
+     "cached_tokens": 0
+    },
+    {
+     "index": 1,
+     "input_tokens": 1255,
+     "output_tokens": 68,
+     "cached_tokens": 0
+    }
+   ],
+   "operators": {
+    "ProduceResults": 1,
+    "Limit": 1,
+    "EagerAggregation": 1,
+    "Filter": 2,
+    "Expand(All)": 1,
+    "NodeIndexSeek": 1
+   },
+   "guardrail_rejections": 0,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 0,
+   "timeouts": 0,
+   "violations": [],
+   "parse": "parsed",
+   "error": null,
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": true,
+   "score_f1": 1.0,
+   "score_gold": {
+    "n": 5,
+    "total": 163488
+   },
+   "score_matched_keys": 2,
+   "calls": [
+    {
+     "outcome": "ok",
+     "db_hits": 42,
+     "rows": 1,
+     "ms": 43.352032007533126,
+     "operators": {
+      "ProduceResults": 1,
+      "Limit": 1,
+      "EagerAggregation": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 113,
+     "truncated": false,
+     "cypher": "MATCH (source:Account)-[r:TRANSFER]->(a:Account {acct_no: $a, _workspace_id: $workspace_id})\nRETURN count(r) AS transfer_count, sum(r.amount) AS total_amount\nLIMIT $limit"
+    }
+   ],
+   "final_output": "\n\nAccount 108 has received **5 transfers** in total, with a combined amount of **163,488**.\n\nANSWER: {\"transfer_count\": 5, \"total_amount\": 163488}"
+  },
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "ontology",
+   "question_id": "ext_hard_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH (start:Account {acct_no: $a, _workspace_id: $workspace_id})-[:TRANSFER*1..2]->(reachable:Account {_workspace_id: $workspace_id})\nWITH DISTINCT reachable\nRETURN count(reachable) AS distinct_accounts, max(reachable.risk_tier) AS highest_risk_tier\nLIMIT $limit",
+   "row_cap": 50,
+   "max_turns": 8,
+   "context_window": {
+    "native": 204800,
+    "max_model_len": null,
+    "effective": 204800,
+    "position_interpolation_factor": null,
+    "rope_scaling": null
+   },
+   "audience": "external",
+   "difficulty": "hard",
+   "anchor": 108,
+   "round_trips": 1,
+   "db_hits": 537,
+   "rows_into_context": 1,
+   "chars_into_context": 117,
+   "db_ms": 50.0,
+   "model_ms": 3737.9,
+   "wall_ms": 3787.9,
+   "input_tokens": 2425,
+   "output_tokens": 673,
+   "turns": [
+    {
+     "index": 0,
+     "input_tokens": 1135,
+     "output_tokens": 595,
+     "cached_tokens": 0
+    },
+    {
+     "index": 1,
+     "input_tokens": 1290,
+     "output_tokens": 78,
+     "cached_tokens": 0
+    }
+   ],
+   "operators": {
+    "ProduceResults": 1,
+    "Limit": 1,
+    "EagerAggregation": 1,
+    "Distinct": 1,
+    "Filter": 2,
+    "VarLengthExpand(Pruning,BFS,All)": 1,
+    "NodeIndexSeek": 1
+   },
+   "guardrail_rejections": 0,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 0,
+   "timeouts": 0,
+   "violations": [],
+   "parse": "parsed",
+   "error": null,
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": true,
+   "score_f1": 1.0,
+   "score_gold": {
+    "n": 77,
+    "worst_risk_tier": 5
+   },
+   "score_matched_keys": 2,
+   "calls": [
+    {
+     "outcome": "ok",
+     "db_hits": 537,
+     "rows": 1,
+     "ms": 50.00373598886654,
+     "operators": {
+      "ProduceResults": 1,
+      "Limit": 1,
+      "EagerAggregation": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "VarLengthExpand(Pruning,BFS,All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 117,
+     "truncated": false,
+     "cypher": "MATCH (start:Account {acct_no: $a, _workspace_id: $workspace_id})-[:TRANSFER*1..2]->(reachable:Account {_workspace_id: $workspace_id})\nWITH DISTINCT reachable\nRETURN count(reachable) AS distinct_accounts, max(reachable.risk_tier) AS highest_risk_tier\nLIMIT $limit"
+    }
+   ],
+   "final_output": "\n\n77 distinct accounts are reachable within two hops from account 108, and the highest risk_tier among them is 5.\n\nANSWER: {\"distinct_accounts\": 77, \"highest_risk_tier\": 5}"
+  },
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "ontology",
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH ()-[t:TRANSFER]->()\nWHERE t.channel_risk >= 5\nRETURN count(t) AS high_risk_transfers\nLIMIT $limit",
+   "row_cap": 50,
+   "max_turns": 8,
+   "context_window": {
+    "native": 204800,
+    "max_model_len": null,
+    "effective": 204800,
+    "position_interpolation_factor": null,
+    "rope_scaling": null
+   },
+   "audience": "external",
+   "difficulty": "medium",
+   "anchor": 108,
+   "round_trips": 6,
+   "db_hits": 21971,
+   "rows_into_context": 5,
+   "chars_into_context": 589,
+   "db_ms": 282.2,
+   "model_ms": 12297.9,
+   "wall_ms": 12580.1,
+   "input_tokens": 10937,
+   "output_tokens": 1259,
+   "turns": [
+    {
+     "index": 0,
+     "input_tokens": 1138,
+     "output_tokens": 463,
+     "cached_tokens": 0
+    },
+    {
+     "index": 1,
+     "input_tokens": 1271,
+     "output_tokens": 134,
+     "cached_tokens": 0
+    },
+    {
+     "index": 2,
+     "input_tokens": 1423,
+     "output_tokens": 145,
+     "cached_tokens": 0
+    },
+    {
+     "index": 3,
+     "input_tokens": 1570,
+     "output_tokens": 116,
+     "cached_tokens": 0
+    },
+    {
+     "index": 4,
+     "input_tokens": 1727,
+     "output_tokens": 140,
+     "cached_tokens": 0
+    },
+    {
+     "index": 5,
+     "input_tokens": 1851,
+     "output_tokens": 132,
+     "cached_tokens": 0
+    },
+    {
+     "index": 6,
+     "input_tokens": 1957,
+     "output_tokens": 129,
+     "cached_tokens": 0
+    }
+   ],
+   "operators": {
+    "ProduceResults": 6,
+    "Top": 3,
+    "Distinct": 1,
+    "Filter": 10,
+    "Expand(All)": 4,
+    "NodeIndexSeek": 5,
+    "Projection": 3,
+    "CacheProperties": 1,
+    "Limit": 3,
+    "EagerAggregation": 3,
+    "DirectedRelationshipTypeScan": 1
+   },
+   "guardrail_rejections": 0,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 0,
+   "timeouts": 0,
+   "violations": [],
+   "parse": "parsed",
+   "error": null,
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": true,
+   "score_f1": 1.0,
+   "score_gold": [],
+   "calls": [
+    {
+     "outcome": "ok",
+     "db_hits": 42,
+     "rows": 0,
+     "ms": 51.57429400424007,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 68,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = $a AND t.channel_risk >= 5\nRETURN DISTINCT sender.acct_no AS acct_no\nORDER BY acct_no ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 7,
+     "rows": 1,
+     "ms": 45.585313011542894,
+     "operators": {
+      "ProduceResults": 1,
+      "Projection": 1,
+      "CacheProperties": 1,
+      "Limit": 1,
+      "Filter": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 139,
+     "truncated": false,
+     "cypher": "MATCH (a:Account {_workspace_id: $workspace_id})\nWHERE a.acct_no = '108' OR a.acct_no = 108\nRETURN a.acct_no, a.id, a.flagged, a.risk_tier\nLIMIT 10"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 42,
+     "rows": 0,
+     "ms": 59.58286998793483,
+     "operators": {
+      "ProduceResults": 1,
+      "Projection": 2,
+      "Top": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 68,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108 AND t.channel_risk >= 5\nRETURN sender.acct_no AS acct_no, t.channel_risk AS channel_risk, t.amount AS amount\nORDER BY sender.acct_no ASC\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 2,
+     "ms": 47.32818900083657,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "EagerAggregation": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 128,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN t.channel_risk AS channel_risk, count(*) AS cnt\nORDER BY channel_risk ASC\nLIMIT 50"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 42,
+     "rows": 1,
+     "ms": 36.98558299220167,
+     "operators": {
+      "ProduceResults": 1,
+      "Limit": 1,
+      "EagerAggregation": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 90,
+     "truncated": false,
+     "cypher": "MATCH (sender:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})\nWHERE recipient.acct_no = 108\nRETURN count(t) AS total_transfers\nLIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 21791,
+     "rows": 1,
+     "ms": 41.117305008810945,
+     "operators": {
+      "ProduceResults": 1,
+      "Limit": 1,
+      "EagerAggregation": 1,
+      "Filter": 1,
+      "DirectedRelationshipTypeScan": 1
+     },
+     "chars": 96,
+     "truncated": false,
+     "cypher": "MATCH ()-[t:TRANSFER]->()\nWHERE t.channel_risk >= 5\nRETURN count(t) AS high_risk_transfers\nLIMIT $limit"
+    }
+   ],
+   "final_output": "\n\nANSWER: []"
+  },
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "ontology",
+   "question_id": "int_med_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH (owner)-[:OWN]->(a:Account {_workspace_id: $workspace_id})\nMATCH (owner)-[:OWN]->(b:Account {_workspace_id: $workspace_id})\nWHERE a <> b\nAND exists((a)-[:TRANSFER]->(b))\nRETURN count(DISTINCT [a.acct_no, b.acct_no]) AS pair_count\nLIMIT $limit",
+   "row_cap": 50,
+   "max_turns": 8,
+   "context_window": {
+    "native": 204800,
+    "max_model_len": null,
+    "effective": 204800,
+    "position_interpolation_factor": null,
+    "rope_scaling": null
+   },
+   "audience": "internal",
+   "difficulty": "medium",
+   "anchor": null,
+   "round_trips": 1,
+   "db_hits": 188250,
+   "rows_into_context": 1,
+   "chars_into_context": 86,
+   "db_ms": 98.1,
+   "model_ms": 4155.9,
+   "wall_ms": 4254.0,
+   "input_tokens": 2434,
+   "output_tokens": 654,
+   "turns": [
+    {
+     "index": 0,
+     "input_tokens": 1142,
+     "output_tokens": 613,
+     "cached_tokens": 0
+    },
+    {
+     "index": 1,
+     "input_tokens": 1292,
+     "output_tokens": 41,
+     "cached_tokens": 0
+    }
+   ],
+   "operators": {
+    "ProduceResults": 1,
+    "Limit": 1,
+    "EagerAggregation": 1,
+    "Filter": 1,
+    "CacheProperties": 1,
+    "SemiApply": 1,
+    "Expand(All)": 2,
+    "NodeIndexSeek": 1,
+    "Expand(Into)": 1,
+    "Argument": 1
+   },
+   "guardrail_rejections": 0,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 0,
+   "timeouts": 0,
+   "violations": [],
+   "parse": "parsed_bare",
+   "error": null,
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": true,
+   "score_f1": 1.0,
+   "score_gold": {
+    "n": 29
+   },
+   "score_matched_keys": 1,
+   "calls": [
+    {
+     "outcome": "ok",
+     "db_hits": 188250,
+     "rows": 1,
+     "ms": 98.10412999649998,
+     "operators": {
+      "ProduceResults": 1,
+      "Limit": 1,
+      "EagerAggregation": 1,
+      "Filter": 1,
+      "CacheProperties": 1,
+      "SemiApply": 1,
+      "Expand(All)": 2,
+      "NodeIndexSeek": 1,
+      "Expand(Into)": 1,
+      "Argument": 1
+     },
+     "chars": 86,
+     "truncated": false,
+     "cypher": "MATCH (owner)-[:OWN]->(a:Account {_workspace_id: $workspace_id})\nMATCH (owner)-[:OWN]->(b:Account {_workspace_id: $workspace_id})\nWHERE a <> b\nAND exists((a)-[:TRANSFER]->(b))\nRETURN count(DISTINCT [a.acct_no, b.acct_no]) AS pair_count\nLIMIT $limit"
+    }
+   ],
+   "final_output": "\n\nANSWER: 29"
+  }
+ ]
+}

@@ -1,0 +1,35 @@
+=== WORKLOAD=single_gptoss TOPOLOGY=single_gpu_moe ===
+Total token throughput (tok/s):                                     2564.19
+Total requested prompt tokens:                                      283080
+NPU prefix hit prompt tokens:                                       250288
+NPU prefix hit ratio (%):                                           88.42
+Total prefix hit ratio (%):                                         88.42
+Mean TTFT (ms):                                                     73.23
+Median TTFT (ms):                                                   74.15
+P99 TTFT (ms):                                                      100.08
+Mean TPOT (ms):                                                     42.53
+=== WORKLOAD=single_gptoss TOPOLOGY=four_gpu_moe_dp2_tp2 ===
+Total token throughput (tok/s):                                     2530.12
+Total requested prompt tokens:                                      283080
+NPU prefix hit prompt tokens:                                       244448
+NPU prefix hit ratio (%):                                           86.35
+Total prefix hit ratio (%):                                         86.35
+Mean TTFT (ms):                                                     59.43
+Median TTFT (ms):                                                   57.01
+P99 TTFT (ms):                                                      112.64
+Mean TPOT (ms):                                                     46.60
+Mean TTFT (ms):                                                     61.13
+Median TTFT (ms):                                                   55.54
+P99 TTFT (ms):                                                      115.82
+Mean TPOT (ms):                                                     49.15
+=== WORKLOAD=multi_minimax TOPOLOGY=single_gpu_moe ===
+Total token throughput (tok/s):                                     1193.12
+Total requested prompt tokens:                                      380720
+NPU prefix hit prompt tokens:                                       309808
+NPU prefix hit ratio (%):                                           81.37
+Total prefix hit ratio (%):                                         81.37
+Mean TTFT (ms):                                                     83.53
+Median TTFT (ms):                                                   81.01
+P99 TTFT (ms):                                                      130.64
+Mean TPOT (ms):                                                     46.16
+=== WORKLOAD=multi_minimax TOPOLOGY=four_gpu_moe_dp2_tp2 ===
