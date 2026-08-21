@@ -1,0 +1,26 @@
+# The image must not depend on where it was built.
+#
+# `COPY . .` obeys this file, not .gitignore. Without it a local build bakes in whatever
+# happens to be on that machine — 40MB of generated snapshots, 48MB of past results, a 97MB
+# .git, the beads Dolt database — while a CI build (which checks out from git) does not. Same
+# Dockerfile, two different images, and the manifest could not tell them apart.
+#
+# Snapshots stay out deliberately: they are regenerated on the instance from a fixed seed
+# (GENERATE_MISSING=1 reproduces the committed checksums exactly) or seeded over the wire.
+outputs/
+results/
+figures/
+.git/
+.github/
+.beads/
+**/__pycache__/
+*.py[cod]
+.venv/
+venv/
+py312/
+.env
+*.log
+*.duckdb
+*.parquet
+rust-harness/target/
+bench/*/target/

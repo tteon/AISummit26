@@ -113,6 +113,26 @@ docker build -f testbed/Dockerfile -t ghcr.io/<owner>/aisummit26-testbed:$(git r
 docker push ghcr.io/<owner>/aisummit26-testbed:<sha>
 ```
 
+**1b. What the image does and does not carry.** The 12 GB never passes through your machine:
+GitHub builds from the Dockerfile in the repo and pushes to GHCR, and the *instance* pulls
+from GHCR at creation using the datacenter's bandwidth. A registry is not optional — a vast
+instance can only be started from an image, never build one — but which side builds is.
+
+In the image: python 3.12, vLLM, nvcc and gcc (from the official vLLM base), DozerDB 5.26.3.0
+copied out of the graphstack image, the harness, and seocho pinned to the measured tag. Not in
+the image, on purpose:
+
+| left out | why, and what happens instead |
+| --- | --- |
+| model weights (~63 GB for gpt-oss-120b) | would triple the image and put redistribution in scope; downloaded per rental (~4 min at 8.7 Gb/s here), or kept on a vast **volume** to survive across rentals |
+| FinBench snapshots | `outputs/` is gitignored and `.dockerignore`d; `GENERATE_MISSING=1` reproduces the committed manifest's checksums exactly, or seed them with `SEED_SNAPSHOTS` |
+| every secret | passed as env at run time, never baked |
+
+`.dockerignore` exists for a specific reason: `COPY . .` obeys it and not `.gitignore`, so
+without it a local build bakes in whatever is lying around — generated snapshots, past results,
+a 97 MB `.git` — while a CI build checking out from git does not. Same Dockerfile, two different
+images, and no manifest could tell them apart.
+
 **2. Rent.** 1×H200 141 GB, disk ≥ 250 GB (63 GB of MXFP4 weights plus a ~12 GB image),
 instance image = the tag above. Region near the S3 bucket if you are using one.
 
