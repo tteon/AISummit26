@@ -1,0 +1,68 @@
+# MiniMax M2 family — class catalog (mixture-of-experts decoder-only LLMs).
+#
+# Covers MiniMaxM2ForCausalLM checkpoints (M2.5 / M2.7 / ...). Pick the specific
+# model at the CLI.
+#
+# Structurally this is the Qwen3-MoE shape with different class names: per-head QK
+# normalization (``use_qk_norm: true``, via MiniMaxText01RMSNormTP) merged into one
+# ``qk_norm`` catalog entry, and the MLP replaced by ``MiniMaxM2MoE`` which we measure
+# as a unit. ``num_local_experts`` (256) / ``num_experts_per_tok`` (8) are read from
+# the HF config at engine boot, not declared here.
+#
+# Uniform full attention: the HF config's ``attn_type_list`` is all 1s, so there is no
+# alternation to model — unlike gpt-oss, whose layer_types alternate sliding/full and
+# which therefore needs simulator support beyond a catalog.
+#
+# ``shared_intermediate_size`` is 0 on these checkpoints, so there is no shared-expert
+# branch alongside the routed experts, and ``mlp_dense`` stays empty.
+#
+# Canonical layer names mirror vLLM's attribute names
+# (see vllm/model_executor/models/minimax_m2.py: MiniMaxM2Attention.qkv_proj / q_norm /
+# rotary_emb / attn / o_proj, MiniMaxM2DecoderLayer.input_layernorm /
+# post_attention_layernorm / block_sparse_moe).
+
+
+sequence:
+  prologue:  [embedding]
+  pre_attn:  [layernorm, qkv_proj, qk_norm, rotary_emb, attention]
+  post_attn: [o_proj, layernorm]
+  mlp_dense: []
+  mlp_moe:   [moe]
+  head:      [final_layernorm, lm_head, sampler]
+
+
+catalog:
+  dense:
+    embedding:
+      vllm: VocabParallelEmbedding
+    layernorm:
+      vllm: RMSNorm
+      within: MiniMaxM2DecoderLayer
+      tp_stable: true
+    qkv_proj:
+      vllm: QKVParallelLinear
+    qk_norm:
+      vllm: MiniMaxText01RMSNormTP
+      within: MiniMaxM2Attention
+      tp_stable: true
+    rotary_emb:
+      vllm: RotaryEmbedding
+    o_proj:
+      vllm: RowParallelLinear
+      within: MiniMaxM2Attention
+    final_layernorm:
+      vllm: RMSNorm
+      within: MiniMaxM2Model
+      tp_stable: true
+  per_sequence:
+    lm_head:
+      vllm: LogitsProcessor
+    sampler:
+      vllm: Sampler
+      tp_stable: true
+  attention:
+    attention:
+      vllm: Attention
+  moe:
+    moe:
+      vllm: MiniMaxM2MoE
