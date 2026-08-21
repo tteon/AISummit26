@@ -95,7 +95,16 @@ CACHE_FLAG="--enable-prefix-caching"
 # evicted between episodes" — a question a hit *rate* cannot answer. They are off by default
 # and sampled at 1% (config/observability.py:48-53), which at our request volume would leave
 # the histograms empty, so the sample rate is raised deliberately here.
+# Position Interpolation, measurable rather than cited: PI (Chen et al. 2023) linearly
+# down-scales RoPE position indices to extend a pretrained context window, and that is
+# exactly what vLLM's `--rope-scaling '{"rope_type":"linear","factor":N}'` does. Setting it
+# is how the long-prefix end of the sweep becomes reachable on a model whose native window is
+# shorter — and the serving cost it exposes is the point: the KV footprint of a shared prefix
+# grows linearly with its length, so the binding constraint stops being "can the model read
+# this" and becomes "does the server still have it cached".
 OBS_ARGS=()
+[ -n "${ROPE_SCALING:-}" ] && OBS_ARGS+=(--rope-scaling "$ROPE_SCALING")
+[ -n "${KV_TRANSFER_CONFIG:-}" ] && OBS_ARGS+=(--kv-transfer-config "$KV_TRANSFER_CONFIG")
 if [ -n "${OTLP_ENDPOINT:-}" ]; then
   # Without this the serving spans land in Tempo as `unknown_service`, which makes the one
   # thing the joined trace is for — telling the agent side from the serving side — a guess.

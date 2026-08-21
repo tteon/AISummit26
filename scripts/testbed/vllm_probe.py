@@ -71,6 +71,37 @@ QUESTIONS = [
 ]
 
 
+# ~chars per token for this kind of English/YAML text. Only used to *aim* at a length; the
+# number reported for every measurement is the server's own `prompt_tokens`.
+CHARS_PER_TOKEN = 3.6
+
+
+def prefix_of_length(base_text: str, target_tokens: Optional[int]) -> str:
+    """A byte-stable shared prefix of roughly `target_tokens` tokens.
+
+    Longer prefixes are built by repeating the ontology block. That is not the same thing as
+    a genuinely larger ontology — the content repeats — but it is exactly the same thing to
+    the cache: one byte-identical span of N tokens that every request in the arm shares. The
+    axis this sweeps is *prefix length*, which is what decides whether the shared span still
+    fits in the GPU's KV budget, and the honest label for each point is the measured
+    `prompt_tokens` rather than the target.
+
+    Why the axis matters at all: extending a model's context window is cheap now (Position
+    Interpolation, Chen et al. 2023 — linear down-scaling of RoPE position indices, which vLLM
+    exposes as `--rope-scaling '{"rope_type":"linear","factor":N}'`), so long shared prefixes
+    are practical. KV footprint grows linearly with them, which moves the binding constraint
+    from "can the model read this much" to "does the server still have it cached".
+    """
+    if not target_tokens:
+        return base_text
+    target_chars = int(target_tokens * CHARS_PER_TOKEN)
+    if len(base_text) >= target_chars:
+        return base_text[:target_chars]
+    reps = -(-target_chars // (len(base_text) + 32))
+    joined = "\n\n# --- schema block repeat ---\n\n".join([base_text] * reps)
+    return joined[:target_chars]
+
+
 def build_messages(ontology_text: str, question: str, *, salt: Optional[str] = None) -> List[Dict[str, str]]:
     """Stable sections first. The salt, when present, deliberately breaks the shared prefix."""
     system_parts = []
@@ -254,6 +285,12 @@ def main() -> None:
     ap.add_argument("--no-stream", action="store_true",
                     help="skip TTFT (needed for endpoints that do not stream)")
     ap.add_argument("--skip-salted", action="store_true", help="run the stable arm only")
+    ap.add_argument("--prefix-tokens", type=int, default=None,
+                    help="pad the shared prefix to about this many tokens")
+    ap.add_argument("--sweep", default=None,
+                    help="comma-separated prefix token targets, e.g. 2000,8000,32000,65000 — "
+                         "one stable+salted pair per size, in one process so the server's "
+                         "cache state carries across the sweep the way a real workload's would")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
@@ -263,17 +300,31 @@ def main() -> None:
     print(f"[probe] {cfg.provider} {cfg.model_name} @ {cfg.base_url} — "
           f"prefix {len(ontology_text)} chars from {args.prefix_file}", flush=True)
 
-    arms = [run_arm(client, cfg, ontology_text, salted=False, repeats=args.repeats,
-                    max_tokens=args.max_tokens, stream=not args.no_stream)]
-    if not args.skip_salted:
-        arms.append(run_arm(client, cfg, ontology_text, salted=True, repeats=args.repeats,
-                            max_tokens=args.max_tokens, stream=not args.no_stream))
+    sizes: List[Optional[int]] = ([int(x) for x in args.sweep.split(",")] if args.sweep
+                                  else [args.prefix_tokens or None])
+    arms = []
+    for target in sizes:
+        text = prefix_of_length(ontology_text, target)
+        print(f"[probe] prefix target={target or 'native'} tokens "
+              f"({len(text)} chars)", flush=True)
+        arm = run_arm(client, cfg, text, salted=False, repeats=args.repeats,
+                      max_tokens=args.max_tokens, stream=not args.no_stream)
+        arm["prefix_target_tokens"] = target
+        arm["prefix_chars"] = len(text)
+        arms.append(arm)
+        if not args.skip_salted:
+            control = run_arm(client, cfg, text, salted=True, repeats=args.repeats,
+                              max_tokens=args.max_tokens, stream=not args.no_stream)
+            control["prefix_target_tokens"] = target
+            control["prefix_chars"] = len(text)
+            arms.append(control)
 
     report = {
         "schema_version": "seocho.finbench.vllm-prefix-probe.v1",
         "manifest": runmeta.manifest(),
         "endpoint": get_inference_info(cfg.base_url, model_descriptor=cfg.descriptor()),
-        "prefix": {"file": args.prefix_file, "chars": len(ontology_text)},
+        "prefix": {"file": args.prefix_file, "chars": len(ontology_text),
+                   "sweep": args.sweep, "chars_per_token_assumed": CHARS_PER_TOKEN},
         "arms": arms,
     }
     text = json.dumps(report, indent=2, default=str)
