@@ -36,7 +36,11 @@ DEFAULT_CYPHER = ("MATCH (:Account {acct_no:$a,_workspace_id:$ws})<-[t:TRANSFER]
 
 # prefix hash -> first-seen monotonic time; stands in for the KV blocks a real server keeps
 _SEEN_PREFIXES: Dict[str, float] = {}
-_STATS = {"requests": 0, "tool_calls": 0, "finals": 0, "cache_hits": 0}
+_STATS = {"requests": 0, "tool_calls": 0, "finals": 0, "cache_hits": 0,
+          # Counting the header turns "the episodes ran" into "trace propagation
+          # actually worked on the async path" — the distinction that hid a dead
+          # episode loop for three hours (a sync httpx hook on an AsyncClient).
+          "traceparent_seen": 0}
 
 
 def _approx_tokens(text: str) -> int:
@@ -79,7 +83,9 @@ class Handler(BaseHTTPRequestHandler):
                 f'{_STATS["cache_hits"]}\n'
                 f'vllm:gpu_prefix_cache_hit_rate{{model_name="{self.server.model_id}"}} '
                 f'{hit_rate:.4f}\n'
-                f'vllm:cache_config_info{{block_size="16",enable_prefix_caching="True"}} 1\n')
+                f'vllm:cache_config_info{{block_size="16",enable_prefix_caching="True"}} 1\n'
+                f'stub:traceparent_seen_total {_STATS["traceparent_seen"]}\n'
+                f'stub:requests_total {_STATS["requests"]}\n')
             return self._send(200, text.encode(), "text/plain; version=0.0.4")
         self._send(404, {"error": "not found"})
 
@@ -90,6 +96,8 @@ class Handler(BaseHTTPRequestHandler):
         req = json.loads(self.rfile.read(length) or b"{}")
         messages = req.get("messages", [])
         _STATS["requests"] += 1
+        if self.headers.get("traceparent"):
+            _STATS["traceparent_seen"] += 1
 
         key = _prefix_key(messages) if len(messages) > 1 else None
         cached = 0
