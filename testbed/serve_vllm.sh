@@ -103,6 +103,12 @@ CACHE_FLAG="--enable-prefix-caching"
 # grows linearly with its length, so the binding constraint stops being "can the model read
 # this" and becomes "does the server still have it cached".
 OBS_ARGS=()
+# PI_FACTOR is the paper's knob spelled the way vLLM takes it: linear RoPE down-scaling.
+# ROPE_SCALING stays available for anything more exotic (yarn, dynamic), but PI is linear by
+# definition, so this is the form the experiment uses.
+if [ -n "${PI_FACTOR:-}" ]; then
+  OBS_ARGS+=(--rope-scaling "{\"rope_type\":\"linear\",\"factor\":${PI_FACTOR}}")
+fi
 [ -n "${ROPE_SCALING:-}" ] && OBS_ARGS+=(--rope-scaling "$ROPE_SCALING")
 [ -n "${KV_TRANSFER_CONFIG:-}" ] && OBS_ARGS+=(--kv-transfer-config "$KV_TRANSFER_CONFIG")
 if [ -n "${OTLP_ENDPOINT:-}" ]; then
@@ -138,9 +144,15 @@ python3 - "$FLAGS_OUT" "$SERVER_PID" "$PREFIX_CACHING" "$MODEL" "$SERVED_NAME" "
          "$GPU_UTIL" "$MAX_LEN" "$*" <<'PYEOF'
 import json, sys
 out, pid, caching, model, served, port, util, maxlen, argv = sys.argv[1:10]
+import os
+pi = os.environ.get("PI_FACTOR") or None
 json.dump({"pid": int(pid), "prefix_caching": caching, "model": model,
            "served_model_name": served, "port": int(port),
            "gpu_memory_utilization": float(util), "max_model_len": int(maxlen),
+           # Position Interpolation, recorded next to the window it produced. Without this
+           # pairing a results file cannot say whether 500k tokens of context were native.
+           "position_interpolation_factor": float(pi) if pi else None,
+           "rope_scaling": ({"rope_type": "linear", "factor": float(pi)} if pi else None),
            "argv": argv}, open(out, "w"), indent=2)
 PYEOF
 

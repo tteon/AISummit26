@@ -78,6 +78,18 @@ class ModelConfig:
     max_tokens: int = 1000
     base_url: Optional[str] = None
     api_key: Optional[str] = None
+    # The window the server was started with, and how it got there. Position Interpolation
+    # (Chen et al. 2023) extends a RoPE model's window by linearly down-scaling position
+    # indices — vLLM spells it `--rope-scaling {"rope_type":"linear","factor":N}`, which is
+    # PI exactly. A run at an extended window is a different condition from a run at the
+    # native one, in both directions: it can hold a longer shared prefix (the capacity the
+    # experiment wants) and it can answer worse (the paper reports degradation even inside
+    # the original window, and reaches usable quality only after ~1000 fine-tuning steps,
+    # which we do not do). Recording the factor is what keeps the two apart; the harness's
+    # own correctness scoring is what measures the second.
+    native_context: Optional[int] = None
+    max_model_len: Optional[int] = None
+    pi_factor: Optional[float] = None
     # Sampling/serving extras passed straight through to the endpoint (vLLM guided
     # decoding, cache salts). Empty for every arm measured so far.
     extra_body: Dict[str, Any] = field(default_factory=dict)
@@ -117,6 +129,15 @@ class ModelConfig:
             )
         return {"api_key": self.api_key, "base_url": self.base_url}
 
+    @property
+    def effective_context(self) -> Optional[int]:
+        """The window the model is being asked to use, PI included."""
+        if self.max_model_len:
+            return self.max_model_len
+        if self.native_context and self.pi_factor:
+            return int(self.native_context * self.pi_factor)
+        return self.native_context
+
     def descriptor(self) -> Dict[str, Any]:
         """Endpoint identity for the run manifest — never the key."""
         return {
@@ -127,6 +148,16 @@ class ModelConfig:
             "max_tokens": self.max_tokens,
             "extra_body": self.extra_body or None,
             "api_key_present": bool(self.api_key and self.api_key != "EMPTY"),
+            "context": {
+                "native": self.native_context,
+                "max_model_len": self.max_model_len,
+                "effective": self.effective_context,
+                # None means the server ran at its native window. A number means Position
+                # Interpolation was in play and the answers must be read with that in mind.
+                "position_interpolation_factor": self.pi_factor,
+                "rope_scaling": ({"rope_type": "linear", "factor": self.pi_factor}
+                                 if self.pi_factor else None),
+            },
         }
 
 

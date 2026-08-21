@@ -882,12 +882,14 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
                       anchor: Optional[int], gold_rows: List[Dict[str, Any]],
                       schema: Dict[str, Any], guardrail_fn, model_name: str,
                       repeat: int = 0, max_tokens: Optional[int] = None,
-                      conversation_sink=None) -> Dict[str, Any]:
+                      conversation_sink=None, base_row_cap: int = ROW_CAP,
+                      in_context_row_cap: int = IN_CONTEXT_ROW_CAP,
+                      endpoint_descriptor: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     calls: List[Dict[str, Any]] = []
     # The in-context arm pays for its rows twice — in context and in turns — so it gets its
     # own budget. The other four arms share one, because between them the database does the
     # aggregating and a single call answers.
-    row_cap = IN_CONTEXT_ROW_CAP if arm in _IN_CONTEXT_ARMS else ROW_CAP
+    row_cap = (in_context_row_cap if arm in _IN_CONTEXT_ARMS else base_row_cap)
     max_turns = IN_CONTEXT_MAX_TURNS if arm in _IN_CONTEXT_ARMS else MAX_TURNS
     eng_calls: List[Dict[str, Any]] = []
     gate = {"unlocked": False}
@@ -973,6 +975,10 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
         "sf": sf, "database": database, "arm": arm, "question_id": question["id"],
         "repeat": repeat, "settled_cypher": settled,
         "row_cap": row_cap, "max_turns": max_turns,
+        # The served window and the PI factor travel with every episode. A 4x-interpolated
+        # run that answers worse is a finding; a 4x-interpolated run mistaken for a native
+        # one is a corrupted dataset.
+        "context_window": (endpoint_descriptor or {}).get("context"),
         "audience": question["audience"], "difficulty": question["difficulty"],
         "anchor": anchor,
         "round_trips": len(calls),
@@ -1126,7 +1132,9 @@ async def main_async(args) -> None:
                 schema=thin_schema if arm == "labels" else full_schema,
                 guardrail_fn=guardrail_fn, model_name=args.model, repeat=repeat,
                 max_tokens=args.max_tokens,
-                conversation_sink=(conv_file is not None) or None)
+                conversation_sink=(conv_file is not None) or None,
+                base_row_cap=args.row_cap, in_context_row_cap=args.in_context_row_cap,
+                endpoint_descriptor=(_MODEL_CFG.descriptor() if _MODEL_CFG else None))
         results.append(r)
         if conv_file is not None and r.get("conversation") is not None:
             async with conv_lock:
@@ -1162,6 +1170,8 @@ async def main_async(args) -> None:
         "model": _MODEL_CFG.model_name if _MODEL_CFG else args.model,
         "endpoint": _MODEL_CFG.descriptor() if _MODEL_CFG else None,
         "arms": list(args.arms), "row_cap": ROW_CAP,
+        "row_cap_configured": args.row_cap,
+        "in_context_row_cap_configured": args.in_context_row_cap,
         "tx_timeout_s": TX_TIMEOUT_S, "probe_timeout_s": PROBE_TIMEOUT_S,
         "max_turns": MAX_TURNS,
         "context": {db: {k: v for k, v in c.items() if k != "gold"} for db, c in context.items()},
@@ -1188,6 +1198,14 @@ def main() -> None:
     add_provider_args(p, default_model=None)
     p.add_argument("--max-tokens", type=int, default=None,
                    help="per-turn output cap; None keeps the endpoint default")
+    # The row caps are what let a longer context window actually be used. They are constants
+    # for the published runs (50 / 200, sized so the in-context arm is feasible at SF1 and
+    # not at SF100); a Position Interpolation run is asking a different question — what a 4x
+    # window buys — and that needs the cap to move with it. Overridden values are recorded.
+    p.add_argument("--row-cap", type=int, default=ROW_CAP,
+                   help=f"rows per query for the non-in-context arms (default {ROW_CAP})")
+    p.add_argument("--in-context-row-cap", type=int, default=IN_CONTEXT_ROW_CAP,
+                   help=f"rows per page for the in-context arms (default {IN_CONTEXT_ROW_CAP})")
     p.add_argument("--ontology", default="ontology/finbench.ontology.yaml")
     p.add_argument("--concurrency", type=int, default=4)
     p.add_argument("--repeats", type=int, default=3,

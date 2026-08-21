@@ -58,6 +58,16 @@ def add_provider_args(parser: argparse.ArgumentParser, *, default_model: Optiona
                         help="served model name; for vllm it must match GET /v1/models")
     parser.add_argument("--base-url", default=None,
                         help="override the provider's base_url (default from *_BASE_URL)")
+    # Position Interpolation is a server-side flag (--rope-scaling), so the harness cannot
+    # turn it on from here — but it must record which window it ran against, or a run at 4x
+    # the native context is indistinguishable from one at native in the results.
+    parser.add_argument("--native-context", type=int, default=None,
+                        help="the model's pre-trained window, for the record")
+    parser.add_argument("--max-model-len", type=int, default=None,
+                        help="the window the server was actually started with")
+    parser.add_argument("--pi-factor", type=float, default=None,
+                        help="Position Interpolation factor the server was started with "
+                             "(--rope-scaling linear). Recorded, not applied, by the harness")
 
 
 def model_config(args: Any = None, /, **overrides: Any) -> ModelConfig:
@@ -67,7 +77,9 @@ def model_config(args: Any = None, /, **overrides: Any) -> ModelConfig:
     if args is not None:
         for src, dest in (("provider", "provider"), ("model", "model_name"),
                           ("base_url", "base_url"), ("max_tokens", "max_tokens"),
-                          ("temperature", "temperature")):
+                          ("temperature", "temperature"),
+                          ("native_context", "native_context"),
+                          ("max_model_len", "max_model_len"), ("pi_factor", "pi_factor")):
             value = getattr(args, src, None)
             if value is not None:
                 fields[dest] = value
