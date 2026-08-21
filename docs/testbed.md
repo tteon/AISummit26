@@ -252,6 +252,20 @@ salted arm inside the *same* server is what rules out "the server just warmed up
 last two rows: with caching off vLLM stops exporting the prefix-cache counters entirely,
 which makes the flag itself verifiable from the manifest rather than trusted.
 
+### On the rented box, the dashboards are optional
+
+A vast.ai instance is itself a container, so the four-service compose above needs
+docker-in-docker there. It is not worth choosing machines by that: metrics are the live view,
+and the durable record is the run directory. `scripts/testbed/metrics_sampler.py` walks the
+same `/metrics` endpoint on the same 5s interval and appends each sample to
+`results/runs/<id>/metrics.jsonl` (wall clock *and* monotonic clock per sample, because
+intervals derived from a wall clock are wrong across an NTP step). `bootstrap.sh` starts it
+for the duration of the episodes, so the whole run is analysable — and replayable into a
+local Prometheus — after the instance is gone.
+
+Bring the Grafana stack up locally for analysis, or on the instance only if the machine you
+rented can run docker.
+
 ## Parity, and what these runs are not
 
 - **These are new arms, not replacements.** The published figures come from this repo's

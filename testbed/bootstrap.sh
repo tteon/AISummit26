@@ -42,6 +42,7 @@ EPISODES_JSON="${RUN_DIR}/episodes.json"
 EPISODES_LOG="${RUN_DIR}/episodes.jsonl"
 PROBE_JSON="${RUN_DIR}/vllm_prefix_probe.json"
 WATCH_PID=""
+SAMPLER_PID=""
 
 say() { echo -e "\n=== [$(date -u +%H:%M:%S)] $* ===" ; }
 have() { [[ ",${STEPS}," == *",$1,"* ]]; }
@@ -50,6 +51,7 @@ s3_on() { [ -n "${S3_BUCKET:-}" ]; }
 
 cleanup() {
   [ -n "$WATCH_PID" ] && kill "$WATCH_PID" 2>/dev/null
+  [ -n "$SAMPLER_PID" ] && kill "$SAMPLER_PID" 2>/dev/null
   return 0
 }
 trap cleanup EXIT
@@ -148,6 +150,14 @@ fi
 # --- 5. episodes ----------------------------------------------------------------------
 if have episodes; then
   say "episodes"
+  # The serving metrics for the whole run, into the run directory. The Grafana stack is a
+  # live view and needs docker-in-docker to run on a rented instance; this needs nothing,
+  # and it is what makes "what was the cache doing during episode 412" answerable later.
+  if [ "$DRY_RUN" != "1" ]; then
+    python3 scripts/testbed/metrics_sampler.py --base-url "$VLLM_BASE_URL" \
+        --out "${RUN_DIR}/metrics.jsonl" --interval "${METRICS_INTERVAL:-5}" &
+    SAMPLER_PID=$!
+  fi
   dbs=""
   for sf in $SCALES; do dbs="$dbs ${DB_PREFIX}${sf}:${sf}"; done
   if s3_on && [ "$DRY_RUN" != "1" ]; then
@@ -173,6 +183,8 @@ if have probe; then
   run python3 scripts/testbed/vllm_probe.py --provider vllm --model "$VLLM_MODEL" \
       --base-url "$VLLM_BASE_URL" --repeats "${PROBE_REPEATS:-8}" --out "$PROBE_JSON"
 fi
+
+[ -n "$SAMPLER_PID" ] && { kill "$SAMPLER_PID" 2>/dev/null; SAMPLER_PID=""; }
 
 # --- 7. checkpoint --------------------------------------------------------------------
 if have push && s3_on; then
