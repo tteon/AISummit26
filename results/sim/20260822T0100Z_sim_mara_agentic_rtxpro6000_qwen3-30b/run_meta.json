@@ -1,0 +1,39 @@
+{
+  "schema_version": "seocho.finbench.sim-run.v1",
+  "simulator": {
+    "repo": "https://github.com/casys-kaist/LLMServingSim",
+    "commit": "5daddb21a545658d5150b535712d0494584b5278",
+    "container_image": "astrasim/tutorial-micro2024",
+    "command": "python3 -m serving --cluster-config configs/cluster/single_node_moe_single_instance.json --dtype bfloat16 --block-size 16 --dataset workloads/aisummit26_mara_agentic.jsonl --output outputs/aisummit26_mara.csv"
+  },
+  "hardware_model": {
+    "hardware": "RTXPRO6000",
+    "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+    "tp_size": 2,
+    "npu_mem_gb": 96,
+    "dtype": "bfloat16",
+    "block_size": 16,
+    "note": "a BUNDLED profile, not the H200/gpt-oss-120b we measured \u2014 absolute latencies belong to this combo, not to our rental"
+  },
+  "results": {
+    "prompt_tokens_requested": 86312,
+    "npu_prefix_hit_tokens": 75024,
+    "npu_prefix_hit_ratio_pct": 86.92,
+    "ttft_ms": {
+      "mean": 42.01,
+      "median": 41.1,
+      "p99": 65.39
+    },
+    "tpot_ms": {
+      "mean": 15.5,
+      "median": 15.69,
+      "p99": 18.54
+    },
+    "total_token_throughput_tok_s": 1942.32
+  },
+  "provenance": {
+    "source": "MARA gpt-oss-120b episodes measured 2026-08-22 against a local DozerDB sf1 graph; per-turn tokens and conversations recorded by agent_interaction.py --log-conversations",
+    "mara_reported_cached_tokens": 0,
+    "caveat": "MARA has no prefix cache, so the 86.92% is what a caching server WOULD have hit on this workload \u2014 a simulated counterfactual, not a measurement of MARA"
+  }
+}

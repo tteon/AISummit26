@@ -1,0 +1,25 @@
+{
+  "schema_version": "seocho.finbench.llmservingsim-workload.v1",
+  "source_episodes": "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/mara_ep.json",
+  "source_conversations": "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/mara_conv.jsonl",
+  "sessions": 32,
+  "episodes_skipped_no_turns": 0,
+  "arrival_process": {
+    "kind": "poisson",
+    "rate_per_s": 0.5,
+    "seed": 20260822
+  },
+  "token_ids": {
+    "emitted": true,
+    "encoding": "o200k_base",
+    "fidelity": "re-rendered conversation, local tokeniser; sharing structure exact, absolute ids approximate"
+  },
+  "tenants_per_episode": 8,
+  "arms": [
+    "in_context",
+    "ontology"
+  ],
+  "scale_factors": [
+    1
+  ]
+}
