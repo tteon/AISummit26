@@ -8,10 +8,9 @@
 # Manual trigger only. This repo is a talk artifact, not a service: nobody wants a 12 GB
 # build firing on every README edit.
 #
-# This file is kept at testbed/ci/ rather than .github/workflows/ because the credential
-# this repo is pushed with has no `workflow` scope — GitHub refuses workflow files from it.
-# To activate: copy it to .github/workflows/testbed-image.yml, either by pasting it in the
-# GitHub web UI (which carries the scope) or by pushing with a PAT that has `workflow`.
+# Lived at testbed/ci/ until 2026-08-22, because the push credential had no `workflow` scope
+# and GitHub refuses workflow files from such a token. Now in place after
+# `gh auth refresh -s workflow -s write:packages`.
 name: testbed image
 
 on:
