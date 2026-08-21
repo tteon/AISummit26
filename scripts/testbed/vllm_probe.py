@@ -341,6 +341,75 @@ def run_pressure(client, cfg, base_text: str, *, distinct: int, target_tokens: i
     }
 
 
+def run_offload(client, cfg, base_text: str, *, target_tokens: int, flood: int,
+                max_tokens: int) -> Dict[str, Any]:
+    """Five points that let an offload tier be judged a cost rather than assumed a win.
+
+    A hit rate cannot say whether a host-RAM KV tier helps: fetching an evicted prefix over
+    PCIe competes with simply recomputing it, and LMCache defaults to `use_layerwise=False`,
+    which transfers the whole span before compute starts instead of overlapping per layer. So
+    the sequence measures both directions of the trade:
+
+      1. `insert`        first sight of prefix A — with a tier attached this also pays to
+                         *write* every block to host RAM, which is the overhead that exists
+                         even when nothing is ever reused
+      2. `gpu_warm`      A again immediately — the ceiling, served from GPU blocks
+      3. `evicted_fetch` A after flooding the GPU cache — the number that decides everything:
+                         a tier is worth having only if this beats recompute
+      4. `absent`        a prefix never seen — recompute, the floor
+      5. `flood_*`       the flooding requests themselves, kept because a tier that slows
+                         down unrelated traffic is a tax on the whole workload
+
+    Run it once with no connector and once with LMCache to compare, and read `absent` first:
+    if `absent` is slower with the tier attached, the tier costs even when it cannot help.
+    """
+    def ask(prefix_text: str, label: str, qid: int) -> Dict[str, Any]:
+        rec = one_request(client, cfg.model_name,
+                          build_messages(prefix_text, f"How many transfers does account {qid} have?"),
+                          max_tokens=max_tokens, stream=True)
+        rec["point"] = label
+        print(f"  [{label:<13}] ttft={rec['ttft_s']} total={rec['total_s']:.3f}s "
+              f"prompt={rec['prompt_tokens']} cached={rec['cached_tokens']}", flush=True)
+        return rec
+
+    a_text = "# tenant A — workspace ws_A\n" + prefix_of_length(base_text, target_tokens)
+    b_text = "# tenant B — workspace ws_B\n" + prefix_of_length(base_text, target_tokens)
+
+    before = scrape_vllm_metrics(cfg.base_url)
+    points = [ask(a_text, "insert", 1001), ask(a_text, "gpu_warm", 1002)]
+
+    flood_recs = []
+    for i in range(flood):
+        text = f"# tenant F{i:03d} — workspace ws_F{i:03d}\n" + prefix_of_length(base_text, target_tokens)
+        flood_recs.append(ask(text, f"flood_{i:02d}", 2000 + i))
+
+    points.append(ask(a_text, "evicted_fetch", 1003))
+    points.append(ask(b_text, "absent", 1004))
+    after = scrape_vllm_metrics(cfg.base_url)
+
+    before_c, after_c = _counters(before), _counters(after)
+    delta = {k: (round(v - before_c.get(k, 0.0), 4) if "_total" in k else round(v, 4))
+             for k, v in after_c.items()}
+    by = {r["point"]: r for r in points}
+    return {
+        "arm": "offload",
+        "prefix_target_tokens": target_tokens,
+        "flood_prefixes": flood,
+        "points": {k: {"ttft_s": v["ttft_s"], "total_s": round(v["total_s"], 4),
+                       "prompt_tokens": v["prompt_tokens"], "cached_tokens": v["cached_tokens"]}
+                   for k, v in by.items()},
+        "verdict": {
+            # The only comparison that matters, computed here so it cannot be spun later.
+            "evicted_fetch_vs_absent": (round(by["evicted_fetch"]["ttft_s"] / by["absent"]["ttft_s"], 3)
+                                        if by["evicted_fetch"]["ttft_s"] and by["absent"]["ttft_s"]
+                                        else None),
+            "note": "<1 means the tier beat recompute; >=1 means it did not",
+        },
+        "counter_delta": delta or None,
+        "samples": points + flood_recs,
+    }
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -365,6 +434,12 @@ def main() -> None:
                     help="run the eviction/offload test with this many distinct prefixes "
                          "instead of the sweep")
     ap.add_argument("--pressure-rounds", type=int, default=3)
+    ap.add_argument("--offload", action="store_true",
+                    help="five-point offload test: insert / gpu_warm / evicted_fetch / absent")
+    ap.add_argument("--flood", type=int, default=6,
+                    help="prefixes used to evict the subject between gpu_warm and "
+                         "evicted_fetch; size them so flood x prefix > the GPU KV budget the "
+                         "serve log prints")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
@@ -373,6 +448,27 @@ def main() -> None:
     client = sync_client(cfg)
     print(f"[probe] {cfg.provider} {cfg.model_name} @ {cfg.base_url} — "
           f"prefix {len(ontology_text)} chars from {args.prefix_file}", flush=True)
+
+    if args.offload:
+        arm = run_offload(client, cfg, ontology_text, target_tokens=args.prefix_tokens or 8000,
+                          flood=args.flood, max_tokens=args.max_tokens)
+        report = {
+            "schema_version": "seocho.finbench.vllm-prefix-probe.v1",
+            "manifest": runmeta.manifest(),
+            "endpoint": get_inference_info(cfg.base_url, model_descriptor=cfg.descriptor()),
+            "prefix": {"file": args.prefix_file, "chars": len(ontology_text), "mode": "offload"},
+            "arms": [arm],
+        }
+        text = json.dumps(report, indent=2, default=str)
+        if args.out:
+            Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.out).write_text(text + "\n")
+            print(f"\nwrote {args.out}")
+        else:
+            print(text)
+        print("\nverdict evicted_fetch/absent =", arm["verdict"]["evicted_fetch_vs_absent"],
+              "(<1 tier won, >=1 tier lost)")
+        return
 
     if args.pressure:
         arms = [run_pressure(client, cfg, ontology_text, distinct=args.pressure,

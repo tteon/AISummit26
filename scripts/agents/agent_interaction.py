@@ -836,6 +836,31 @@ def score(question: Dict[str, Any], gold_rows: List[Dict[str, Any]],
 _MODEL_CFG = None
 
 
+def turn_usage(result) -> List[Dict[str, Any]]:
+    """Per-LLM-call token counts for one episode, in order.
+
+    The episode total (`input_tokens`) answers "what did this arm cost". It cannot answer
+    "what would a serving stack do with this workload", because a serving simulator schedules
+    *calls*: each one has its own prompt length, its own generation length, and its own
+    position in a chain where the previous call's output is the next call's input. That is the
+    shape LLMServingSim's agentic JSONL wants (`sub_requests` with `input_toks` / `output_toks`
+    / `tool_duration_ns`), and a sum of turns cannot be un-summed.
+    """
+    turns: List[Dict[str, Any]] = []
+    for i, resp in enumerate(getattr(result, "raw_responses", None) or []):
+        u = getattr(resp, "usage", None)
+        turns.append({
+            "index": i,
+            "input_tokens": getattr(u, "input_tokens", None),
+            "output_tokens": getattr(u, "output_tokens", None),
+            # Cached-prompt tokens when the endpoint reports them. Absent on MARA, present on
+            # a vLLM served with --enable-prompt-tokens-details.
+            "cached_tokens": getattr(getattr(u, "input_tokens_details", None),
+                                     "cached_tokens", None),
+        })
+    return turns
+
+
 _MODEL_CACHE: Dict[str, Any] = {}
 
 
@@ -856,7 +881,8 @@ def chat_model(model: str):
 async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dict[str, Any],
                       anchor: Optional[int], gold_rows: List[Dict[str, Any]],
                       schema: Dict[str, Any], guardrail_fn, model_name: str,
-                      repeat: int = 0, max_tokens: Optional[int] = None) -> Dict[str, Any]:
+                      repeat: int = 0, max_tokens: Optional[int] = None,
+                      conversation_sink=None) -> Dict[str, Any]:
     calls: List[Dict[str, Any]] = []
     # The in-context arm pays for its rows twice — in context and in turns — so it gets its
     # own budget. The other four arms share one, because between them the database does the
@@ -889,6 +915,8 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
     t0 = time.perf_counter()
     final_text, err = "", None
     usage_in = usage_out = 0
+    turns: List[Dict[str, Any]] = []
+    conversation: Optional[List[Any]] = None
     nudged = False
     try:
         result = await Runner.run(agent, prompt, max_turns=max_turns)
@@ -896,6 +924,9 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
         usage = getattr(getattr(result, "context_wrapper", None), "usage", None)
         if usage is not None:
             usage_in, usage_out = usage.input_tokens, usage.output_tokens
+        turns = turn_usage(result)
+        if conversation_sink is not None:
+            conversation = result.to_input_list()
         if not final_text.strip():
             # gpt-oss sometimes spends its whole closing turn in the reasoning channel and
             # returns empty content (deterministic at temperature 0 for some prompts).
@@ -915,6 +946,9 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
             if usage is not None:
                 usage_in += usage.input_tokens
                 usage_out += usage.output_tokens
+            turns += turn_usage(result)
+            if conversation_sink is not None:
+                conversation = result.to_input_list()
     except MaxTurnsExceeded:
         err = "max_turns_exceeded"
     except Exception as exc:  # a model-side failure is a real outcome, not a crash
@@ -949,7 +983,11 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
         "model_ms": round(max(wall_ms - db_ms, 0.0), 1),
         "wall_ms": round(wall_ms, 1),
         "input_tokens": usage_in, "output_tokens": usage_out,
+        # One entry per LLM call. Pair with `calls` (same order) to get the tool wait between
+        # them: turn i is followed by the tool invocation whose db time is calls[i]["ms"].
+        "turns": turns,
         "operators": dict(ops),
+        **({"conversation": conversation} if conversation is not None else {}),
         "guardrail_rejections": sum(1 for c in calls if c["outcome"] == "guardrail_rejected"),
         "plan_rejections": sum(1 for c in calls if c["outcome"] == "plan_rejected"),
         "engineering_probes": sum(1 for c in eng_calls if c["outcome"] != "locked"),
@@ -1065,6 +1103,17 @@ async def main_async(args) -> None:
     log_file = log_path.open("a")
     log_lock = asyncio.Lock()
 
+    # The prompts themselves, not just their token counts. A serving simulator can only
+    # model prefix reuse if it can hash the actual token ids (LLMServingSim disables prefix
+    # caching for any request without `input_tok_ids`), and the prompt is what gets tokenised.
+    # Off by default: at SF100 the in-context arms carry 200-row pages, so this file is much
+    # larger than the episode log.
+    conv_file = None
+    conv_lock = asyncio.Lock()
+    if args.log_conversations:
+        Path(args.log_conversations).parent.mkdir(parents=True, exist_ok=True)
+        conv_file = Path(args.log_conversations).open("a")
+
     async def one(db: str, arm: str, q: Dict[str, Any], repeat: int) -> None:
         if (db, arm, q["id"], repeat) in done:
             return
@@ -1076,8 +1125,21 @@ async def main_async(args) -> None:
                 gold_rows=ctx["gold"][q["id"]],
                 schema=thin_schema if arm == "labels" else full_schema,
                 guardrail_fn=guardrail_fn, model_name=args.model, repeat=repeat,
-                max_tokens=args.max_tokens)
+                max_tokens=args.max_tokens,
+                conversation_sink=(conv_file is not None) or None)
         results.append(r)
+        if conv_file is not None and r.get("conversation") is not None:
+            async with conv_lock:
+                conv_file.write(json.dumps({
+                    "database": db, "arm": arm, "question_id": q["id"], "repeat": repeat,
+                    "sf": ctx["sf"], "anchor": ctx["anchor"],
+                    "instructions": build_instructions(
+                        thin_schema if arm == "labels" else full_schema, arm=arm),
+                    "prompt": q["question"].format(a=ctx["anchor"]),
+                    "conversation": r.pop("conversation"),
+                }, default=str) + "\n")
+                conv_file.flush()
+        r.pop("conversation", None)
         async with log_lock:
             log_file.write(json.dumps(r, default=str) + "\n")
             log_file.flush()
@@ -1091,6 +1153,8 @@ async def main_async(args) -> None:
     print(f"\n[run] {len(jobs)} episodes, concurrency {args.concurrency}\n", flush=True)
     await asyncio.gather(*jobs)
     log_file.close()
+    if conv_file is not None:
+        conv_file.close()
     driver.close()
 
     out = {
@@ -1141,6 +1205,10 @@ def main() -> None:
                         "while the run is still going.")
     p.add_argument("--resume", action="store_true",
                    help="skip episodes already present in the episode log")
+    p.add_argument("--log-conversations", default=None,
+                   help="also write each episode's full message list to this JSONL. Needed to "
+                        "build serving-simulator workloads (token ids come from the prompts, "
+                        "and LLMServingSim disables prefix caching without them). Large.")
     asyncio.run(main_async(p.parse_args()))
 
 
