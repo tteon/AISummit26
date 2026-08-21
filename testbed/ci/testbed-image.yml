@@ -1,0 +1,82 @@
+# Build the testbed image where the bandwidth is free.
+#
+# The image is ~12 GB (the vLLM base dominates), and a vast.ai instance *is* a container —
+# it cannot build a Dockerfile, it can only be started from one. Pushing 12 GB up from a
+# laptop to a registry is the slow path; GitHub already has the layers cached next to
+# Docker Hub, so it builds and pushes in minutes.
+#
+# Manual trigger only. This repo is a talk artifact, not a service: nobody wants a 12 GB
+# build firing on every README edit.
+#
+# This file is kept at testbed/ci/ rather than .github/workflows/ because the credential
+# this repo is pushed with has no `workflow` scope — GitHub refuses workflow files from it.
+# To activate: copy it to .github/workflows/testbed-image.yml, either by pasting it in the
+# GitHub web UI (which carries the scope) or by pushing with a PAT that has `workflow`.
+name: testbed image
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "image tag (default: short sha)"
+        required: false
+        default: ""
+      vllm_base:
+        description: "vLLM base image"
+        required: false
+        default: "vllm/vllm-openai:v0.27.1"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The runner's 14 GB of free space does not fit a 12 GB image plus its build cache.
+      - name: Reclaim disk
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+                      /usr/local/share/boost "$AGENT_TOOLSDIRECTORY"
+          df -h /
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve tag
+        id: tag
+        run: |
+          TAG="${{ inputs.tag }}"
+          [ -z "$TAG" ] && TAG="$(git rev-parse --short HEAD)"
+          echo "value=$TAG" >> "$GITHUB_OUTPUT"
+          echo "image=ghcr.io/${GITHUB_REPOSITORY,,}-testbed:$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: testbed/Dockerfile
+          build-args: |
+            BASE=${{ inputs.vllm_base }}
+          push: true
+          tags: ${{ steps.tag.outputs.image }}
+          provenance: false
+
+      - name: Summary
+        run: |
+          echo "### Testbed image" >> "$GITHUB_STEP_SUMMARY"
+          echo '`${{ steps.tag.outputs.image }}`' >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Set this as the vast.ai instance image, then inside it:" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo 'GENERATE_MISSING=1 NEO4J_PASSWORD=... SCALES="1 10" \' >> "$GITHUB_STEP_SUMMARY"
+          echo '  VLLM_MODEL=openai/gpt-oss-120b testbed/bootstrap.sh' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

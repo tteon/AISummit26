@@ -93,6 +93,68 @@ python3 scripts/testbed/s3_ckpt.py verify --run-id <run_id> --path results/runs/
 It exits non-zero unless every local file is in S3 at the same size. `bootstrap.sh` runs it
 as its last step for the same reason.
 
+## First benchmark on a rented box, step by step
+
+The instance cannot build the image — a vast.ai instance *is* a container, started from an
+image, with no docker of its own. So the image is built elsewhere and the instance is started
+from it. Building it on GitHub is the cheap route: the vLLM base layers already live next to
+Docker Hub, so nothing 12 GB has to leave your laptop.
+
+**1. Build the image.** The workflow lives at `testbed/ci/testbed-image.yml` — copy it to
+`.github/workflows/testbed-image.yml` in the fork first (paste it in the GitHub web UI, or
+push with a token carrying the `workflow` scope; the credential this repo is normally pushed
+with does not have it). Then Actions → `testbed image` → Run workflow. It is
+`workflow_dispatch` only and prints the resulting tag:
+`ghcr.io/<owner>/aisummit26-testbed:<sha>`. Make the package public, or give vast.ai a
+registry credential. Local alternative, if you would rather not use CI:
+
+```bash
+docker build -f testbed/Dockerfile -t ghcr.io/<owner>/aisummit26-testbed:$(git rev-parse --short HEAD) .
+docker push ghcr.io/<owner>/aisummit26-testbed:<sha>
+```
+
+**2. Rent.** 1×H200 141 GB, disk ≥ 250 GB (63 GB of MXFP4 weights plus a ~12 GB image),
+instance image = the tag above. Region near the S3 bucket if you are using one.
+
+**3. Run.** Inside the instance:
+
+```bash
+cd /workspace/AIsummit26
+GENERATE_MISSING=1 \
+NEO4J_PASSWORD="$(openssl rand -hex 12)" \
+SCALES="1 10" \
+VLLM_MODEL=openai/gpt-oss-120b \
+RUN_ID=$(date -u +%Y%m%dT%H%M%SZ)_h200_prefix_on \
+  testbed/bootstrap.sh
+```
+
+`GENERATE_MISSING=1` matters because `outputs/` is gitignored: a fresh clone has no
+snapshots. The generator is seeded, and regenerating SF1 reproduces the committed manifest's
+checksums exactly — the same graph, not a similar one. SF100 is the slow one; seed that from
+S3 rather than regenerating it on a metered GPU.
+
+**4. The control arm.** Same command, `PREFIX_CACHING=off` and a different `RUN_ID`. Without
+it there is no A/B: vLLM V1 enables prefix caching by default, so an unflagged "control"
+measures the treatment a second time.
+
+**5. Get the results off the box before destroying it.** With `S3_BUCKET` set, `bootstrap.sh`
+pushes each step and its last action is a gate that exits non-zero unless every local file is
+in S3. Without a bucket it says so plainly and refuses to call the run safe — copy
+`results/runs/<run_id>/` down yourself (`vastai copy`, `scp`) and check it arrived.
+
+A first pass (SF1+SF10, 7 arms, 3 repeats) is a few hundred episodes; budget the rental for
+weight download plus that, and expect the model download to dominate the first ten minutes.
+
+### Two things specific to gpt-oss on vLLM
+
+- **Tool calls need no flag.** vLLM 0.27.1 routes gpt-oss output through `HarmonyParser`;
+  the `GptOssToolParser` is only a capability declaration (`tool_parsers/gptoss_tool_parser.py:19`).
+  Do not pass `--tool-call-parser` for it.
+- **The empty-final-turn quirk may follow the model.** On long multi-page episodes the hosted
+  endpoint deterministically spent the closing turn in the reasoning channel and returned
+  empty content; the harness answers with one recorded nudge (`nudged` in the episode). If
+  vLLM shows the same shape, that is the model's harmony channel, not the testbed.
+
 ## Verifying the wiring without a GPU
 
 `scripts/testbed/stub_openai.py` answers the same surface vLLM does — `/v1/models`,
