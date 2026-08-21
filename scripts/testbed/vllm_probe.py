@@ -131,11 +131,18 @@ def one_request(client, model: str, messages: List[Dict[str, str]], *, max_token
             if chunk.usage is not None:
                 usage = chunk.usage
             for choice in chunk.choices or []:
+                # gpt-oss and other harmony/reasoning models emit their first tokens on the
+                # reasoning channel, so `delta.content` stays None for seconds while the model
+                # is already decoding. Timing only `content` reports TTFT as absent on exactly
+                # the models this repo measures — the same channel that produced the
+                # empty-final-turn quirk in the hosted runs.
                 delta = getattr(choice.delta, "content", None)
-                if delta:
+                reasoning = (getattr(choice.delta, "reasoning_content", None)
+                             or getattr(choice.delta, "reasoning", None))
+                if delta or reasoning:
                     if ttft is None:
                         ttft = time.perf_counter() - t0
-                    text_len += len(delta)
+                    text_len += len(delta or "") + len(reasoning or "")
     else:
         resp = client.chat.completions.create(
             model=model, messages=messages, temperature=0.0, max_tokens=max_tokens)
