@@ -97,12 +97,20 @@ def _propagating_http_client(async_: bool):
     except ImportError:
         return None
 
-    def inject(request) -> None:
+    def _inject(request) -> None:
         if trace.get_current_span().get_span_context().is_valid:
             propagate.inject(request.headers)
 
-    hooks = {"request": [inject]}
-    return httpx.AsyncClient(event_hooks=hooks) if async_ else httpx.Client(event_hooks=hooks)
+    # httpx requires *coroutine* event hooks on an AsyncClient and rejects a sync callable —
+    # and the OpenAI SDK reports that rejection as APIConnectionError, i.e. as if the server
+    # were unreachable. A sync hook here therefore breaks every async call (the whole episode
+    # path) while leaving the sync path (the probe) working, which is exactly the kind of
+    # asymmetry that gets shipped.
+    if async_:
+        async def _ainject(request) -> None:
+            _inject(request)
+        return httpx.AsyncClient(event_hooks={"request": [_ainject]})
+    return httpx.Client(event_hooks={"request": [_inject]})
 
 
 def async_client(cfg: ModelConfig):
