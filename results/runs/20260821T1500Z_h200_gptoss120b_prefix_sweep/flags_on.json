@@ -1,0 +1,10 @@
+{
+  "pid": 1025,
+  "prefix_caching": "on",
+  "model": "openai/gpt-oss-120b",
+  "served_model_name": "openai/gpt-oss-120b",
+  "port": 8000,
+  "gpu_memory_utilization": 0.92,
+  "max_model_len": 131072,
+  "argv": "serve openai/gpt-oss-120b --host 0.0.0.0 --port 8000 --served-model-name openai/gpt-oss-120b --gpu-memory-utilization 0.92 --max-model-len 131072 --enable-prompt-tokens-details --enable-prefix-caching --kv-cache-metrics --kv-cache-metrics-sample 1.0"
+}

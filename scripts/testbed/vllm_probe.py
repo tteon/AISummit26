@@ -278,6 +278,69 @@ def run_arm(client, cfg, ontology_text: str, *, salted: bool, repeats: int,
     }
 
 
+def run_pressure(client, cfg, base_text: str, *, distinct: int, target_tokens: int,
+                 rounds: int, max_tokens: int) -> Dict[str, Any]:
+    """Fill the KV cache past its capacity, then ask for the prefixes back.
+
+    The length sweep answers "is a shared prefix cheap when it is cached". This answers the
+    question that decides whether that matters in production: **does it stay cached** when
+    other work competes for the same blocks. `distinct` prefixes, each byte-unique from its
+    first token, are cycled `rounds` times. If their combined size exceeds the GPU's KV
+    budget (the serve log prints it as "GPU KV cache size: N tokens"), round 2 cannot hit on
+    everything, and the shortfall is eviction rather than a cold start.
+
+    This is the regime an offload tier exists for: with `--kv-transfer-config` pointing at
+    LMCache, an evicted block can come back from host RAM instead of being recomputed, and
+    the hits show up on `vllm:external_prefix_cache_*` rather than the local counters.
+    """
+    prefixes = []
+    for i in range(distinct):
+        # Unique from the first token, so no two prefixes share a cache entry.
+        head = f"# tenant {i:04d} — workspace ws_{i:04d}\n"
+        prefixes.append(head + prefix_of_length(base_text, target_tokens))
+
+    before = scrape_vllm_metrics(cfg.base_url)
+    per_round = []
+    samples: List[Dict[str, Any]] = []
+    for r in range(rounds):
+        ratios, ttfts = [], []
+        for i, text in enumerate(prefixes):
+            rec = one_request(client, cfg.model_name,
+                              build_messages(text, f"How many transfers does account {1001+i} have?"),
+                              max_tokens=max_tokens, stream=True)
+            rec.update({"round": r, "prefix_index": i})
+            samples.append(rec)
+            if rec.get("cache_hit_ratio") is not None:
+                ratios.append(rec["cache_hit_ratio"])
+            if rec.get("ttft_s") is not None:
+                ttfts.append(rec["ttft_s"])
+        per_round.append({
+            "round": r,
+            "mean_cache_hit_ratio": round(sum(ratios)/len(ratios), 4) if ratios else None,
+            "median_ttft_s": round(statistics.median(ttfts), 4) if ttfts else None,
+        })
+        print(f"  [pressure round {r}] mean cached/prompt="
+              f"{per_round[-1]['mean_cache_hit_ratio']} median ttft={per_round[-1]['median_ttft_s']}s",
+              flush=True)
+    after = scrape_vllm_metrics(cfg.base_url)
+
+    counters = {}
+    before_c, after_c = _counters(before), _counters(after)
+    for k, v in after_c.items():
+        counters[k] = round(v - before_c.get(k, 0.0), 4) if "_total" in k else round(v, 4)
+    usage = [ln for ln in after.get("lines", []) if "kv_cache_usage_perc" in ln]
+    return {
+        "arm": "pressure",
+        "distinct_prefixes": distinct,
+        "prefix_target_tokens": target_tokens,
+        "rounds": rounds,
+        "per_round": per_round,
+        "counter_delta": counters or None,
+        "kv_cache_usage_lines": usage,
+        "samples": samples,
+    }
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -298,6 +361,10 @@ def main() -> None:
                     help="comma-separated prefix token targets, e.g. 2000,8000,32000,65000 — "
                          "one stable+salted pair per size, in one process so the server's "
                          "cache state carries across the sweep the way a real workload's would")
+    ap.add_argument("--pressure", type=int, default=0,
+                    help="run the eviction/offload test with this many distinct prefixes "
+                         "instead of the sweep")
+    ap.add_argument("--pressure-rounds", type=int, default=3)
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
@@ -306,6 +373,27 @@ def main() -> None:
     client = sync_client(cfg)
     print(f"[probe] {cfg.provider} {cfg.model_name} @ {cfg.base_url} — "
           f"prefix {len(ontology_text)} chars from {args.prefix_file}", flush=True)
+
+    if args.pressure:
+        arms = [run_pressure(client, cfg, ontology_text, distinct=args.pressure,
+                             target_tokens=args.prefix_tokens or 32000,
+                             rounds=args.pressure_rounds, max_tokens=args.max_tokens)]
+        report = {
+            "schema_version": "seocho.finbench.vllm-prefix-probe.v1",
+            "manifest": runmeta.manifest(),
+            "endpoint": get_inference_info(cfg.base_url, model_descriptor=cfg.descriptor()),
+            "prefix": {"file": args.prefix_file, "chars": len(ontology_text),
+                       "mode": "pressure", "chars_per_token_assumed": CHARS_PER_TOKEN},
+            "arms": arms,
+        }
+        text = json.dumps(report, indent=2, default=str)
+        if args.out:
+            Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.out).write_text(text + "\n")
+            print(f"\nwrote {args.out}")
+        else:
+            print(text)
+        return
 
     sizes: List[Optional[int]] = ([int(x) for x in args.sweep.split(",")] if args.sweep
                                   else [args.prefix_tokens or None])
