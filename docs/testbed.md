@@ -274,8 +274,8 @@ docker compose -f testbed/observability/docker-compose.yml up -d   # collector 4
                                                                    # prom 9094, tempo 3200,
                                                                    # grafana 3004
 OTLP_ENDPOINT=http://127.0.0.1:4317 testbed/serve_vllm.sh
-SEOCHO_TRACING_BACKEND=otlp SEOCHO_METRICS_BACKEND=otlp \
-SEOCHO_METRICS_OTLP_ENDPOINT=http://127.0.0.1:4317 python3 scripts/agents/agent_interaction.py ...
+OTLP_ENDPOINT=http://127.0.0.1:4317 python3 scripts/agents/agent_interaction.py \
+    --via-seocho --seocho-src /path/to/seocho --seocho-otlp http://127.0.0.1:4317 ...
 ```
 
 Traces and metrics take different routes, and not by accident:
@@ -295,6 +295,42 @@ Traces and metrics take different routes, and not by accident:
   exporter (only `vllm/v1/metrics/ray_wrappers.py` touches OpenTelemetry), so the collector
   scrapes `:8000/metrics` and forwards it as OTLP, and Prometheus scrapes it directly as
   well — if the collector dies mid-run the serving metrics should not die with it.
+
+### The middle tier: seocho as the orchestrator, and its telemetry
+
+The thesis is three-tier — a graph database on the CPU, a model server on the GPU, and an
+orchestrator deciding what crosses between them — and for most of this work the middle tier
+was the only one with no telemetry. The harness used seocho as a library of pure functions
+(ontology, policy, guardrail) and called the Bolt driver itself, so nothing in the exchange
+reported on the layer the experiment is actually about.
+
+`--via-seocho` fixes that by routing each Cypher through `seocho.query.query_proxy.QueryProxy`
+— seocho's instrumented execution path — over an adapter that keeps the harness's own driver,
+session, `PROFILE`, row cap and stage timers. Same query, same caps, same guardrail decisions;
+what changes is that the orchestrator emits. Behind a flag and recorded in the manifest
+(`executed_via`), because the published arms ran without it and a silent change of execution
+path would leave old and new runs incomparable while looking identical.
+
+```bash
+OTLP_ENDPOINT=http://127.0.0.1:4317 python3 scripts/agents/agent_interaction.py \
+    --via-seocho --seocho-src /home/hadry/lab/seocho-room/seocho \
+    --seocho-otlp http://127.0.0.1:4317 ...
+```
+
+Verified end to end against the local collector: one trace id holding `episode` (harness) →
+`run_cypher` (harness) → **`db.query` (seocho)**, and 44 `seocho.*` series in Prometheus
+including `seocho_retrieval_duration_seconds`, `seocho_retrieval_candidate_count` and
+`seocho_retrieval_selected_count`. With a real vLLM behind `--otlp-traces-endpoint`, its
+`llm_request` span joins the same trace, so one trace spans all three tiers.
+
+Two things worth knowing. The env names are **`SEOCHO_TRACE_BACKEND`** /
+`SEOCHO_TRACE_OTLP_ENDPOINT` for tracing and `SEOCHO_METRICS_BACKEND` /
+`SEOCHO_METRICS_OTLP_ENDPOINT` for metrics — not the `SEOCHO_TRACING_*` an earlier version of
+this document guessed at — and the metrics backend accepts only `none` or `otlp` (`console`
+raises). And **which seocho answered matters**: the pip build on this box is 0.2.0 with no
+`seocho.query` at all, while the working tree at `/home/hadry/lab/seocho-room/seocho` is 0.6.0
+with 119 spec'd instruments. `--seocho-src` selects the tree and the manifest records the
+version and path that actually loaded, because "seocho" is not a version.
 
 ### The metric names that matter (0.27.1)
 

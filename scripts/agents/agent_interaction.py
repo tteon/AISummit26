@@ -444,7 +444,8 @@ def _estimated_rows(plan: Any) -> float:
 
 def make_instrumented_tool(driver, database: str, *, arm: str, anchor: Optional[int],
                            calls: List[Dict[str, Any]], guardrail_fn=None,
-                           row_cap: int = ROW_CAP, gate: Optional[Dict[str, Any]] = None):
+                           row_cap: int = ROW_CAP, gate: Optional[Dict[str, Any]] = None,
+                           seocho_factory=None):
     """One tool, four behaviours, one record per call.
 
     The parameters the model must not be trusted with — the workspace scope, the row cap, and
@@ -453,6 +454,11 @@ def make_instrumented_tool(driver, database: str, *, arm: str, anchor: Optional[
     question into 38 million db hits, and a harness that owns the scope is what a real
     subject-scoped service does.
     """
+
+    # When present, the middle tier runs the query: seocho's QueryProxy wraps the same driver
+    # call this tool would have made, and emits the retrieval metrics and the db.query span the
+    # orchestrator tier otherwise never reported.
+    orchestrator = seocho_factory(row_cap) if seocho_factory is not None else None
 
     @function_tool(
         name_override="run_cypher",
@@ -553,8 +559,37 @@ def make_instrumented_tool(driver, database: str, *, arm: str, anchor: Optional[
                     # every arm's settled query identically, which is where latency is measured.
                     record["probe_passed"] = True
 
-            tx = session.begin_transaction(timeout=budget)
-            try:
+            if orchestrator is not None:
+                try:
+                    res = orchestrator.run(cypher, params, database=database)
+                except Neo4jError as exc:
+                    record["outcome"] = "db_error"
+                    record["error"] = exc.code
+                    record["ms"] = (time.perf_counter() - t0) * 1000
+                    msg = f"ERROR — {exc.code}: {str(exc)[:220]}"
+                    record["chars"] = len(msg)
+                    return msg
+                if res["rejected"]:
+                    # seocho refused before the database saw it. Already counted on its side as
+                    # seocho.retrieval.admission_rejection.count; recorded here so the episode
+                    # shows why it has no rows.
+                    record["outcome"] = "seocho_admission_rejected"
+                    record["error"] = res["rejected"]
+                    record["ms"] = (time.perf_counter() - t0) * 1000
+                    msg = f"ERROR — the orchestrator refused the query: {res['rejected']}"
+                    record["chars"] = len(msg)
+                    return msg
+                rows = res["rows"]
+                stages = res["stages"]
+                summary = stages["summary"]
+                for k in ("submit_ms", "hydrate_ms", "server_available_ms",
+                          "server_consumed_ms"):
+                    if k in stages:
+                        record[k] = stages[k]
+                record["executed_via"] = "seocho.QueryProxy"
+            else:
+              tx = session.begin_transaction(timeout=budget)
+              try:
                 t_run = time.perf_counter()
                 result = tx.run("PROFILE " + cypher, **params)
                 # Hydration is timed on its own because it is the tool's *client-side* CPU
@@ -570,29 +605,30 @@ def make_instrumented_tool(driver, database: str, *, arm: str, anchor: Optional[
                 t_hydrated = time.perf_counter()
                 summary = result.consume()
                 tx.commit()
+                record["executed_via"] = "raw_bolt"
                 record["hydrate_ms"] = (t_hydrated - t_hydrate) * 1000
                 record["submit_ms"] = (t_hydrate - t_run) * 1000
                 # The server's own split, straight from the Bolt summary: time to first row
                 # (planning + execution start) and time to stream the rest.
                 record["server_available_ms"] = float(summary.result_available_after or 0)
                 record["server_consumed_ms"] = float(summary.result_consumed_after or 0)
-            except Neo4jError as exc:
-                tx.close()
-                record["outcome"] = ("timeout" if "Transaction" in (exc.code or "")
-                                     and "terminat" in str(exc).lower() else "db_error")
-                record["error"] = exc.code
-                record["ms"] = (time.perf_counter() - t0) * 1000
-                msg = f"ERROR — {exc.code}: {str(exc)[:220]}"
-                record["chars"] = len(msg)
-                return msg
-            except Exception as exc:  # driver-level failure, e.g. a killed transaction
-                tx.close()
-                record["outcome"] = "timeout"
-                record["error"] = type(exc).__name__
-                record["ms"] = (time.perf_counter() - t0) * 1000
-                msg = f"ERROR — the query was stopped after {TX_TIMEOUT_S:.0f}s: {type(exc).__name__}"
-                record["chars"] = len(msg)
-                return msg
+              except Neo4jError as exc:
+                  tx.close()
+                  record["outcome"] = ("timeout" if "Transaction" in (exc.code or "")
+                                       and "terminat" in str(exc).lower() else "db_error")
+                  record["error"] = exc.code
+                  record["ms"] = (time.perf_counter() - t0) * 1000
+                  msg = f"ERROR — {exc.code}: {str(exc)[:220]}"
+                  record["chars"] = len(msg)
+                  return msg
+              except Exception as exc:  # driver-level failure, e.g. a killed transaction
+                  tx.close()
+                  record["outcome"] = "timeout"
+                  record["error"] = type(exc).__name__
+                  record["ms"] = (time.perf_counter() - t0) * 1000
+                  msg = f"ERROR — the query was stopped after {TX_TIMEOUT_S:.0f}s: {type(exc).__name__}"
+                  record["chars"] = len(msg)
+                  return msg
 
         ops = Counter()
         _operators(summary.profile, ops)
@@ -917,7 +953,8 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
                       repeat: int = 0, max_tokens: Optional[int] = None,
                       conversation_sink=None, base_row_cap: int = ROW_CAP,
                       in_context_row_cap: int = IN_CONTEXT_ROW_CAP,
-                      endpoint_descriptor: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+                      endpoint_descriptor: Optional[Dict[str, Any]] = None,
+                      seocho_factory=None) -> Dict[str, Any]:
     calls: List[Dict[str, Any]] = []
     # The in-context arm pays for its rows twice — in context and in turns — so it gets its
     # own budget. The other four arms share one, because between them the database does the
@@ -930,7 +967,8 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
                                   guardrail_fn=(guardrail_fn if arm in
                                                 ("guardrail", "plan", "plan_hints") else None),
                                   row_cap=row_cap,
-                                  gate=gate if arm in _HINT_ARMS else None)
+                                  gate=gate if arm in _HINT_ARMS else None,
+                                  seocho_factory=seocho_factory)
     tools = [tool]
     if arm in _HINT_ARMS:
         tools.append(make_engineering_tool(driver, database, anchor=anchor,
@@ -1064,6 +1102,19 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
 
 async def main_async(args) -> None:
     global _MODEL_CFG
+    seocho_obs = None
+    seocho_factory = None
+    if getattr(args, "via_seocho", False):
+        # The middle tier of the exchange — graph database on one side, model server on the
+        # other — was the one with no telemetry, because the harness used seocho as a library
+        # of pure functions and called the driver itself. This puts it back in the path it was
+        # designed for and lets its instruments report.
+        from harness.seocho_bridge import enable_observability
+        seocho_obs = enable_observability(backend="otlp", endpoint=args.seocho_otlp,
+                                          source=args.seocho_src)
+        print(f"[seocho] {seocho_obs['seocho_version']} from {seocho_obs['source_prepended']} "
+              f"metrics={seocho_obs['metrics_enabled']} tracing={seocho_obs['tracing_enabled']}",
+              flush=True)
     # Resolve the endpoint before any episode runs, so a misconfigured testbed fails here
     # rather than 300 episodes in, and so args.model carries the name that was actually
     # served (vLLM has no default — it must match GET /v1/models).
@@ -1094,6 +1145,13 @@ async def main_async(args) -> None:
         return list(validate_text2cypher_fallback(cypher, params=params, policy=policy))
 
     driver = GraphDatabase.driver(args.uri, auth=(args.user, args.password))
+    if seocho_obs is not None:
+        from harness.seocho_bridge import SeochoOrchestrator
+
+        def _mk(cap: int):
+            return SeochoOrchestrator(driver, row_cap=cap, workspace_id=WS,
+                                      tx_timeout_s=TX_TIMEOUT_S)
+        seocho_factory = _mk
     targets = []
     for spec in args.databases:
         db, _, sf = spec.partition(":")
@@ -1172,7 +1230,8 @@ async def main_async(args) -> None:
                     max_tokens=args.max_tokens,
                     conversation_sink=(conv_file is not None) or None,
                     base_row_cap=args.row_cap, in_context_row_cap=args.in_context_row_cap,
-                    endpoint_descriptor=(_MODEL_CFG.descriptor() if _MODEL_CFG else None))
+                    endpoint_descriptor=(_MODEL_CFG.descriptor() if _MODEL_CFG else None),
+                seocho_factory=seocho_factory)
         results.append(r)
         if conv_file is not None and r.get("conversation") is not None:
             async with conv_lock:
@@ -1208,6 +1267,8 @@ async def main_async(args) -> None:
         "model": _MODEL_CFG.model_name if _MODEL_CFG else args.model,
         "endpoint": _MODEL_CFG.descriptor() if _MODEL_CFG else None,
         "arms": list(args.arms), "row_cap": ROW_CAP,
+        "seocho_observability": seocho_obs,
+        "executed_via": "seocho.QueryProxy" if seocho_obs is not None else "raw_bolt",
         "row_cap_configured": args.row_cap,
         "in_context_row_cap_configured": args.in_context_row_cap,
         "tx_timeout_s": TX_TIMEOUT_S, "probe_timeout_s": PROBE_TIMEOUT_S,
@@ -1263,6 +1324,17 @@ def main() -> None:
                         "while the run is still going.")
     p.add_argument("--resume", action="store_true",
                    help="skip episodes already present in the episode log")
+    p.add_argument("--via-seocho", action="store_true",
+                   help="run every Cypher through seocho's instrumented QueryProxy instead of "
+                        "the raw driver, so the orchestrator tier emits its own metrics and "
+                        "spans (seocho.retrieval.*, db.query). Same query, same row cap, same "
+                        "guardrail decisions — recorded in the manifest because the published "
+                        "arms ran without it.")
+    p.add_argument("--seocho-src", default=None,
+                   help="path to a seocho checkout (or its src/) to prefer over the installed "
+                        "package; the pip build on a box may predate the instrumented paths")
+    p.add_argument("--seocho-otlp", default=None,
+                   help="OTLP endpoint for seocho's own metrics and traces")
     p.add_argument("--log-conversations", default=None,
                    help="also write each episode's full message list to this JSONL. Needed to "
                         "build serving-simulator workloads (token ids come from the prompts, "
