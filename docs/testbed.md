@@ -172,7 +172,14 @@ Three properties worth knowing about:
   polling through them burns disk charges forever while the script looks busy.
 - **The price ceiling is enforced on the chosen offer**, not merely requested in the query. A
   query field that turns out not to exist is ignored by the API, and the first result of an
-  unfiltered search can be an $8/hr box.
+  unfiltered search can be an $8/hr box. This is not hypothetical: the query field for price
+  is `dph`, while the price in the result JSON is `dph_total` — the first version of this
+  script filtered on `dph_total` and the API silently ignored it.
+
+  The default query also demands `reliability>0.98` (a flaky host ends a 40-minute run at
+  minute 30), `inet_down>=500` (63 GB of weights is ~17 minutes at 500 Mb/s) and
+  `duration>1` day of offered rental. `gpu_name` takes underscores for spaces
+  (`RTX_4090`, not `RTX 4090`).
 
 **So is S3 needed?** For this experiment, no. `vastai copy` moves results home and can seed
 snapshots the other way (36 MB of SF100 parquet over the wire beats regenerating it at GPU

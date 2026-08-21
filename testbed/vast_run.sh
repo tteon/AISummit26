@@ -29,7 +29,10 @@ IMAGE="${IMAGE:-}"                       # ghcr.io/<owner>/aisummit26-testbed:<s
 DISK_GB="${DISK_GB:-250}"                # 63GB of MXFP4 weights + a ~12GB image + results
 GPU_QUERY="${GPU_QUERY:-gpu_name=H200 num_gpus=1}"
 MAX_DPH="${MAX_DPH:-4.0}"                # hard ceiling, $/hr — a typo in a query is expensive
-SORT="${SORT:-dph_total}"                # cheapest first; use 'dlperf_usd-' for value-first
+SORT="${SORT:-dph}"                      # cheapest first; use 'dlperf_usd-' for value-first
+MIN_RELIABILITY="${MIN_RELIABILITY:-0.98}"   # a flaky host ends a 40-minute run at minute 30
+MIN_INET_DOWN="${MIN_INET_DOWN:-500}"        # 63GB of MXFP4 weights: 500Mb/s is ~17 minutes
+MIN_DURATION_D="${MIN_DURATION_D:-1}"        # max rental duration the host offers, in days
 INSTANCE_ID="${INSTANCE_ID:-}"
 RUN_ID="${RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)_$(echo "${GPU_QUERY}" | tr -cd 'A-Za-z0-9')_${PREFIX_CACHING:-on}}"
 REMOTE_DIR="${REMOTE_DIR:-/workspace/AIsummit26}"
@@ -91,7 +94,13 @@ echo "destroy  : $([ "$DESTROY_ON_SUCCESS" = 1 ] && echo "after a verified copy"
 if [ -z "$INSTANCE_ID" ]; then
   say "search"
   [ -z "$IMAGE" ] && { echo "IMAGE is required to create an instance"; exit 64; }
-  QUERY="$GPU_QUERY verified=true rentable=true direct_port_count>=1 disk_space>=${DISK_GB} dph_total<=${MAX_DPH}"
+  # Field names are the *query* names from `vastai search offers --help`, which are not the
+  # result names: the price filter is `dph`, while the price in the result JSON is
+  # `dph_total`. Getting that backwards is silent — the API ignores an unknown query field —
+  # which is why the ceiling is re-checked on the chosen offer below.
+  QUERY="$GPU_QUERY verified=true rentable=true direct_port_count>=1"
+  QUERY="$QUERY disk_space>=${DISK_GB} dph<=${MAX_DPH} reliability>${MIN_RELIABILITY}"
+  QUERY="$QUERY inet_down>=${MIN_INET_DOWN} duration>${MIN_DURATION_D}"
   echo "+ vastai search offers '$QUERY' -o '$SORT' --raw"
   echo "  (offers -> ${LOCAL_RUN_DIR}/vast_offers.json)"
   if [ "$DRY_RUN" = "1" ]; then
