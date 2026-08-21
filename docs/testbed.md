@@ -396,6 +396,77 @@ local Prometheus — after the instance is gone.
 Bring the Grafana stack up locally for analysis, or on the instance only if the machine you
 rented can run docker.
 
+## Four stages, and why stage 2 cannot come before stage 3
+
+The questions this repo ends on are about scale, and scale is expensive to rent. So the work
+splits into four stages with very different costs — but the order that looks obvious is wrong.
+
+| # | Stage | Endpoint / tool | Cost | Answers | Cannot answer |
+| --- | --- | --- | --- | --- | --- |
+| 1 | **Workload extraction** | MARA **or** a self-hosted vLLM, through `harness/llm.py` | API tokens only | how many LLM calls an episode takes, how long each prompt and generation is, how long the tool runs between them, which spans are shared | anything about caching, if the endpoint has none |
+| 2 | **Simulation** | LLMServingSim, local, CPU-only | free | 100 tenants, a CXL tier, weights off the accelerator, TP/PP/PD layouts — every counterfactual | absolute latency, unless calibrated against stage 3 |
+| 3 | **Real measurement** | rented GPU | \$4–15/hr | what the hardware actually does, and the constants stage 2 needs | anything the rental cannot hold: more GPUs, a CXL device, 100 tenants |
+| 4 | **Kernel work** | Nsight + CUDA docs | rental time | where a kernel's time goes and whether it can be moved | whether moving it changes the system-level answer |
+
+**Stage 1 works from either endpoint, and that is the point.** MARA is the cheap way to get
+workload *shape*: per-turn tokens, tool waits, the real prompt text. It cannot report cache
+behaviour — verified, `cached_tokens` is absent and TTFT is flat across identical prefixes —
+so every turn it records shows `cached_tokens: 0`. A self-hosted vLLM gives the same shape
+*plus* real cache behaviour, at GPU prices. Use MARA to build workloads, vLLM to check them.
+
+**Stage 2 is not a measurement.** Its own documentation is blunt about this: with the default
+`mem_util: 0.9` its TTFT was off by −20.7%, and it landed at +0.6% only after `mem_util` was
+matched to the real run's resolved block count. And it warns that KV capacity is invisible
+until a run actually *fills* it. Our entire question lives in the saturating regime, so the
+order is:
+
+```
+1 (workload, cheap)  →  3 (short: profile + anchor)  →  2 (sweeps, free)  →  3' (verify the
+one configuration the sweep chose)  →  4 (kernel)  →  back to 2 with the new profile
+```
+
+Stage 4 closes the loop rather than ending it: a kernel improvement shows up in the profile
+bundle's `attention.csv` / `dense.csv` / `moe.csv`, so re-profiling (or hand-editing the
+bundle to model the win) lets stage 2 answer the only question that matters about it — whether
+a faster kernel changes the system-level outcome, or whether the run was bound by cache
+capacity all along. On this workload the second is the live hypothesis: the 14.8× we measured
+came from *not* prefilling, and no kernel beats work that is skipped. Where kernel work does
+bite for us is narrower and specific: the MXFP4 path for gpt-oss, the attention backend at
+long context, and the KV transfer path an offload tier depends on.
+
+## Hardware available to the simulator
+
+Three tiers, and one distinction that matters more than the list: **memory is free to
+change, compute is not.** `npu_mem.mem_size` / `mem_bw` / `mem_util`, `cpu_mem`, `cxl_mem`
+and the whole `placement` block are plain config. Compute latency comes only from a profile
+bundle under `profiler/perf/<HARDWARE>/`. Raising `mem_size` from 96 to 143 and calling it an
+H200 gives H200 memory with RTX PRO 6000 compute — fine for a capacity study, not something
+to label with a GPU's name.
+
+**Ready now (bundled profiles, zero cost).** RTX 4090 with Llama-3.1-8B (tp1);
+RTX PRO 6000 with Llama-3.1-8B, Qwen3-30B-A3B-Instruct-2507 and Qwen3-32B (tp1, tp2).
+
+**One profiling rental each** — the profiler works as-is wherever vLLM does: A100, H100,
+**H200**, RTX 6000 Ada, L40S, Blackwell B100/B200 (needs the `cu130` image), Hopper SXM,
+AMD MI300X (ROCm). `HARDWARE` is just a folder label that `cluster_config.hardware` must
+match. Budget from the docs' own estimates: dense and per-sequence in seconds, attention
+5–15 min, MoE 10–30 min, skew 10–25 min — so **30–70 minutes per (model, TP)**, about \$3–5
+on a single H200.
+
+*But not gpt-oss.* The profiler pins vLLM `0.19.0`, which predates gpt-oss, and
+`profiler/models/` has no `gpt_oss.yaml`. The practical target is
+**H200 × Qwen3-30B-A3B-Instruct-2507** — MoE like gpt-oss, `model_type: qwen3_moe` with an
+architecture YAML already present and its HF config already vendored at
+`configs/model/Qwen/`. Rent with the image `vllm/vllm-openai:v0.19.0` so the instance *is*
+the profiler's container, and no docker-in-docker is needed.
+
+**Synthesizable without silicon** — for anything vLLM cannot serve (TPU, a custom NPU, a PIM
+part), the CSV bundle *is* the contract: `dense.csv` (`layer, tokens, time_us`),
+`per_sequence.csv`, `attention.csv` (`prefill_chunk, kv_prefill, n_decode, kv_decode,
+time_us` — a 4D grid, and our axis is two of its dimensions), and `moe.csv` for MoE. Write
+those four tables from any source and the simulator treats the part as real. PIM memory types
+ship as `configs/pim/*.ini` (DDR4-3200, HBM2-2000, LPDDR4X-4266, LPDDR5-6400).
+
 ## Parity, and what these runs are not
 
 - **These are new arms, not replacements.** The published figures come from this repo's
