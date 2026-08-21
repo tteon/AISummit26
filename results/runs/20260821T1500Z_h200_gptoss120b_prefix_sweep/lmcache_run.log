@@ -1,0 +1,17 @@
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+[32;20m[2026-08-21 15:21:04,879] LMCache INFO:[0m torch_dev=<module 'torch.cuda' from '/usr/local/lib/python3.12/dist-packages/torch/cuda/__init__.py'>, torch_device_type=cuda [3m(_device_detect.py:143:lmcache.v1.platform._device_detect)[0m
+[33;20m[2026-08-21 15:21:04,883] LMCache WARNING:[0m lmcache.c_ops compiled extension not found; CudaDeviceOps stays on the torch baseline for all ops. [3m(device_ops.py:34:lmcache.v1.platform.cuda.device_ops)[0m
+lmcache 0.5.3
+[gpu] freed (0MiB)
+/usr/lib/python3.12/multiprocessing/resource_tracker.py:279: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
+[serve] stopped
+GPU KV cache size: 908,048 tokens
+48
+  File "/usr/local/lib/python3.12/dist-packages/openai/_base_client.py", line 1375, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/openai/_base_client.py", line 1115, in request
+    raise APIConnectionError(request=request) from err
+openai.APIConnectionError: Connection error.
+LMCACHE_DONE

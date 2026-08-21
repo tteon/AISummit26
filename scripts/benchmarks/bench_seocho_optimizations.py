@@ -26,14 +26,14 @@ import duckdb
 
 # Load API key
 ENV_FILE = Path(__file__).resolve().parents[2] / ".env"
-MARA_KEY = os.getenv("MARA_API_KEY")
-if not MARA_KEY and ENV_FILE.exists():
-    for line in ENV_FILE.read_text().splitlines():
-        if line.startswith("MARA_API_KEY="):
-            MARA_KEY = line.split("=", 1)[1].strip()
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from harness.llm import async_client, default_config  # noqa: E402
 
-MARA_BASE_URL = os.getenv("MARA_BASE_URL", "https://api.cloud.mara.com/v1")
-MODEL_NAME = "gpt-oss-120b"
+# One connector for the whole repo (harness/llm.py): provider, model and
+# base_url come from MODEL_PROVIDER/*_MODEL/*_BASE_URL, so this script runs
+# against the hosted API or a self-hosted vLLM without an edit.
+MODEL_CFG = default_config()
+MODEL_NAME = MODEL_CFG.model_name
 
 ONTOLOGY_PATH = Path(__file__).resolve().parents[2] / "ontology" / "finbench.ontology.yaml"
 ontology = Ontology.from_dict(yaml.safe_load(ONTOLOGY_PATH.read_text()))
@@ -112,7 +112,7 @@ async def run_optimization_experiment():
     print("🚀 Benchmarking SEOCHO Text2Cypher Optimizations (Proposals 1, 2, 3)")
     print("=" * 95)
 
-    client = AsyncOpenAI(api_key=MARA_KEY, base_url=MARA_BASE_URL)
+    client = async_client(MODEL_CFG)
 
     test_cases = [
         {

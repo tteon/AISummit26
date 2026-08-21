@@ -1,0 +1,44 @@
+# Traces in by OTLP, vLLM metrics in by scrape, everything out to Tempo/Prometheus.
+receivers:
+  otlp:
+    protocols:
+      grpc: { endpoint: 0.0.0.0:4317 }
+      http: { endpoint: 0.0.0.0:4318 }
+  # vLLM 0.27.1 has no OTLP metrics exporter — only the Prometheus endpoint — so the
+  # collector scrapes it. 5s matches the seocho benchmark stack's interval, which keeps
+  # per-episode prefill effects visible instead of averaged away.
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: vllm
+          scrape_interval: 5s
+          static_configs:
+            - targets: ["host.docker.internal:8000"]
+              labels: { component: serving }
+
+processors:
+  batch: { timeout: 2s }
+  # Without this, a 300-episode run's traces are indistinguishable from each other.
+  resource:
+    attributes:
+      - { key: deployment.environment, value: aisummit26-testbed, action: upsert }
+
+exporters:
+  otlp/tempo:
+    endpoint: tempo:4317
+    tls: { insecure: true }
+  prometheusremotewrite:
+    endpoint: http://prometheus:9090/api/v1/write
+    tls: { insecure: true }
+    resource_to_telemetry_conversion: { enabled: true }
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [resource, batch]
+      exporters: [otlp/tempo]
+    metrics:
+      receivers: [otlp, prometheus]
+      processors: [resource, batch]
+      exporters: [prometheusremotewrite]

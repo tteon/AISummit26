@@ -1,0 +1,4 @@
+boto3>=1.34
+# OTLP export for the collector topology in testbed/observability/
+opentelemetry-sdk>=1.30
+opentelemetry-exporter-otlp-proto-grpc>=1.30

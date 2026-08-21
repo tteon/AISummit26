@@ -64,12 +64,19 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+import sys
+
 import yaml
 from neo4j import GraphDatabase
 from neo4j.exceptions import Neo4jError
 
 from agents import Agent, ModelSettings, Runner, function_tool
 from agents.exceptions import MaxTurnsExceeded
+
+# Run as a script, sys.path[0] is this file's directory, so the repo's own packages need
+# the root put back on the path before `harness` resolves.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from harness.llm import add_provider_args, agents_model, model_config  # noqa: E402
 
 WS = "default"
 ROW_CAP = 50
@@ -823,25 +830,66 @@ def score(question: Dict[str, Any], gold_rows: List[Dict[str, Any]],
 # --------------------------------------------------------------------------------------
 # Runner
 # --------------------------------------------------------------------------------------
-def mara_model(model: str):
-    from agents import OpenAIChatCompletionsModel
-    from openai import AsyncOpenAI
+# Resolved once in main() from --provider/--model/--base-url, then read by every episode.
+# The endpoint is a measured variable here — the same arms run against the hosted API and
+# against a self-hosted vLLM — so it is recorded in the output rather than assumed.
+_MODEL_CFG = None
 
-    key = os.environ["MARA_API_KEY"]
-    client = AsyncOpenAI(api_key=key,
-                         base_url=os.getenv("MARA_BASE_URL", "https://api.cloud.mara.com/v1"))
-    return OpenAIChatCompletionsModel(model=model, openai_client=client)
+
+def turn_usage(result) -> List[Dict[str, Any]]:
+    """Per-LLM-call token counts for one episode, in order.
+
+    The episode total (`input_tokens`) answers "what did this arm cost". It cannot answer
+    "what would a serving stack do with this workload", because a serving simulator schedules
+    *calls*: each one has its own prompt length, its own generation length, and its own
+    position in a chain where the previous call's output is the next call's input. That is the
+    shape LLMServingSim's agentic JSONL wants (`sub_requests` with `input_toks` / `output_toks`
+    / `tool_duration_ns`), and a sum of turns cannot be un-summed.
+    """
+    turns: List[Dict[str, Any]] = []
+    for i, resp in enumerate(getattr(result, "raw_responses", None) or []):
+        u = getattr(resp, "usage", None)
+        turns.append({
+            "index": i,
+            "input_tokens": getattr(u, "input_tokens", None),
+            "output_tokens": getattr(u, "output_tokens", None),
+            # Cached-prompt tokens when the endpoint reports them. Absent on MARA, present on
+            # a vLLM served with --enable-prompt-tokens-details.
+            "cached_tokens": getattr(getattr(u, "input_tokens_details", None),
+                                     "cached_tokens", None),
+        })
+    return turns
+
+
+_MODEL_CACHE: Dict[str, Any] = {}
+
+
+def chat_model(model: str):
+    """The Agents SDK model for an episode, bound to the resolved provider.
+
+    Memoised per endpoint: a run is 800+ episodes, and building a client per episode leaks
+    a connection pool and its file descriptors every time — on a rented box that surfaces
+    hundreds of episodes in as "too many open files", not as a clean failure.
+    """
+    cfg = _MODEL_CFG if _MODEL_CFG is not None else model_config(model_name=model)
+    key = f"{cfg.provider}|{cfg.model_name}|{cfg.base_url}"
+    if key not in _MODEL_CACHE:
+        _MODEL_CACHE[key] = agents_model(cfg)
+    return _MODEL_CACHE[key]
 
 
 async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dict[str, Any],
                       anchor: Optional[int], gold_rows: List[Dict[str, Any]],
                       schema: Dict[str, Any], guardrail_fn, model_name: str,
-                      repeat: int = 0, max_tokens: Optional[int] = None) -> Dict[str, Any]:
+                      repeat: int = 0, max_tokens: Optional[int] = None,
+                      conversation_sink=None, base_row_cap: int = ROW_CAP,
+                      in_context_row_cap: int = IN_CONTEXT_ROW_CAP,
+                      endpoint_descriptor: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     calls: List[Dict[str, Any]] = []
     # The in-context arm pays for its rows twice — in context and in turns — so it gets its
     # own budget. The other four arms share one, because between them the database does the
     # aggregating and a single call answers.
-    row_cap = IN_CONTEXT_ROW_CAP if arm in _IN_CONTEXT_ARMS else ROW_CAP
+    row_cap = (in_context_row_cap if arm in _IN_CONTEXT_ARMS else base_row_cap)
     max_turns = IN_CONTEXT_MAX_TURNS if arm in _IN_CONTEXT_ARMS else MAX_TURNS
     eng_calls: List[Dict[str, Any]] = []
     gate = {"unlocked": False}
@@ -858,7 +906,7 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
     agent = Agent(
         name=f"analyst_{arm}",
         instructions=build_instructions(schema, arm=arm),
-        model=mara_model(model_name),
+        model=chat_model(model_name),
         # max_tokens stays None for the published gpt-oss runs (the server default was
         # enough); reasoning-heavy models on the same endpoint (DeepSeek-V3.2) hit the
         # default's ceiling mid-thought and 400 out, so replication runs raise it.
@@ -869,6 +917,8 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
     t0 = time.perf_counter()
     final_text, err = "", None
     usage_in = usage_out = 0
+    turns: List[Dict[str, Any]] = []
+    conversation: Optional[List[Any]] = None
     nudged = False
     try:
         result = await Runner.run(agent, prompt, max_turns=max_turns)
@@ -876,6 +926,9 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
         usage = getattr(getattr(result, "context_wrapper", None), "usage", None)
         if usage is not None:
             usage_in, usage_out = usage.input_tokens, usage.output_tokens
+        turns = turn_usage(result)
+        if conversation_sink is not None:
+            conversation = result.to_input_list()
         if not final_text.strip():
             # gpt-oss sometimes spends its whole closing turn in the reasoning channel and
             # returns empty content (deterministic at temperature 0 for some prompts).
@@ -895,6 +948,9 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
             if usage is not None:
                 usage_in += usage.input_tokens
                 usage_out += usage.output_tokens
+            turns += turn_usage(result)
+            if conversation_sink is not None:
+                conversation = result.to_input_list()
     except MaxTurnsExceeded:
         err = "max_turns_exceeded"
     except Exception as exc:  # a model-side failure is a real outcome, not a crash
@@ -919,6 +975,10 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
         "sf": sf, "database": database, "arm": arm, "question_id": question["id"],
         "repeat": repeat, "settled_cypher": settled,
         "row_cap": row_cap, "max_turns": max_turns,
+        # The served window and the PI factor travel with every episode. A 4x-interpolated
+        # run that answers worse is a finding; a 4x-interpolated run mistaken for a native
+        # one is a corrupted dataset.
+        "context_window": (endpoint_descriptor or {}).get("context"),
         "audience": question["audience"], "difficulty": question["difficulty"],
         "anchor": anchor,
         "round_trips": len(calls),
@@ -929,7 +989,11 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
         "model_ms": round(max(wall_ms - db_ms, 0.0), 1),
         "wall_ms": round(wall_ms, 1),
         "input_tokens": usage_in, "output_tokens": usage_out,
+        # One entry per LLM call. Pair with `calls` (same order) to get the tool wait between
+        # them: turn i is followed by the tool invocation whose db time is calls[i]["ms"].
+        "turns": turns,
         "operators": dict(ops),
+        **({"conversation": conversation} if conversation is not None else {}),
         "guardrail_rejections": sum(1 for c in calls if c["outcome"] == "guardrail_rejected"),
         "plan_rejections": sum(1 for c in calls if c["outcome"] == "plan_rejected"),
         "engineering_probes": sum(1 for c in eng_calls if c["outcome"] != "locked"),
@@ -966,6 +1030,14 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
 
 
 async def main_async(args) -> None:
+    global _MODEL_CFG
+    # Resolve the endpoint before any episode runs, so a misconfigured testbed fails here
+    # rather than 300 episodes in, and so args.model carries the name that was actually
+    # served (vLLM has no default — it must match GET /v1/models).
+    _MODEL_CFG = model_config(args, max_tokens=args.max_tokens)
+    args.model = _MODEL_CFG.model_name
+    print(f"[endpoint] {_MODEL_CFG.provider} {_MODEL_CFG.model_name} @ {_MODEL_CFG.base_url}",
+          flush=True)
     questions = ([q for q in QUESTIONS if q["id"] in set(args.only)] if args.only
                  else QUESTIONS)
     if args.only and not questions:
@@ -1014,7 +1086,43 @@ async def main_async(args) -> None:
     sem = asyncio.Semaphore(args.concurrency)
     results: List[Dict[str, Any]] = []
 
+    # An episode log that is appended to as episodes settle, not written once at the end.
+    # On a rented instance the process can disappear mid-run (the box is reclaimed, the
+    # GPU is preempted), and a run that only persists on completion loses every episode it
+    # already paid for. The log is also the resume key: one line per finished episode.
+    log_path = Path(args.episodes_log or f"{args.out}.jsonl")
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    done: set = set()
+    if args.resume and log_path.exists():
+        for line in log_path.read_text().splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rec = json.loads(line)
+            except json.JSONDecodeError:
+                continue  # a torn last line is the normal shape of a killed process
+            done.add((rec.get("database"), rec.get("arm"), rec.get("question_id"),
+                      rec.get("repeat")))
+            results.append(rec)
+        print(f"[resume] {len(done)} episodes already in {log_path}", flush=True)
+    log_file = log_path.open("a")
+    log_lock = asyncio.Lock()
+
+    # The prompts themselves, not just their token counts. A serving simulator can only
+    # model prefix reuse if it can hash the actual token ids (LLMServingSim disables prefix
+    # caching for any request without `input_tok_ids`), and the prompt is what gets tokenised.
+    # Off by default: at SF100 the in-context arms carry 200-row pages, so this file is much
+    # larger than the episode log.
+    conv_file = None
+    conv_lock = asyncio.Lock()
+    if args.log_conversations:
+        Path(args.log_conversations).parent.mkdir(parents=True, exist_ok=True)
+        conv_file = Path(args.log_conversations).open("a")
+
     async def one(db: str, arm: str, q: Dict[str, Any], repeat: int) -> None:
+        if (db, arm, q["id"], repeat) in done:
+            return
         ctx = context[db]
         async with sem:
             r = await run_episode(
@@ -1023,8 +1131,26 @@ async def main_async(args) -> None:
                 gold_rows=ctx["gold"][q["id"]],
                 schema=thin_schema if arm == "labels" else full_schema,
                 guardrail_fn=guardrail_fn, model_name=args.model, repeat=repeat,
-                max_tokens=args.max_tokens)
+                max_tokens=args.max_tokens,
+                conversation_sink=(conv_file is not None) or None,
+                base_row_cap=args.row_cap, in_context_row_cap=args.in_context_row_cap,
+                endpoint_descriptor=(_MODEL_CFG.descriptor() if _MODEL_CFG else None))
         results.append(r)
+        if conv_file is not None and r.get("conversation") is not None:
+            async with conv_lock:
+                conv_file.write(json.dumps({
+                    "database": db, "arm": arm, "question_id": q["id"], "repeat": repeat,
+                    "sf": ctx["sf"], "anchor": ctx["anchor"],
+                    "instructions": build_instructions(
+                        thin_schema if arm == "labels" else full_schema, arm=arm),
+                    "prompt": q["question"].format(a=ctx["anchor"]),
+                    "conversation": r.pop("conversation"),
+                }, default=str) + "\n")
+                conv_file.flush()
+        r.pop("conversation", None)
+        async with log_lock:
+            log_file.write(json.dumps(r, default=str) + "\n")
+            log_file.flush()
         print(f"  {db:14s} {arm:9s} {q['id']:11s} r{repeat} trips={r['round_trips']} "
               f"hits={r['db_hits']:>10,} ok={r['score_correct']} "
               f"gr={r['guardrail_rejections']} pl={r['plan_rejections']} "
@@ -1034,11 +1160,18 @@ async def main_async(args) -> None:
             for q in questions for rep in range(args.repeats)]
     print(f"\n[run] {len(jobs)} episodes, concurrency {args.concurrency}\n", flush=True)
     await asyncio.gather(*jobs)
+    log_file.close()
+    if conv_file is not None:
+        conv_file.close()
     driver.close()
 
     out = {
         "schema_version": "seocho.finbench.agent-interaction.v1",
-        "model": args.model, "arms": list(args.arms), "row_cap": ROW_CAP,
+        "model": _MODEL_CFG.model_name if _MODEL_CFG else args.model,
+        "endpoint": _MODEL_CFG.descriptor() if _MODEL_CFG else None,
+        "arms": list(args.arms), "row_cap": ROW_CAP,
+        "row_cap_configured": args.row_cap,
+        "in_context_row_cap_configured": args.in_context_row_cap,
         "tx_timeout_s": TX_TIMEOUT_S, "probe_timeout_s": PROBE_TIMEOUT_S,
         "max_turns": MAX_TURNS,
         "context": {db: {k: v for k, v in c.items() if k != "gold"} for db, c in context.items()},
@@ -1062,9 +1195,17 @@ def main() -> None:
     p.add_argument("--databases", nargs="+", default=["finbenchl1:1", "finbenchl10:10",
                                                       "finbenchl100:100"])
     p.add_argument("--arms", nargs="+", default=ARMS, choices=ARMS)
-    p.add_argument("--model", default="gpt-oss-120b")
+    add_provider_args(p, default_model=None)
     p.add_argument("--max-tokens", type=int, default=None,
                    help="per-turn output cap; None keeps the endpoint default")
+    # The row caps are what let a longer context window actually be used. They are constants
+    # for the published runs (50 / 200, sized so the in-context arm is feasible at SF1 and
+    # not at SF100); a Position Interpolation run is asking a different question — what a 4x
+    # window buys — and that needs the cap to move with it. Overridden values are recorded.
+    p.add_argument("--row-cap", type=int, default=ROW_CAP,
+                   help=f"rows per query for the non-in-context arms (default {ROW_CAP})")
+    p.add_argument("--in-context-row-cap", type=int, default=IN_CONTEXT_ROW_CAP,
+                   help=f"rows per page for the in-context arms (default {IN_CONTEXT_ROW_CAP})")
     p.add_argument("--ontology", default="ontology/finbench.ontology.yaml")
     p.add_argument("--concurrency", type=int, default=4)
     p.add_argument("--repeats", type=int, default=3,
@@ -1076,6 +1217,16 @@ def main() -> None:
                    help="restrict to these question ids, for re-running one cell without "
                         "disturbing the conditions the rest of the run shared")
     p.add_argument("--out", default="results/episodes/agent_interaction.json")
+    p.add_argument("--episodes-log", default=None,
+                   help="append-only JSONL of settled episodes (default: <out>.jsonl). This "
+                        "is what a killed run resumes from, and what the testbed syncs to S3 "
+                        "while the run is still going.")
+    p.add_argument("--resume", action="store_true",
+                   help="skip episodes already present in the episode log")
+    p.add_argument("--log-conversations", default=None,
+                   help="also write each episode's full message list to this JSONL. Needed to "
+                        "build serving-simulator workloads (token ids come from the prompts, "
+                        "and LLMServingSim disables prefix caching without them). Large.")
     asyncio.run(main_async(p.parse_args()))
 
 

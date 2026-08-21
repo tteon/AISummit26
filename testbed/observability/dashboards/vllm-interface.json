@@ -1,0 +1,105 @@
+{
+  "uid": "aisummit-vllm-interface",
+  "title": "AIsummit26 — ontology prefix on vLLM",
+  "tags": ["aisummit26", "vllm"],
+  "timezone": "browser",
+  "time": {"from": "now-30m", "to": "now"},
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Prefix cache hit rate (token-denominated, 5m)",
+      "description": "Counters, not a gauge — the ratio is computed at query time so the window is the reader's choice. This is the vLLM metrics design's own guidance for prefix cache metrics. Denominator is tokens queried, not blocks: the 5s log line's hit rate is a different denominator over the most recent 1k block queries, so the two numbers are not comparable.",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1}},
+      "targets": [
+        {"refId": "A", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "rate(vllm:prefix_cache_hits_total[5m]) / rate(vllm:prefix_cache_queries_total[5m])",
+         "legendFormat": "local {{model_name}}"},
+        {"refId": "B", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "rate(vllm:external_prefix_cache_hits_total[5m]) / clamp_min(rate(vllm:external_prefix_cache_queries_total[5m]), 1)",
+         "legendFormat": "external tier {{model_name}}"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "TTFT p50/p99 (server-side)",
+      "description": "vLLM measures TTFT from the frontend arrival_time, so it includes tokenisation but not the client's network hop — it will read slightly lower than the probe's client-side TTFT. Compare like with like.",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "targets": [
+        {"refId": "A", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "histogram_quantile(0.5, sum by (le, model_name) (rate(vllm:time_to_first_token_seconds_bucket[5m])))",
+         "legendFormat": "p50"},
+        {"refId": "B", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "histogram_quantile(0.99, sum by (le, model_name) (rate(vllm:time_to_first_token_seconds_bucket[5m])))",
+         "legendFormat": "p99"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Where the request's time goes: queue / prefill / decode (mean)",
+      "description": "The split the hosted endpoint only exposed through a vendor SDK. Engine-core monotonic timestamps, so these are comparable to each other; do not compare them against client-side wall clock.",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "targets": [
+        {"refId": "A", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "rate(vllm:request_queue_time_seconds_sum[5m]) / clamp_min(rate(vllm:request_queue_time_seconds_count[5m]), 1)",
+         "legendFormat": "queue"},
+        {"refId": "B", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "rate(vllm:request_prefill_time_seconds_sum[5m]) / clamp_min(rate(vllm:request_prefill_time_seconds_count[5m]), 1)",
+         "legendFormat": "prefill"},
+        {"refId": "C", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "rate(vllm:request_decode_time_seconds_sum[5m]) / clamp_min(rate(vllm:request_decode_time_seconds_count[5m]), 1)",
+         "legendFormat": "decode"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "KV block residency: lifetime vs idle-before-evict",
+      "description": "On one chart deliberately — the vLLM docs' own reason: together they show stranded cache. For this experiment they answer what a hit rate cannot, namely whether the ontology's blocks survive between episodes or are evicted and re-prefilled. Requires --kv-cache-metrics; sampled, so raise --kv-cache-metrics-sample above the 1% default.",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "targets": [
+        {"refId": "A", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "rate(vllm:kv_block_lifetime_seconds_sum[5m]) / clamp_min(rate(vllm:kv_block_lifetime_seconds_count[5m]), 1)",
+         "legendFormat": "mean lifetime"},
+        {"refId": "B", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "rate(vllm:kv_block_idle_before_evict_seconds_sum[5m]) / clamp_min(rate(vllm:kv_block_idle_before_evict_seconds_count[5m]), 1)",
+         "legendFormat": "mean idle before evict"},
+        {"refId": "C", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "rate(vllm:kv_block_reuse_gap_seconds_sum[5m]) / clamp_min(rate(vllm:kv_block_reuse_gap_seconds_count[5m]), 1)",
+         "legendFormat": "mean reuse gap"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "KV cache usage and queue depth",
+      "description": "Server-level metrics exist to explain the request-level ones: a TTFT rise with usage near 1.0 is eviction pressure, the same rise with a waiting queue is admission pressure.",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+      "targets": [
+        {"refId": "A", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "vllm:kv_cache_usage_perc", "legendFormat": "kv cache used (0-1)"},
+        {"refId": "B", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "vllm:num_requests_running", "legendFormat": "running"},
+        {"refId": "C", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "vllm:num_requests_waiting", "legendFormat": "waiting"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Prompt tokens: total vs served from cache",
+      "description": "The interchange cost of the ontology block, in the only currency that matters here: tokens the server had to prefill versus tokens it did not.",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+      "fieldConfig": {"defaults": {"unit": "tps"}},
+      "targets": [
+        {"refId": "A", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "rate(vllm:prompt_tokens_total[5m])", "legendFormat": "prompt tokens/s"},
+        {"refId": "B", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "rate(vllm:prompt_tokens_cached_total[5m])", "legendFormat": "cached prompt tokens/s"},
+        {"refId": "C", "datasource": {"type": "prometheus", "uid": "prom"},
+         "expr": "rate(vllm:generation_tokens_total[5m])", "legendFormat": "generation tokens/s"}
+      ]
+    }
+  ]
+}

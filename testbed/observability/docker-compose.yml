@@ -1,0 +1,73 @@
+# One collector, two producers: seocho's spans and vLLM's spans in the same trace tree.
+#
+# This is ADR-0144's topology (OTLP Collector -> Prometheus for metrics, Tempo for traces,
+# Grafana on top), with the half that ADR deferred now live. Its exact words were that
+# LMCache's reference *metrics* "do not apply to us — we run no local vLLM+LMCache serving
+# layer; we call external APIs". The testbed is that serving layer, so they apply now.
+#
+# Metrics and traces arrive by different routes on purpose:
+#   * traces  — both seocho (SEOCHO_TRACING_BACKEND=otlp) and vLLM (--otlp-traces-endpoint)
+#               push OTLP to the collector. vLLM parents its request span to the incoming
+#               traceparent, so one trace holds episode -> Cypher -> model prefill/decode.
+#   * metrics — vLLM exports Prometheus only (no OTLP metrics exporter in 0.27.1), so the
+#               collector *scrapes* :8000/metrics and forwards it as OTLP. That keeps one
+#               pipeline instead of two dashboards that disagree.
+#
+# Ports avoid the seocho-bench pair already on 9092/3002.
+#   docker compose -f testbed/observability/docker-compose.yml up -d
+#   OTLP_ENDPOINT=http://127.0.0.1:4317 testbed/serve_vllm.sh
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.116.1
+    container_name: aisummit-otel-collector
+    command: ["--config=/etc/otel/config.yaml"]
+    volumes:
+      - ./otel-collector.yaml:/etc/otel/config.yaml:ro
+    ports:
+      - "127.0.0.1:4317:4317"   # OTLP gRPC  (seocho + vLLM push here)
+      - "127.0.0.1:4318:4318"   # OTLP HTTP
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    container_name: aisummit-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=30d
+      - --web.enable-remote-write-receiver
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports: ["127.0.0.1:9094:9090"]
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    restart: unless-stopped
+
+  tempo:
+    image: grafana/tempo:2.7.0
+    container_name: aisummit-tempo
+    command: ["-config.file=/etc/tempo/tempo.yaml"]
+    volumes:
+      - ./tempo.yaml:/etc/tempo/tempo.yaml:ro
+      - tempo-data:/var/tempo
+    ports: ["127.0.0.1:3200:3200"]
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.5.1
+    container_name: aisummit-grafana
+    depends_on: [prometheus, tempo]
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+    volumes:
+      - ./grafana-datasources.yml:/etc/grafana/provisioning/datasources/ds.yml:ro
+      - ./grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/provider.yml:ro
+      - ./dashboards:/var/lib/grafana/dashboards:ro
+    ports: ["127.0.0.1:3004:3000"]
+    restart: unless-stopped
+
+volumes:
+  prometheus-data:
+  tempo-data:

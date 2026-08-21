@@ -1,0 +1,10 @@
+{
+  "pid": 422283,
+  "prefix_caching": "on",
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "served_model_name": "Qwen/Qwen2.5-1.5B-Instruct",
+  "port": 8000,
+  "gpu_memory_utilization": 0.8,
+  "max_model_len": 16384,
+  "argv": "serve Qwen/Qwen2.5-1.5B-Instruct --host 0.0.0.0 --port 8000 --served-model-name Qwen/Qwen2.5-1.5B-Instruct --gpu-memory-utilization 0.80 --max-model-len 16384 --enable-prompt-tokens-details --enable-prefix-caching --kv-transfer-config {\"kv_connector\":\"LMCacheConnectorV1\",\"kv_role\":\"kv_both\"} --kv-cache-metrics --kv-cache-metrics-sample 1.0 --num-gpu-blocks-override 2048"
+}

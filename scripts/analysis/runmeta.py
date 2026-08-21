@@ -50,8 +50,22 @@ def _cpu_model() -> str | None:
     return None
 
 
-def manifest(db_container: str = "graphrag-neo4j", **extra: Any) -> Dict[str, Any]:
+def manifest(db_container: str | None = None, **extra: Any) -> Dict[str, Any]:
     repo = Path(__file__).resolve().parents[2]
+    # The container name is not fixed on a rented instance, and on one running DozerDB as
+    # a local process there is none at all — an absent value is recorded as absent rather
+    # than as the local default's.
+    db_container = db_container or os.getenv("DB_CONTAINER", "graphrag-neo4j")
+    accelerator: Dict[str, Any] = {"present": False}
+    inference: Dict[str, Any] = {}
+    try:
+        sys.path.insert(0, str(repo))
+        from harness.environment import get_accelerator_info, get_host_context, get_inference_info
+        accelerator = get_accelerator_info()
+        inference = get_inference_info(os.getenv("VLLM_BASE_URL")) if os.getenv("VLLM_BASE_URL") else {}
+        host_context = get_host_context()
+    except Exception:  # a benchmark must not fail because metadata collection did
+        host_context = {}
     return {
         "timestamp_utc": datetime.datetime.now(datetime.timezone.utc)
                                           .isoformat(timespec="seconds"),
@@ -80,5 +94,9 @@ def manifest(db_container: str = "graphrag-neo4j", **extra: Any) -> Dict[str, An
                             "/var/lib/neo4j/conf/neo4j.conf | cut -d= -f2"),
         "db_container_id": (_cmd("docker", "inspect", "--format", "{{.Id}}",
                                  db_container) or "")[:12] or None,
+        "db_container": db_container,
+        "accelerator": accelerator,
+        "host_context": host_context,
+        "inference": inference or None,
         **extra,
     }

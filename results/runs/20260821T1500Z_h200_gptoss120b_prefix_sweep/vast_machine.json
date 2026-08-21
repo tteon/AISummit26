@@ -1,0 +1,20 @@
+{
+  "id": 48312627,
+  "machine_id": 131697,
+  "gpu_name": "H200",
+  "num_gpus": 1,
+  "gpu_ram": 143771,
+  "cpu_name": "Xeon\u00ae Platinum 8480+",
+  "cpu_cores_effective": 28.0,
+  "disk_space": 250.0,
+  "dph_total": 3.9798976608187138,
+  "inet_down": 8698.0,
+  "inet_up": 9181.9,
+  "geolocation": "Saudi Arabia, SA",
+  "cuda_max_good": 13.0,
+  "driver_version": "580.159.03",
+  "image_uuid": "vllm/vllm-openai:v0.27.1",
+  "start_date": 1787323050.536938,
+  "uptime_hours": 0.982,
+  "approx_cost_usd": 3.91
+}

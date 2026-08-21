@@ -1,0 +1,413 @@
+{
+ "schema_version": "seocho.finbench.agent-interaction.v1",
+ "model": "gpt-oss-120b",
+ "endpoint": {
+  "provider": "mara",
+  "model_name": "gpt-oss-120b",
+  "base_url": "https://api.cloud.mara.com/v1",
+  "temperature": 0.0,
+  "max_tokens": 1000,
+  "extra_body": null,
+  "api_key_present": true
+ },
+ "arms": [
+  "ontology",
+  "in_context"
+ ],
+ "row_cap": 50,
+ "tx_timeout_s": 60.0,
+ "probe_timeout_s": 2.0,
+ "max_turns": 8,
+ "context": {
+  "finbenchl1": {
+   "sf": 1,
+   "anchor": 108,
+   "p99_out_degree": 11
+  }
+ },
+ "questions": [
+  {
+   "id": "ext_easy_1",
+   "audience": "external",
+   "difficulty": "easy",
+   "ko": "\ub0b4 \uacc4\uc88c\ub85c \uc9c0\uae08\uae4c\uc9c0 \ub4e4\uc5b4\uc628 \uc774\uccb4\ub294 \uba87 \uac74\uc774\uace0 \ucd1d\uc561\uc740 \uc5bc\ub9c8\uc778\uac00\uc694?",
+   "question": "For account number {a}: how many transfers has it received in total, and what is the total amount received?",
+   "shape": "scalar"
+  },
+  {
+   "id": "ext_med_1",
+   "audience": "external",
+   "difficulty": "medium",
+   "ko": "\ub0b4 \uacc4\uc88c\ub85c \ub3c8\uc744 \ubcf4\ub0b8 \uacc4\uc88c \uc911 \uace0\uc704\ud5d8 \ucc44\ub110\uc744 \uc4f4 \uacf3\uc740 \uc5b4\ub514\uc778\uac00\uc694?",
+   "question": "Which accounts sent money to account number {a} on a transfer whose own channel_risk property is 5 or more? Give the five lowest such account numbers in ascending order.",
+   "shape": "list"
+  }
+ ],
+ "repeats": 1,
+ "episodes": [
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "in_context",
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[r:TRANSFER]->(dst:Account {_workspace_id: $workspace_id, acct_no: $a}) RETURN src.acct_no AS src_acct_no, r.amount AS amount SKIP 0 LIMIT $limit",
+   "row_cap": 200,
+   "max_turns": 16,
+   "audience": "external",
+   "difficulty": "easy",
+   "anchor": 108,
+   "round_trips": 2,
+   "db_hits": 52,
+   "rows_into_context": 5,
+   "chars_into_context": 530,
+   "db_ms": 71.6,
+   "model_ms": 6644.5,
+   "wall_ms": 6716.1,
+   "input_tokens": 3952,
+   "output_tokens": 643,
+   "turns": [
+    {
+     "index": 0,
+     "input_tokens": 1134,
+     "output_tokens": 330,
+     "cached_tokens": 0
+    },
+    {
+     "index": 1,
+     "input_tokens": 1307,
+     "output_tokens": 137,
+     "cached_tokens": 0
+    },
+    {
+     "index": 2,
+     "input_tokens": 1511,
+     "output_tokens": 176,
+     "cached_tokens": 0
+    }
+   ],
+   "operators": {
+    "ProduceResults": 1,
+    "Projection": 1,
+    "Skip": 1,
+    "Limit": 1,
+    "Filter": 2,
+    "Expand(All)": 1,
+    "NodeIndexSeek": 1
+   },
+   "guardrail_rejections": 0,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 1,
+   "timeouts": 0,
+   "violations": [],
+   "parse": "parsed",
+   "error": null,
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": true,
+   "score_f1": 1.0,
+   "score_gold": {
+    "n": 5,
+    "total": 163488
+   },
+   "score_matched_keys": 2,
+   "calls": [
+    {
+     "outcome": "db_error",
+     "db_hits": 0,
+     "rows": 0,
+     "ms": 14.919155000825413,
+     "operators": {},
+     "chars": 267,
+     "error": "Neo.ClientError.Statement.SyntaxError",
+     "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[:TRANSFER]->(dst:Account {_workspace_id: $workspace_id, acct_no: $a}) RETURN src.acct_no AS src_acct_no, dst.acct_no AS dst_acct_no, amount SKIP 0 LIMIT $limit"
+    },
+    {
+     "outcome": "ok",
+     "db_hits": 52,
+     "rows": 5,
+     "ms": 56.66920200746972,
+     "operators": {
+      "ProduceResults": 1,
+      "Projection": 1,
+      "Skip": 1,
+      "Limit": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 263,
+     "truncated": false,
+     "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[r:TRANSFER]->(dst:Account {_workspace_id: $workspace_id, acct_no: $a}) RETURN src.acct_no AS src_acct_no, r.amount AS amount SKIP 0 LIMIT $limit"
+    }
+   ],
+   "final_output": "ANSWER: {\"transfer_count\":5,\"total_amount\":163488}"
+  },
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "in_context",
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH (s:Account {_workspace_id: $workspace_id})- [t:TRANSFER]-> (r:Account {_workspace_id: $workspace_id})\nWHERE r.acct_no = $a AND t.channel_risk >= 5\nRETURN s.acct_no AS sender_acct_no\nORDER BY s.acct_no ASC\nLIMIT $limit",
+   "row_cap": 200,
+   "max_turns": 16,
+   "audience": "external",
+   "difficulty": "medium",
+   "anchor": 108,
+   "round_trips": 1,
+   "db_hits": 42,
+   "rows_into_context": 0,
+   "chars_into_context": 69,
+   "db_ms": 66.4,
+   "model_ms": 2340.1,
+   "wall_ms": 2406.5,
+   "input_tokens": 2424,
+   "output_tokens": 674,
+   "turns": [
+    {
+     "index": 0,
+     "input_tokens": 1146,
+     "output_tokens": 490,
+     "cached_tokens": 0
+    },
+    {
+     "index": 1,
+     "input_tokens": 1278,
+     "output_tokens": 184,
+     "cached_tokens": 0
+    }
+   ],
+   "operators": {
+    "ProduceResults": 1,
+    "Top": 1,
+    "Projection": 1,
+    "Filter": 2,
+    "Expand(All)": 1,
+    "NodeIndexSeek": 1
+   },
+   "guardrail_rejections": 0,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 0,
+   "timeouts": 0,
+   "violations": [],
+   "parse": "parsed",
+   "error": null,
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": true,
+   "score_f1": 1.0,
+   "score_gold": [],
+   "calls": [
+    {
+     "outcome": "ok",
+     "db_hits": 42,
+     "rows": 0,
+     "ms": 66.4201059989864,
+     "operators": {
+      "ProduceResults": 1,
+      "Top": 1,
+      "Projection": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 69,
+     "truncated": false,
+     "cypher": "MATCH (s:Account {_workspace_id: $workspace_id})- [t:TRANSFER]-> (r:Account {_workspace_id: $workspace_id})\nWHERE r.acct_no = $a AND t.channel_risk >= 5\nRETURN s.acct_no AS sender_acct_no\nORDER BY s.acct_no ASC\nLIMIT $limit"
+    }
+   ],
+   "final_output": "ANSWER: []"
+  },
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "ontology",
+   "question_id": "ext_easy_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(a:Account {_workspace_id: $workspace_id, acct_no: $a}) RETURN count(t) AS transfer_count, sum(t.amount) AS total_amount LIMIT $limit",
+   "row_cap": 50,
+   "max_turns": 8,
+   "audience": "external",
+   "difficulty": "easy",
+   "anchor": 108,
+   "round_trips": 1,
+   "db_hits": 47,
+   "rows_into_context": 1,
+   "chars_into_context": 113,
+   "db_ms": 64.8,
+   "model_ms": 2869.1,
+   "wall_ms": 2933.8,
+   "input_tokens": 2193,
+   "output_tokens": 410,
+   "turns": [
+    {
+     "index": 0,
+     "input_tokens": 1032,
+     "output_tokens": 393,
+     "cached_tokens": 0
+    },
+    {
+     "index": 1,
+     "input_tokens": 1161,
+     "output_tokens": 17,
+     "cached_tokens": 0
+    }
+   ],
+   "operators": {
+    "ProduceResults": 1,
+    "Limit": 1,
+    "EagerAggregation": 1,
+    "Filter": 2,
+    "Expand(All)": 1,
+    "NodeIndexSeek": 1
+   },
+   "guardrail_rejections": 0,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 0,
+   "timeouts": 0,
+   "violations": [],
+   "parse": "parsed",
+   "error": null,
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": true,
+   "score_f1": 1.0,
+   "score_gold": {
+    "n": 5,
+    "total": 163488
+   },
+   "score_matched_keys": 2,
+   "calls": [
+    {
+     "outcome": "ok",
+     "db_hits": 47,
+     "rows": 1,
+     "ms": 64.75063601101283,
+     "operators": {
+      "ProduceResults": 1,
+      "Limit": 1,
+      "EagerAggregation": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 113,
+     "truncated": false,
+     "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(a:Account {_workspace_id: $workspace_id, acct_no: $a}) RETURN count(t) AS transfer_count, sum(t.amount) AS total_amount LIMIT $limit"
+    }
+   ],
+   "final_output": "ANSWER: {\"transfer_count\":5,\"total_amount\":163488}"
+  },
+  {
+   "sf": 1,
+   "database": "finbenchl1",
+   "arm": "ontology",
+   "question_id": "ext_med_1",
+   "repeat": 0,
+   "settled_cypher": "MATCH (s:Account {_workspace_id:$workspace_id})- [t:TRANSFER]->(r:Account {_workspace_id:$workspace_id, acct_no:$a})\nWHERE t.channel_risk >= 5\nWITH DISTINCT s.acct_no AS acct_no\nORDER BY acct_no ASC\nLIMIT 5\nRETURN acct_no\nLIMIT $limit",
+   "row_cap": 50,
+   "max_turns": 8,
+   "audience": "external",
+   "difficulty": "medium",
+   "anchor": 108,
+   "round_trips": 1,
+   "db_hits": 42,
+   "rows_into_context": 0,
+   "chars_into_context": 68,
+   "db_ms": 84.6,
+   "model_ms": 7638.2,
+   "wall_ms": 7722.8,
+   "input_tokens": 2220,
+   "output_tokens": 689,
+   "turns": [
+    {
+     "index": 0,
+     "input_tokens": 1044,
+     "output_tokens": 530,
+     "cached_tokens": 0
+    },
+    {
+     "index": 1,
+     "input_tokens": 1176,
+     "output_tokens": 159,
+     "cached_tokens": 0
+    }
+   ],
+   "operators": {
+    "ProduceResults": 1,
+    "Limit": 1,
+    "Top": 1,
+    "Distinct": 1,
+    "Filter": 2,
+    "Expand(All)": 1,
+    "NodeIndexSeek": 1
+   },
+   "guardrail_rejections": 0,
+   "plan_rejections": 0,
+   "engineering_probes": 0,
+   "engineering_locked_attempts": 0,
+   "hint_in_settled": false,
+   "join_hint_in_settled": false,
+   "join_hint_probes": 0,
+   "engineering_calls": [],
+   "db_errors": 0,
+   "timeouts": 0,
+   "violations": [],
+   "parse": "parsed",
+   "error": null,
+   "nudged": false,
+   "hit_row_cap": false,
+   "disclosed_truncation": false,
+   "silent_truncation_failure": false,
+   "score_correct": true,
+   "score_f1": 1.0,
+   "score_gold": [],
+   "calls": [
+    {
+     "outcome": "ok",
+     "db_hits": 42,
+     "rows": 0,
+     "ms": 84.5611410040874,
+     "operators": {
+      "ProduceResults": 1,
+      "Limit": 1,
+      "Top": 1,
+      "Distinct": 1,
+      "Filter": 2,
+      "Expand(All)": 1,
+      "NodeIndexSeek": 1
+     },
+     "chars": 68,
+     "truncated": false,
+     "cypher": "MATCH (s:Account {_workspace_id:$workspace_id})- [t:TRANSFER]->(r:Account {_workspace_id:$workspace_id, acct_no:$a})\nWHERE t.channel_risk >= 5\nWITH DISTINCT s.acct_no AS acct_no\nORDER BY acct_no ASC\nLIMIT 5\nRETURN acct_no\nLIMIT $limit"
+    }
+   ],
+   "final_output": "ANSWER: []"
+  }
+ ]
+}
