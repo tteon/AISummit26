@@ -75,9 +75,11 @@ run() { echo "+ $*"; [ "$DRY_RUN" = "1" ] || "$@"; }
 need() { command -v "$1" >/dev/null 2>&1 || { echo "$1 not found on PATH"; exit 69; }; }
 
 # --dry-run prints the plan and must work before anything is installed: reviewing what a
-# script will spend money on should not itself require the tool that spends it.
+# script will spend money on should not itself require the tool that spends it — and must not
+# leave a run directory behind either, or `results/runs/` fills with rehearsals that look
+# like measurements.
 [ "$DRY_RUN" = "1" ] || need vastai
-mkdir -p "$LOCAL_RUN_DIR"
+[ "$DRY_RUN" = "1" ] || mkdir -p "$LOCAL_RUN_DIR"
 
 echo "run id   : $RUN_ID"
 echo "image    : ${IMAGE:-<unset — required unless INSTANCE_ID is given>}"
@@ -91,6 +93,7 @@ if [ -z "$INSTANCE_ID" ]; then
   [ -z "$IMAGE" ] && { echo "IMAGE is required to create an instance"; exit 64; }
   QUERY="$GPU_QUERY verified=true rentable=true direct_port_count>=1 disk_space>=${DISK_GB} dph_total<=${MAX_DPH}"
   echo "+ vastai search offers '$QUERY' -o '$SORT' --raw"
+  echo "  (offers -> ${LOCAL_RUN_DIR}/vast_offers.json)"
   if [ "$DRY_RUN" = "1" ]; then
     OFFER_ID="<offer>"
   else
@@ -124,7 +127,7 @@ sys.stderr.write(f\"chose offer {o['id']}: {o.get('gpu_name')} x{o.get('num_gpus
     INSTANCE_ID="<instance>"
   fi
 fi
-echo "$INSTANCE_ID" > "${LOCAL_RUN_DIR}/vast_instance_id"
+[ "$DRY_RUN" = "1" ] || echo "$INSTANCE_ID" > "${LOCAL_RUN_DIR}/vast_instance_id"
 
 # --- 2. wait for running -------------------------------------------------------------------
 say "wait for running"
