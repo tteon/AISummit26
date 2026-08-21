@@ -137,13 +137,54 @@ S3 rather than regenerating it on a metered GPU.
 it there is no A/B: vLLM V1 enables prefix caching by default, so an unflagged "control"
 measures the treatment a second time.
 
-**5. Get the results off the box before destroying it.** With `S3_BUCKET` set, `bootstrap.sh`
-pushes each step and its last action is a gate that exits non-zero unless every local file is
-in S3. Without a bucket it says so plainly and refuses to call the run safe — copy
-`results/runs/<run_id>/` down yourself (`vastai copy`, `scp`) and check it arrived.
+**5. Get the results off the box before destroying it.** `testbed/vast_run.sh` does the whole
+rental as one command and this is the part it exists for — see below. With `S3_BUCKET` set,
+`bootstrap.sh` also pushes each step and ends on a gate that exits non-zero unless every local
+file is in S3; without a bucket it says so plainly and refuses to call the run safe.
 
 A first pass (SF1+SF10, 7 arms, 3 repeats) is a few hundred episodes; budget the rental for
 weight download plus that, and expect the model download to dominate the first ten minutes.
+
+### Driving the rental from the CLI (and why S3 is optional)
+
+`testbed/vast_run.sh` runs the whole lifecycle: search under a price ceiling → create → poll
+until `running` → seed snapshots → run `bootstrap.sh` over ssh → pull results → verify the
+pull → destroy. `--dry-run` prints every command and needs nothing installed, because
+reviewing what a script will spend money on should not itself require the tool that spends it.
+
+```bash
+vastai set api-key <key>
+vastai create ssh-key ~/.ssh/id_ed25519.pub      # BEFORE creating; keys apply at creation
+IMAGE=ghcr.io/<owner>/aisummit26-testbed:<sha> SEED_SNAPSHOTS="1 10" testbed/vast_run.sh
+PREFIX_CACHING=off IMAGE=... testbed/vast_run.sh  # the control arm
+```
+
+Three properties worth knowing about:
+
+- **The rental is recorded.** `vast_offers.json`, `vast_instance.json` and a trimmed
+  `vast_machine.json` (GPU, host, `$/hr`, disk, network, driver, geolocation) land in the run
+  directory *while the machine still exists*. A latency number whose machine is gone and
+  unnamed is not reproducible, and on vast.ai the machine is gone minutes after the run.
+- **Teardown is last and conditional.** The order is run → copy → verify the copy → destroy.
+  Anything that fails leaves the instance alive and prints the destroy command: an unattended
+  teardown that fires before the copy succeeded is data loss, and the difference in cost is
+  cents. The poll loop also treats `exited` / `offline` / `unknown_error` as terminal, because
+  polling through them burns disk charges forever while the script looks busy.
+- **The price ceiling is enforced on the chosen offer**, not merely requested in the query. A
+  query field that turns out not to exist is ignored by the API, and the first result of an
+  unfiltered search can be an $8/hr box.
+
+**So is S3 needed?** For this experiment, no. `vastai copy` moves results home and can seed
+snapshots the other way (36 MB of SF100 parquet over the wire beats regenerating it at GPU
+rates), and the driver pulls the run directory every `PULL_INTERVAL_S` (default 300s) *while
+the run is going* — which is what the S3 watch loop was for. Lose the host at hour two and the
+last pull still holds `episodes.jsonl`, so the next rental skips what this one already paid
+for.
+
+What S3 still buys, if it ever matters: content-addressed datasets reused across many
+rentals without re-uploading, artifacts that outlive your laptop, and a destroy gate that
+checks the remote rather than the local copy. `scripts/testbed/s3_ckpt.py` stays for that day;
+it is not on the critical path for the first benchmark.
 
 ### Two things specific to gpt-oss on vLLM
 

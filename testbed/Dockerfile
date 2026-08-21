@@ -82,5 +82,12 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH=/workspace/AIsummit26 \
     OPENAI_AGENTS_DISABLE_TRACING=1
 
+# The container must stay up and must NOT start the benchmark by itself.
+#
+# On vast.ai the instance's lifecycle *is* this container's main process: if it exits, the
+# instance goes to `exited` and the run dies with it — so a CMD that runs the benchmark and
+# returns would destroy the evidence at the moment it finished. The rental also needs sshd
+# alive to be reachable at all. So the image idles, and the benchmark is invoked explicitly
+# (`--onstart-cmd`, an ssh session, or `docker run ... testbed/bootstrap.sh` locally).
 ENTRYPOINT ["/bin/bash"]
-CMD ["testbed/bootstrap.sh"]
+CMD ["-lc", "sleep infinity"]
