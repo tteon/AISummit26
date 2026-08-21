@@ -77,6 +77,7 @@ from agents.exceptions import MaxTurnsExceeded
 # the root put back on the path before `harness` resolves.
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from harness.llm import add_provider_args, agents_model, model_config  # noqa: E402
+from harness.tracing import init_tracing, shutdown_tracing, span  # noqa: E402
 
 WS = "default"
 ROW_CAP = 50
@@ -499,7 +500,12 @@ def make_instrumented_tool(driver, database: str, *, arm: str, anchor: Optional[
                 return msg
 
         t0 = time.perf_counter()
-        with driver.session(database=database) as session:
+        # Child of the episode span. The graph side of the exchange had no span at all — the
+        # same defect this repo argues against for the model side.
+        with span("run_cypher", **{"db.system": "neo4j", "db.name": database,
+                                   "aisummit.arm": arm, "aisummit.row_cap": row_cap,
+                                   "db.statement": cypher[:400]}), \
+                driver.session(database=database) as session:
             budget = TX_TIMEOUT_S
             if arm in _PLAN_ARMS:
                 accepted = ACCEPT_COST_MARK in cypher
@@ -1034,6 +1040,8 @@ async def main_async(args) -> None:
     # Resolve the endpoint before any episode runs, so a misconfigured testbed fails here
     # rather than 300 episodes in, and so args.model carries the name that was actually
     # served (vLLM has no default — it must match GET /v1/models).
+    # No endpoint configured means no tracer and no cost; testbed/observability sets one.
+    init_tracing("aisummit26-harness")
     _MODEL_CFG = model_config(args, max_tokens=args.max_tokens)
     args.model = _MODEL_CFG.model_name
     print(f"[endpoint] {_MODEL_CFG.provider} {_MODEL_CFG.model_name} @ {_MODEL_CFG.base_url}",
@@ -1125,16 +1133,19 @@ async def main_async(args) -> None:
             return
         ctx = context[db]
         async with sem:
-            r = await run_episode(
-                driver=driver, database=db, sf=ctx["sf"], arm=arm, question=q,
-                anchor=ctx["anchor"] if q["audience"] == "external" else None,
-                gold_rows=ctx["gold"][q["id"]],
-                schema=thin_schema if arm == "labels" else full_schema,
-                guardrail_fn=guardrail_fn, model_name=args.model, repeat=repeat,
-                max_tokens=args.max_tokens,
-                conversation_sink=(conv_file is not None) or None,
-                base_row_cap=args.row_cap, in_context_row_cap=args.in_context_row_cap,
-                endpoint_descriptor=(_MODEL_CFG.descriptor() if _MODEL_CFG else None))
+            with span("episode", **{"aisummit.arm": arm, "aisummit.question_id": q["id"],
+                                    "aisummit.sf": ctx["sf"], "aisummit.repeat": repeat,
+                                    "aisummit.database": db}):
+                r = await run_episode(
+                    driver=driver, database=db, sf=ctx["sf"], arm=arm, question=q,
+                    anchor=ctx["anchor"] if q["audience"] == "external" else None,
+                    gold_rows=ctx["gold"][q["id"]],
+                    schema=thin_schema if arm == "labels" else full_schema,
+                    guardrail_fn=guardrail_fn, model_name=args.model, repeat=repeat,
+                    max_tokens=args.max_tokens,
+                    conversation_sink=(conv_file is not None) or None,
+                    base_row_cap=args.row_cap, in_context_row_cap=args.in_context_row_cap,
+                    endpoint_descriptor=(_MODEL_CFG.descriptor() if _MODEL_CFG else None))
         results.append(r)
         if conv_file is not None and r.get("conversation") is not None:
             async with conv_lock:
@@ -1183,6 +1194,8 @@ async def main_async(args) -> None:
     }
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.out).write_text(json.dumps(out, indent=1, default=str))
+    # Without a flush the last episodes' spans die with the process.
+    shutdown_tracing()
     print(f"\nwrote {args.out}  ({len(results)} episodes)")
 
 
