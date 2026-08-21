@@ -13,7 +13,7 @@ from openai import AsyncOpenAI
 import yaml
 
 from harness.config import BenchmarkConfig, SuiteConfig
-from harness.environment import get_hardware_info, get_software_info
+from harness.environment import get_hardware_info, get_inference_info, get_software_info
 from harness.plotter import generate_sql_vs_cypher_plot, generate_latency_plot
 
 # ANSI Colors
@@ -37,10 +37,7 @@ class BenchmarkRunner:
             if p not in sys.path:
                 sys.path.insert(0, p)
 
-        self.client = AsyncOpenAI(
-            api_key=self.config.model.api_key,
-            base_url=self.config.model.base_url
-        )
+        self.client = AsyncOpenAI(**self.config.model.client_kwargs())
         self.results_root = Path(self.config.output.results_dir)
         self.runs_root = self.results_root / "runs"
         self.runs_root.mkdir(parents=True, exist_ok=True)
@@ -63,9 +60,16 @@ class BenchmarkRunner:
         # 1. Collect Environment Metadata
         hw_info = get_hardware_info()
         sw_info = get_software_info(self.repo_root)
+        # The endpoint is a condition of the run, not a detail of it: the same suite
+        # against MARA and against a self-hosted vLLM are different measurements, and
+        # only the local server can say whether prefix caching was on.
+        endpoint_info = get_inference_info(model_descriptor=self.config.model.descriptor())
 
         (run_dir / "hardware.json").write_text(json.dumps(hw_info, indent=2))
         (run_dir / "software.json").write_text(json.dumps(sw_info, indent=2))
+        (run_dir / "endpoint.json").write_text(json.dumps(endpoint_info, indent=2))
+        print(f"🔌 Endpoint: {self.config.model.provider} {self.config.model.model_name} "
+              f"@ {self.config.model.base_url}")
 
         suite_results = {}
 

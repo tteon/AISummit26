@@ -17,26 +17,117 @@ class DatasetConfig:
     output_dir: str = "outputs/finbench"
 
 
+# Both providers speak the OpenAI chat-completions surface, so the connector is a
+# base_url plus a key policy — not a new client. The difference that matters for this
+# repo is what each endpoint can be *asked*: MARA has no prefix caching (verified
+# 2026-08-08 — cached_tokens absent, TTFT flat across identical prefixes), so the
+# ontology-as-shared-KV-tier question can only be put to a self-hosted vLLM.
+PROVIDER_SPECS: Dict[str, Dict[str, Any]] = {
+    "mara": {
+        "base_url_env": ("MARA_BASE_URL",),
+        "default_base_url": "https://api.cloud.mara.com/v1",
+        "api_key_env": ("MARA_API_KEY",),
+        "api_key_required": True,
+        "default_model": "gpt-oss-120b",
+        "model_env": ("MARA_MODEL",),
+    },
+    "vllm": {
+        # SEOCHO's own vLLM preset reads the same two names (store/llm.py:86), so a
+        # testbed instance configured for one is configured for both.
+        "base_url_env": ("VLLM_BASE_URL", "SEOCHO_VLLM_BASE_URL"),
+        "default_base_url": "http://localhost:8000/v1",
+        "api_key_env": ("VLLM_API_KEY", "SEOCHO_VLLM_API_KEY"),
+        # vLLM serves unauthenticated by default; the OpenAI client still wants a
+        # non-empty string, and "EMPTY" is vLLM's documented placeholder.
+        "api_key_required": False,
+        "api_key_placeholder": "EMPTY",
+        # No default: the model name must match the server's --served-model-name, and a
+        # wrong one fails at request time with a 404 that reads like a network problem.
+        "default_model": None,
+        "model_env": ("VLLM_MODEL",),
+    },
+}
+
+
+def _env_first(names: tuple[str, ...]) -> Optional[str]:
+    for name in names:
+        value = os.getenv(name)
+        if value:
+            return value
+    return None
+
+
+def _dotenv_first(names: tuple[str, ...], path: Path = Path(".env")) -> Optional[str]:
+    """Read a key out of a local .env without importing dotenv (it may not be installed)."""
+    if not path.exists():
+        return None
+    wanted = {f"{n}=" for n in names}
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        for prefix in wanted:
+            if line.startswith(prefix):
+                return line.split("=", 1)[1].strip().strip('"').strip("'")
+    return None
+
+
 @dataclass
 class ModelConfig:
     provider: str = "mara"
-    model_name: str = "gpt-oss-120b"
+    model_name: Optional[str] = None
     temperature: float = 0.0
     max_tokens: int = 1000
     base_url: Optional[str] = None
     api_key: Optional[str] = None
+    # Sampling/serving extras passed straight through to the endpoint (vLLM guided
+    # decoding, cache salts). Empty for every arm measured so far.
+    extra_body: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
+        spec = PROVIDER_SPECS.get(self.provider)
+        if spec is None:
+            known = ", ".join(sorted(PROVIDER_SPECS))
+            raise ValueError(f"unknown model provider {self.provider!r} (known: {known})")
+
         if not self.base_url:
-            self.base_url = os.getenv("MARA_BASE_URL", "https://api.cloud.mara.com/v1")
+            self.base_url = _env_first(spec["base_url_env"]) or spec["default_base_url"]
+
+        if not self.model_name:
+            self.model_name = _env_first(spec["model_env"]) or spec["default_model"]
+        if not self.model_name:
+            raise ValueError(
+                f"provider {self.provider!r} has no default model: set model.model_name in the "
+                f"config or {spec['model_env'][0]} in the environment. For vLLM it must match "
+                "the server's served model name (GET /v1/models lists it)."
+            )
+
         if not self.api_key:
-            self.api_key = os.getenv("MARA_API_KEY")
-            if not self.api_key:
-                env_f = Path(".env")
-                if env_f.exists():
-                    for line in env_f.read_text().splitlines():
-                        if line.startswith("MARA_API_KEY="):
-                            self.api_key = line.split("=", 1)[1].strip()
+            self.api_key = _env_first(spec["api_key_env"]) or _dotenv_first(spec["api_key_env"])
+        if not self.api_key and not spec["api_key_required"]:
+            self.api_key = spec.get("api_key_placeholder", "EMPTY")
+        # A missing *required* key is not raised here: `runner.py list` and every plotting
+        # path build a config without ever calling the endpoint. It is raised by
+        # `client_kwargs()`, at the moment a client is actually constructed.
+
+    def client_kwargs(self) -> Dict[str, Any]:
+        spec = PROVIDER_SPECS[self.provider]
+        if not self.api_key and spec["api_key_required"]:
+            raise ValueError(
+                f"provider {self.provider!r} needs a key: set {spec['api_key_env'][0]} in the "
+                "environment or .env"
+            )
+        return {"api_key": self.api_key, "base_url": self.base_url}
+
+    def descriptor(self) -> Dict[str, Any]:
+        """Endpoint identity for the run manifest — never the key."""
+        return {
+            "provider": self.provider,
+            "model_name": self.model_name,
+            "base_url": self.base_url,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+            "extra_body": self.extra_body or None,
+            "api_key_present": bool(self.api_key and self.api_key != "EMPTY"),
+        }
 
 
 @dataclass
@@ -74,7 +165,16 @@ class BenchmarkConfig:
     def from_yaml(cls, path: str | Path) -> BenchmarkConfig:
         data = yaml.safe_load(Path(path).read_text())
         dataset = DatasetConfig(**data.get("dataset", {}))
-        model = ModelConfig(**data.get("model", {}))
+        model_data = dict(data.get("model", {}))
+        # The provider is the one field the testbed overrides without editing the config:
+        # the same suite runs against MARA here and against the rented vLLM there.
+        model_data["provider"] = os.getenv("MODEL_PROVIDER", model_data.get("provider", "mara"))
+        if os.getenv("MODEL_PROVIDER") and not os.getenv("KEEP_MODEL_NAME"):
+            # A provider swap invalidates the config's model name; let the provider spec
+            # and its *_MODEL env resolve it instead of silently asking vLLM for a name
+            # it does not serve.
+            model_data.pop("model_name", None)
+        model = ModelConfig(**model_data)
         output = OutputConfig(**data.get("output", {}))
         suites = [SuiteConfig(**s) for s in data.get("suites", [])]
         return cls(

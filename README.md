@@ -481,6 +481,21 @@ python runner.py run --config configs/quick_smoke.yaml
 python runner.py demo -p ext_med_1 -a 1001
 ```
 
+### 🖥️ Running the arms on a self-hosted vLLM (rented GPU)
+
+The published numbers come from a hosted API that has no prefix cache — verified, not
+assumed: `cached_tokens` is absent and TTFT is flat across byte-identical prefixes. The one
+question that needs a server of our own, "does the shared ontology prefix stop being paid
+for", is measured by the testbed in [`docs/testbed.md`](docs/testbed.md): one image holding
+DozerDB, vLLM and this harness, datasets and results checkpointed to S3, and an
+`episodes.jsonl` the run resumes from when the instance disappears.
+
+```bash
+MODEL_PROVIDER=vllm VLLM_MODEL=openai/gpt-oss-120b VLLM_BASE_URL=http://127.0.0.1:8000/v1 \
+  python runner.py run --config configs/quick_smoke.yaml   # any suite, any endpoint
+NEO4J_PASSWORD=... S3_BUCKET=... testbed/bootstrap.sh      # the whole loop on a rented box
+```
+
 ### 🔬 Step-by-Step Reproduction Pipeline
 
 ```bash

@@ -1,0 +1,18 @@
+# Prometheus also scrapes vLLM directly, not only via the collector: if the collector dies
+# mid-run the serving metrics must not die with it. The durable record is still the run's
+# JSON manifest — this stack is the live view, never the source of a published number.
+global:
+  scrape_interval: 5s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: vllm
+    honor_labels: true
+    static_configs:
+      - targets: ["host.docker.internal:8000"]
+        labels: { component: serving }
+  - job_name: seocho-harness
+    honor_labels: true
+    static_configs:
+      - targets: ["host.docker.internal:9464"]
+        labels: { component: harness }

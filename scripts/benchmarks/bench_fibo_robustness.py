@@ -31,14 +31,14 @@ FIBO_ONTOLOGY_FILE = WORKSPACE_ROOT / "ontology" / "fibo_finbench.ontology.yaml"
 
 # Load API key
 ENV_FILE = WORKSPACE_ROOT / ".env"
-MARA_KEY = os.getenv("MARA_API_KEY")
-if not MARA_KEY and ENV_FILE.exists():
-    for line in ENV_FILE.read_text().splitlines():
-        if line.startswith("MARA_API_KEY="):
-            MARA_KEY = line.split("=", 1)[1].strip()
+sys.path.insert(0, str(WORKSPACE_ROOT))
+from harness.llm import async_client, default_config  # noqa: E402
 
-MARA_BASE_URL = os.getenv("MARA_BASE_URL", "https://api.cloud.mara.com/v1")
-MODEL_NAME = "gpt-oss-120b"
+# One connector for the whole repo (harness/llm.py): provider, model and
+# base_url come from MODEL_PROVIDER/*_MODEL/*_BASE_URL, so this script runs
+# against the hosted API or a self-hosted vLLM without an edit.
+MODEL_CFG = default_config()
+MODEL_NAME = MODEL_CFG.model_name
 
 # Load FIBO Ontology
 fibo_onto = Ontology.from_dict(yaml.safe_load(FIBO_ONTOLOGY_FILE.read_text()))
@@ -130,7 +130,7 @@ async def run_fibo_benchmark():
     print("=" * 105)
 
     con = setup_sf100_duckdb()
-    client = AsyncOpenAI(api_key=MARA_KEY, base_url=MARA_BASE_URL)
+    client = async_client(MODEL_CFG)
 
     results = []
 

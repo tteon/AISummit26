@@ -20,14 +20,14 @@ from openai import AsyncOpenAI
 
 # Load MARA_API_KEY from .env
 ENV_FILE = Path(__file__).resolve().parents[2] / ".env"
-MARA_KEY = os.getenv("MARA_API_KEY")
-if not MARA_KEY and ENV_FILE.exists():
-    for line in ENV_FILE.read_text().splitlines():
-        if line.startswith("MARA_API_KEY="):
-            MARA_KEY = line.split("=", 1)[1].strip()
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from harness.llm import async_client, default_config  # noqa: E402
 
-MARA_BASE_URL = os.getenv("MARA_BASE_URL", "https://api.cloud.mara.com/v1")
-MODEL_NAME = "gpt-oss-120b"
+# One connector for the whole repo (harness/llm.py): provider, model and
+# base_url come from MODEL_PROVIDER/*_MODEL/*_BASE_URL, so this script runs
+# against the hosted API or a self-hosted vLLM without an edit.
+MODEL_CFG = default_config()
+MODEL_NAME = MODEL_CFG.model_name
 
 # Import scenarios from bench_sql_vs_cypher
 from bench_sql_vs_cypher import BENCHMARK_QUESTIONS, create_duckdb_mock_database
@@ -202,7 +202,7 @@ async def main():
     print(f"🌐 Running Live LLM Multi-Arm Benchmark with MARA API ({MODEL_NAME})")
     print("=" * 85)
 
-    client = AsyncOpenAI(api_key=MARA_KEY, base_url=MARA_BASE_URL)
+    client = async_client(MODEL_CFG)
     con = create_duckdb_mock_database()
 
     # Representative multi-tier sample: 1 Easy, 1 Medium, 1 Hard

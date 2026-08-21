@@ -64,12 +64,19 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+import sys
+
 import yaml
 from neo4j import GraphDatabase
 from neo4j.exceptions import Neo4jError
 
 from agents import Agent, ModelSettings, Runner, function_tool
 from agents.exceptions import MaxTurnsExceeded
+
+# Run as a script, sys.path[0] is this file's directory, so the repo's own packages need
+# the root put back on the path before `harness` resolves.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from harness.llm import add_provider_args, agents_model, model_config  # noqa: E402
 
 WS = "default"
 ROW_CAP = 50
@@ -823,14 +830,27 @@ def score(question: Dict[str, Any], gold_rows: List[Dict[str, Any]],
 # --------------------------------------------------------------------------------------
 # Runner
 # --------------------------------------------------------------------------------------
-def mara_model(model: str):
-    from agents import OpenAIChatCompletionsModel
-    from openai import AsyncOpenAI
+# Resolved once in main() from --provider/--model/--base-url, then read by every episode.
+# The endpoint is a measured variable here — the same arms run against the hosted API and
+# against a self-hosted vLLM — so it is recorded in the output rather than assumed.
+_MODEL_CFG = None
 
-    key = os.environ["MARA_API_KEY"]
-    client = AsyncOpenAI(api_key=key,
-                         base_url=os.getenv("MARA_BASE_URL", "https://api.cloud.mara.com/v1"))
-    return OpenAIChatCompletionsModel(model=model, openai_client=client)
+
+_MODEL_CACHE: Dict[str, Any] = {}
+
+
+def chat_model(model: str):
+    """The Agents SDK model for an episode, bound to the resolved provider.
+
+    Memoised per endpoint: a run is 800+ episodes, and building a client per episode leaks
+    a connection pool and its file descriptors every time — on a rented box that surfaces
+    hundreds of episodes in as "too many open files", not as a clean failure.
+    """
+    cfg = _MODEL_CFG if _MODEL_CFG is not None else model_config(model_name=model)
+    key = f"{cfg.provider}|{cfg.model_name}|{cfg.base_url}"
+    if key not in _MODEL_CACHE:
+        _MODEL_CACHE[key] = agents_model(cfg)
+    return _MODEL_CACHE[key]
 
 
 async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dict[str, Any],
@@ -858,7 +878,7 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
     agent = Agent(
         name=f"analyst_{arm}",
         instructions=build_instructions(schema, arm=arm),
-        model=mara_model(model_name),
+        model=chat_model(model_name),
         # max_tokens stays None for the published gpt-oss runs (the server default was
         # enough); reasoning-heavy models on the same endpoint (DeepSeek-V3.2) hit the
         # default's ceiling mid-thought and 400 out, so replication runs raise it.
@@ -966,6 +986,14 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
 
 
 async def main_async(args) -> None:
+    global _MODEL_CFG
+    # Resolve the endpoint before any episode runs, so a misconfigured testbed fails here
+    # rather than 300 episodes in, and so args.model carries the name that was actually
+    # served (vLLM has no default — it must match GET /v1/models).
+    _MODEL_CFG = model_config(args, max_tokens=args.max_tokens)
+    args.model = _MODEL_CFG.model_name
+    print(f"[endpoint] {_MODEL_CFG.provider} {_MODEL_CFG.model_name} @ {_MODEL_CFG.base_url}",
+          flush=True)
     questions = ([q for q in QUESTIONS if q["id"] in set(args.only)] if args.only
                  else QUESTIONS)
     if args.only and not questions:
@@ -1014,7 +1042,32 @@ async def main_async(args) -> None:
     sem = asyncio.Semaphore(args.concurrency)
     results: List[Dict[str, Any]] = []
 
+    # An episode log that is appended to as episodes settle, not written once at the end.
+    # On a rented instance the process can disappear mid-run (the box is reclaimed, the
+    # GPU is preempted), and a run that only persists on completion loses every episode it
+    # already paid for. The log is also the resume key: one line per finished episode.
+    log_path = Path(args.episodes_log or f"{args.out}.jsonl")
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    done: set = set()
+    if args.resume and log_path.exists():
+        for line in log_path.read_text().splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rec = json.loads(line)
+            except json.JSONDecodeError:
+                continue  # a torn last line is the normal shape of a killed process
+            done.add((rec.get("database"), rec.get("arm"), rec.get("question_id"),
+                      rec.get("repeat")))
+            results.append(rec)
+        print(f"[resume] {len(done)} episodes already in {log_path}", flush=True)
+    log_file = log_path.open("a")
+    log_lock = asyncio.Lock()
+
     async def one(db: str, arm: str, q: Dict[str, Any], repeat: int) -> None:
+        if (db, arm, q["id"], repeat) in done:
+            return
         ctx = context[db]
         async with sem:
             r = await run_episode(
@@ -1025,6 +1078,9 @@ async def main_async(args) -> None:
                 guardrail_fn=guardrail_fn, model_name=args.model, repeat=repeat,
                 max_tokens=args.max_tokens)
         results.append(r)
+        async with log_lock:
+            log_file.write(json.dumps(r, default=str) + "\n")
+            log_file.flush()
         print(f"  {db:14s} {arm:9s} {q['id']:11s} r{repeat} trips={r['round_trips']} "
               f"hits={r['db_hits']:>10,} ok={r['score_correct']} "
               f"gr={r['guardrail_rejections']} pl={r['plan_rejections']} "
@@ -1034,11 +1090,14 @@ async def main_async(args) -> None:
             for q in questions for rep in range(args.repeats)]
     print(f"\n[run] {len(jobs)} episodes, concurrency {args.concurrency}\n", flush=True)
     await asyncio.gather(*jobs)
+    log_file.close()
     driver.close()
 
     out = {
         "schema_version": "seocho.finbench.agent-interaction.v1",
-        "model": args.model, "arms": list(args.arms), "row_cap": ROW_CAP,
+        "model": _MODEL_CFG.model_name if _MODEL_CFG else args.model,
+        "endpoint": _MODEL_CFG.descriptor() if _MODEL_CFG else None,
+        "arms": list(args.arms), "row_cap": ROW_CAP,
         "tx_timeout_s": TX_TIMEOUT_S, "probe_timeout_s": PROBE_TIMEOUT_S,
         "max_turns": MAX_TURNS,
         "context": {db: {k: v for k, v in c.items() if k != "gold"} for db, c in context.items()},
@@ -1062,7 +1121,7 @@ def main() -> None:
     p.add_argument("--databases", nargs="+", default=["finbenchl1:1", "finbenchl10:10",
                                                       "finbenchl100:100"])
     p.add_argument("--arms", nargs="+", default=ARMS, choices=ARMS)
-    p.add_argument("--model", default="gpt-oss-120b")
+    add_provider_args(p, default_model=None)
     p.add_argument("--max-tokens", type=int, default=None,
                    help="per-turn output cap; None keeps the endpoint default")
     p.add_argument("--ontology", default="ontology/finbench.ontology.yaml")
@@ -1076,6 +1135,12 @@ def main() -> None:
                    help="restrict to these question ids, for re-running one cell without "
                         "disturbing the conditions the rest of the run shared")
     p.add_argument("--out", default="results/episodes/agent_interaction.json")
+    p.add_argument("--episodes-log", default=None,
+                   help="append-only JSONL of settled episodes (default: <out>.jsonl). This "
+                        "is what a killed run resumes from, and what the testbed syncs to S3 "
+                        "while the run is still going.")
+    p.add_argument("--resume", action="store_true",
+                   help="skip episodes already present in the episode log")
     asyncio.run(main_async(p.parse_args()))
 
 
