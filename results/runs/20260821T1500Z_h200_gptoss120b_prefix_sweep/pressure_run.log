@@ -1,0 +1,13 @@
+[repo] 4d2a359 feat(probe): pressure mode — does the shared prefix STAY cached
+9
+[gpu] freed after 10s (0MiB)
+[serve] ready after 90s
+[serve] pid 7415 detached; log /workspace/vllm_press.log
+GPU KV cache size: 1,635,338 tokens
+[probe] vllm openai/gpt-oss-120b @ http://127.0.0.1:8000/v1 — prefix 9214 chars from ontology/finbench.ontology.yaml
+  [pressure round 0] mean cached/prompt=0.002 median ttft=1.8337s
+  [pressure round 1] mean cached/prompt=0.0021 median ttft=1.8311s
+  [pressure round 2] mean cached/prompt=0.0021 median ttft=1.8289s
+
+wrote /workspace/probe_PRESSURE_gpuonly.json
+PRESSURE_DONE
