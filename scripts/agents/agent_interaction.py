@@ -555,10 +555,27 @@ def make_instrumented_tool(driver, database: str, *, arm: str, anchor: Optional[
 
             tx = session.begin_transaction(timeout=budget)
             try:
+                t_run = time.perf_counter()
                 result = tx.run("PROFILE " + cypher, **params)
+                # Hydration is timed on its own because it is the tool's *client-side* CPU
+                # cost, and on this workload it dominates the server's: measured earlier at
+                # 20.8 us/row client versus 2.9 us/row server. A pipeline that reports only
+                # "db time" attributes that cost to the database and then optimises the wrong
+                # side — which is the mistake "Towards Understanding, Analyzing, and
+                # Optimizing Agentic AI Execution: A CPU-Centric Perspective" (Raj et al.,
+                # arXiv 2511.00739) is about, having found CPU-side tool processing to be up
+                # to 88% of end-to-end latency in tool-dominated agentic workloads.
+                t_hydrate = time.perf_counter()
                 rows = [dict(r) for _, r in zip(range(row_cap), result)]
+                t_hydrated = time.perf_counter()
                 summary = result.consume()
                 tx.commit()
+                record["hydrate_ms"] = (t_hydrated - t_hydrate) * 1000
+                record["submit_ms"] = (t_hydrate - t_run) * 1000
+                # The server's own split, straight from the Bolt summary: time to first row
+                # (planning + execution start) and time to stream the rest.
+                record["server_available_ms"] = float(summary.result_available_after or 0)
+                record["server_consumed_ms"] = float(summary.result_consumed_after or 0)
             except Neo4jError as exc:
                 tx.close()
                 record["outcome"] = ("timeout" if "Transaction" in (exc.code or "")
@@ -580,6 +597,12 @@ def make_instrumented_tool(driver, database: str, *, arm: str, anchor: Optional[
         ops = Counter()
         _operators(summary.profile, ops)
         record["ms"] = (time.perf_counter() - t0) * 1000
+        # What the tool spent on the CPU that is *not* the database: hydration, guardrail
+        # validation, plan probing, and this harness's own bookkeeping. Reported as a residual
+        # rather than assumed to be zero.
+        record["client_cpu_ms"] = round(max(
+            record["ms"] - record.get("server_available_ms", 0.0)
+            - record.get("server_consumed_ms", 0.0), 0.0), 3)
         record["db_hits"] = _db_hits(summary.profile)
         record["rows"] = len(rows)
         record["operators"] = dict(ops)
@@ -587,6 +610,7 @@ def make_instrumented_tool(driver, database: str, *, arm: str, anchor: Optional[
         # the agent acts on it is the measurement.
         more = len(rows) >= row_cap
         record["truncated"] = more
+        t_encode = time.perf_counter()
         if arm == "in_context_csv":
             # Same fields as the JSON payload — rows, count, cap, more_available — with the
             # keys paid for once in the header line instead of once per row. The trailer is a
@@ -609,6 +633,9 @@ def make_instrumented_tool(driver, database: str, *, arm: str, anchor: Optional[
                 body["more_available"] = more
             payload = json.dumps(body, default=str)
         record["chars"] = len(payload)
+        # Serialising rows into the prompt is CPU work too, and it is the part that grows with
+        # the row cap rather than with the query — the axis the in-context arms move.
+        record["encode_ms"] = round((time.perf_counter() - t_encode) * 1000, 3)
         return payload
 
     return run_cypher
