@@ -79,6 +79,19 @@ else
 fi
 
 # --- serve ----------------------------------------------------------------------------
+# Tool calling is not optional for this repo: the episode loop *is* an agent with a tool, and
+# vLLM refuses `tool_choice: auto` with a 400 unless both of these are set. Found by running
+# the episode loop against a local vLLM for the first time — the probe never needed it, so a
+# rented box would have failed the same way at full price.
+#
+# The parser is per model family (hermes covers Qwen2.5/3 function calling). gpt-oss needs
+# NONE: its harmony output is parsed by HarmonyParser and passing a parser is wrong there, so
+# TOOL_PARSER="" skips both flags for it.
+TOOL_ARGS=()
+if [ -n "${TOOL_PARSER:-}" ]; then
+  TOOL_ARGS+=(--enable-auto-tool-choice --tool-call-parser "$TOOL_PARSER")
+fi
+
 CACHE_FLAG="--enable-prefix-caching"
 [ "$PREFIX_CACHING" = "off" ] && CACHE_FLAG="--no-enable-prefix-caching"
 
@@ -131,7 +144,7 @@ set -- serve "$MODEL" --host "$HOST" --port "$PORT" \
   --gpu-memory-utilization "$GPU_UTIL" \
   --max-model-len "$MAX_LEN" \
   --enable-prompt-tokens-details \
-  "$CACHE_FLAG" "${OBS_ARGS[@]}"
+  "$CACHE_FLAG" "${TOOL_ARGS[@]}" "${OBS_ARGS[@]}"
 [ -n "${VLLM_EXTRA_ARGS:-}" ] && set -- "$@" ${VLLM_EXTRA_ARGS}
 
 echo "[serve] $VLLM_BIN $*"

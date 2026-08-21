@@ -276,7 +276,13 @@ QUESTIONS: List[Dict[str, Any]] = [
 ]
 
 ARMS = ["labels", "ontology", "guardrail", "plan", "plan_hints", "plan_hints_join",
-        "in_context", "in_context_blind", "in_context_csv"]
+        "in_context", "in_context_blind", "in_context_csv", "seocho_native"]
+
+# The one arm where our agent does not write Cypher. seocho's own text2cypher agent writes it,
+# its validator accepts or repairs it, and its QueryProxy runs it — so one round holds two
+# model calls with the orchestrator between them, which is the three-tier exchange this repo
+# is about rather than a two-tier one with a library in the middle.
+_SEOCHO_NATIVE_ARMS = ("seocho_native",)
 
 # Condition 4b. Identical to `plan` in what gets refused; different in what the agent can
 # do about it. A refusal unlocks a second tool, engineer_query, which probes a candidate
@@ -352,6 +358,23 @@ def build_instructions(schema: Dict[str, Any], *, arm: str) -> str:
         "- End every query with LIMIT $limit.",
         "- Call the tool as many times as you need, then answer.",
     ]
+    if arm in _SEOCHO_NATIVE_ARMS:
+        parts = [
+            "You are a financial-crime analyst answering questions about a financial graph.",
+            "",
+            "You do not write Cypher. Call ask_graph with a precise natural-language "
+            "request and the orchestrator's own text2cypher agent will generate, validate "
+            "and run the query, returning rows as JSON.",
+            "",
+            "Schema (for phrasing your request in the graph's own vocabulary):",
+            json.dumps(schema, indent=2, default=str),
+            "",
+            "Rules:",
+            "- Ask for exactly what you need; name the account number when the question does.",
+            "- The row budget is the orchestrator's, not yours: if the answer says rows were "
+            "truncated, ask a narrower question rather than assuming you saw everything.",
+            "- Call ask_graph as many times as you need, then answer.",
+        ]
     if arm in _PLAN_ARMS:
         parts.append(
             "- The tool runs EXPLAIN before executing. If the plan scans all nodes or the "
@@ -440,6 +463,81 @@ def _estimated_rows(plan: Any) -> float:
     for child in children or []:
         est = max(est, _estimated_rows(child))
     return est
+
+
+def make_graph_question_tool(agent, *, calls: List[Dict[str, Any]], anchor: Optional[int]):
+    """`ask_graph(question)` — the orchestrator generates the Cypher, validates it, runs it.
+
+    One record per call, the same shape the Cypher tool produces, plus what only this path can
+    report: how long generation took, how many attempts the validator needed, and whether the
+    query was EXPLAINed before execution. A repair loop that costs two generations is a
+    serving cost with an interface cause, and it is invisible unless counted here.
+    """
+
+    @function_tool(
+        name_override="ask_graph",
+        description_override=(
+            "Ask the financial graph a question in natural language. The orchestrator's "
+            "text2cypher agent writes and validates the query, runs it, and returns the rows "
+            "as JSON. $workspace_id, $limit and (where the question names an account) $a are "
+            "supplied for you."),
+    )
+    async def ask_graph(question: str) -> str:
+        record: Dict[str, Any] = {"cypher": None, "outcome": "ok", "db_hits": 0, "rows": 0,
+                                  "ms": 0.0, "operators": {}, "chars": 0,
+                                  "question": question[:400], "executed_via": "seocho.text2cypher"}
+        calls.append(record)
+        params: Dict[str, Any] = {"workspace_id": WS, "ws": WS, "limit": agent.row_cap}
+        if anchor is not None:
+            params["a"] = anchor
+            params["acct_no"] = anchor
+        t0 = time.perf_counter()
+        with span("ask_graph", **{"aisummit.arm": "seocho_native"}):
+            try:
+                out = await agent.ask(question, params)
+            except Exception as exc:
+                record["outcome"] = "text2cypher_failed"
+                record["error"] = f"{type(exc).__name__}: {str(exc)[:200]}"
+                record["ms"] = (time.perf_counter() - t0) * 1000
+                msg = f"ERROR — the orchestrator could not produce a valid query: {record['error']}"
+                record["chars"] = len(msg)
+                return msg
+        record["ms"] = (time.perf_counter() - t0) * 1000
+        record["cypher"] = out["cypher"]
+        record["generate_ms"] = out["generate_ms"]
+        record["attempts"] = out["attempts"]
+        record["explained"] = out["explained"]
+        record["prompt_version"] = out["prompt_version"]
+        if out["rejected"]:
+            record["outcome"] = "seocho_admission_rejected"
+            record["error"] = out["rejected"]
+            msg = f"ERROR — the orchestrator refused the query: {out['rejected']}"
+            record["chars"] = len(msg)
+            return msg
+
+        rows = out["rows"]
+        stages = out["stages"] or {}
+        for k in ("submit_ms", "hydrate_ms", "server_available_ms", "server_consumed_ms",
+                  "client_cpu_ms"):
+            if k in stages:
+                record[k] = stages[k]
+        summary = stages.get("summary")
+        if summary is not None and getattr(summary, "profile", None) is not None:
+            ops: Counter = Counter()
+            _operators(summary.profile, ops)
+            record["operators"] = dict(ops)
+            record["db_hits"] = _db_hits(summary.profile)
+        record["rows"] = len(rows)
+        more = len(rows) >= agent.row_cap
+        record["truncated"] = more
+        t_encode = time.perf_counter()
+        payload = json.dumps({"rows": rows, "row_count": len(rows), "row_cap": agent.row_cap,
+                              "more_available": more, "cypher": out["cypher"]}, default=str)
+        record["encode_ms"] = round((time.perf_counter() - t_encode) * 1000, 3)
+        record["chars"] = len(payload)
+        return payload
+
+    return ask_graph
 
 
 def make_instrumented_tool(driver, database: str, *, arm: str, anchor: Optional[int],
@@ -954,7 +1052,7 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
                       conversation_sink=None, base_row_cap: int = ROW_CAP,
                       in_context_row_cap: int = IN_CONTEXT_ROW_CAP,
                       endpoint_descriptor: Optional[Dict[str, Any]] = None,
-                      seocho_factory=None) -> Dict[str, Any]:
+                      seocho_factory=None, seocho_agent_factory=None) -> Dict[str, Any]:
     calls: List[Dict[str, Any]] = []
     # The in-context arm pays for its rows twice — in context and in turns — so it gets its
     # own budget. The other four arms share one, because between them the database does the
@@ -963,12 +1061,20 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
     max_turns = IN_CONTEXT_MAX_TURNS if arm in _IN_CONTEXT_ARMS else MAX_TURNS
     eng_calls: List[Dict[str, Any]] = []
     gate = {"unlocked": False}
-    tool = make_instrumented_tool(driver, database, arm=arm, anchor=anchor, calls=calls,
-                                  guardrail_fn=(guardrail_fn if arm in
-                                                ("guardrail", "plan", "plan_hints") else None),
-                                  row_cap=row_cap,
-                                  gate=gate if arm in _HINT_ARMS else None,
-                                  seocho_factory=seocho_factory)
+    if arm in _SEOCHO_NATIVE_ARMS:
+        if seocho_agent_factory is None:
+            raise SystemExit("the seocho_native arm needs --via-seocho (it is the arm where "
+                             "the orchestrator writes the query)")
+        tool = make_graph_question_tool(seocho_agent_factory(database), calls=calls,
+                                       anchor=anchor)
+    else:
+        tool = make_instrumented_tool(driver, database, arm=arm, anchor=anchor, calls=calls,
+                                      guardrail_fn=(guardrail_fn if arm in
+                                                    ("guardrail", "plan", "plan_hints")
+                                                    else None),
+                                      row_cap=row_cap,
+                                      gate=gate if arm in _HINT_ARMS else None,
+                                      seocho_factory=seocho_factory)
     tools = [tool]
     if arm in _HINT_ARMS:
         tools.append(make_engineering_tool(driver, database, anchor=anchor,
@@ -1035,7 +1141,11 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
     ops: Counter = Counter()
     for c in calls:
         ops.update(c.get("operators") or {})
-    db_ms = sum(c["ms"] for c in calls)
+    # In the seocho_native arm a tool call is generation *plus* execution, so the raw sum
+    # would charge the graph for time the GPU spent writing Cypher — inverting the very
+    # attribution this repo measures. Generation is subtracted out and reported on its own.
+    text2cypher_ms = sum((c.get("generate_ms") or 0.0) for c in calls)
+    db_ms = max(sum(c["ms"] for c in calls) - text2cypher_ms, 0.0)
     # The query the episode actually settled on — the last one that reached the database and
     # returned rows. This is what stage two replays without a model in the loop, because the
     # thing an operator ships is the query an agent design produces, and its p99 is a database
@@ -1057,7 +1167,12 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
         "rows_into_context": sum(c["rows"] for c in calls),
         "chars_into_context": sum(c["chars"] for c in calls),
         "db_ms": round(db_ms, 1),
-        "model_ms": round(max(wall_ms - db_ms, 0.0), 1),
+        # The orchestrator's own model calls: zero in every arm where our agent writes the
+        # Cypher, and a first-class cost in the one where seocho does.
+        "text2cypher_ms": round(text2cypher_ms, 1),
+        "text2cypher_calls": sum(1 for c in calls if c.get("generate_ms")),
+        "text2cypher_attempts": sum((c.get("attempts") or 0) for c in calls),
+        "model_ms": round(max(wall_ms - db_ms - text2cypher_ms, 0.0), 1),
         "wall_ms": round(wall_ms, 1),
         "input_tokens": usage_in, "output_tokens": usage_out,
         # One entry per LLM call. Pair with `calls` (same order) to get the tool wait between
@@ -1094,7 +1209,10 @@ async def run_episode(*, driver, database: str, sf: int, arm: str, question: Dic
             and not verdict.get("correct")
             and not discloses_truncation(final_text, answer)),
         **{f"score_{k}": v for k, v in verdict.items()},
-        "calls": [{k: v for k, v in c.items() if k != "cypher"} | {"cypher": c["cypher"][:600]}
+        # `cypher` is None in the seocho_native arm when generation itself failed — an
+        # outcome to record, not a crash to hit while recording it.
+        "calls": [{k: v for k, v in c.items() if k != "cypher"}
+                  | {"cypher": (c.get("cypher") or "")[:600]}
                   for c in calls],
         "final_output": final_text[-1200:],
     }
@@ -1104,6 +1222,7 @@ async def main_async(args) -> None:
     global _MODEL_CFG
     seocho_obs = None
     seocho_factory = None
+    seocho_agent_factory = None
     if getattr(args, "via_seocho", False):
         # The middle tier of the exchange — graph database on one side, model server on the
         # other — was the one with no telemetry, because the harness used seocho as a library
@@ -1152,6 +1271,19 @@ async def main_async(args) -> None:
             return SeochoOrchestrator(driver, row_cap=cap, workspace_id=WS,
                                       tx_timeout_s=TX_TIMEOUT_S)
         seocho_factory = _mk
+
+        from harness.seocho_bridge import SeochoGraphAgent
+        _agents: Dict[str, Any] = {}
+
+        def _mk_agent(db: str):
+            # One agent per database: it holds the backend and the policy, and the policy is
+            # where the row cap comes from in this arm.
+            if db not in _agents:
+                _agents[db] = SeochoGraphAgent(driver, cfg=_MODEL_CFG, ontology=ontology,
+                                               policy=policy, workspace_id=WS, database=db,
+                                               tx_timeout_s=TX_TIMEOUT_S)
+            return _agents[db]
+        seocho_agent_factory = _mk_agent
     targets = []
     for spec in args.databases:
         db, _, sf = spec.partition(":")
@@ -1231,7 +1363,8 @@ async def main_async(args) -> None:
                     conversation_sink=(conv_file is not None) or None,
                     base_row_cap=args.row_cap, in_context_row_cap=args.in_context_row_cap,
                     endpoint_descriptor=(_MODEL_CFG.descriptor() if _MODEL_CFG else None),
-                seocho_factory=seocho_factory)
+                seocho_factory=seocho_factory,
+                seocho_agent_factory=seocho_agent_factory)
         results.append(r)
         if conv_file is not None and r.get("conversation") is not None:
             async with conv_lock:

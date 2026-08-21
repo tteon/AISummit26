@@ -186,3 +186,123 @@ class SeochoOrchestrator:
             # Countable, not inferable: seocho already emitted the rejection metric and event.
             return {"rows": [], "stages": {}, "rejected": str(exc)}
         return {"rows": rows, "stages": dict(self.store.last), "rejected": None}
+
+
+# --------------------------------------------------------------------------------------
+# The orchestrator's own text2cypher agent
+# --------------------------------------------------------------------------------------
+def make_llm_backend(cfg) -> Any:
+    """A seocho LLM backend pointed at the endpoint this run already resolved.
+
+    seocho 0.6.0 ships presets for both providers this repo uses (`mara` and `vllm`), so the
+    orchestrator talks to the same server the episode's own agent does — same model, same
+    base_url, same key policy. Two different endpoints would make the two LLM calls in a round
+    incomparable, which is the whole point of measuring them together.
+    """
+    from seocho.store.llm import create_llm_backend
+    return create_llm_backend(provider=cfg.provider, model=cfg.model_name,
+                              api_key=cfg.api_key, base_url=cfg.base_url)
+
+
+def schema_map_from_ontology(ontology: Any) -> Dict[str, Any]:
+    """`{label: (property, ...)}` — the shape text2cypher puts in its prompt."""
+    out: Dict[str, Any] = {}
+    for label, node in (getattr(ontology, "nodes", None) or {}).items():
+        props = getattr(node, "properties", None) or {}
+        out[str(label)] = tuple(str(k) for k in props)
+    rels = getattr(ontology, "relationships", None) or {}
+    if rels:
+        out["_relationships"] = tuple(str(k) for k in rels)
+    return out
+
+
+class SeochoGraphAgent:
+    """Question in, rows out — with seocho doing the generation *and* the execution.
+
+    This is the arm the three-tier thesis actually describes. In every other arm our own agent
+    writes the Cypher and the orchestrator is a library; here seocho's text2cypher agent
+    writes it (one LLM call on the GPU), its validator accepts or repairs it, and its
+    QueryProxy runs it (the CPU/graph tier) — so a single round contains two model calls with
+    the orchestrator between them, and both tiers report:
+
+        seocho.text2cypher.duration / .validation_failure.count / .execution_failure.count
+        seocho.retrieval.duration / .inflight
+
+    The row cap comes from the policy (`max_result_rows`), not from this harness, because the
+    interface must not disagree with itself about how many rows exist.
+    """
+
+    def __init__(self, driver, *, cfg, ontology, policy, workspace_id: str,
+                 database: str, row_cap: Optional[int] = None,
+                 tx_timeout_s: Optional[float] = None):
+        self.backend = make_llm_backend(cfg)
+        self.model = cfg.model_name
+        self.policy = policy
+        self.schema = schema_map_from_ontology(ontology)
+        self.database = database
+        self.workspace_id = workspace_id
+        self._driver = driver
+        cap = row_cap or int(getattr(policy, "max_result_rows", 50) or 50)
+        self.row_cap = cap
+        self.orchestrator = SeochoOrchestrator(driver, row_cap=cap, workspace_id=workspace_id,
+                                               tx_timeout_s=tx_timeout_s)
+
+    async def _explain(self, cypher: str, params: Dict[str, Any]) -> None:
+        """seocho's `Explain` contract: raise if the query does not compile.
+
+        Run on a thread so the event loop is not blocked by the driver's sync API.
+        """
+        import asyncio
+
+        def _run() -> None:
+            with self._driver.session(database=self.database) as session:
+                session.run("EXPLAIN " + cypher, **params).consume()
+
+        await asyncio.to_thread(_run)
+
+    async def ask(self, question: str, params: Dict[str, Any]) -> Dict[str, Any]:
+        from seocho.query.text2cypher import generate_validated_cypher
+        t0 = time.perf_counter()
+        gen = await generate_validated_cypher(
+            question=question, schema=self.schema, params=params, policy=self.policy,
+            backend=self.backend, model=self.model, explain=self._explain)
+        gen_ms = (time.perf_counter() - t0) * 1000
+        import asyncio
+        res = await asyncio.to_thread(self.orchestrator.run, gen.cypher, dict(gen.params),
+                                      database=self.database)
+        return {
+            "cypher": gen.cypher, "params": dict(gen.params),
+            "attempts": gen.attempts, "explained": gen.explained,
+            "prompt_version": gen.prompt_version,
+            "generate_ms": round(gen_ms, 3),
+            "rows": res["rows"], "stages": res["stages"], "rejected": res["rejected"],
+        }
+
+
+def guide_backend_with_grammar(backend: Any, grammar: str) -> Any:
+    """Make an existing seocho backend decode under an EBNF, in place.
+
+    seocho's `provider_options` has an allowlist (`prompt_cache_key`, `cache_salt`,
+    `thinking`), so a grammar cannot be threaded through the public argument — and patching
+    seocho is not on the table for an experiment that has to stay comparable to it. Instead the
+    instance's class gains one override: the request kwargs get
+    `extra_body={"structured_outputs": {"grammar": ...}}`, which is vLLM 0.27's shape
+    (`guided_grammar` was removed; see StructuredOutputsParams in sampling_params.py).
+
+    `response_format` is dropped when a grammar is set: the two are mutually exclusive ways of
+    constraining the same output, and vLLM refuses both at once. The grammar itself produces the
+    JSON envelope, so seocho's contract still holds.
+    """
+    base = type(backend)
+
+    class _GrammarGuided(base):  # type: ignore[misc, valid-type]
+        def _completion_request_kwargs(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
+            kw = super()._completion_request_kwargs(*args, **kwargs)
+            extra = dict(kw.get("extra_body") or {})
+            extra["structured_outputs"] = {"grammar": grammar}
+            kw["extra_body"] = extra
+            kw.pop("response_format", None)
+            return kw
+
+    backend.__class__ = _GrammarGuided
+    return backend
