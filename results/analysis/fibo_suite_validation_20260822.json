@@ -1,8 +1,8 @@
 {
   "schema_version": "seocho.fibo.suite-validation.v1",
   "manifest": {
-    "timestamp_utc": "2026-08-22T05:57:18+00:00",
-    "git_commit": "c4fb8a9d830fa78fc902c490aac6669a87575a8d",
+    "timestamp_utc": "2026-08-22T07:04:39+00:00",
+    "git_commit": "6e11f4f91c93f33c853660bdaa6a322a620941ee",
     "git_dirty": true,
     "argv": [
       "scripts/benchmarks/validate_fibo_suite.py",
@@ -122,7 +122,7 @@
       "inlined_literals": [],
       "runs": true,
       "rows": 1,
-      "sample": "[{\"ubo_candidates\": 111, \"accounts\": 147}]",
+      "sample": "[{\"ubo_candidates\": 111}]",
       "grammar_member": true,
       "seocho_violations": []
     },

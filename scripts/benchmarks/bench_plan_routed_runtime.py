@@ -288,21 +288,44 @@ def main() -> None:
     ap.add_argument("--warmup-calls", type=int, default=120)
     ap.add_argument("--seed", type=int, default=20260822)
     ap.add_argument("--policies", default="slotted,pipelined,parallel,routed")
+    ap.add_argument("--suite", default=None,
+                    help="load the workload from a FIBO suite yaml instead of the built-in "
+                         "QUESTIONS: each gold query becomes a workload item with its declared "
+                         "params, so the runtime router is measured on the same queries the "
+                         "text2cypher experiments generate against")
     ap.add_argument("--out", default="results/bench/plan_routed_runtime.json")
     args = ap.parse_args()
 
     from neo4j import GraphDatabase
     driver = GraphDatabase.driver(args.uri, auth=(args.user, args.password))
     params = {"a": args.anchor, "ws": WS, "limit": args.limit, "tier": args.tier}
+    questions = QUESTIONS
+    if args.suite:
+        import yaml
+        suite = yaml.safe_load(Path(args.suite).read_text())
+        ws_id = suite.get("workspace_id", WS)
+        questions = []
+        merged: Dict[str, Any] = {"workspace_id": ws_id}
+        for q in suite["questions"]:
+            gold = " ".join(str(q["gold"]).split())
+            for k, v in (q.get("params") or {}).items():
+                merged.setdefault(k, args.anchor if v == "anchor" else v)
+            # The class is decided by the router's own plan review at run time; the label here
+            # only sets the sweep-share weighting, so gold-labelled families keep their mix.
+            questions.append({"id": q["id"],
+                              "class": "sweep" if not q.get("in_subset", True) else "point",
+                              "cypher": gold})
+        params = merged
+        params["acct_no"] = params.get("acct_no", args.anchor)
     db_cgroup = cpuutil.container_cgroup_cpu_path(args.container)
 
-    n_sweep = sum(1 for q in QUESTIONS if q["class"] == "sweep")
-    n_point = len(QUESTIONS) - n_sweep
+    n_sweep = sum(1 for q in questions if q["class"] == "sweep")
+    n_point = len(questions) - n_sweep
     weights = [(args.sweep_share / n_sweep) if q["class"] == "sweep"
-               else ((1 - args.sweep_share) / n_point) for q in QUESTIONS]
+               else ((1 - args.sweep_share) / n_point) for q in questions]
 
     for i in range(args.warmup_calls):
-        q = QUESTIONS[i % len(QUESTIONS)]
+        q = questions[i % len(questions)]
         with driver.session(database=args.database) as s:
             list(s.run(q["cypher"], **params))
     print(f"[bench] anchor={args.anchor} sweep_share={args.sweep_share} "
@@ -315,7 +338,7 @@ def main() -> None:
                        parallel_max_inflight=args.parallel_max_inflight,
                        inflight_metric=args.inflight_metric)
     routing_table = []
-    for q in QUESTIONS:
+    for q in questions:
         info = probe.review(q["cypher"], params)
         lo, _ = probe.route(q["cypher"], params, 1, 0)
         hi, _ = probe.route(q["cypher"], params, 8, args.parallel_max_inflight)
@@ -338,7 +361,7 @@ def main() -> None:
                 router = PlanRouter(driver, args.database, sweep_rows=args.sweep_rows,
                                     parallel_max_inflight=args.parallel_max_inflight,
                                     inflight_metric=args.inflight_metric)
-            c = run_policy(driver, args.database, policy=policy, questions=QUESTIONS,
+            c = run_policy(driver, args.database, policy=policy, questions=questions,
                            weights=weights, workers=w, calls=args.calls, params=params,
                            router=router, seed=args.seed, db_cgroup=db_cgroup)
             if router is not None:
@@ -377,7 +400,7 @@ def main() -> None:
         },
         "manifest": runmeta.manifest(db_container=args.container),
         "config": {k: v for k, v in vars(args).items() if k != "password"},
-        "questions": QUESTIONS,
+        "questions": questions,
         "routing_table": routing_table,
         "plan_review_ms_per_template": round(probe.explain_ms_total / max(probe.misses, 1), 3),
         "cells": cells,

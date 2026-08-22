@@ -51,7 +51,9 @@ questions:
     family: anchored
     fibo_anchor: "fibo-fbc-pas-caa:AccountHolder"
     difficulty: medium
-    question: "Who owns account {a}, and how many accounts does that owner hold in total?"
+    # The question must name its identifier: "who owns" let the model answer with owner.name
+    # ('person-757') while gold answered with owner.id ('757') — both right, unscoreable.
+    question: "What is the id of the owner of account {a}, and how many accounts does that owner hold in total?"
     # Two MATCH clauses, not a comma pattern: Cypher's relationship-uniqueness rule applies
     # within one MATCH, so with a single-account owner the comma form finds no second OWN edge
     # and returns nothing. Separate clauses may reuse the same relationship.
@@ -81,10 +83,12 @@ questions:
     # Workspace-wide rather than anchored: the SF1 anchor account is person-owned directly, so
     # the anchored variant aggregates to zero and scores blind (validator rule). SF1 measures:
     # 111 persons stand behind 147 company-owned accounts.
+    # Gold returns exactly what the question asks — one number. The first version also
+    # returned the account count, so a model answering the question as asked scored wrong.
     question: "How many persons stand behind company-owned accounts through an investment into the owning company?"
     gold: >-
       MATCH (p:Person { _workspace_id: $workspace_id })-[i:INVEST]->(c:Company { _workspace_id: $workspace_id })-[o:OWN]->(a:Account { _workspace_id: $workspace_id })
-      RETURN count(DISTINCT p) AS ubo_candidates, count(DISTINCT a) AS accounts LIMIT $limit
+      RETURN count(DISTINCT p) AS ubo_candidates LIMIT $limit
     params: {limit: 50}
     in_subset: true
 

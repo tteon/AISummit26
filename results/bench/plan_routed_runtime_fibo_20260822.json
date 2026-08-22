@@ -1,0 +1,802 @@
+{
+  "schema_version": "seocho.finbench.plan-routed-runtime.v1",
+  "question": "does reviewing the plan once and routing the runtime beat a fixed policy?",
+  "method": {
+    "router": "EXPLAIN once per query template (memoised by query string, which is sound because the grammar forbids inlined literals), classify by leaf EstimatedRows, then pick by live in-flight count",
+    "thresholds": "from two measured sweeps, not chosen: parallel is slower on point-anchored plans, and one parallel scan occupies 10.66 cores so it is only correct while the machine is free",
+    "baselines": "the same mixed workload under each fixed runtime",
+    "db_cpu": "container cgroup cpu.stat"
+  },
+  "manifest": {
+    "timestamp_utc": "2026-08-22T07:07:19+00:00",
+    "git_commit": "6e11f4f91c93f33c853660bdaa6a322a620941ee",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/bench_plan_routed_runtime.py",
+      "--uri",
+      "bolt://localhost:7690",
+      "--password",
+      "testpass1234",
+      "--database",
+      "finbenchl100",
+      "--container",
+      "aisummit-ent",
+      "--suite",
+      "configs/fibo_text2cypher_suite.yaml",
+      "--workers",
+      "1,2,4,8",
+      "--calls",
+      "400",
+      "--sweep-share",
+      "0.3",
+      "--out",
+      "results/bench/plan_routed_runtime_fibo_20260822.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "neo4j:5.26-enterprise",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "08c0b32ead4c",
+    "db_container": "aisummit-ent",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6520",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null
+  },
+  "config": {
+    "uri": "bolt://localhost:7690",
+    "user": "neo4j",
+    "database": "finbenchl100",
+    "container": "aisummit-ent",
+    "anchor": 7,
+    "limit": 200,
+    "tier": 1,
+    "sweep_rows": 1000.0,
+    "parallel_max_inflight": 2,
+    "inflight_metric": "sweep",
+    "sweep_share": 0.3,
+    "workers": "1,2,4,8",
+    "calls": 400,
+    "warmup_calls": 120,
+    "seed": 20260822,
+    "policies": "slotted,pipelined,parallel,routed",
+    "suite": "configs/fibo_text2cypher_suite.yaml",
+    "out": "results/bench/plan_routed_runtime_fibo_20260822.json"
+  },
+  "questions": [
+    {
+      "id": "in_transfer_total",
+      "class": "point",
+      "cypher": "MATCH (src:Account { _workspace_id: $workspace_id })-[t:TRANSFER]->(dst:Account { _workspace_id: $workspace_id, acct_no: $acct_no }) RETURN count(t) AS n, sum(t.amount) AS total LIMIT $limit"
+    },
+    {
+      "id": "two_hop_reach",
+      "class": "point",
+      "cypher": "MATCH (start:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[t:TRANSFER*1..2]->(reach:Account { _workspace_id: $workspace_id }) WHERE reach <> start RETURN count(DISTINCT reach) AS reachable LIMIT $limit"
+    },
+    {
+      "id": "owner_portfolio",
+      "class": "point",
+      "cypher": "MATCH (o:Person|Company { _workspace_id: $workspace_id })-[r1:OWN]->(a:Account { _workspace_id: $workspace_id, acct_no: $acct_no }) MATCH (o)-[r2:OWN]->(b:Account { _workspace_id: $workspace_id }) RETURN o.id AS owner, count(DISTINCT b) AS accounts LIMIT $limit"
+    },
+    {
+      "id": "recent_page",
+      "class": "point",
+      "cypher": "MATCH (a:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[t:TRANSFER]->(b:Account { _workspace_id: $workspace_id }) RETURN b.acct_no AS acct, t.amount AS amount, t.ts AS ts ORDER BY t.ts DESC LIMIT $limit"
+    },
+    {
+      "id": "ubo_chain",
+      "class": "point",
+      "cypher": "MATCH (p:Person { _workspace_id: $workspace_id })-[i:INVEST]->(c:Company { _workspace_id: $workspace_id })-[o:OWN]->(a:Account { _workspace_id: $workspace_id }) RETURN count(DISTINCT p) AS ubo_candidates LIMIT $limit"
+    },
+    {
+      "id": "ubo_depth",
+      "class": "sweep",
+      "cypher": "MATCH (o:Person|Company {_workspace_id: $workspace_id})-[:OWN]->(a:Account {_workspace_id: $workspace_id}) WITH o, count(a) AS held WHERE held >= $min_accounts RETURN o.id AS owner, held ORDER BY held DESC LIMIT $limit"
+    },
+    {
+      "id": "guarantee_chain",
+      "class": "sweep",
+      "cypher": "MATCH (x:Person|Company {_workspace_id: $workspace_id})-[g1:GUARANTEE]->(y:Person|Company {_workspace_id: $workspace_id})-[g2:GUARANTEE]->(z:Person|Company {_workspace_id: $workspace_id}) WITH x, count(*) AS chains RETURN count(x) AS chain_starters, sum(chains) AS chains LIMIT $limit"
+    },
+    {
+      "id": "rail_mix",
+      "class": "point",
+      "cypher": "MATCH (a:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[u:USES_CHANNEL]->(c:Channel { _workspace_id: $workspace_id }) RETURN c.code AS channel, sum(u.tx_count) AS transactions ORDER BY transactions DESC LIMIT $limit"
+    },
+    {
+      "id": "risky_rail_senders",
+      "class": "point",
+      "cypher": "MATCH (src:Account { _workspace_id: $workspace_id })-[t:TRANSFER]->(dst:Account { _workspace_id: $workspace_id, acct_no: $acct_no }) WHERE t.channel_risk >= $risk_weight RETURN count(t) AS risky_transfers, sum(t.amount) AS risky_amount LIMIT $limit"
+    },
+    {
+      "id": "structuring_fanin",
+      "class": "sweep",
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(dst:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) WITH src, count(t) AS k WHERE k >= $min_count RETURN src.acct_no AS sender, k ORDER BY k DESC LIMIT $limit"
+    },
+    {
+      "id": "sub_threshold_inflow",
+      "class": "point",
+      "cypher": "MATCH (src:Account { _workspace_id: $workspace_id })-[t:TRANSFER]->(dst:Account { _workspace_id: $workspace_id, acct_no: $acct_no }) WHERE t.amount < $amount_max RETURN count(t) AS n, sum(t.amount) AS total LIMIT $limit"
+    },
+    {
+      "id": "loan_disbursement_path",
+      "class": "point",
+      "cypher": "MATCH (l:Loan { _workspace_id: $workspace_id })-[d:DEPOSIT]->(x:Account { _workspace_id: $workspace_id })-[t:TRANSFER*1..3]->(dst:Account { _workspace_id: $workspace_id, acct_no: $acct_no }) RETURN count(DISTINCT l) AS loans LIMIT $limit"
+    },
+    {
+      "id": "loan_repay_imbalance",
+      "class": "sweep",
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id})-[r:REPAY]->(l:Loan {_workspace_id: $workspace_id}) WITH l, sum(r.amount) AS repaid WHERE repaid < l.principal * $repaid_ratio RETURN l.id AS loan, l.principal AS principal, repaid ORDER BY repaid LIMIT $limit"
+    }
+  ],
+  "routing_table": [
+    {
+      "id": "in_transfer_total",
+      "class": "point",
+      "leaf_estimated_rows_max": 1.0,
+      "sweep_shaped": false,
+      "runtime_when_free": "pipelined",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "two_hop_reach",
+      "class": "point",
+      "leaf_estimated_rows_max": 1.0,
+      "sweep_shaped": false,
+      "runtime_when_free": "pipelined",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "owner_portfolio",
+      "class": "point",
+      "leaf_estimated_rows_max": 1.0,
+      "sweep_shaped": false,
+      "runtime_when_free": "pipelined",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "recent_page",
+      "class": "point",
+      "leaf_estimated_rows_max": 1.0,
+      "sweep_shaped": false,
+      "runtime_when_free": "pipelined",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "ubo_chain",
+      "class": "point",
+      "leaf_estimated_rows_max": 10000.0,
+      "sweep_shaped": true,
+      "runtime_when_free": "parallel",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "ubo_depth",
+      "class": "sweep",
+      "leaf_estimated_rows_max": 107225.94408058077,
+      "sweep_shaped": true,
+      "runtime_when_free": "parallel",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "guarantee_chain",
+      "class": "sweep",
+      "leaf_estimated_rows_max": 107225.94408058077,
+      "sweep_shaped": true,
+      "runtime_when_free": "parallel",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "rail_mix",
+      "class": "point",
+      "leaf_estimated_rows_max": 1.0,
+      "sweep_shaped": false,
+      "runtime_when_free": "pipelined",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "risky_rail_senders",
+      "class": "point",
+      "leaf_estimated_rows_max": 1.0,
+      "sweep_shaped": false,
+      "runtime_when_free": "pipelined",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "structuring_fanin",
+      "class": "sweep",
+      "leaf_estimated_rows_max": 1.0,
+      "sweep_shaped": false,
+      "runtime_when_free": "pipelined",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "sub_threshold_inflow",
+      "class": "point",
+      "leaf_estimated_rows_max": 1.0,
+      "sweep_shaped": false,
+      "runtime_when_free": "pipelined",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "loan_disbursement_path",
+      "class": "point",
+      "leaf_estimated_rows_max": 1.0,
+      "sweep_shaped": false,
+      "runtime_when_free": "pipelined",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "loan_repay_imbalance",
+      "class": "sweep",
+      "leaf_estimated_rows_max": 20001.0,
+      "sweep_shaped": true,
+      "runtime_when_free": "parallel",
+      "runtime_when_saturated": "pipelined"
+    }
+  ],
+  "plan_review_ms_per_template": 16.585,
+  "cells": [
+    {
+      "policy": "slotted",
+      "workers": 1,
+      "calls": 400,
+      "throughput_per_s": 35.93,
+      "wall_s": 11.134,
+      "db_cores_busy": 1.37,
+      "p50_ms": 2.679,
+      "p90_ms": 92.868,
+      "p99_ms": 157.082,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 2.391,
+          "p90_ms": 27.951,
+          "p99_ms": 40.326,
+          "mean_ms": 6.568
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 90.868,
+          "p90_ms": 146.432,
+          "p99_ms": 158.17,
+          "mean_ms": 71.432
+        }
+      },
+      "routed_counts": {
+        "sweep:slotted": 131,
+        "point:slotted": 269
+      }
+    },
+    {
+      "policy": "pipelined",
+      "workers": 1,
+      "calls": 400,
+      "throughput_per_s": 44.92,
+      "wall_s": 8.9041,
+      "db_cores_busy": 1.53,
+      "p50_ms": 2.286,
+      "p90_ms": 69.697,
+      "p99_ms": 137.48,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 2.084,
+          "p90_ms": 20.857,
+          "p99_ms": 41.63,
+          "mean_ms": 5.967
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 63.988,
+          "p90_ms": 114.406,
+          "p99_ms": 143.303,
+          "mean_ms": 55.645
+        }
+      },
+      "routed_counts": {
+        "sweep:pipelined": 131,
+        "point:pipelined": 269
+      }
+    },
+    {
+      "policy": "parallel",
+      "workers": 1,
+      "calls": 400,
+      "throughput_per_s": 89.18,
+      "wall_s": 4.4854,
+      "db_cores_busy": 7.97,
+      "p50_ms": 2.695,
+      "p90_ms": 34.76,
+      "p99_ms": 70.572,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 2.274,
+          "p90_ms": 9.067,
+          "p99_ms": 46.129,
+          "mean_ms": 4.775
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 16.904,
+          "p90_ms": 46.205,
+          "p99_ms": 102.63,
+          "mean_ms": 24.353
+        }
+      },
+      "routed_counts": {
+        "sweep:parallel": 131,
+        "point:parallel": 269
+      }
+    },
+    {
+      "policy": "routed",
+      "workers": 1,
+      "calls": 400,
+      "throughput_per_s": 136.85,
+      "wall_s": 2.923,
+      "db_cores_busy": 7.217,
+      "p50_ms": 1.873,
+      "p90_ms": 16.866,
+      "p99_ms": 37.253,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 1.652,
+          "p90_ms": 5.645,
+          "p99_ms": 6.83,
+          "mean_ms": 2.167
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 14.936,
+          "p90_ms": 36.01,
+          "p99_ms": 37.388,
+          "mean_ms": 16.848
+        }
+      },
+      "routed_counts": {
+        "sweep:parallel": 102,
+        "point:pipelined": 239,
+        "sweep:pipelined": 29,
+        "point:parallel": 30
+      },
+      "router": {
+        "templates_reviewed": 13,
+        "cache_hits": 387,
+        "lookups": 400,
+        "hit_rate": 0.9675,
+        "explain_ms_total": 122.563,
+        "explain_ms_per_call": 0.3064
+      }
+    },
+    {
+      "policy": "slotted",
+      "workers": 2,
+      "calls": 400,
+      "throughput_per_s": 76.55,
+      "wall_s": 5.2255,
+      "db_cores_busy": 2.203,
+      "p50_ms": 1.694,
+      "p90_ms": 95.292,
+      "p99_ms": 152.973,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 1.508,
+          "p90_ms": 27.413,
+          "p99_ms": 29.702,
+          "mean_ms": 4.561
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 91.763,
+          "p90_ms": 150.509,
+          "p99_ms": 153.125,
+          "mean_ms": 70.066
+        }
+      },
+      "routed_counts": {
+        "point:slotted": 269,
+        "sweep:slotted": 131
+      }
+    },
+    {
+      "policy": "pipelined",
+      "workers": 2,
+      "calls": 400,
+      "throughput_per_s": 98.07,
+      "wall_s": 4.0786,
+      "db_cores_busy": 2.341,
+      "p50_ms": 1.614,
+      "p90_ms": 69.675,
+      "p99_ms": 118.244,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 1.466,
+          "p90_ms": 20.267,
+          "p99_ms": 36.408,
+          "mean_ms": 3.952
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 65.855,
+          "p90_ms": 115.364,
+          "p99_ms": 122.312,
+          "mean_ms": 53.901
+        }
+      },
+      "routed_counts": {
+        "point:pipelined": 269,
+        "sweep:pipelined": 131
+      }
+    },
+    {
+      "policy": "parallel",
+      "workers": 2,
+      "calls": 400,
+      "throughput_per_s": 181.25,
+      "wall_s": 2.2069,
+      "db_cores_busy": 11.536,
+      "p50_ms": 2.732,
+      "p90_ms": 28.961,
+      "p99_ms": 62.789,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 2.332,
+          "p90_ms": 8.684,
+          "p99_ms": 17.552,
+          "mean_ms": 3.855
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 23.585,
+          "p90_ms": 54.662,
+          "p99_ms": 64.016,
+          "mean_ms": 25.671
+        }
+      },
+      "routed_counts": {
+        "point:parallel": 269,
+        "sweep:parallel": 131
+      }
+    },
+    {
+      "policy": "routed",
+      "workers": 2,
+      "calls": 400,
+      "throughput_per_s": 172.69,
+      "wall_s": 2.3163,
+      "db_cores_busy": 11.677,
+      "p50_ms": 2.539,
+      "p90_ms": 32.475,
+      "p99_ms": 65.144,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 2.061,
+          "p90_ms": 8.496,
+          "p99_ms": 20.193,
+          "mean_ms": 3.416
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 25.509,
+          "p90_ms": 55.963,
+          "p99_ms": 69.521,
+          "mean_ms": 27.802
+        }
+      },
+      "routed_counts": {
+        "point:pipelined": 239,
+        "sweep:pipelined": 29,
+        "sweep:parallel": 102,
+        "point:parallel": 30
+      },
+      "router": {
+        "templates_reviewed": 13,
+        "cache_hits": 387,
+        "lookups": 400,
+        "hit_rate": 0.9675,
+        "explain_ms_total": 56.766,
+        "explain_ms_per_call": 0.1419
+      }
+    },
+    {
+      "policy": "slotted",
+      "workers": 4,
+      "calls": 400,
+      "throughput_per_s": 120.77,
+      "wall_s": 3.312,
+      "db_cores_busy": 4.09,
+      "p50_ms": 1.557,
+      "p90_ms": 121.841,
+      "p99_ms": 197.299,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 1.382,
+          "p90_ms": 33.534,
+          "p99_ms": 37.244,
+          "mean_ms": 5.249
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 114.48,
+          "p90_ms": 190.27,
+          "p99_ms": 206.726,
+          "mean_ms": 88.656
+        }
+      },
+      "routed_counts": {
+        "point:slotted": 269,
+        "sweep:slotted": 131
+      }
+    },
+    {
+      "policy": "pipelined",
+      "workers": 4,
+      "calls": 400,
+      "throughput_per_s": 165.78,
+      "wall_s": 2.4129,
+      "db_cores_busy": 3.839,
+      "p50_ms": 1.508,
+      "p90_ms": 83.701,
+      "p99_ms": 144.338,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 1.36,
+          "p90_ms": 23.613,
+          "p99_ms": 26.332,
+          "mean_ms": 4.068
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 75.664,
+          "p90_ms": 142.669,
+          "p99_ms": 144.948,
+          "mean_ms": 64.158
+        }
+      },
+      "routed_counts": {
+        "point:pipelined": 269,
+        "sweep:pipelined": 131
+      }
+    },
+    {
+      "policy": "parallel",
+      "workers": 4,
+      "calls": 400,
+      "throughput_per_s": 199.7,
+      "wall_s": 2.003,
+      "db_cores_busy": 14.77,
+      "p50_ms": 8.888,
+      "p90_ms": 54.341,
+      "p99_ms": 94.55,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 5.826,
+          "p90_ms": 22.436,
+          "p99_ms": 36.578,
+          "mean_ms": 9.351
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 37.874,
+          "p90_ms": 78.98,
+          "p99_ms": 103.098,
+          "mean_ms": 41.712
+        }
+      },
+      "routed_counts": {
+        "point:parallel": 269,
+        "sweep:parallel": 131
+      }
+    },
+    {
+      "policy": "routed",
+      "workers": 4,
+      "calls": 400,
+      "throughput_per_s": 187.42,
+      "wall_s": 2.1342,
+      "db_cores_busy": 12.294,
+      "p50_ms": 2.865,
+      "p90_ms": 58.371,
+      "p99_ms": 250.918,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 2.18,
+          "p90_ms": 8.848,
+          "p99_ms": 48.129,
+          "mean_ms": 4.867
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 33.952,
+          "p90_ms": 81.57,
+          "p99_ms": 297.141,
+          "mean_ms": 51.616
+        }
+      },
+      "routed_counts": {
+        "point:pipelined": 245,
+        "sweep:pipelined": 52,
+        "sweep:parallel": 79,
+        "point:parallel": 24
+      },
+      "router": {
+        "templates_reviewed": 14,
+        "cache_hits": 386,
+        "lookups": 400,
+        "hit_rate": 0.965,
+        "explain_ms_total": 92.901,
+        "explain_ms_per_call": 0.2323
+      }
+    },
+    {
+      "policy": "slotted",
+      "workers": 8,
+      "calls": 400,
+      "throughput_per_s": 184.66,
+      "wall_s": 2.1661,
+      "db_cores_busy": 7.701,
+      "p50_ms": 1.852,
+      "p90_ms": 151.02,
+      "p99_ms": 258.519,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 1.711,
+          "p90_ms": 38.828,
+          "p99_ms": 58.735,
+          "mean_ms": 7.08
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 133.505,
+          "p90_ms": 241.107,
+          "p99_ms": 261.875,
+          "mean_ms": 111.43
+        }
+      },
+      "routed_counts": {
+        "point:slotted": 269,
+        "sweep:slotted": 131
+      }
+    },
+    {
+      "policy": "pipelined",
+      "workers": 8,
+      "calls": 400,
+      "throughput_per_s": 235.97,
+      "wall_s": 1.6951,
+      "db_cores_busy": 7.765,
+      "p50_ms": 1.976,
+      "p90_ms": 115.629,
+      "p99_ms": 197.06,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 1.76,
+          "p90_ms": 27.936,
+          "p99_ms": 41.882,
+          "mean_ms": 5.332
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 95.493,
+          "p90_ms": 184.201,
+          "p99_ms": 198.366,
+          "mean_ms": 87.498
+        }
+      },
+      "routed_counts": {
+        "point:pipelined": 269,
+        "sweep:pipelined": 131
+      }
+    },
+    {
+      "policy": "parallel",
+      "workers": 8,
+      "calls": 400,
+      "throughput_per_s": 214.08,
+      "wall_s": 1.8685,
+      "db_cores_busy": 15.207,
+      "p50_ms": 30.309,
+      "p90_ms": 78.565,
+      "p99_ms": 117.905,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 20.707,
+          "p90_ms": 51.192,
+          "p99_ms": 76.864,
+          "mean_ms": 25.527
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 61.039,
+          "p90_ms": 104.194,
+          "p99_ms": 122.949,
+          "mean_ms": 60.476
+        }
+      },
+      "routed_counts": {
+        "sweep:parallel": 131,
+        "point:parallel": 269
+      }
+    },
+    {
+      "policy": "routed",
+      "workers": 8,
+      "calls": 400,
+      "throughput_per_s": 201.31,
+      "wall_s": 1.987,
+      "db_cores_busy": 13.767,
+      "p50_ms": 4.753,
+      "p90_ms": 99.831,
+      "p99_ms": 342.172,
+      "by_class": {
+        "point": {
+          "calls": 269,
+          "p50_ms": 3.102,
+          "p90_ms": 11.838,
+          "p99_ms": 72.08,
+          "mean_ms": 8.339
+        },
+        "sweep": {
+          "calls": 131,
+          "p50_ms": 67.83,
+          "p90_ms": 230.491,
+          "p99_ms": 354.764,
+          "mean_ms": 98.629
+        }
+      },
+      "routed_counts": {
+        "point:pipelined": 253,
+        "sweep:pipelined": 79,
+        "sweep:parallel": 52,
+        "point:parallel": 16
+      },
+      "router": {
+        "templates_reviewed": 15,
+        "cache_hits": 385,
+        "lookups": 400,
+        "hit_rate": 0.9625,
+        "explain_ms_total": 138.01,
+        "explain_ms_per_call": 0.345
+      }
+    }
+  ]
+}
