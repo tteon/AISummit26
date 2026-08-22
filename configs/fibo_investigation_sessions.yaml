@@ -1,0 +1,148 @@
+# Long-running AML investigation sessions — the workload for experiment ③:
+# context engineering vs prompt accumulation over a multi-turn conversation.
+#
+# Each session is a drill-down an AML analyst actually performs, built by chaining the
+# calibrated FIBO suite's question shapes. The property that makes it a *long-running*
+# workload rather than a list of questions: **turn N's parameters come from turn N-1's gold
+# answer**, and the question text refers to it anaphorically ("that account", "that owner").
+# A context policy that drops the wrong thing loses the referent and the turn.
+#
+# Gold is a chain: each turn's gold runs with parameters extracted from previous turns' gold
+# rows (`from: {turn, column}`), so per-turn gold is deterministic given the graph, and error
+# propagation in the model's answers is measured, not hidden — preserving referents across
+# turns is exactly what a context policy is for.
+#
+# The three context arms the runner implements:
+#   full_history  every prior Q&A verbatim  — append-only prefix, cache-friendly, token-heavy
+#   window        last 2 turns verbatim     — short, but the prefix shifts every turn
+#   case_file     running fact sheet        — minimal tokens, rewritten each turn (cache-hostile),
+#                                             and the arm most likely to lose a referent
+suite: fibo_investigation_v1
+workspace_id: default
+
+sessions:
+  - id: follow_the_money
+    description: "Inbound structuring: find the dominant counterparty, pivot to its owner, profile the rails."
+    turns:
+      - id: t1_top_sender
+        question: "Which account sent the most money in total to account {a}? Return its account number and the total."
+        gold: >-
+          MATCH (src:Account { _workspace_id: $workspace_id })-[t:TRANSFER]->(dst:Account { _workspace_id: $workspace_id, acct_no: $acct_no })
+          RETURN src.acct_no AS acct, sum(t.amount) AS total ORDER BY total DESC LIMIT $limit
+        params: {acct_no: anchor, limit: 1}
+      - id: t2_owner
+        question: "What is the id of the owner of that account?"
+        gold: >-
+          MATCH (o:Person|Company { _workspace_id: $workspace_id })-[r:OWN]->(a:Account { _workspace_id: $workspace_id, acct_no: $acct_no })
+          RETURN o.id AS owner LIMIT $limit
+        params: {acct_no: {from: {turn: t1_top_sender, column: acct}}, limit: 50}
+      - id: t3_portfolio
+        question: "How many accounts does that owner hold in total?"
+        gold: >-
+          MATCH (o:Person|Company { _workspace_id: $workspace_id })-[r:OWN]->(b:Account { _workspace_id: $workspace_id })
+          WHERE o.id = $owner_id RETURN count(b) AS accounts LIMIT $limit
+        params: {owner_id: {from: {turn: t2_owner, column: owner}}, limit: 50}
+      - id: t4_inflow_profile
+        question: "Back to that top sender account: how many transfers flow into it, and what do they total?"
+        gold: >-
+          MATCH (src:Account { _workspace_id: $workspace_id })-[t:TRANSFER]->(dst:Account { _workspace_id: $workspace_id, acct_no: $acct_no })
+          RETURN count(t) AS inflows, sum(t.amount) AS total LIMIT $limit
+        params: {acct_no: {from: {turn: t1_top_sender, column: acct}}, limit: 50}
+      # amount_max is 30000 here, not the suite's 10000: the chained account's inflows run
+      # 17.7k-45.3k on SF1, and a threshold below all of them makes the gold blind (validator).
+      - id: t5_sub_threshold
+        question: "Of those inflows into that account, how many stay under {amount_max}, and what do they add up to?"
+        gold: >-
+          MATCH (src:Account { _workspace_id: $workspace_id })-[t:TRANSFER]->(dst:Account { _workspace_id: $workspace_id, acct_no: $acct_no })
+          WHERE t.amount < $amount_max RETURN count(t) AS n, sum(t.amount) AS total LIMIT $limit
+        params: {acct_no: {from: {turn: t1_top_sender, column: acct}}, amount_max: 30000, limit: 50}
+      - id: t6_rails
+        question: "Over which channels does that account transact, and how many transactions per channel?"
+        gold: >-
+          MATCH (a:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[u:USES_CHANNEL]->(c:Channel { _workspace_id: $workspace_id })
+          RETURN c.code AS channel, sum(u.tx_count) AS transactions ORDER BY transactions DESC LIMIT $limit
+        params: {acct_no: {from: {turn: t1_top_sender, column: acct}}, limit: 50}
+
+  - id: layering_reach
+    description: "Outbound layering: dominant beneficiary, its reach, loan proceeds arriving near it."
+    turns:
+      - id: t1_top_beneficiary
+        question: "To which account did account {a} send the most in total? Return its account number and the total."
+        gold: >-
+          MATCH (a:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[t:TRANSFER]->(d:Account { _workspace_id: $workspace_id })
+          RETURN d.acct_no AS acct, sum(t.amount) AS total ORDER BY total DESC LIMIT $limit
+        params: {acct_no: anchor, limit: 1}
+      - id: t2_reach
+        question: "Starting from that beneficiary account, how many distinct accounts can be reached in one or two outgoing transfers, excluding itself?"
+        gold: >-
+          MATCH (start:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[t:TRANSFER*1..2]->(reach:Account { _workspace_id: $workspace_id })
+          WHERE reach <> start RETURN count(DISTINCT reach) AS reachable LIMIT $limit
+        params: {acct_no: {from: {turn: t1_top_beneficiary, column: acct}}, limit: 50}
+      - id: t3_owner
+        question: "What is the id of the owner of that beneficiary account?"
+        gold: >-
+          MATCH (o:Person|Company { _workspace_id: $workspace_id })-[r:OWN]->(a:Account { _workspace_id: $workspace_id, acct_no: $acct_no })
+          RETURN o.id AS owner LIMIT $limit
+        params: {acct_no: {from: {turn: t1_top_beneficiary, column: acct}}, limit: 50}
+      - id: t4_loans_nearby
+        question: "Did any loan proceeds reach that beneficiary account within three transfer hops of a disbursement? Count the loans."
+        gold: >-
+          MATCH (l:Loan { _workspace_id: $workspace_id })-[d:DEPOSIT]->(x:Account { _workspace_id: $workspace_id })-[t:TRANSFER*1..3]->(dst:Account { _workspace_id: $workspace_id, acct_no: $acct_no })
+          RETURN count(DISTINCT l) AS loans LIMIT $limit
+        params: {acct_no: {from: {turn: t1_top_beneficiary, column: acct}}, limit: 50}
+      - id: t5_owner_portfolio
+        question: "And how many accounts does that owner hold in total?"
+        gold: >-
+          MATCH (o:Person|Company { _workspace_id: $workspace_id })-[r:OWN]->(b:Account { _workspace_id: $workspace_id })
+          WHERE o.id = $owner_id RETURN count(b) AS accounts LIMIT $limit
+        params: {owner_id: {from: {turn: t3_owner, column: owner}}, limit: 50}
+      - id: t6_risky_inflows
+        question: "Of the transfers into that beneficiary account, how many rode a channel with risk {risk_weight} or higher, and what do they total?"
+        gold: >-
+          MATCH (src:Account { _workspace_id: $workspace_id })-[t:TRANSFER]->(dst:Account { _workspace_id: $workspace_id, acct_no: $acct_no })
+          WHERE t.channel_risk >= $risk_weight RETURN count(t) AS risky, sum(t.amount) AS total LIMIT $limit
+        params: {acct_no: {from: {turn: t1_top_beneficiary, column: acct}}, risk_weight: 2, limit: 50}
+
+  - id: ubo_concentration
+    description: "Ownership concentration: the largest holder, then that holder's exposure profile."
+    turns:
+      - id: t1_top_holder
+        question: "Which owner controls the most accounts in this workspace? Return the owner id and the count."
+        gold: >-
+          MATCH (o:Person|Company {_workspace_id: $workspace_id})-[:OWN]->(a:Account {_workspace_id: $workspace_id})
+          WITH o, count(a) AS held RETURN o.id AS owner, held ORDER BY held DESC, owner LIMIT $limit
+        params: {limit: 1}
+      - id: t2_holdings
+        question: "List that owner's account numbers."
+        gold: >-
+          MATCH (o:Person|Company { _workspace_id: $workspace_id })-[r:OWN]->(b:Account { _workspace_id: $workspace_id })
+          WHERE o.id = $owner_id RETURN b.acct_no AS acct ORDER BY acct LIMIT $limit
+        params: {owner_id: {from: {turn: t1_top_holder, column: owner}}, limit: 50}
+      - id: t3_risky_exposure
+        question: "Across all accounts held by that owner, how many incoming transfers rode a channel with risk {risk_weight} or higher?"
+        gold: >-
+          MATCH (o:Person|Company {_workspace_id: $workspace_id})-[:OWN]->(d:Account {_workspace_id: $workspace_id})
+          WHERE o.id = $owner_id
+          MATCH (s:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(d)
+          WHERE t.channel_risk >= $risk_weight
+          RETURN count(t) AS risky LIMIT $limit
+        params: {owner_id: {from: {turn: t1_top_holder, column: owner}}, risk_weight: 2, limit: 50}
+      # The guarantee turn was blind (the top holder guarantees nobody on SF1); login-device
+      # sharing is the replacement — FinBench's Medium is the strongest multi-layer signal.
+      - id: t4_login_devices
+        question: "How many login devices have signed in to that owner's accounts, and how many sign-ins in total?"
+        gold: >-
+          MATCH (o:Person|Company {_workspace_id: $workspace_id})-[:OWN]->(d:Account {_workspace_id: $workspace_id})
+          WHERE o.id = $owner_id
+          MATCH (m:Medium {_workspace_id: $workspace_id})-[si:SIGN_IN]->(d)
+          RETURN count(DISTINCT m) AS devices, count(si) AS signins LIMIT $limit
+        params: {owner_id: {from: {turn: t1_top_holder, column: owner}}, limit: 50}
+      - id: t5_sub_threshold
+        question: "Across that owner's accounts, how many incoming transfers stay under {amount_max}?"
+        gold: >-
+          MATCH (o:Person|Company {_workspace_id: $workspace_id})-[:OWN]->(d:Account {_workspace_id: $workspace_id})
+          WHERE o.id = $owner_id
+          MATCH (s:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(d)
+          WHERE t.amount < $amount_max
+          RETURN count(t) AS n LIMIT $limit
+        params: {owner_id: {from: {turn: t1_top_holder, column: owner}}, amount_max: 10000, limit: 50}
