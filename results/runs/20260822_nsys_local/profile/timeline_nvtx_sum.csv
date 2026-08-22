@@ -1,0 +1,4 @@
+Time (%),Total Time (ns),Instances,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Style,Range
+60.6,3516169,1,3516169.0,3516169.0,3516169,3516169,0.0,PushPop,cuBLAS:cublasCreate_v2
+36.5,2117386,123,17214.5,16794.0,13701,56272,4065.0,PushPop,CCCL:cub::DeviceScan::InclusiveScan
+2.8,165163,10,16516.3,11341.5,9329,61162,15820.4,PushPop,CCCL:cub::DeviceScan::InclusiveSumByKey

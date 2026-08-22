@@ -1,0 +1,38 @@
+{
+  "schema_version": "seocho.finbench.stack-profile.v1",
+  "run_id": "20260822_nsys_local",
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "layers": {
+    "vllm": [
+      "metrics_before.txt",
+      "metrics_after.txt",
+      "vllm_serve.log"
+    ],
+    "torch": [
+      "hardy-lab_11413.async_llm.1787358666672619709.pt.trace.json.gz",
+      "profiler_out_0.txt",
+      "rank0.1787358667329215517.pt.trace.json.gz"
+    ],
+    "kernels": [
+      "timeline.nsys-rep",
+      "timeline.sqlite",
+      "timeline_cuda_gpu_kern_sum.csv",
+      "timeline_cuda_gpu_trace.csv",
+      "timeline_nvtx_sum.csv"
+    ],
+    "device": [
+      "device.csv",
+      "dmon.txt"
+    ],
+    "workload": [
+      "probe.json"
+    ]
+  },
+  "read_order": [
+    "1. metrics_after minus metrics_before: where did the time go at the serving layer",
+    "2. probe.json: TTFT and cached_tokens per request",
+    "3. timeline_nvtx_sum.csv: which vLLM phase owns the wall clock",
+    "4. timeline_cuda_gpu_kern_sum.csv: which kernels, and how much GPU idle between them",
+    "5. torch/*.pt.trace.json: op-level CPU vs CUDA split inside the indicted phase"
+  ]
+}

@@ -1,0 +1,215 @@
+{
+  "schema_version": "seocho.finbench.text2cypher-guidance.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-21T23:33:22+00:00",
+    "git_commit": "fbee7733c34b7287920919151954abc00010ea6b",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/bench_text2cypher_guidance.py",
+      "--provider",
+      "mara",
+      "--model",
+      "gpt-oss-120b",
+      "--uri",
+      "bolt://localhost:7688",
+      "--password",
+      "testpass1234",
+      "--database",
+      "finbenchl1",
+      "--repeats",
+      "2",
+      "--modes",
+      "json,grammar",
+      "--seocho-src",
+      "/home/hadry/lab/seocho-room/seocho",
+      "--seocho-otlp",
+      "http://127.0.0.1:4317",
+      "--out",
+      "results/bench/text2cypher_guidance_mara_20260822.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "512M",
+    "db_heap_max": "",
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "57",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null
+  },
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "gpt-oss-120b",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 1000,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "seocho": {
+    "seocho_version": "0.6.0",
+    "seocho_path": "/home/hadry/lab/seocho-room/seocho/src/seocho/__init__.py",
+    "source_prepended": "/home/hadry/lab/seocho-room/seocho/src",
+    "backend": "otlp",
+    "endpoint": "http://127.0.0.1:4317",
+    "service_name": "seocho-aisummit26",
+    "metrics_enabled": true,
+    "tracing_enabled": true,
+    "tracing_backends": [
+      "otlp"
+    ],
+    "degraded_reasons": [],
+    "errors": null
+  },
+  "anchor": 108,
+  "grammar_chars": 1697,
+  "grammar": "root ::= \"{\" ws \"\\\"cypher\\\"\" ws \":\" ws \"\\\"\" query \"\\\"\" ws \"}\"\n\nquery ::= match_clause (ws match_clause)* (ws where_clause)? ws return_clause (ws order_clause)? ws limit_clause\n\nmatch_clause ::= \"MATCH \" pattern\npattern ::= node (rel node)*\nnode ::= \"(\" var? label_part scope \")\"\nlabel_part ::= \":\" label\nscope ::= \" {\" wsp \"_workspace_id\" wsp \":\" wsp \"$workspace_id\" wsp \"}\"\nrel ::= arrow_l rel_detail arrow_r\narrow_l ::= \"-\" | \"<-\"\narrow_r ::= \"->\" | \"-\"\nrel_detail ::= \"[\" var? \":\" reltype hop_bound? \"]\"\nhop_bound ::= \"*1..\" digit\ndigit ::= \"1\" | \"2\" | \"3\" | \"4\"\n\nwhere_clause ::= \"WHERE \" predicate (\" AND \" predicate)*\npredicate ::= ref ws comparator ws param\ncomparator ::= \"=\" | \">=\" | \"<=\" | \">\" | \"<\" | \"<>\"\nparam ::= \"$channel_risk\" | \"$risk_tier\" | \"$acct_no\" | \"$amount\" | \"$limit\" | \"$ts\" | \"$a\" | \"$n\"\n\nreturn_clause ::= \"RETURN \" ret_item (\", \" ret_item)*\nret_item ::= (aggregate | ref | \"DISTINCT \" ref) (\" AS \" var)?\naggregate ::= agg_fn \"(\" (\"DISTINCT \" )? ref \")\"\nagg_fn ::= \"collect\" | \"count\" | \"avg\" | \"max\" | \"min\" | \"sum\"\n\norder_clause ::= \"ORDER BY \" ref (\" DESC\" | \" ASC\")?\nlimit_clause ::= \"LIMIT $limit\"\n\nref ::= var (\".\" prop)?\nlabel ::= \"Account\" | \"Channel\" | \"Company\" | \"Medium\" | \"Person\" | \"Loan\"\nreltype ::= \"USES_CHANNEL\" | \"GUARANTEE\" | \"TRANSFER\" | \"WITHDRAW\" | \"DEPOSIT\" | \"SIGN_IN\" | \"INVEST\" | \"APPLY\" | \"REPAY\" | \"OWN\"\nprop ::= \"_workspace_id\" | \"channel_risk\" | \"cross_border\" | \"risk_weight\" | \"risk_level\" | \"acct_type\" | \"principal\" | \"risk_tier\" | \"tx_count\" | \"acct_no\" | \"channel\" | \"country\" | \"flagged\" | \"amount\" | \"sector\" | \"label\" | \"limit\" | \"code\" | \"iban\" | \"name\" | \"type\" | \"id\" | \"ts\"\nvar ::= [a-z] [a-z0-9_]*\nws ::= \" \"*\nwsp ::= \" \"*\n",
+  "grammar_honored_probe": {
+    "honored": false,
+    "output": "Hello, I hope you\u2019re having a wonderful day!"
+  },
+  "by_mode": {
+    "json": {
+      "generations": 8,
+      "validated": 6,
+      "failed": 2,
+      "attempts_total": 6,
+      "attempts_mean": 1,
+      "repairs": 0,
+      "ms_mean": 3024.6,
+      "ms_total": 24196.9,
+      "in_subset": 6
+    },
+    "grammar": {
+      "generations": 0,
+      "skipped": true,
+      "reason": "endpoint does not honor grammars"
+    }
+  },
+  "samples": [
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 2405.3,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})- [r:TRANSFER]-> (target:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nRETURN count(r) AS incoming_count, sum(r.amount) AS total_value\nLIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "json",
+      "question_id": "incoming_count",
+      "repeat": 0
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 1884.3,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})- [r:TRANSFER]-> (target:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nRETURN count(r) AS incoming_count, sum(r.amount) AS total_value\nLIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "json",
+      "question_id": "incoming_count",
+      "repeat": 1
+    },
+    {
+      "ok": false,
+      "attempts": null,
+      "explained": null,
+      "ms": 3980.5,
+      "error": "ValueError: text2cypher rejected: explain_failed:CypherSyntaxError",
+      "mode": "json",
+      "question_id": "largest_out",
+      "repeat": 0
+    },
+    {
+      "ok": false,
+      "attempts": null,
+      "explained": null,
+      "ms": 3948.0,
+      "error": "ValueError: text2cypher rejected: explain_failed:CypherSyntaxError",
+      "mode": "json",
+      "question_id": "largest_out",
+      "repeat": 1
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 2862.4,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[:TRANSFER]->(tgt:Account {_workspace_id: $workspace_id, acct_no: $acct_no})-[:USES_CHANNEL]->(ch:Channel {_workspace_id: $workspace_id})\nWHERE ch.risk_weight >= $channel_risk\nRETURN src\nLIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "json",
+      "question_id": "risky_senders",
+      "repeat": 0
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 4486.0,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[:TRANSFER]->(tgt:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src)-[:USES_CHANNEL]->(ch:Channel {_workspace_id: $workspace_id})\nWHERE ch.risk_weight >= $channel_risk\nRETURN src.acct_no AS source_acct_no, src.id AS source_id\nLIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "json",
+      "question_id": "risky_senders",
+      "repeat": 1
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 2313.4,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nMATCH (owner {_workspace_id: $workspace_id})-[:OWN]->(dest)\nWHERE owner:Person OR owner:Company\nRETURN owner.id AS ownerId, owner.name AS ownerName, labels(owner) AS ownerLabels\nLIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "json",
+      "question_id": "owners_two_hops",
+      "repeat": 0
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 2317.0,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nMATCH (owner {_workspace_id: $workspace_id})-[:OWN]->(dest)\nWHERE owner:Person OR owner:Company\nRETURN owner.id AS ownerId, owner.name AS ownerName, labels(owner) AS ownerLabels\nLIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "json",
+      "question_id": "owners_two_hops",
+      "repeat": 1
+    }
+  ]
+}

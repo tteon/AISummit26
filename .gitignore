@@ -25,3 +25,12 @@ figures/*
 !figures/slo-tradeoff.svg
 !figures/plan-hints-ab.svg
 !figures/estimate-error.svg
+
+# Raw profiler captures: regenerable, and enormous. A single nsys run here was 75 MB of
+# .nsys-rep plus 237 MB of .sqlite, past GitHub's limit. The analysable outputs — the
+# kern_sum / nvtx_sum / gpu_trace CSVs nsys stats derives, and the torch trace — are what a
+# reader needs; the raw capture stays on the box that made it.
+*.nsys-rep
+*.sqlite
+*.ncu-rep
+**/torch/*.pt.trace.json*

@@ -1,0 +1,2 @@
+index, name, driver_version, memory.total [MiB], clocks.max.sm [MHz], power.limit [W]
+0, NVIDIA GeForce RTX 3070, 595.84, 8192 MiB, 2100 MHz, 220.00 W

@@ -1,0 +1,106 @@
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                                   Name    Self CPU %      Self CPU   CPU total %     CPU total  CPU time avg    # of Calls  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                         threading.py(1032): _bootstrap         0.00%       2.182us       175.00%       36.606s        5.229s             7  
+                   threading.py(1075): _bootstrap_inner         0.00%       4.307us       175.00%       36.606s        5.229s             7  
+                                threading.py(1012): run         0.00%       2.069us       100.00%       20.918s        5.229s             4  
+                     vllm/v1/engine/utils.py(268): _run         0.00%       0.869us        25.00%        5.229s        5.229s             1  
+                                threading.py(655): wait         0.00%       2.433us       100.00%       20.918s        5.229s             4  
+                                threading.py(355): wait         0.00%     628.401us        25.00%        5.230s        2.615s             2  
+vllm/v1/engine/core.py(1779): process_output_sockets...         0.02%       5.065ms        25.00%        5.229s        5.229s             1  
+                                     queue.py(171): get         0.00%      17.639us         0.00%     670.929us     670.929us             1  
+    vllm/v1/engine/core.py(1703): process_input_sockets         0.00%     345.851us        25.00%        5.229s        5.229s             1  
+                           zmq/sugar/poll.py(106): poll         5.59%        1.169s         5.59%        1.169s        1.169s             1  
+                              tqdm/_monitor.py(69): run         0.00%       0.571us        75.00%       15.688s        5.229s             3  
+                                threading.py(359): wait         0.00%       3.187us        75.00%       15.688s        5.229s             3  
+     vllm/usage/usage_lib.py(174): _report_usage_worker         0.00%       0.553us        25.00%        5.229s        5.229s             1  
+vllm/usage/usage_lib.py(256): _report_continuous_usa...        25.00%        5.229s        25.00%        5.229s        5.229s             1  
+                                  <string>(1): <module>         0.00%       0.474us        25.00%        5.229s        5.229s             1  
+              multiprocessing/spawn.py(122): spawn_main         0.00%       0.726us        25.00%        5.229s        5.229s             1  
+                   multiprocessing/spawn.py(135): _main         0.00%       0.518us        25.00%        5.229s        5.229s             1  
+            multiprocessing/process.py(314): _bootstrap         0.00%       1.107us        25.00%        5.229s        5.229s             1  
+                   multiprocessing/process.py(108): run         0.00%       0.823us        25.00%        5.229s        5.229s             1  
+          vllm/v1/engine/core.py(1342): run_engine_core         0.00%       0.678us        25.00%        5.229s        5.229s             1  
+vllm/v1/fault_tolerance/engine_core_sentinel.py(179)...         0.00%       0.201us        25.00%        5.229s        5.229s             1  
+            vllm/v1/engine/core.py(1382): run_busy_loop        -0.99%  -207765.190us        25.00%        5.229s        5.229s             1  
+     vllm/v1/engine/core.py(1421): _process_input_queue         0.00%      16.717us         5.59%        1.170s        1.170s             1  
+vllm/v1/engine/core.py(1534): _handle_client_request...         0.00%       0.878us         0.00%     540.556us     540.556us             1  
+vllm/v1/engine/core.py(1574): _invoke_utility_method...         0.00%       5.336us         0.00%     539.678us     539.678us             1  
+                 vllm/v1/engine/core.py(1529): <lambda>         0.00%       0.544us         0.00%     499.820us     499.820us             1  
+                   vllm/v1/engine/core.py(770): profile         0.00%       0.506us         0.00%     499.276us     499.276us             1  
+             vllm/v1/executor/abstract.py(257): profile         0.00%       0.712us         0.00%     498.770us     498.770us             1  
+vllm/v1/executor/uniproc_executor.py(92): collective...         0.00%       1.519us         0.00%     498.058us     498.058us             1  
+               vllm/v1/serial_utils.py(510): run_method         0.00%       2.650us         0.00%     491.854us     491.854us             1  
+            vllm/v1/worker/gpu_worker.py(1158): profile         0.00%       0.845us         0.00%     489.204us     489.204us             1  
+                    vllm/profiler/wrapper.py(81): start         0.00%       0.444us         0.00%     488.359us     488.359us             1  
+              vllm/profiler/wrapper.py(57): _call_start         0.00%       0.821us         0.00%     487.915us     487.915us             1  
+                  vllm/profiler/wrapper.py(263): _start         0.00%       0.534us         0.00%     487.094us     487.094us             1  
+                torch/profiler/profiler.py(1128): start         0.00%       0.715us         0.00%     486.560us     486.560us             1  
+      torch/profiler/profiler.py(1262): _transit_action         0.00%       1.765us         0.00%     485.845us     485.845us             1  
+           torch/profiler/profiler.py(342): start_trace         0.00%      21.424us         0.00%     484.080us     484.080us             1  
+          torch/autograd/profiler.py(414): _start_trace         0.00%     236.676us         0.00%     238.522us     238.522us             1  
+                    <built-in function perf_counter_ns>         0.00%       2.313us         0.00%       2.313us       1.157us             2  
+     torch/profiler/profiler.py(538): add_metadata_json         0.00%       8.639us         0.00%      12.176us       6.088us             2  
+<built-in method _add_metadata_json of pybind11_buil...         0.00%       3.537us         0.00%       3.537us       1.768us             2  
+<built-in method kineto_available of pybind11_builti...         0.00%       0.552us         0.00%       0.552us       0.552us             1  
+torch/profiler/profiler.py(554): _get_distributed_in...         0.00%      19.994us         0.00%     176.590us     176.590us             1  
+        torch/distributed/__init__.py(17): is_available         0.00%       1.542us         0.00%       2.278us       2.278us             1  
+                            <built-in function hasattr>         0.01%       1.374ms         0.01%       1.374ms       0.165us          8325  
+torch/distributed/distributed_c10d.py(1394): is_init...         0.00%       3.624us         0.00%       6.629us       1.326us             5  
+      torch/distributed/distributed_c10d.py(817): WORLD         0.00%       6.862us         0.00%       9.252us       0.402us            23  
+torch/distributed/distributed_c10d.py(688): default_...         0.00%       2.390us         0.00%       2.390us       0.104us            23  
+torch/distributed/distributed_c10d.py(1471): get_bac...         0.00%      10.729us         0.00%      20.890us      20.890us             1  
+torch/distributed/distributed_c10d.py(1420): _get_de...         0.00%       3.898us         0.00%       7.965us       1.991us             4  
+torch/distributed/distributed_c10d.py(1095): _rank_n...         0.00%       3.371us         0.00%       3.371us       0.211us            16  
+     torch/distributed/distributed_c10d.py(702): pg_map         0.00%       0.267us         0.00%       0.267us       0.133us             2  
+<built-in method get of dict object at 0x7a289db8558...         0.03%       6.273ms         0.03%       6.321ms       0.420us         15051  
+             torch/utils/_typing_utils.py(13): not_none         0.00%       1.319us         0.00%       1.319us       0.094us            14  
+    torch/distributed/distributed_c10d.py(330): __new__         0.00%       2.949us         0.00%       4.775us       4.775us             1  
+                         <built-in function isinstance>         0.05%       9.923ms         0.06%      11.777ms       0.232us         50688  
+<built-in method upper of str object at 0x7a29343de0...         0.00%       0.513us         0.00%       0.513us       0.513us             1  
+                            <built-in function getattr>         0.01%       2.675ms         0.01%       2.944ms       0.325us          9072  
+torch/distributed/distributed_c10d.py(2552): get_ran...         0.00%       3.920us         0.00%       8.274us       8.274us             1  
+<built-in method rank of pybind11_builtins.pybind11_...         0.00%       2.464us         0.00%       2.464us       2.464us             1  
+torch/distributed/distributed_c10d.py(2579): get_wor...         0.00%       1.351us         0.00%       7.953us       7.953us             1  
+torch/distributed/distributed_c10d.py(1191): _get_gr...         0.00%      12.140us         0.00%      23.299us       1.664us            14  
+<built-in method size of pybind11_builtins.pybind11_...         0.00%       3.344us         0.00%       3.344us       0.239us            14  
+torch/distributed/distributed_c10d.py(1555): get_pg_...         0.00%       1.008us         0.00%       1.123us       1.123us             1  
+torch/distributed/distributed_c10d.py(745): group_co...         0.00%       0.115us         0.00%       0.115us       0.115us             1  
+torch/distributed/distributed_c10d.py(1546): _get_al...         0.00%       6.121us         0.00%      99.837us      99.837us             1  
+torch/distributed/distributed_c10d.py(1531): _get_pg...         0.00%      25.169us         0.00%      93.613us       7.201us            13  
+torch/distributed/distributed_c10d.py(6354): _get_pr...         0.00%       6.957us         0.00%      10.653us       0.819us            13  
+torch/distributed/distributed_c10d.py(715): pg_names...         0.00%       1.113us         0.00%       1.113us       0.086us            13  
+torch/distributed/distributed_c10d.py(1451): get_bac...         0.00%      15.434us         0.00%      22.377us       1.721us            13  
+torch/distributed/distributed_c10d.py(735): pg_backe...         0.00%       1.247us         0.00%       1.247us       0.096us            13  
+torch/distributed/distributed_c10d.py(1177): get_pro...         0.00%      15.155us         0.00%      18.621us       1.432us            13  
+torch/distributed/distributed_c10d.py(725): pg_group...         0.00%       1.304us         0.00%       1.304us       0.100us            13  
+<built-in method keys of dict object at 0x7a270bbd5a...         0.00%       4.996us         0.00%       4.996us       0.200us            25  
+                        torch/cuda/nccl.py(35): version         0.00%       5.898us         0.00%       7.627us       7.627us             1  
+                      <built-in function _nccl_version>         0.00%       0.734us         0.00%       0.734us       0.734us             1  
+               <built-in function _nccl_version_suffix>         0.00%       0.582us         0.00%       0.582us       0.582us             1  
+<built-in method decode of bytes object at 0x1535410...         0.00%      43.394us         0.00%      43.394us       0.168us           258  
+      <built-in method join of str object at 0x1541f08>         0.00%     812.250us         0.01%       1.248ms       1.544us           808  
+             torch/profiler/profiler.py(571): <genexpr>         0.00%       1.684us         0.00%       1.684us       0.421us             4  
+                           json/__init__.py(183): dumps         0.00%      14.723us         0.00%     107.906us      26.977us             4  
+                         json/encoder.py(105): __init__         0.00%       2.127us         0.00%       2.127us       1.063us             2  
+                           json/encoder.py(183): encode         0.00%      10.830us         0.00%      91.056us      22.764us             4  
+                       json/encoder.py(205): iterencode         0.00%      76.537us         0.00%      76.537us      19.134us             4  
+<built-in method items of dict object at 0x7a270a15f...         0.01%       2.117ms         0.01%       2.117ms       0.248us          8543  
+                   <frozen abc>(117): __instancecheck__         0.00%     779.162us         0.01%       1.854ms       0.925us          2004  
+                 <built-in function _abc_instancecheck>         0.01%       1.063ms         0.01%       1.075ms       0.536us          2004  
+                 vllm/v1/serial_utils.py(132): __init__         0.00%       0.166us         0.00%       0.166us       0.166us             1  
+                 vllm/v1/engine/core.py(1531): <lambda>         0.00%       3.693us         0.00%      34.207us      34.207us             1  
+         vllm/v1/engine/__init__.py(256): __post_init__         0.00%     595.695us         0.00%     751.941us       2.566us           293  
+                          <built-in function monotonic>         0.00%     278.186us         0.00%     278.186us       0.471us           591  
+                              queue.py(185): put_nowait         0.00%     307.724us         0.02%       4.719ms      15.731us           300  
+                                     queue.py(122): put         0.01%       1.477ms         0.02%       4.411ms      14.705us           300  
+                           threading.py(299): __enter__         0.01%       1.151ms         0.01%       2.637ms       1.129us          2336  
+<built-in method __enter__ of _thread.lock object at...         0.00%     371.357us         0.00%     371.357us       0.626us           593  
+                                    queue.py(213): _put         0.00%     177.845us         0.00%     289.125us       0.964us           300  
+<built-in method append of collections.deque object ...         0.00%     138.571us         0.00%     138.571us       0.262us           528  
+                              threading.py(394): notify         0.01%       1.407ms         0.02%       3.150ms       2.679us          1176  
+                           threading.py(314): _is_owned         0.00%     508.829us         0.01%       1.081ms       1.209us           894  
+<built-in method acquire of _thread.lock object at 0...        34.03%        7.118s        34.03%        7.118s       4.024ms          1769  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
+Self CPU time total: 20.918s
+

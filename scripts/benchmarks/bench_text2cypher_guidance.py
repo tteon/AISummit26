@@ -82,6 +82,27 @@ async def one_generation(*, backend, model: str, question: str, schema, params, 
                 "error": f"{type(exc).__name__}: {str(exc)[:200]}"}
 
 
+async def grammar_is_honored(backend, model: str) -> Dict[str, Any]:
+    """Prove the endpoint actually applies a grammar before believing a grammar-mode result.
+
+    MARA accepts `structured_outputs` (and the older `guided_grammar`) with HTTP 200 and
+    ignores them: measured 2026-08-22, the output was byte-identical to the unconstrained
+    baseline for all three spellings. An A/B run without this check reports "the grammar did
+    not help" when the truth is "the grammar was never applied" — a false null that looks like
+    a finding. So the benchmark asks a question only one answer can satisfy.
+    """
+    from harness.seocho_bridge import guide_backend_with_grammar
+    probe = guide_backend_with_grammar(backend, 'root ::= "GRAMMAR_WAS_HONORED"')
+    try:
+        r = await probe.acomplete(system="", user="Say hello in one sentence.",
+                                  temperature=0.0, max_tokens=64, task_hint="probe",
+                                  mode="pipeline")
+        text = (getattr(r, "text", None) or str(r)).strip()
+    except Exception as exc:
+        return {"honored": False, "error": f"{type(exc).__name__}: {str(exc)[:160]}"}
+    return {"honored": text == "GRAMMAR_WAS_HONORED", "output": text[:120]}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -98,6 +119,8 @@ def main() -> None:
     ap.add_argument("--modes", default="json,grammar")
     ap.add_argument("--seocho-src", default=None)
     ap.add_argument("--seocho-otlp", default=None)
+    ap.add_argument("--force-grammar", action="store_true",
+                    help="run grammar mode even if the endpoint fails the honored-probe")
     ap.add_argument("--out", default="results/bench/text2cypher_guidance.json")
     args = ap.parse_args()
 
@@ -141,11 +164,19 @@ def main() -> None:
                 session.run("EXPLAIN " + cypher, **p).consume()
         await asyncio.to_thread(_run)
 
+    honored: Dict[str, Any] = {}
+
     async def run_all() -> List[Dict[str, Any]]:
         samples: List[Dict[str, Any]] = []
         for mode in args.modes.split(","):
             backend = make_llm_backend(cfg)
             if mode == "grammar":
+                honored.update(await grammar_is_honored(make_llm_backend(cfg), cfg.model_name))
+                if not honored.get("honored") and not args.force_grammar:
+                    print(f"  SKIP grammar mode: this endpoint ignores grammars "
+                          f"(probe returned {honored.get('output') or honored.get('error')!r}). "
+                          f"Pass --force-grammar to record it anyway.", flush=True)
+                    continue
                 backend = guide_backend_with_grammar(backend, grammar)
             for qid, template in QUESTIONS:
                 for rep in range(args.repeats):
@@ -168,6 +199,12 @@ def main() -> None:
 
     def agg(mode: str) -> Dict[str, Any]:
         rows = [s for s in samples if s["mode"] == mode]
+        if not rows:
+            # A mode the endpoint could not run — recorded as skipped rather than as zero,
+            # because "no data" and "no effect" are different claims.
+            return {"generations": 0, "skipped": True,
+                    "reason": "endpoint does not honor grammars"
+                              if mode == "grammar" else "no samples"}
         ok = [s for s in rows if s["ok"]]
         att = [s["attempts"] for s in ok if s["attempts"]]
         return {
@@ -190,6 +227,7 @@ def main() -> None:
         "anchor": anchor,
         "grammar_chars": len(grammar),
         "grammar": grammar,
+        "grammar_honored_probe": honored or None,
         "by_mode": {m: agg(m) for m in args.modes.split(",")},
         "samples": samples,
     }
