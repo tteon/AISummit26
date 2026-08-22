@@ -18,6 +18,40 @@ grammar produces *that*, with the query inside the string. That is only safe bec
 already forbids inlined literals — parameters instead — so a conforming query contains no
 double quote to escape.
 
+Three expressibility gaps closed after the H200 e2e measured their cost (13 of 19 grammar-arm
+failures were inside-subset queries that executed and scored wrong; see
+docs/fibo_text2cypher_plan.md for the attribution):
+
+* **Union labels** — the ontology itself declares endpoints as `Person|Company`, and the
+  grammar could not say it; on the question that needed it the constrained model, unable to
+  write the union, degenerated into a trivial sample query. `label_part` now admits up to
+  three alternatives, matching Cypher's `(n:Person|Company)`.
+* **Comma multi-patterns** — `MATCH (o)-[:OWN]->(a1), (o)-[:OWN]->(a2)` is how the winning
+  unconstrained query bound two accounts to one owner. `match_clause` now admits up to three
+  comma-joined patterns.
+* **Bare-variable comparisons were admissible nonsense** — `ref` in a predicate admitted
+  `reach <> $acct_no`, a node compared to an integer; it executed and scored wrong.
+  Predicates now require a qualified `var "." prop` when comparing against a parameter; bare
+  variables remain legal in RETURN (returning a node is meaningful), in ORDER BY (ordering by
+  an alias is), and in the one place a bare comparison means something: `a <> b` between two
+  bound variables, the self-loop-exclusion idiom every reachability query in the corpus uses
+  (`WHERE reachable <> start`). That form is `<>`-only — node identity *equality* against
+  a parameter stays impossible, which is the nonsense the fix was for.
+
+A bare `(var)` node re-references a variable bound earlier — `MATCH (o:Person {{scope}})-[:OWN]->
+(a1), (o)-[:OWN]->(a2)` and the second-MATCH continuation both need it, every gold query uses
+it, and without it the union/comma fixes above were unreachable in practice. A CFG cannot check
+that the variable *was* bound, so this re-opens a corner where an all-bare pattern is
+admissible and would sweep; that is accepted deliberately, because the sweep guard was never
+really the grammar's to give — the earlier plan-shape measurement showed a fully scoped query
+sweeping 6.4M db hits through an index — it is the plan-shape router's (leaf EstimatedRows),
+and admissibility is this grammar's job.
+
+The node map also admits up to two `prop: $param` pairs after the tenant scope. Anchoring in
+the map and anchoring in WHERE plan identically (measured: estimated rows 1, 71 db hits both
+ways), but every unconstrained model run anchored in the map — forcing the unnatural phrasing
+bought nothing and taxed the model's priors.
+
 Relationship variables are mandatory (`[t:TRANSFER]`, never `[:TRANSFER]`). "A variable an
 aggregate references must be bound in the pattern" is context-sensitive and no CFG can say
 it — and gpt-oss-120b hit exactly that hole twice in a row on the same question, writing
@@ -88,12 +122,14 @@ def grammar_from_policy(policy: Any, *, params: Sequence[str],
 
 query ::= match_clause (ws match_clause){{0,3}} (ws where_clause)? ws return_clause (ws order_clause)? ws limit_clause
 
-match_clause ::= "MATCH " pattern
+match_clause ::= "MATCH " pattern ("," ws pattern){{0,2}}
 pattern ::= node (rel node){{0,4}}
-node ::= "(" var? label_part scope ")"
-label_part ::= ":" label
-scope ::= " {{" wsp "{ws_prop}" wsp ":" wsp "$workspace_id" wsp "}}"
-rel ::= arrow_l rel_detail arrow_r
+node ::= refnode | fullnode
+refnode ::= "(" var ")"
+fullnode ::= "(" var? label_part? scope ")"
+label_part ::= ":" label ("|" label){{0,2}}
+scope ::= " {{" wsp "{ws_prop}" wsp ":" wsp "$workspace_id" wsp ("," ws prop wsp ":" wsp param wsp){{0,2}} "}}"
+rel ::= arrow_l ws rel_detail ws arrow_r ws
 arrow_l ::= "-" | "<-"
 arrow_r ::= "->" | "-"
 rel_detail ::= "[" var ":" reltype hop_bound? "]"
@@ -101,7 +137,8 @@ hop_bound ::= "*1.." digit
 digit ::= {_alt(str(i) for i in range(1, hops + 1))}
 
 where_clause ::= "WHERE " predicate (" AND " predicate){{0,5}}
-predicate ::= ref ws comparator ws param
+predicate ::= qref ws comparator ws param | var " <> " var | qref " <> " qref
+qref ::= var "." prop
 comparator ::= "=" | ">=" | "<=" | ">" | "<" | "<>"
 param ::= {_alt("$" + p for p in param_names) if param_names else '"$limit"'}
 
