@@ -499,6 +499,12 @@ def make_graph_question_tool(agent, *, calls: List[Dict[str, Any]], anchor: Opti
                 record["outcome"] = "text2cypher_failed"
                 record["error"] = f"{type(exc).__name__}: {str(exc)[:200]}"
                 record["ms"] = (time.perf_counter() - t0) * 1000
+                # The bridge stamps the failed generation's elapsed time onto the exception.
+                # Without it this call's whole duration lands in db_ms (= ms - generate_ms),
+                # and a repair loop that never converges masquerades as database time.
+                gen_ms = getattr(exc, "generate_ms", None)
+                if gen_ms is not None:
+                    record["generate_ms"] = gen_ms
                 msg = f"ERROR — the orchestrator could not produce a valid query: {record['error']}"
                 record["chars"] = len(msg)
                 return msg

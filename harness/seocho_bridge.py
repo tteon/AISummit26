@@ -263,13 +263,29 @@ class SeochoGraphAgent:
     async def ask(self, question: str, params: Dict[str, Any]) -> Dict[str, Any]:
         from seocho.query.text2cypher import generate_validated_cypher
         t0 = time.perf_counter()
-        gen = await generate_validated_cypher(
-            question=question, schema=self.schema, params=params, policy=self.policy,
-            backend=self.backend, model=self.model, explain=self._explain)
+        try:
+            gen = await generate_validated_cypher(
+                question=question, schema=self.schema, params=params, policy=self.policy,
+                backend=self.backend, model=self.model, explain=self._explain)
+        except Exception as exc:
+            # A failed generation still spent its wall time in the LLM, and losing that
+            # number corrupts the episode's attribution: the harness computes db_ms as
+            # (tool time - generation time), so a generation that raises without reporting
+            # its time gets booked as database time. One run of 26 episodes booked 101.7 s
+            # of failed-generation LLM time as db_ms that way — reported as "seocho
+            # orchestration overhead" until the per-call residuals said otherwise.
+            exc.generate_ms = round((time.perf_counter() - t0) * 1000, 3)  # type: ignore[attr-defined]
+            raise
         gen_ms = (time.perf_counter() - t0) * 1000
         import asyncio
-        res = await asyncio.to_thread(self.orchestrator.run, gen.cypher, dict(gen.params),
-                                      database=self.database)
+        try:
+            res = await asyncio.to_thread(self.orchestrator.run, gen.cypher, dict(gen.params),
+                                          database=self.database)
+        except Exception as exc:
+            # Same stamp on the execution path: generation succeeded and its time is known,
+            # so a query that then fails at the database must not re-book that time as db_ms.
+            exc.generate_ms = round(gen_ms, 3)  # type: ignore[attr-defined]
+            raise
         return {
             "cypher": gen.cypher, "params": dict(gen.params),
             "attempts": gen.attempts, "explained": gen.explained,
