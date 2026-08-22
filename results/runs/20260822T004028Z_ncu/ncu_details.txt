@@ -1,0 +1,149 @@
+[15694] python3.12@127.0.0.1
+  ampere_bf16_s16816gemm_bf16_256x128_ldg8_f2f_stages_32x3_tn (70, 4, 1)x(256, 1, 1), Context 1, Stream 25, Device 0, CC 8.6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- ------------
+    Metric Name             Metric Unit Metric Value
+    ----------------------- ----------- ------------
+    DRAM Frequency                  Ghz         6.79
+    SM Frequency                    Ghz         1.50
+    Elapsed Cycles                cycle    1,452,702
+    Memory Throughput                 %        24.92
+    DRAM Throughput                   %        20.48
+    Duration                         us       970.30
+    L1/TEX Cache Throughput           %        17.76
+    L2 Cache Throughput               %        24.92
+    SM Active Cycles              cycle 1,263,352.02
+    Compute (SM) Throughput           %        41.18
+    ----------------------- ----------- ------------
+
+    OPT   This workload exhibits low compute throughput and memory bandwidth utilization relative to the peak           
+          performance of this device. Achieved compute throughput and/or memory bandwidth below 60.0% of peak           
+          typically indicate latency issues. Look at Scheduler Statistics and Warp State Statistics for potential       
+          reasons.                                                                                                      
+
+    Section: Compute Workload Analysis
+    -------------------- ----------- ------------
+    Metric Name          Metric Unit Metric Value
+    -------------------- ----------- ------------
+    Executed Ipc Active   inst/cycle         0.25
+    Executed Ipc Elapsed  inst/cycle         0.22
+    Issue Slots Busy               %         5.51
+    Issued Ipc Active     inst/cycle         0.25
+    SM Busy                        %        41.18
+    -------------------- ----------- ------------
+
+    INF   Tensor is the highest-utilized pipeline (41.2%) based on elapsed cycles in the workload, taking into account  
+          the rates of its different instructions. It is the logical aggregation of individual tensor pipelines. It's   
+          dominated by its Tensor (FP) sub-pipeline. It is well-utilized, but should not be a bottleneck.               
+
+    Section: Memory Workload Analysis
+    -------------------------------------- ----------- ------------
+    Metric Name                            Metric Unit Metric Value
+    -------------------------------------- ----------- ------------
+    Local Memory Spilling Requests                                0
+    Local Memory Spilling Request Overhead           %      no data
+    Memory Throughput                          Gbyte/s        89.05
+    Mem Busy                                         %        24.92
+    Max Bandwidth                                    %        23.60
+    L1/TEX Hit Rate                                  %            0
+    L2 Persisting Size                           Kbyte       786.43
+    L2 Compression Success Rate                      %            0
+    L2 Compression Ratio                                          0
+    L2 Compression Input Sectors                sector            0
+    L2 Hit Rate                                      %        90.20
+    Mem Pipes Busy                                   %         8.93
+    -------------------------------------- ----------- ------------
+
+    Section: Occupancy
+    ------------------------------- ----------- ------------
+    Metric Name                     Metric Unit Metric Value
+    ------------------------------- ----------- ------------
+    Block Limit SM                        block           16
+    Block Limit Registers                 block            1
+    Block Limit Shared Mem                block            1
+    Block Limit Warps                     block            6
+    Theoretical Active Warps per SM        warp            8
+    Theoretical Occupancy                     %        16.67
+    Achieved Occupancy                        %        16.66
+    Achieved Active Warps Per SM           warp         8.00
+    ------------------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 83.33%                                                                                    
+          The 2.00 theoretical warps per scheduler this kernel can issue according to its occupancy are below the       
+          hardware maximum of 12. This kernel's theoretical occupancy (16.7%) is limited by the number of required      
+          registers, and the required amount of shared memory.                                                          
+
+  ampere_bf16_s16816gemm_bf16_256x128_ldg8_f2f_stages_32x3_tn (70, 4, 1)x(256, 1, 1), Context 1, Stream 25, Device 0, CC 8.6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- ------------
+    Metric Name             Metric Unit Metric Value
+    ----------------------- ----------- ------------
+    DRAM Frequency                  Ghz         6.79
+    SM Frequency                    Ghz         1.50
+    Elapsed Cycles                cycle    1,452,590
+    Memory Throughput                 %        24.92
+    DRAM Throughput                   %        20.48
+    Duration                         us       970.08
+    L1/TEX Cache Throughput           %        17.77
+    L2 Cache Throughput               %        24.92
+    SM Active Cycles              cycle 1,262,713.22
+    Compute (SM) Throughput           %        41.17
+    ----------------------- ----------- ------------
+
+    OPT   This workload exhibits low compute throughput and memory bandwidth utilization relative to the peak           
+          performance of this device. Achieved compute throughput and/or memory bandwidth below 60.0% of peak           
+          typically indicate latency issues. Look at Scheduler Statistics and Warp State Statistics for potential       
+          reasons.                                                                                                      
+
+    Section: Compute Workload Analysis
+    -------------------- ----------- ------------
+    Metric Name          Metric Unit Metric Value
+    -------------------- ----------- ------------
+    Executed Ipc Active   inst/cycle         0.25
+    Executed Ipc Elapsed  inst/cycle         0.22
+    Issue Slots Busy               %         5.51
+    Issued Ipc Active     inst/cycle         0.25
+    SM Busy                        %        41.17
+    -------------------- ----------- ------------
+
+    INF   Tensor is the highest-utilized pipeline (41.2%) based on elapsed cycles in the workload, taking into account  
+          the rates of its different instructions. It is the logical aggregation of individual tensor pipelines. It's   
+          dominated by its Tensor (FP) sub-pipeline. It is well-utilized, but should not be a bottleneck.               
+
+    Section: Memory Workload Analysis
+    -------------------------------------- ----------- ------------
+    Metric Name                            Metric Unit Metric Value
+    -------------------------------------- ----------- ------------
+    Local Memory Spilling Requests                                0
+    Local Memory Spilling Request Overhead           %      no data
+    Memory Throughput                          Gbyte/s        89.06
+    Mem Busy                                         %        24.92
+    Max Bandwidth                                    %        23.61
+    L1/TEX Hit Rate                                  %            0
+    L2 Persisting Size                           Kbyte       786.43
+    L2 Compression Success Rate                      %            0
+    L2 Compression Ratio                                          0
+    L2 Compression Input Sectors                sector            0
+    L2 Hit Rate                                      %        90.20
+    Mem Pipes Busy                                   %         8.93
+    -------------------------------------- ----------- ------------
+
+    Section: Occupancy
+    ------------------------------- ----------- ------------
+    Metric Name                     Metric Unit Metric Value
+    ------------------------------- ----------- ------------
+    Block Limit SM                        block           16
+    Block Limit Registers                 block            1
+    Block Limit Shared Mem                block            1
+    Block Limit Warps                     block            6
+    Theoretical Active Warps per SM        warp            8
+    Theoretical Occupancy                     %        16.67
+    Achieved Occupancy                        %        16.66
+    Achieved Active Warps Per SM           warp         8.00
+    ------------------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 83.33%                                                                                    
+          The 2.00 theoretical warps per scheduler this kernel can issue according to its occupancy are below the       
+          hardware maximum of 12. This kernel's theoretical occupancy (16.7%) is limited by the number of required      
+          registers, and the required amount of shared memory.                                                          
+

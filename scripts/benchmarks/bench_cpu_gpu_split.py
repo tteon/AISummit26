@@ -67,6 +67,15 @@ QUERIES = {
              "(b:Account {_workspace_id:$ws}) "
              "RETURN b.acct_no AS acct, t.amount AS amount, t.ts AS ts, t.channel AS channel "
              "ORDER BY t.ts DESC LIMIT $limit"),
+    # The two shapes above are index-anchored point lookups: a handful of rows, no scan. A
+    # Cypher runtime has nothing to parallelise in them, so measuring runtimes on those two
+    # alone cannot answer whether the runtime matters. These two give the engine work that
+    # morsel-driven execution and cross-core splitting were actually built for.
+    "scan": ("MATCH (a:Account {_workspace_id:$ws}) WHERE a.risk_tier > 1 "
+             "RETURN count(a) AS n, avg(a._out_degree) AS deg"),
+    "fanout": ("MATCH (:Account {acct_no:$a,_workspace_id:$ws})-[:TRANSFER]->"
+               "(b:Account {_workspace_id:$ws})-[t:TRANSFER]->(c:Account {_workspace_id:$ws}) "
+               "RETURN count(DISTINCT c) AS reach, sum(t.amount) AS total"),
 }
 
 
@@ -109,9 +118,19 @@ class PowerSampler(threading.Thread):
                 "note": "CPU package power unavailable inside a container; not estimated"}
 
 
-def one_call(driver, database: str, shape: str, anchor: int, row_cap: int) -> Dict[str, Any]:
-    """One tool call, timed the way the harness times it, stage by stage."""
+def one_call(driver, database: str, shape: str, anchor: int, row_cap: int,
+             runtime: Optional[str] = None) -> Dict[str, Any]:
+    """One tool call, timed the way the harness times it, stage by stage.
+
+    `runtime` prefixes `CYPHER runtime=...`. Worth sweeping because the engine's runtime is a
+    *choice*, not a patch: slotted executes tuple-at-a-time on one thread, pipelined is
+    morsel-driven and vectorised, parallel splits a read across cores. DozerDB 5.26.3 reports
+    edition "enterprise" but supports neither pipelined nor parallel — it warns and silently
+    falls back to slotted — so measuring the difference needs a server that has them.
+    """
     cypher = QUERIES[shape]
+    if runtime:
+        cypher = f"CYPHER runtime={runtime} " + cypher
     params = {"a": anchor, "ws": WS, "workspace_id": WS, "limit": row_cap}
     t0 = time.perf_counter()
     with driver.session(database=database) as session:
@@ -151,7 +170,7 @@ def poisson_offsets(n: int, rate: float, seed: int) -> List[float]:
 
 def run_cell(driver, database: str, *, shape: str, row_cap: int, batch_size: int,
              requests: int, rate: float, anchor: int, seed: int,
-             warmup: int) -> Dict[str, Any]:
+             warmup: int, runtime: Optional[str] = None) -> Dict[str, Any]:
     """One (batch size, row cap, shape) cell under open-loop Poisson arrivals."""
     offsets = poisson_offsets(requests, rate, seed)
     samples: List[Dict[str, Any]] = []
@@ -164,7 +183,7 @@ def run_cell(driver, database: str, *, shape: str, row_cap: int, batch_size: int
         if delay > 0:
             time.sleep(delay)
         queued_ms = max((time.perf_counter() - due) * 1000, 0.0)
-        rec = one_call(driver, database, shape, anchor, row_cap)
+        rec = one_call(driver, database, shape, anchor, row_cap, runtime)
         rec["index"] = i
         rec["queue_ms"] = round(queued_ms, 3)
         with lock:
@@ -188,7 +207,7 @@ def run_cell(driver, database: str, *, shape: str, row_cap: int, batch_size: int
     mean_service_s = statistics.mean(s["total_ms"] for s in steady) / 1000
     achieved_rate = len(steady) / wall_s if wall_s else 0.0
     return {
-        "shape": shape, "row_cap": row_cap, "batch_size": batch_size,
+        "shape": shape, "row_cap": row_cap, "batch_size": batch_size, "runtime": runtime,
         "requests": requests, "warmup_discarded": warmup,
         "target_rate_per_s": rate, "achieved_rate_per_s": round(achieved_rate, 3),
         "wall_s": round(wall_s, 3),
@@ -222,12 +241,25 @@ def main() -> None:
     ap.add_argument("--database", default="finbenchl1")
     ap.add_argument("--anchor", type=int, default=None,
                     help="account to query; default picks the p99 out-degree hub")
+    ap.add_argument("--runtimes", default="",
+                    help="comma-separated Cypher runtimes to sweep (slotted,pipelined,parallel); "
+                         "empty means the server default. A server that lacks a runtime warns "
+                         "and falls back silently, so check `runtime_supported` in the report "
+                         "before reading a difference as a difference")
     ap.add_argument("--shapes", default="aggregate,page")
     ap.add_argument("--row-caps", default="50,200")
     ap.add_argument("--batch-sizes", default="1,2,4,8,16")
     ap.add_argument("--requests-per-batch", type=int, default=64)
     ap.add_argument("--rate", type=float, default=8.0, help="Poisson arrivals per second")
     ap.add_argument("--warmup", type=int, default=8)
+    ap.add_argument("--prewarm", type=int, default=200,
+                    help="queries executed before the sweep starts, so the page cache and the "
+                         "query plan cache are warm for the FIRST runtime too. Without this the "
+                         "sweep order itself produces a ranking")
+    ap.add_argument("--passes", type=int, default=1,
+                    help="sweep the runtime list this many times, reversing the order on every "
+                         "other pass. Two passes make order effects visible: if forward and "
+                         "reverse disagree, the difference is warmup, not the runtime")
     ap.add_argument("--seed", type=int, default=20260822)
     ap.add_argument("--db-container", default=None)
     ap.add_argument("--out", default="results/bench/cpu_gpu_split.json")
@@ -244,10 +276,52 @@ def main() -> None:
                            p=p99).single()["a"]
     print(f"[bench] anchor={anchor} db={args.database} rate={args.rate}/s", flush=True)
 
+    # Warm the page cache and plan cache before anything is timed. The first cell of a cold
+    # server is slow for reasons that have nothing to do with the runtime under test, and that
+    # cost lands entirely on whichever runtime happens to be swept first.
+    if args.prewarm > 0:
+        t0 = time.perf_counter()
+        caps = [int(x) for x in args.row_caps.split(",")]
+        shapes = args.shapes.split(",")
+        for i in range(args.prewarm):
+            one_call(driver, args.database, shapes[i % len(shapes)], anchor,
+                     caps[i % len(caps)], None)
+        print(f"[prewarm] {args.prewarm} calls in {time.perf_counter()-t0:.2f}s", flush=True)
+
     power = PowerSampler()
     power.start()
     cells: List[Dict[str, Any]] = []
-    for shape in args.shapes.split(","):
+    runtimes: List[Optional[str]] = ([r.strip() for r in args.runtimes.split(",") if r.strip()]
+                                     or [None])
+    # A runtime the server does not have is not an error — it is a warning and a silent
+    # downgrade to slotted, which would show up as "no difference" and be read as a finding.
+    # A runtime can be present on the server and still be declined for a particular query:
+    # parallel supports only a subset of operators. So probe every (runtime, shape) pair and
+    # read back the runtime the planner actually chose, rather than the one we asked for.
+    supported: Dict[str, Any] = {}
+    for rt in runtimes:
+        if rt is None:
+            continue
+        for shape in args.shapes.split(","):
+            with driver.session(database=args.database) as s_:
+                res = s_.run(f"CYPHER runtime={rt} EXPLAIN " + QUERIES[shape],
+                             a=anchor, ws=WS, workspace_id=WS, limit=200)
+                list(res)
+                summary = res.consume()
+                notes = [n.get("description", "") for n in (summary.notifications or [])]
+                chosen = ((summary.plan or {}).get("args", {}) or {}).get("runtime")
+            downgraded = (any("does not support the requested runtime" in n for n in notes)
+                          or (chosen is not None and str(chosen).lower() != rt))
+            supported[f"{rt}/{shape}"] = {"requested": rt, "chosen": chosen,
+                                          "supported": not downgraded,
+                                          "notifications": notes[:2]}
+            print(f"[runtime] {rt:9s} {shape:9s} -> planner chose {chosen} "
+                  f"{'' if not downgraded else '(DOWNGRADED)'}", flush=True)
+
+    for pass_i in range(max(1, args.passes)):
+     # Reverse on every other pass: an effect that survives both orders is not warmup.
+     for runtime in (runtimes if pass_i % 2 == 0 else list(reversed(runtimes))):
+      for shape in args.shapes.split(","):
         for row_cap in (int(x) for x in args.row_caps.split(",")):
             if shape == "aggregate" and row_cap != int(args.row_caps.split(",")[0]):
                 continue  # the aggregate returns one row; the cap is irrelevant to it
@@ -256,14 +330,15 @@ def main() -> None:
                 cell = run_cell(driver, args.database, shape=shape, row_cap=row_cap,
                                 batch_size=bs, requests=args.requests_per_batch,
                                 rate=args.rate, anchor=anchor, seed=args.seed,
-                                warmup=args.warmup)
+                                warmup=args.warmup, runtime=runtime)
                 # r(BS) = T(BS) / T(BS/2): at 1 the CPU stage has stopped scaling.
                 tp = cell["completed_per_s"]
                 cell["throughput_gain_ratio"] = (round(tp / prev_tp, 3)
                                                  if prev_tp not in (None, 0) else None)
                 prev_tp = tp
+                cell["pass"] = pass_i
                 cells.append(cell)
-                print(f"  {shape:9s} cap={row_cap:>3} bs={bs:>2} "
+                print(f"  p{pass_i} {str(runtime or 'default'):9s} {shape:9s} cap={row_cap:>3} bs={bs:>2} "
                       f"done/s={tp:>7.2f} r(BS)={cell['throughput_gain_ratio']} "
                       f"p50={cell['latency_ms']['p50']:>7.2f}ms p90={cell['latency_ms']['p90']:>7.2f}ms "
                       f"client_cpu={100*cell['client_cpu_share']:>4.1f}% rho={cell['rho_cpu']}",
@@ -286,6 +361,7 @@ def main() -> None:
         "manifest": runmeta.manifest(db_container=args.db_container),
         "config": {k: v for k, v in vars(args).items() if k != "password"},
         "anchor": anchor,
+        "runtime_supported": supported or None,
         "power": power.stop(),
         "cells": cells,
     }

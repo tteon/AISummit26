@@ -95,6 +95,10 @@ Each of these cost real time once. They are documented so they cost it only once
 | a vast.ai instance is itself a container | anything needing `docker exec` or a compose stack fails there | `bulk_load.py --exec-mode local`; `scripts/testbed/metrics_sampler.py` instead of the dashboards |
 | one client per episode | hundreds of episodes in, "too many open files" rather than a clean failure | `chat_model()` memoises per endpoint |
 | pushing a workflow file | rejected: the push credential has no `workflow` scope | ships at `testbed/ci/`, copied into `.github/workflows/` by hand |
+| DozerDB has no `pipelined`/`parallel` runtime | reports `edition: enterprise`, warns `01N40`, then **silently runs slotted** — so a runtime sweep looks like "no difference" and reads as a finding | `bench_cpu_gpu_split.py` records `runtime_supported` per (runtime, shape), read from the runtime the planner actually chose |
+| `runtime=parallel` downgrades per *query*, not per server | a server-level probe says "available" while the shape under test silently ran slotted | the probe `EXPLAIN`s each real shape and compares planner runtime to the requested one |
+| a cold page cache ranks the sweep | first runtime swept is slowest; the ranking is the sweep order | `--prewarm` before timing, `--passes 2` reverses runtime order; an effect must survive both |
+| `apoc.cypher.parallel` is not morsel execution | assumed to substitute for the parallel runtime; it is thread-pool fan-out in separate transactions, and it is APOC **Extended**, absent from Core 5.26 | Core has `apoc.periodic.iterate` (`parallel:true`) for batches, nothing for intra-query parallelism |
 
 ## What not to do
 
