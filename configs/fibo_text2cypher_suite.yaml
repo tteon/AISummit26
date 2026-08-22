@@ -1,0 +1,194 @@
+# FIBO-anchored text2cypher suite — questions co-designed with their parameter contract.
+#
+# Why this file exists: the H200 e2e showed the failure the old question set could not even
+# name. Threshold questions ("channel risk 5 or more") had no bound parameter, and the policy
+# forbids literals, so those questions were unwritable under the grammar and literal-inlining
+# rejections without it — the same wall wearing two error messages. The rule here is the fix:
+# **every threshold a question names ships as a parameter in that question's `params`.**
+#
+# Each question carries:
+#   family       one of the three FIBO AML families from bench_fibo_robustness, or `anchored`
+#   fibo_anchor  the FIBO term the scenario grounds on (documentation, and prompt material)
+#   question     natural language, with {a} substituted by the run's anchor account
+#   gold         reference Cypher against the *store* schema (Person/Company/OWN/INVEST/...).
+#                The FIBO ontology file renames these (NaturalPerson, BENEFICIAL_OWNER_OF...);
+#                mapping that projection is plan step 3, not this file's job.
+#   params       the full parameter contract — every $name in `gold`, with a runnable default
+#   in_subset    whether gold is inside the grammar subset. This is the routing label: the
+#                target mix is ~60/40 so routing is measurable rather than assumed.
+#
+# Gold for in_subset questions is written in canonical grammar surface form (scope first in
+# the node map, named relationship variables) so grammar membership is exact, not aspirational.
+
+suite: fibo_text2cypher_v1
+workspace_id: default
+
+questions:
+  # ---- anchored basics -----------------------------------------------------------------
+  - id: in_transfer_total
+    family: anchored
+    fibo_anchor: "fibo-bp-prc:PaymentExecution"
+    difficulty: easy
+    question: "For account number {a}: how many incoming transfers are there and what is their total amount?"
+    gold: >-
+      MATCH (src:Account { _workspace_id: $workspace_id })-[t:TRANSFER]->(dst:Account { _workspace_id: $workspace_id, acct_no: $acct_no })
+      RETURN count(t) AS n, sum(t.amount) AS total LIMIT $limit
+    params: {acct_no: anchor, limit: 50}
+    in_subset: true
+
+  - id: two_hop_reach
+    family: anchored
+    fibo_anchor: "fibo-bp-prc:PaymentExecution (layering reach)"
+    difficulty: medium
+    question: "Starting from account {a}, how many distinct accounts can be reached in one or two outgoing transfers, excluding {a} itself?"
+    gold: >-
+      MATCH (start:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[t:TRANSFER*1..2]->(reach:Account { _workspace_id: $workspace_id })
+      WHERE reach <> start RETURN count(DISTINCT reach) AS reachable LIMIT $limit
+    params: {acct_no: anchor, limit: 50}
+    in_subset: true
+
+  - id: owner_portfolio
+    family: anchored
+    fibo_anchor: "fibo-fbc-pas-caa:AccountHolder"
+    difficulty: medium
+    question: "Who owns account {a}, and how many accounts does that owner hold in total?"
+    # Two MATCH clauses, not a comma pattern: Cypher's relationship-uniqueness rule applies
+    # within one MATCH, so with a single-account owner the comma form finds no second OWN edge
+    # and returns nothing. Separate clauses may reuse the same relationship.
+    gold: >-
+      MATCH (o:Person|Company { _workspace_id: $workspace_id })-[r1:OWN]->(a:Account { _workspace_id: $workspace_id, acct_no: $acct_no })
+      MATCH (o)-[r2:OWN]->(b:Account { _workspace_id: $workspace_id })
+      RETURN o.id AS owner, count(DISTINCT b) AS accounts LIMIT $limit
+    params: {acct_no: anchor, limit: 50}
+    in_subset: true
+
+  - id: recent_page
+    family: anchored
+    fibo_anchor: "fibo-bp-prc:PaymentExecution"
+    difficulty: easy
+    question: "Show the most recent outgoing transfers of account {a}: counterparty, amount, timestamp."
+    gold: >-
+      MATCH (a:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[t:TRANSFER]->(b:Account { _workspace_id: $workspace_id })
+      RETURN b.acct_no AS acct, t.amount AS amount, t.ts AS ts ORDER BY t.ts DESC LIMIT $limit
+    params: {acct_no: anchor, limit: 50}
+    in_subset: true
+
+  # ---- FIBO UBO family (fibo-be-le-lp / fibo-be-le-cb) -----------------------------------
+  - id: ubo_chain
+    family: ubo
+    fibo_anchor: "fibo-be-oac-cctl:ControllingParty via holding chain"
+    difficulty: medium
+    # Workspace-wide rather than anchored: the SF1 anchor account is person-owned directly, so
+    # the anchored variant aggregates to zero and scores blind (validator rule). SF1 measures:
+    # 111 persons stand behind 147 company-owned accounts.
+    question: "How many persons stand behind company-owned accounts through an investment into the owning company?"
+    gold: >-
+      MATCH (p:Person { _workspace_id: $workspace_id })-[i:INVEST]->(c:Company { _workspace_id: $workspace_id })-[o:OWN]->(a:Account { _workspace_id: $workspace_id })
+      RETURN count(DISTINCT p) AS ubo_candidates, count(DISTINCT a) AS accounts LIMIT $limit
+    params: {limit: 50}
+    in_subset: true
+
+  - id: ubo_depth
+    family: ubo
+    fibo_anchor: "fibo-be-oac-cctl:IndirectControl (multi-tier)"
+    difficulty: hard
+    question: "Across the whole workspace, which owners control at least {min_accounts} accounts, and how many does each control?"
+    gold: >-
+      MATCH (o:Person|Company {_workspace_id: $workspace_id})-[:OWN]->(a:Account {_workspace_id: $workspace_id})
+      WITH o, count(a) AS held WHERE held >= $min_accounts
+      RETURN o.id AS owner, held ORDER BY held DESC LIMIT $limit
+    params: {min_accounts: 2, limit: 50}
+    in_subset: false        # WITH-pipeline: aggregate then filter
+
+  - id: guarantee_chain
+    family: ubo
+    fibo_anchor: "fibo-fbc-dae-dbt:ThirdPartyGuarantee (chained exposure)"
+    difficulty: hard
+    # Mutual (length-two) circles are zero on SF1, which would score blind; chains of two
+    # guarantees exist (146 on SF1) and carry the same layered-exposure semantics. Stays
+    # outside the subset: the distinct-endpoints condition needs a pattern the subset lacks
+    # once you also want per-guarantor counts — expressed here with WITH.
+    question: "How many chains of two consecutive guarantees exist, and how many distinct parties start one?"
+    gold: >-
+      MATCH (x:Person|Company {_workspace_id: $workspace_id})-[g1:GUARANTEE]->(y:Person|Company {_workspace_id: $workspace_id})-[g2:GUARANTEE]->(z:Person|Company {_workspace_id: $workspace_id})
+      WITH x, count(*) AS chains
+      RETURN count(x) AS chain_starters, sum(chains) AS chains LIMIT $limit
+    params: {limit: 50}
+    in_subset: false        # WITH-pipeline
+
+  # ---- FIBO payment-rail family (fibo-bp-prc) --------------------------------------------
+  - id: rail_mix
+    family: rail
+    fibo_anchor: "fibo-bp-prc:SettlementRail"
+    difficulty: medium
+    question: "Over which channels does account {a} transact, and how many transactions per channel?"
+    gold: >-
+      MATCH (a:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[u:USES_CHANNEL]->(c:Channel { _workspace_id: $workspace_id })
+      RETURN c.code AS channel, sum(u.tx_count) AS transactions ORDER BY transactions DESC LIMIT $limit
+    params: {acct_no: anchor, limit: 50}
+    in_subset: true
+
+  - id: risky_rail_senders
+    family: rail
+    fibo_anchor: "fibo-bp-prc:SettlementRail (FATF high-risk)"
+    difficulty: medium
+    # risk_weight defaults to 2 because the SF1 anchor's incoming transfers top out at
+    # channel_risk 2 (4 of 5 qualify); on SF10+ raise it back toward FATF-high (4-5).
+    question: "Which transfers into account {a} rode a channel with risk {risk_weight} or higher? Count them and sum their amounts."
+    gold: >-
+      MATCH (src:Account { _workspace_id: $workspace_id })-[t:TRANSFER]->(dst:Account { _workspace_id: $workspace_id, acct_no: $acct_no })
+      WHERE t.channel_risk >= $risk_weight
+      RETURN count(t) AS risky_transfers, sum(t.amount) AS risky_amount LIMIT $limit
+    params: {acct_no: anchor, risk_weight: 2, limit: 50}
+    in_subset: true
+
+  - id: structuring_fanin
+    family: rail
+    fibo_anchor: "fibo-bp-prc:PaymentExecution (structuring / smurfing fan-in)"
+    difficulty: hard
+    # min_count defaults to 1 because SF1's max fan-in is 1; raise it on SF10+ where senders
+    # repeat. An empty gold answer is a scoring blind spot (empty == empty scores correct), so
+    # the default must produce rows on the scale it ships for.
+    question: "Which sender accounts made at least {min_count} separate transfers into account {a}?"
+    gold: >-
+      MATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(dst:Account {_workspace_id: $workspace_id, acct_no: $acct_no})
+      WITH src, count(t) AS k WHERE k >= $min_count
+      RETURN src.acct_no AS sender, k ORDER BY k DESC LIMIT $limit
+    params: {acct_no: anchor, min_count: 1, limit: 50}
+    in_subset: false        # WITH-pipeline: per-sender count then filter
+
+  - id: sub_threshold_inflow
+    family: rail
+    fibo_anchor: "fibo-bp-prc:PaymentExecution (sub-threshold placement)"
+    difficulty: medium
+    question: "How many transfers into account {a} stayed under {amount_max}, and what do they add up to?"
+    gold: >-
+      MATCH (src:Account { _workspace_id: $workspace_id })-[t:TRANSFER]->(dst:Account { _workspace_id: $workspace_id, acct_no: $acct_no })
+      WHERE t.amount < $amount_max
+      RETURN count(t) AS n, sum(t.amount) AS total LIMIT $limit
+    params: {acct_no: anchor, amount_max: 10000, limit: 50}
+    in_subset: true
+
+  # ---- FIBO credit-facility family (fibo-fbc-dae-dbt) -------------------------------------
+  - id: loan_disbursement_path
+    family: loan
+    fibo_anchor: "fibo-fbc-dae-dbt:CommittedCreditFacility (proceeds placement)"
+    difficulty: medium
+    question: "Did loan proceeds reach account {a} within three transfer hops of a disbursement? Count the loans."
+    gold: >-
+      MATCH (l:Loan { _workspace_id: $workspace_id })-[d:DEPOSIT]->(x:Account { _workspace_id: $workspace_id })-[t:TRANSFER*1..3]->(dst:Account { _workspace_id: $workspace_id, acct_no: $acct_no })
+      RETURN count(DISTINCT l) AS loans LIMIT $limit
+    params: {acct_no: anchor, limit: 50}
+    in_subset: true
+
+  - id: loan_repay_imbalance
+    family: loan
+    fibo_anchor: "fibo-fbc-dae-dbt:CommittedCreditFacility (repayment integration)"
+    difficulty: hard
+    question: "For each loan, compare its principal against the total repaid so far and report loans repaid below {repaid_ratio} of principal."
+    gold: >-
+      MATCH (a:Account {_workspace_id: $workspace_id})-[r:REPAY]->(l:Loan {_workspace_id: $workspace_id})
+      WITH l, sum(r.amount) AS repaid WHERE repaid < l.principal * $repaid_ratio
+      RETURN l.id AS loan, l.principal AS principal, repaid ORDER BY repaid LIMIT $limit
+    params: {repaid_ratio: 0.5, limit: 50}
+    in_subset: false        # WITH-pipeline + arithmetic on properties
