@@ -1285,10 +1285,14 @@ async def main_async(args) -> None:
         if args.seocho_grammar:
             from harness.cypher_grammar import grammar_from_policy
             from harness.seocho_bridge import guide_backend_with_grammar
-            # The parameters the harness binds for every question, so the grammar's `param`
-            # rule admits exactly what a generated query may reference.
+            # Only parameters that survive seocho's own param filtering may appear here.
+            # The first run of this flag also admitted `$a` (the harness binds it as an
+            # alias of acct_no), the grammar let the model write it, and seocho then
+            # dropped it before execution — 28 of 43 tool failures were ParameterMissing:a.
+            # The grammar must describe what the *executor* accepts, not what the harness
+            # happens to have lying around.
             grammar_text = grammar_from_policy(
-                policy, params=sorted(("workspace_id", "limit", "acct_no", "a", "n")))
+                policy, params=sorted(("workspace_id", "limit", "acct_no")))
             if args.provider == "mara":
                 raise SystemExit("--seocho-grammar on MARA would be a false null: the endpoint "
                                  "accepts structured_outputs and ignores it (measured; see "

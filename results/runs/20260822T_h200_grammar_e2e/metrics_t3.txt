@@ -1,0 +1,5 @@
+vllm:prefix_cache_queries_total{engine="0",model_name="openai/gpt-oss-120b"} 850312.0
+vllm:prefix_cache_hits_total{engine="0",model_name="openai/gpt-oss-120b"} 675824.0
+vllm:prompt_tokens_total{engine="0",model_name="openai/gpt-oss-120b"} 850312.0
+vllm:kv_block_lifetime_seconds_count{engine="0",model_name="openai/gpt-oss-120b"} 1202.0
+vllm:kv_block_lifetime_seconds_sum{engine="0",model_name="openai/gpt-oss-120b"} 181.3705378
