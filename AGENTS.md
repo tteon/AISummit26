@@ -105,7 +105,7 @@ Each of these cost real time once. They are documented so they cost it only once
 | prefix caching on by default (vLLM V1) | the "control" arm shows the same speedup as the treatment | `testbed/serve_vllm.sh`, `PREFIX_CACHING=off` |
 | `--enable-prompt-tokens-details` off by default | `prompt_tokens_details: null`; server counters move but cannot be attributed to an episode | `vllm/entrypoints/openai/cli_args.py:132` |
 | KV residency metrics off, then sampled at 1% | `kv_block_*` histograms empty at our request volume | `--kv-cache-metrics-sample`, raised in the serve script |
-| gpt-oss tool calls | do **not** pass `--tool-call-parser`; `HarmonyParser` handles it | `vllm/tool_parsers/gptoss_tool_parser.py:19` |
+| gpt-oss tool calls on vLLM 0.27 | without `--enable-auto-tool-choice --tool-call-parser openai` the server returns finish_reason=stop with empty content and **no tool_calls** — the episode loop runs 0 trips and every arm scores 0, silently | `testbed/serve_vllm.sh` `TOOL_PARSER=openai`; the earlier note here said gpt-oss needs no parser, which was true of a different code path and cost one full e2e run |
 | gpt-oss empty final turn | closing turn spent in the reasoning channel, empty content; harness answers with one recorded nudge (`nudged`) | seen on the hosted endpoint; may follow the model |
 | `outputs/` is gitignored | a fresh clone has no snapshots and the loader has nothing to load | `GENERATE_MISSING=1`, or seed from S3 |
 | a vast.ai instance is itself a container | anything needing `docker exec` or a compose stack fails there | `bulk_load.py --exec-mode local`; `scripts/testbed/metrics_sampler.py` instead of the dashboards |
