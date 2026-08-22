@@ -1,0 +1,798 @@
+{
+  "schema_version": "seocho.finbench.ontology-conformance.v1",
+  "question": "does the declared ontology describe the graph that is loaded?",
+  "manifest": {
+    "timestamp_utc": "2026-08-22T02:30:42+00:00",
+    "git_commit": "21fa7ce913b33646c83909c0883e302fec8ce9fd",
+    "git_dirty": true,
+    "argv": [
+      "scripts/analysis/ontology_conformance.py",
+      "--uri",
+      "bolt://localhost:7688",
+      "--password",
+      "testpass1234",
+      "--database",
+      "finbenchl1",
+      "--seocho-src",
+      "../seocho-room/seocho",
+      "--db-container",
+      "aisummit-simtest",
+      "--out",
+      "results/analysis/ontology_conformance_sf1_20260822.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "1ac98b0dc1b2",
+    "db_container": "aisummit-simtest",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6520",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null
+  },
+  "config": {
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "database": "finbenchl1",
+    "ontology": "ontology/finbench.ontology.yaml",
+    "seocho_src": "../seocho-room/seocho",
+    "db_container": "aisummit-simtest",
+    "out": "results/analysis/ontology_conformance_sf1_20260822.json"
+  },
+  "policy": {
+    "allowed_labels": [
+      "Account",
+      "Channel",
+      "Company",
+      "Loan",
+      "Medium",
+      "Person"
+    ],
+    "allowed_relationships": [
+      "APPLY",
+      "DEPOSIT",
+      "GUARANTEE",
+      "INVEST",
+      "OWN",
+      "REPAY",
+      "SIGN_IN",
+      "TRANSFER",
+      "USES_CHANNEL",
+      "WITHDRAW"
+    ],
+    "allowed_properties": [
+      "_workspace_id",
+      "acct_no",
+      "acct_type",
+      "amount",
+      "channel",
+      "channel_risk",
+      "code",
+      "country",
+      "cross_border",
+      "flagged",
+      "iban",
+      "id",
+      "label",
+      "limit",
+      "name",
+      "principal",
+      "risk_level",
+      "risk_tier",
+      "risk_weight",
+      "sector",
+      "ts",
+      "tx_count",
+      "type"
+    ],
+    "workspace_property": "_workspace_id",
+    "max_graph_hops": 4
+  },
+  "graph": {
+    "labels": [
+      "Account",
+      "Channel",
+      "Company",
+      "Loan",
+      "Medium",
+      "Person"
+    ],
+    "rel_types": [
+      "APPLY",
+      "DEPOSIT",
+      "GUARANTEE",
+      "INVEST",
+      "OWN",
+      "REPAY",
+      "SIGN_IN",
+      "TRANSFER",
+      "USES_CHANNEL",
+      "WITHDRAW"
+    ],
+    "node_properties": {
+      "Account": [
+        "_out_degree",
+        "_workspace_id",
+        "acct_no",
+        "acct_type",
+        "flagged",
+        "iban",
+        "id",
+        "owner_id",
+        "risk_tier"
+      ],
+      "Channel": [
+        "_workspace_id",
+        "code",
+        "label",
+        "risk_weight",
+        "share"
+      ],
+      "Company": [
+        "_workspace_id",
+        "id",
+        "name",
+        "sector"
+      ],
+      "Loan": [
+        "_workspace_id",
+        "id",
+        "principal",
+        "term_years"
+      ],
+      "Medium": [
+        "_workspace_id",
+        "id",
+        "is_blocked",
+        "risk_level",
+        "type"
+      ],
+      "Person": [
+        "_workspace_id",
+        "age",
+        "country",
+        "id",
+        "name"
+      ]
+    },
+    "node_counts": {
+      "Account": 2470,
+      "Channel": 12,
+      "Company": 100,
+      "Loan": 201,
+      "Medium": 300,
+      "Person": 1000
+    },
+    "rel_properties": {
+      "APPLY": [
+        "_workspace_id",
+        "organization",
+        "ts"
+      ],
+      "DEPOSIT": [
+        "_workspace_id",
+        "amount"
+      ],
+      "GUARANTEE": [
+        "_workspace_id",
+        "relationship",
+        "ts"
+      ],
+      "INVEST": [
+        "_workspace_id",
+        "ratio",
+        "ts"
+      ],
+      "OWN": [
+        "_workspace_id"
+      ],
+      "REPAY": [
+        "_workspace_id",
+        "amount"
+      ],
+      "SIGN_IN": [
+        "_workspace_id",
+        "location",
+        "ts"
+      ],
+      "TRANSFER": [
+        "_workspace_id",
+        "amount",
+        "channel",
+        "channel_risk",
+        "cross_border",
+        "ts"
+      ],
+      "USES_CHANNEL": [
+        "_workspace_id",
+        "tx_count"
+      ],
+      "WITHDRAW": [
+        "_workspace_id",
+        "amount",
+        "ts"
+      ]
+    },
+    "rel_counts": {
+      "APPLY": 200,
+      "DEPOSIT": 201,
+      "GUARANTEE": 400,
+      "INVEST": 151,
+      "OWN": 2029,
+      "REPAY": 201,
+      "SIGN_IN": 4002,
+      "TRANSFER": 10895,
+      "USES_CHANNEL": 7875,
+      "WITHDRAW": 1500
+    },
+    "rel_endpoints": [
+      "Account-[REPAY]->Loan",
+      "Account-[TRANSFER]->Account",
+      "Account-[USES_CHANNEL]->Channel",
+      "Account-[WITHDRAW]->Account",
+      "Company-[APPLY]->Loan",
+      "Company-[GUARANTEE]->Company",
+      "Company-[GUARANTEE]->Person",
+      "Company-[INVEST]->Company",
+      "Company-[OWN]->Account",
+      "Loan-[DEPOSIT]->Account",
+      "Medium-[SIGN_IN]->Account",
+      "Person-[APPLY]->Loan",
+      "Person-[GUARANTEE]->Company",
+      "Person-[GUARANTEE]->Person",
+      "Person-[INVEST]->Company",
+      "Person-[OWN]->Account"
+    ],
+    "indexes": [
+      {
+        "name": "idx_account_acct_no",
+        "labels": [
+          "Account"
+        ],
+        "properties": [
+          "acct_no"
+        ],
+        "type": "RANGE",
+        "state": "ONLINE"
+      },
+      {
+        "name": "idx_account_flagged",
+        "labels": [
+          "Account"
+        ],
+        "properties": [
+          "flagged"
+        ],
+        "type": "RANGE",
+        "state": "ONLINE"
+      },
+      {
+        "name": "idx_account_id",
+        "labels": [
+          "Account"
+        ],
+        "properties": [
+          "id"
+        ],
+        "type": "RANGE",
+        "state": "ONLINE"
+      },
+      {
+        "name": "idx_account_risk_tier",
+        "labels": [
+          "Account"
+        ],
+        "properties": [
+          "risk_tier"
+        ],
+        "type": "RANGE",
+        "state": "ONLINE"
+      },
+      {
+        "name": "idx_account_ws",
+        "labels": [
+          "Account"
+        ],
+        "properties": [
+          "_workspace_id"
+        ],
+        "type": "RANGE",
+        "state": "ONLINE"
+      },
+      {
+        "name": "idx_channel_code",
+        "labels": [
+          "Channel"
+        ],
+        "properties": [
+          "code"
+        ],
+        "type": "RANGE",
+        "state": "ONLINE"
+      },
+      {
+        "name": "idx_company_id",
+        "labels": [
+          "Company"
+        ],
+        "properties": [
+          "id"
+        ],
+        "type": "RANGE",
+        "state": "ONLINE"
+      },
+      {
+        "name": "idx_loan_id",
+        "labels": [
+          "Loan"
+        ],
+        "properties": [
+          "id"
+        ],
+        "type": "RANGE",
+        "state": "ONLINE"
+      },
+      {
+        "name": "idx_medium_id",
+        "labels": [
+          "Medium"
+        ],
+        "properties": [
+          "id"
+        ],
+        "type": "RANGE",
+        "state": "ONLINE"
+      },
+      {
+        "name": "idx_person_id",
+        "labels": [
+          "Person"
+        ],
+        "properties": [
+          "id"
+        ],
+        "type": "RANGE",
+        "state": "ONLINE"
+      },
+      {
+        "name": "index_343aff4e",
+        "labels": null,
+        "properties": null,
+        "type": "LOOKUP",
+        "state": "ONLINE"
+      },
+      {
+        "name": "index_f7700477",
+        "labels": null,
+        "properties": null,
+        "type": "LOOKUP",
+        "state": "ONLINE"
+      }
+    ]
+  },
+  "declared": {
+    "labels": [
+      "Account",
+      "Channel",
+      "Company",
+      "Loan",
+      "Medium",
+      "Person"
+    ],
+    "rel_types": [
+      "APPLY",
+      "DEPOSIT",
+      "GUARANTEE",
+      "INVEST",
+      "OWN",
+      "REPAY",
+      "SIGN_IN",
+      "TRANSFER",
+      "USES_CHANNEL",
+      "WITHDRAW"
+    ],
+    "node_properties": {
+      "Account": [
+        "acct_no",
+        "acct_type",
+        "flagged",
+        "iban",
+        "id",
+        "risk_tier"
+      ],
+      "Person": [
+        "country",
+        "id",
+        "name"
+      ],
+      "Company": [
+        "id",
+        "name",
+        "sector"
+      ],
+      "Loan": [
+        "id",
+        "principal"
+      ],
+      "Channel": [
+        "code",
+        "label",
+        "risk_weight"
+      ],
+      "Medium": [
+        "id",
+        "risk_level",
+        "type"
+      ]
+    },
+    "rel_properties": {
+      "TRANSFER": [
+        "amount",
+        "channel",
+        "channel_risk",
+        "cross_border",
+        "ts"
+      ],
+      "USES_CHANNEL": [
+        "tx_count"
+      ],
+      "OWN": [],
+      "DEPOSIT": [
+        "amount"
+      ],
+      "REPAY": [
+        "amount"
+      ],
+      "APPLY": [],
+      "INVEST": [],
+      "GUARANTEE": [],
+      "WITHDRAW": [],
+      "SIGN_IN": []
+    },
+    "identity_keys": {
+      "Account": [
+        "acct_no",
+        "id"
+      ],
+      "Person": [],
+      "Company": [],
+      "Loan": [],
+      "Channel": [],
+      "Medium": []
+    },
+    "rel_endpoints": [
+      "Account-[REPAY]->Loan",
+      "Account-[TRANSFER]->Account",
+      "Account-[USES_CHANNEL]->Channel",
+      "Account-[WITHDRAW]->Account",
+      "Company-[APPLY]->Loan",
+      "Company-[GUARANTEE]->Company",
+      "Company-[GUARANTEE]->Person",
+      "Company-[INVEST]->Company",
+      "Company-[OWN]->Account",
+      "Loan-[DEPOSIT]->Account",
+      "Medium-[SIGN_IN]->Account",
+      "Person-[APPLY]->Loan",
+      "Person-[GUARANTEE]->Company",
+      "Person-[GUARANTEE]->Person",
+      "Person-[INVEST]->Company",
+      "Person-[OWN]->Account"
+    ]
+  },
+  "label_and_type_diffs": [
+    {
+      "scope": "labels",
+      "declared_but_absent": [],
+      "present_but_undeclared": [],
+      "agreed": [
+        "Account",
+        "Channel",
+        "Company",
+        "Loan",
+        "Medium",
+        "Person"
+      ]
+    },
+    {
+      "scope": "relationship_types",
+      "declared_but_absent": [],
+      "present_but_undeclared": [],
+      "agreed": [
+        "APPLY",
+        "DEPOSIT",
+        "GUARANTEE",
+        "INVEST",
+        "OWN",
+        "REPAY",
+        "SIGN_IN",
+        "TRANSFER",
+        "USES_CHANNEL",
+        "WITHDRAW"
+      ]
+    }
+  ],
+  "node_property_diffs": [
+    {
+      "label": "Account",
+      "node_count": 2470,
+      "scope": "properties:Account",
+      "declared_but_absent": [],
+      "present_but_undeclared": [
+        "owner_id"
+      ],
+      "agreed": [
+        "acct_no",
+        "acct_type",
+        "flagged",
+        "iban",
+        "id",
+        "risk_tier"
+      ],
+      "infrastructure_properties": [
+        "_out_degree",
+        "_workspace_id"
+      ]
+    },
+    {
+      "label": "Channel",
+      "node_count": 12,
+      "scope": "properties:Channel",
+      "declared_but_absent": [],
+      "present_but_undeclared": [
+        "share"
+      ],
+      "agreed": [
+        "code",
+        "label",
+        "risk_weight"
+      ],
+      "infrastructure_properties": [
+        "_workspace_id"
+      ]
+    },
+    {
+      "label": "Company",
+      "node_count": 100,
+      "scope": "properties:Company",
+      "declared_but_absent": [],
+      "present_but_undeclared": [],
+      "agreed": [
+        "id",
+        "name",
+        "sector"
+      ],
+      "infrastructure_properties": [
+        "_workspace_id"
+      ]
+    },
+    {
+      "label": "Loan",
+      "node_count": 201,
+      "scope": "properties:Loan",
+      "declared_but_absent": [],
+      "present_but_undeclared": [
+        "term_years"
+      ],
+      "agreed": [
+        "id",
+        "principal"
+      ],
+      "infrastructure_properties": [
+        "_workspace_id"
+      ]
+    },
+    {
+      "label": "Medium",
+      "node_count": 300,
+      "scope": "properties:Medium",
+      "declared_but_absent": [],
+      "present_but_undeclared": [
+        "is_blocked"
+      ],
+      "agreed": [
+        "id",
+        "risk_level",
+        "type"
+      ],
+      "infrastructure_properties": [
+        "_workspace_id"
+      ]
+    },
+    {
+      "label": "Person",
+      "node_count": 1000,
+      "scope": "properties:Person",
+      "declared_but_absent": [],
+      "present_but_undeclared": [
+        "age"
+      ],
+      "agreed": [
+        "country",
+        "id",
+        "name"
+      ],
+      "infrastructure_properties": [
+        "_workspace_id"
+      ]
+    }
+  ],
+  "rel_property_diffs": [
+    {
+      "rel_type": "APPLY",
+      "rel_count": 200,
+      "scope": "rel_properties:APPLY",
+      "declared_but_absent": [],
+      "present_but_undeclared": [
+        "organization",
+        "ts"
+      ],
+      "agreed": []
+    },
+    {
+      "rel_type": "DEPOSIT",
+      "rel_count": 201,
+      "scope": "rel_properties:DEPOSIT",
+      "declared_but_absent": [],
+      "present_but_undeclared": [],
+      "agreed": [
+        "amount"
+      ]
+    },
+    {
+      "rel_type": "GUARANTEE",
+      "rel_count": 400,
+      "scope": "rel_properties:GUARANTEE",
+      "declared_but_absent": [],
+      "present_but_undeclared": [
+        "relationship",
+        "ts"
+      ],
+      "agreed": []
+    },
+    {
+      "rel_type": "INVEST",
+      "rel_count": 151,
+      "scope": "rel_properties:INVEST",
+      "declared_but_absent": [],
+      "present_but_undeclared": [
+        "ratio",
+        "ts"
+      ],
+      "agreed": []
+    },
+    {
+      "rel_type": "OWN",
+      "rel_count": 2029,
+      "scope": "rel_properties:OWN",
+      "declared_but_absent": [],
+      "present_but_undeclared": [],
+      "agreed": []
+    },
+    {
+      "rel_type": "REPAY",
+      "rel_count": 201,
+      "scope": "rel_properties:REPAY",
+      "declared_but_absent": [],
+      "present_but_undeclared": [],
+      "agreed": [
+        "amount"
+      ]
+    },
+    {
+      "rel_type": "SIGN_IN",
+      "rel_count": 4002,
+      "scope": "rel_properties:SIGN_IN",
+      "declared_but_absent": [],
+      "present_but_undeclared": [
+        "location",
+        "ts"
+      ],
+      "agreed": []
+    },
+    {
+      "rel_type": "TRANSFER",
+      "rel_count": 10895,
+      "scope": "rel_properties:TRANSFER",
+      "declared_but_absent": [],
+      "present_but_undeclared": [],
+      "agreed": [
+        "amount",
+        "channel",
+        "channel_risk",
+        "cross_border",
+        "ts"
+      ]
+    },
+    {
+      "rel_type": "USES_CHANNEL",
+      "rel_count": 7875,
+      "scope": "rel_properties:USES_CHANNEL",
+      "declared_but_absent": [],
+      "present_but_undeclared": [],
+      "agreed": [
+        "tx_count"
+      ]
+    },
+    {
+      "rel_type": "WITHDRAW",
+      "rel_count": 1500,
+      "scope": "rel_properties:WITHDRAW",
+      "declared_but_absent": [],
+      "present_but_undeclared": [
+        "amount",
+        "ts"
+      ],
+      "agreed": []
+    }
+  ],
+  "identity_keys": [
+    {
+      "label": "Account",
+      "identity_key": "acct_no",
+      "exists_in_graph": true,
+      "indexed": true
+    },
+    {
+      "label": "Account",
+      "identity_key": "id",
+      "exists_in_graph": true,
+      "indexed": true
+    }
+  ],
+  "endpoint_diff": {
+    "scope": "relationship_endpoints",
+    "declared_but_absent": [],
+    "present_but_undeclared": [],
+    "agreed": [
+      "Account-[REPAY]->Loan",
+      "Account-[TRANSFER]->Account",
+      "Account-[USES_CHANNEL]->Channel",
+      "Account-[WITHDRAW]->Account",
+      "Company-[APPLY]->Loan",
+      "Company-[GUARANTEE]->Company",
+      "Company-[GUARANTEE]->Person",
+      "Company-[INVEST]->Company",
+      "Company-[OWN]->Account",
+      "Loan-[DEPOSIT]->Account",
+      "Medium-[SIGN_IN]->Account",
+      "Person-[APPLY]->Loan",
+      "Person-[GUARANTEE]->Company",
+      "Person-[GUARANTEE]->Person",
+      "Person-[INVEST]->Company",
+      "Person-[OWN]->Account"
+    ]
+  },
+  "problems": [
+    "Account: graph properties undeclared ['owner_id']",
+    "Channel: graph properties undeclared ['share']",
+    "Loan: graph properties undeclared ['term_years']",
+    "Medium: graph properties undeclared ['is_blocked']",
+    "Person: graph properties undeclared ['age']"
+  ],
+  "conformant": false
+}
