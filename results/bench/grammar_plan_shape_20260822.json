@@ -1,0 +1,666 @@
+{
+  "schema_version": "seocho.finbench.grammar-plan-shape.v1",
+  "question": "does the ontology-derived grammar prevent scan-shaped Cypher?",
+  "method": {
+    "membership": "xgrammar accept_string + is_completed on the JSON envelope \u2014 the same engine vLLM constrains with, so membership is exact",
+    "plan_shape": "EXPLAIN leaf operators. Classified by cost, not operator name: the tenant scope is an indexed property, so a full sweep of a label plans as NodeIndexSeek and a name-based test reports it as a seek. sweep_shaped = a leaf touches >= --sweep-rows estimated rows",
+    "cost": "PROFILE db hits and server-reported time"
+  },
+  "manifest": {
+    "timestamp_utc": "2026-08-22T01:32:06+00:00",
+    "git_commit": "81d27999c2b95deae2a0a1d392c5594bee363040",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/bench_grammar_plan_shape.py",
+      "--uri",
+      "bolt://localhost:7690",
+      "--password",
+      "testpass1234",
+      "--database",
+      "finbenchl100",
+      "--db-container",
+      "aisummit-ent",
+      "--seocho-src",
+      "../seocho-room/seocho",
+      "--out",
+      "results/bench/grammar_plan_shape_20260822.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "neo4j:5.26-enterprise",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "fb6a9e9f8bb5",
+    "db_container": "aisummit-ent",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6520",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null
+  },
+  "config": {
+    "uri": "bolt://localhost:7690",
+    "user": "neo4j",
+    "database": "finbenchl100",
+    "ontology": "ontology/finbench.ontology.yaml",
+    "anchor": 7,
+    "limit": 200,
+    "reports": "results/bench/text2cypher_guidance_20260822.json,results/bench/text2cypher_guidance_mara_20260822.json",
+    "sweep_rows": 1000.0,
+    "seocho_src": "../seocho-room/seocho",
+    "db_container": "aisummit-ent",
+    "out": "results/bench/grammar_plan_shape_20260822.json"
+  },
+  "params": {
+    "workspace_id": "default",
+    "limit": 200,
+    "acct_no": 7,
+    "n": 1,
+    "channel_risk": 0.5,
+    "risk_tier": 3,
+    "amount": 1000.0
+  },
+  "grammar_chars": 1682,
+  "grammar": "root ::= \"{\" ws \"\\\"cypher\\\"\" ws \":\" ws \"\\\"\" query \"\\\"\" ws \"}\"\n\nquery ::= match_clause (ws match_clause)* (ws where_clause)? ws return_clause (ws order_clause)? ws limit_clause\n\nmatch_clause ::= \"MATCH \" pattern\npattern ::= node (rel node)*\nnode ::= \"(\" var? label_part scope \")\"\nlabel_part ::= \":\" label\nscope ::= \" {\" wsp \"_workspace_id\" wsp \":\" wsp \"$workspace_id\" wsp \"}\"\nrel ::= arrow_l rel_detail arrow_r\narrow_l ::= \"-\" | \"<-\"\narrow_r ::= \"->\" | \"-\"\nrel_detail ::= \"[\" var? \":\" reltype hop_bound? \"]\"\nhop_bound ::= \"*1..\" digit\ndigit ::= \"1\" | \"2\" | \"3\" | \"4\"\n\nwhere_clause ::= \"WHERE \" predicate (\" AND \" predicate)*\npredicate ::= ref ws comparator ws param\ncomparator ::= \"=\" | \">=\" | \"<=\" | \">\" | \"<\" | \"<>\"\nparam ::= \"$channel_risk\" | \"$risk_tier\" | \"$acct_no\" | \"$amount\" | \"$limit\" | \"$n\"\n\nreturn_clause ::= \"RETURN \" ret_item (\", \" ret_item)*\nret_item ::= (aggregate | ref | \"DISTINCT \" ref) (\" AS \" var)?\naggregate ::= agg_fn \"(\" (\"DISTINCT \" )? ref \")\"\nagg_fn ::= \"collect\" | \"count\" | \"avg\" | \"max\" | \"min\" | \"sum\"\n\norder_clause ::= \"ORDER BY \" ref (\" DESC\" | \" ASC\")?\nlimit_clause ::= \"LIMIT $limit\"\n\nref ::= var (\".\" prop)?\nlabel ::= \"Account\" | \"Channel\" | \"Company\" | \"Medium\" | \"Person\" | \"Loan\"\nreltype ::= \"USES_CHANNEL\" | \"GUARANTEE\" | \"TRANSFER\" | \"WITHDRAW\" | \"DEPOSIT\" | \"SIGN_IN\" | \"INVEST\" | \"APPLY\" | \"REPAY\" | \"OWN\"\nprop ::= \"_workspace_id\" | \"channel_risk\" | \"cross_border\" | \"risk_weight\" | \"risk_level\" | \"acct_type\" | \"principal\" | \"risk_tier\" | \"tx_count\" | \"acct_no\" | \"channel\" | \"country\" | \"flagged\" | \"amount\" | \"sector\" | \"label\" | \"limit\" | \"code\" | \"iban\" | \"name\" | \"type\" | \"id\" | \"ts\"\nvar ::= [a-z] [a-z0-9_]*\nws ::= \" \"*\nwsp ::= \" \"*\n",
+  "verdict": {
+    "grammar_prevents_scans": false,
+    "grammar_admitted_scan_shaped": [
+      {
+        "name": "label_scan_count",
+        "cypher": "MATCH (a:Account { _workspace_id: $workspace_id }) RETURN count(a) AS n LIMIT $limit",
+        "leaf_operators": [
+          "NodeIndexSeek"
+        ],
+        "leaf_estimated_rows_max": 200470.0,
+        "leaf_operators_named_seek": true,
+        "db_hits": 200471
+      },
+      {
+        "name": "label_scan_filtered",
+        "cypher": "MATCH (a:Account { _workspace_id: $workspace_id }) WHERE a.risk_tier >= $risk_tier RETURN count(a) AS n, avg(a.amount) AS avg_amount LIMIT $limit",
+        "leaf_operators": [
+          "NodeIndexSeekByRange"
+        ],
+        "leaf_estimated_rows_max": 44905.28,
+        "leaf_operators_named_seek": true,
+        "db_hits": 503317
+      },
+      {
+        "name": "label_scan_two_hop",
+        "cypher": "MATCH (a:Account { _workspace_id: $workspace_id })-[t:TRANSFER]->(b:Account { _workspace_id: $workspace_id }) RETURN count(t) AS n, sum(t.amount) AS total LIMIT $limit",
+        "leaf_operators": [
+          "NodeIndexSeek"
+        ],
+        "leaf_estimated_rows_max": 200470.0,
+        "leaf_operators_named_seek": true,
+        "db_hits": 6406311
+      }
+    ]
+  },
+  "rows": [
+    {
+      "source": "probe",
+      "name": "label_scan_count",
+      "intent": "scan",
+      "cypher": "MATCH (a:Account { _workspace_id: $workspace_id }) RETURN count(a) AS n LIMIT $limit",
+      "in_grammar": true,
+      "in_policy_subset": true,
+      "subset_reasons": [],
+      "explain": {
+        "operators": [
+          "ProduceResults",
+          "Limit",
+          "EagerAggregation",
+          "NodeIndexSeek"
+        ],
+        "leaf_operators": [
+          "NodeIndexSeek"
+        ],
+        "scan_ops": [],
+        "seek_ops": [
+          "NodeIndexSeek"
+        ],
+        "index_scan_ops": [],
+        "scan_operator_present": false,
+        "leaf_estimated_rows_max": 200470.0,
+        "sweep_rows_threshold": 1000.0,
+        "sweep_shaped": true,
+        "ok": true
+      },
+      "profile": {
+        "ok": true,
+        "rows_returned": 1,
+        "db_hits": 200471,
+        "operator_rows_total": 200473,
+        "server_ms": 17.0
+      }
+    },
+    {
+      "source": "probe",
+      "name": "label_scan_filtered",
+      "intent": "scan",
+      "cypher": "MATCH (a:Account { _workspace_id: $workspace_id }) WHERE a.risk_tier >= $risk_tier RETURN count(a) AS n, avg(a.amount) AS avg_amount LIMIT $limit",
+      "in_grammar": true,
+      "in_policy_subset": true,
+      "subset_reasons": [],
+      "explain": {
+        "operators": [
+          "ProduceResults",
+          "Limit",
+          "EagerAggregation",
+          "Filter",
+          "NodeIndexSeekByRange"
+        ],
+        "leaf_operators": [
+          "NodeIndexSeekByRange"
+        ],
+        "scan_ops": [],
+        "seek_ops": [
+          "NodeIndexSeekByRange"
+        ],
+        "index_scan_ops": [],
+        "scan_operator_present": false,
+        "leaf_estimated_rows_max": 44905.28,
+        "sweep_rows_threshold": 1000.0,
+        "sweep_shaped": true,
+        "ok": true
+      },
+      "profile": {
+        "ok": true,
+        "rows_returned": 1,
+        "db_hits": 503317,
+        "operator_rows_total": 251661,
+        "server_ms": 53.0
+      }
+    },
+    {
+      "source": "probe",
+      "name": "label_scan_two_hop",
+      "intent": "scan",
+      "cypher": "MATCH (a:Account { _workspace_id: $workspace_id })-[t:TRANSFER]->(b:Account { _workspace_id: $workspace_id }) RETURN count(t) AS n, sum(t.amount) AS total LIMIT $limit",
+      "in_grammar": true,
+      "in_policy_subset": true,
+      "subset_reasons": [],
+      "explain": {
+        "operators": [
+          "ProduceResults",
+          "Limit",
+          "EagerAggregation",
+          "Filter",
+          "Expand(All)",
+          "NodeIndexSeek"
+        ],
+        "leaf_operators": [
+          "NodeIndexSeek"
+        ],
+        "scan_ops": [],
+        "seek_ops": [
+          "NodeIndexSeek"
+        ],
+        "index_scan_ops": [],
+        "scan_operator_present": false,
+        "leaf_estimated_rows_max": 200470.0,
+        "sweep_rows_threshold": 1000.0,
+        "sweep_shaped": true,
+        "ok": true
+      },
+      "profile": {
+        "ok": true,
+        "rows_returned": 1,
+        "db_hits": 6406311,
+        "operator_rows_total": 2202263,
+        "server_ms": 515.0
+      }
+    },
+    {
+      "source": "probe",
+      "name": "anchor_in_where",
+      "intent": "anchored",
+      "cypher": "MATCH (a:Account { _workspace_id: $workspace_id })-[t:TRANSFER]->(b:Account { _workspace_id: $workspace_id }) WHERE a.acct_no = $acct_no RETURN count(t) AS n, sum(t.amount) AS total LIMIT $limit",
+      "in_grammar": true,
+      "in_policy_subset": true,
+      "subset_reasons": [],
+      "explain": {
+        "operators": [
+          "ProduceResults",
+          "Limit",
+          "EagerAggregation",
+          "Filter",
+          "Expand(All)",
+          "Filter",
+          "NodeIndexSeek"
+        ],
+        "leaf_operators": [
+          "NodeIndexSeek"
+        ],
+        "scan_ops": [],
+        "seek_ops": [
+          "NodeIndexSeek"
+        ],
+        "index_scan_ops": [],
+        "scan_operator_present": false,
+        "leaf_estimated_rows_max": 1.0,
+        "sweep_rows_threshold": 1000.0,
+        "sweep_shaped": false,
+        "ok": true
+      },
+      "profile": {
+        "ok": true,
+        "rows_returned": 1,
+        "db_hits": 71,
+        "operator_rows_total": 27,
+        "server_ms": 1.0
+      }
+    },
+    {
+      "source": "probe",
+      "name": "anchor_in_node_map",
+      "intent": "anchored",
+      "cypher": "MATCH (a:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[t:TRANSFER]->(b:Account { _workspace_id: $workspace_id }) RETURN count(t) AS n, sum(t.amount) AS total LIMIT $limit",
+      "in_grammar": false,
+      "in_policy_subset": true,
+      "subset_reasons": [],
+      "explain": {
+        "operators": [
+          "ProduceResults",
+          "Limit",
+          "EagerAggregation",
+          "Filter",
+          "Expand(All)",
+          "Filter",
+          "NodeIndexSeek"
+        ],
+        "leaf_operators": [
+          "NodeIndexSeek"
+        ],
+        "scan_ops": [],
+        "seek_ops": [
+          "NodeIndexSeek"
+        ],
+        "index_scan_ops": [],
+        "scan_operator_present": false,
+        "leaf_estimated_rows_max": 1.0,
+        "sweep_rows_threshold": 1000.0,
+        "sweep_shaped": false,
+        "ok": true
+      },
+      "profile": {
+        "ok": true,
+        "rows_returned": 1,
+        "db_hits": 71,
+        "operator_rows_total": 27,
+        "server_ms": 1.0
+      }
+    },
+    {
+      "source": "generated",
+      "origin": "text2cypher_guidance_20260822.json",
+      "model": "text2cypher_guidance_20260822",
+      "mode": "grammar",
+      "question_id": "incoming_count",
+      "cypher": "MATCH (a:Account { _workspace_id: $workspace_id })-[:TRANSFER]->(t:Account { _workspace_id: $workspace_id }) WHERE t.acct_no = $acct_no RETURN count(t) AS transfer_count, sum(t.amount) AS total_amount ORDER BY total_amount DESC LIMIT $limit",
+      "in_grammar": true,
+      "in_policy_subset": true,
+      "subset_reasons": [],
+      "explain": {
+        "operators": [
+          "ProduceResults",
+          "Top",
+          "EagerAggregation",
+          "Filter",
+          "Expand(All)",
+          "CacheProperties",
+          "Filter",
+          "NodeIndexSeek"
+        ],
+        "leaf_operators": [
+          "NodeIndexSeek"
+        ],
+        "scan_ops": [],
+        "seek_ops": [
+          "NodeIndexSeek"
+        ],
+        "index_scan_ops": [],
+        "scan_operator_present": false,
+        "leaf_estimated_rows_max": 1.0,
+        "sweep_rows_threshold": 1000.0,
+        "sweep_shaped": false,
+        "ok": true
+      },
+      "profile": {
+        "ok": true,
+        "rows_returned": 1,
+        "db_hits": 36,
+        "operator_rows_total": 18,
+        "server_ms": 1.0
+      }
+    },
+    {
+      "source": "generated",
+      "origin": "text2cypher_guidance_20260822.json",
+      "model": "text2cypher_guidance_20260822",
+      "mode": "grammar",
+      "question_id": "largest_out",
+      "cypher": "MATCH (p:Person { _workspace_id: $workspace_id })-[:OWN]->(c:Company { _workspace_id: $workspace_id })-[:TRANSFER*1..3]-(acc:Account { _workspace_id: $workspace_id }) WHERE acc.acct_no = $acct_no AND p.id = $n AND c.id = $acct_no RETURN count(DISTINCT acc) AS num_transfers, max(acc.amount) AS max_amount ORDER BY num_transfers DESC LIMIT $limit",
+      "in_grammar": true,
+      "in_policy_subset": true,
+      "subset_reasons": [],
+      "explain": {
+        "operators": [
+          "ProduceResults",
+          "Top",
+          "EagerAggregation",
+          "Filter",
+          "VarLengthExpand(All)",
+          "Filter",
+          "Expand(All)",
+          "Filter",
+          "NodeIndexSeek"
+        ],
+        "leaf_operators": [
+          "NodeIndexSeek"
+        ],
+        "scan_ops": [],
+        "seek_ops": [
+          "NodeIndexSeek"
+        ],
+        "index_scan_ops": [],
+        "scan_operator_present": false,
+        "leaf_estimated_rows_max": 1.0,
+        "sweep_rows_threshold": 1000.0,
+        "sweep_shaped": false,
+        "ok": true
+      },
+      "profile": {
+        "ok": true,
+        "rows_returned": 1,
+        "db_hits": 1,
+        "operator_rows_total": 3,
+        "server_ms": 1.0
+      }
+    },
+    {
+      "source": "generated",
+      "origin": "text2cypher_guidance_20260822.json",
+      "model": "text2cypher_guidance_20260822",
+      "mode": "grammar",
+      "question_id": "risky_senders",
+      "cypher": "MATCH (a:Account { _workspace_id: $workspace_id })-[:TRANSFER]->(t:Account { _workspace_id: $workspace_id }) WHERE t.acct_no = $acct_no AND t.channel_risk >= $limit RETURN a.id AS id, a.acct_no AS acct_no, a.iban AS iban, a.flagged AS flagged, a.risk_tier AS risk_tier, a.acct_type AS acct_type ORDER BY a.acct_no LIMIT $limit",
+      "in_grammar": true,
+      "in_policy_subset": true,
+      "subset_reasons": [],
+      "explain": {
+        "operators": [
+          "ProduceResults",
+          "Projection",
+          "CacheProperties",
+          "Top",
+          "Projection",
+          "Filter",
+          "Expand(All)",
+          "Filter",
+          "NodeIndexSeek"
+        ],
+        "leaf_operators": [
+          "NodeIndexSeek"
+        ],
+        "scan_ops": [],
+        "seek_ops": [
+          "NodeIndexSeek"
+        ],
+        "index_scan_ops": [],
+        "scan_operator_present": false,
+        "leaf_estimated_rows_max": 1.0,
+        "sweep_rows_threshold": 1000.0,
+        "sweep_shaped": false,
+        "ok": true
+      },
+      "profile": {
+        "ok": true,
+        "rows_returned": 0,
+        "db_hits": 5,
+        "operator_rows_total": 1,
+        "server_ms": 1.0
+      }
+    },
+    {
+      "source": "generated",
+      "origin": "text2cypher_guidance_20260822.json",
+      "model": "text2cypher_guidance_20260822",
+      "mode": "grammar",
+      "question_id": "owners_two_hops",
+      "cypher": "MATCH (p:Person { _workspace_id: $workspace_id })-[:OWN]->(acc:Account { _workspace_id: $workspace_id }) WHERE acc.acct_no = $acct_no AND p.id = $n RETURN count(DISTINCT acc) AS num_accounts, sum(acc.amount) AS total_amount, avg(acc.amount) AS average_amount, max(acc.amount) AS maximum_amount, min(acc.amount) AS minimum_amount ORDER BY num_accounts DESC LIMIT $limit",
+      "in_grammar": true,
+      "in_policy_subset": true,
+      "subset_reasons": [],
+      "explain": {
+        "operators": [
+          "ProduceResults",
+          "Top",
+          "EagerAggregation",
+          "Filter",
+          "Expand(All)",
+          "Filter",
+          "NodeIndexSeek"
+        ],
+        "leaf_operators": [
+          "NodeIndexSeek"
+        ],
+        "scan_ops": [],
+        "seek_ops": [
+          "NodeIndexSeek"
+        ],
+        "index_scan_ops": [],
+        "scan_operator_present": false,
+        "leaf_estimated_rows_max": 1.0,
+        "sweep_rows_threshold": 1000.0,
+        "sweep_shaped": false,
+        "ok": true
+      },
+      "profile": {
+        "ok": true,
+        "rows_returned": 1,
+        "db_hits": 1,
+        "operator_rows_total": 3,
+        "server_ms": 1.0
+      }
+    },
+    {
+      "source": "generated",
+      "origin": "text2cypher_guidance_mara_20260822.json",
+      "model": "text2cypher_guidance_mara_20260822",
+      "mode": "json",
+      "question_id": "incoming_count",
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})- [r:TRANSFER]-> (target:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) RETURN count(r) AS incoming_count, sum(r.amount) AS total_value LIMIT $limit",
+      "in_grammar": false,
+      "in_policy_subset": true,
+      "subset_reasons": [],
+      "explain": {
+        "operators": [
+          "ProduceResults",
+          "Limit",
+          "EagerAggregation",
+          "Filter",
+          "Expand(All)",
+          "Filter",
+          "NodeIndexSeek"
+        ],
+        "leaf_operators": [
+          "NodeIndexSeek"
+        ],
+        "scan_ops": [],
+        "seek_ops": [
+          "NodeIndexSeek"
+        ],
+        "index_scan_ops": [],
+        "scan_operator_present": false,
+        "leaf_estimated_rows_max": 1.0,
+        "sweep_rows_threshold": 1000.0,
+        "sweep_shaped": false,
+        "ok": true
+      },
+      "profile": {
+        "ok": true,
+        "rows_returned": 1,
+        "db_hits": 41,
+        "operator_rows_total": 17,
+        "server_ms": 1.0
+      }
+    },
+    {
+      "source": "generated",
+      "origin": "text2cypher_guidance_mara_20260822.json",
+      "model": "text2cypher_guidance_mara_20260822",
+      "mode": "json",
+      "question_id": "risky_senders",
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[:TRANSFER]->(tgt:Account {_workspace_id: $workspace_id, acct_no: $acct_no})-[:USES_CHANNEL]->(ch:Channel {_workspace_id: $workspace_id}) WHERE ch.risk_weight >= $channel_risk RETURN src LIMIT $limit",
+      "in_grammar": false,
+      "in_policy_subset": true,
+      "subset_reasons": [],
+      "explain": {
+        "operators": [
+          "ProduceResults",
+          "Limit",
+          "Filter",
+          "Expand(All)",
+          "Filter",
+          "Expand(All)",
+          "Filter",
+          "NodeIndexSeek"
+        ],
+        "leaf_operators": [
+          "NodeIndexSeek"
+        ],
+        "scan_ops": [],
+        "seek_ops": [
+          "NodeIndexSeek"
+        ],
+        "index_scan_ops": [],
+        "scan_operator_present": false,
+        "leaf_estimated_rows_max": 1.0,
+        "sweep_rows_threshold": 1000.0,
+        "sweep_shaped": false,
+        "ok": true
+      },
+      "profile": {
+        "ok": true,
+        "rows_returned": 30,
+        "db_hits": 490,
+        "operator_rows_total": 132,
+        "server_ms": 1.0
+      }
+    },
+    {
+      "source": "generated",
+      "origin": "text2cypher_guidance_mara_20260822.json",
+      "model": "text2cypher_guidance_mara_20260822",
+      "mode": "json",
+      "question_id": "risky_senders",
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[:TRANSFER]->(tgt:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) MATCH (src)-[:USES_CHANNEL]->(ch:Channel {_workspace_id: $workspace_id}) WHERE ch.risk_weight >= $channel_risk RETURN src.acct_no AS source_acct_no, src.id AS source_id LIMIT $limit",
+      "in_grammar": false,
+      "in_policy_subset": true,
+      "subset_reasons": [],
+      "explain": {
+        "operators": [
+          "ProduceResults",
+          "Projection",
+          "CacheProperties",
+          "Limit",
+          "Filter",
+          "Expand(All)",
+          "Filter",
+          "Expand(All)",
+          "Filter",
+          "NodeIndexSeek"
+        ],
+        "leaf_operators": [
+          "NodeIndexSeek"
+        ],
+        "scan_ops": [],
+        "seek_ops": [
+          "NodeIndexSeek"
+        ],
+        "index_scan_ops": [],
+        "scan_operator_present": false,
+        "leaf_estimated_rows_max": 1.0,
+        "sweep_rows_threshold": 1000.0,
+        "sweep_shaped": false,
+        "ok": true
+      },
+      "profile": {
+        "ok": true,
+        "rows_returned": 25,
+        "db_hits": 266,
+        "operator_rows_total": 164,
+        "server_ms": 1.0
+      }
+    },
+    {
+      "source": "generated",
+      "origin": "text2cypher_guidance_mara_20260822.json",
+      "model": "text2cypher_guidance_mara_20260822",
+      "mode": "json",
+      "question_id": "owners_two_hops",
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) MATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id}) MATCH (owner {_workspace_id: $workspace_id})-[:OWN]->(dest) WHERE owner:Person OR owner:Company RETURN owner.id AS ownerId, owner.name AS ownerName, labels(owner) AS ownerLabels LIMIT $limit",
+      "in_grammar": false,
+      "in_policy_subset": true,
+      "subset_reasons": [],
+      "explain": {
+        "operators": [
+          "ProduceResults",
+          "Projection",
+          "CacheProperties",
+          "Limit",
+          "Filter",
+          "Expand(All)",
+          "Filter",
+          "Expand(All)",
+          "Filter",
+          "NodeIndexSeek"
+        ],
+        "leaf_operators": [
+          "NodeIndexSeek"
+        ],
+        "scan_ops": [],
+        "seek_ops": [
+          "NodeIndexSeek"
+        ],
+        "index_scan_ops": [],
+        "scan_operator_present": false,
+        "leaf_estimated_rows_max": 1.0,
+        "sweep_rows_threshold": 1000.0,
+        "sweep_shaped": false,
+        "ok": true
+      },
+      "profile": {
+        "ok": true,
+        "rows_returned": 11,
+        "db_hits": 159,
+        "operator_rows_total": 90,
+        "server_ms": 1.0
+      }
+    }
+  ]
+}

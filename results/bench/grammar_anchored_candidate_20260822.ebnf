@@ -1,0 +1,37 @@
+root ::= "{" ws "\"cypher\"" ws ":" ws "\"" query "\"" ws "}"
+
+query ::= match_clause (ws match_clause)* ws where_clause ws return_clause (ws order_clause)? ws limit_clause
+
+match_clause ::= "MATCH " pattern
+pattern ::= node (rel node)*
+node ::= "(" var? label_part scope ")"
+label_part ::= ":" label
+scope ::= " {" wsp "_workspace_id" wsp ":" wsp "$workspace_id" wsp "}"
+rel ::= arrow_l rel_detail arrow_r
+arrow_l ::= "-" | "<-"
+arrow_r ::= "->" | "-"
+rel_detail ::= "[" var? ":" reltype hop_bound? "]"
+hop_bound ::= "*1.." digit
+digit ::= "1" | "2" | "3" | "4"
+
+where_clause ::= "WHERE " anchor_predicate (" AND " predicate)*
+anchor_predicate ::= ref ws "=" ws param
+predicate ::= ref ws comparator ws param
+comparator ::= "=" | ">=" | "<=" | ">" | "<" | "<>"
+param ::= "$channel_risk" | "$risk_tier" | "$acct_no" | "$amount" | "$limit" | "$n"
+
+return_clause ::= "RETURN " ret_item (", " ret_item)*
+ret_item ::= (aggregate | ref | "DISTINCT " ref) (" AS " var)?
+aggregate ::= agg_fn "(" ("DISTINCT " )? ref ")"
+agg_fn ::= "collect" | "count" | "avg" | "max" | "min" | "sum"
+
+order_clause ::= "ORDER BY " ref (" DESC" | " ASC")?
+limit_clause ::= "LIMIT $limit"
+
+ref ::= var ("." prop)?
+label ::= "Account" | "Channel" | "Company" | "Medium" | "Person" | "Loan"
+reltype ::= "USES_CHANNEL" | "GUARANTEE" | "TRANSFER" | "WITHDRAW" | "DEPOSIT" | "SIGN_IN" | "INVEST" | "APPLY" | "REPAY" | "OWN"
+prop ::= "_workspace_id" | "channel_risk" | "cross_border" | "risk_weight" | "risk_level" | "acct_type" | "principal" | "risk_tier" | "tx_count" | "acct_no" | "channel" | "country" | "flagged" | "amount" | "sector" | "label" | "limit" | "code" | "iban" | "name" | "type" | "id" | "ts"
+var ::= [a-z] [a-z0-9_]*
+ws ::= " "*
+wsp ::= " "*
