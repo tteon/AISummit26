@@ -1,0 +1,687 @@
+{
+  "schema_version": "seocho.finbench.plan-routed-runtime.v1",
+  "question": "does reviewing the plan once and routing the runtime beat a fixed policy?",
+  "method": {
+    "router": "EXPLAIN once per query template (memoised by query string, which is sound because the grammar forbids inlined literals), classify by leaf EstimatedRows, then pick by live in-flight count",
+    "thresholds": "from two measured sweeps, not chosen: parallel is slower on point-anchored plans, and one parallel scan occupies 10.66 cores so it is only correct while the machine is free",
+    "baselines": "the same mixed workload under each fixed runtime",
+    "db_cpu": "container cgroup cpu.stat"
+  },
+  "manifest": {
+    "timestamp_utc": "2026-08-22T02:12:56+00:00",
+    "git_commit": "f2ff980511c8c06ce2d99fedfc2abad9b217d728",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/bench_plan_routed_runtime.py",
+      "--password",
+      "testpass1234",
+      "--workers",
+      "1,2,4,8",
+      "--calls",
+      "400",
+      "--sweep-share",
+      "0.1",
+      "--inflight-metric",
+      "sweep",
+      "--parallel-max-inflight",
+      "2",
+      "--out",
+      "results/bench/plan_routed_runtime_20260822.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "neo4j:5.26-enterprise",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "e429bb7f78de",
+    "db_container": "aisummit-ent",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6521",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null
+  },
+  "config": {
+    "uri": "bolt://localhost:7690",
+    "user": "neo4j",
+    "database": "finbenchl100",
+    "container": "aisummit-ent",
+    "anchor": 7,
+    "limit": 200,
+    "tier": 1,
+    "sweep_rows": 1000.0,
+    "parallel_max_inflight": 2,
+    "inflight_metric": "sweep",
+    "sweep_share": 0.1,
+    "workers": "1,2,4,8",
+    "calls": 400,
+    "warmup_calls": 120,
+    "seed": 20260822,
+    "policies": "slotted,pipelined,parallel,routed",
+    "out": "results/bench/plan_routed_runtime_20260822.json"
+  },
+  "questions": [
+    {
+      "id": "incoming_count",
+      "class": "point",
+      "cypher": "MATCH (a:Account {acct_no:$a,_workspace_id:$ws})<-[t:TRANSFER]-(b:Account {_workspace_id:$ws}) RETURN count(t) AS n, sum(t.amount) AS total"
+    },
+    {
+      "id": "two_hop_reach",
+      "class": "point",
+      "cypher": "MATCH (:Account {acct_no:$a,_workspace_id:$ws})-[:TRANSFER]->(b:Account {_workspace_id:$ws})-[t:TRANSFER]->(c:Account {_workspace_id:$ws}) RETURN count(DISTINCT c) AS reach, sum(t.amount) AS total"
+    },
+    {
+      "id": "recent_page",
+      "class": "point",
+      "cypher": "MATCH (a:Account {acct_no:$a,_workspace_id:$ws})-[t:TRANSFER]->(b:Account {_workspace_id:$ws}) RETURN b.acct_no AS acct, t.amount AS amount, t.ts AS ts ORDER BY t.ts DESC LIMIT $limit"
+    },
+    {
+      "id": "portfolio_risk",
+      "class": "sweep",
+      "cypher": "MATCH (a:Account {_workspace_id:$ws}) WHERE a.risk_tier > $tier RETURN count(a) AS n, avg(a._out_degree) AS deg"
+    },
+    {
+      "id": "flagged_total",
+      "class": "sweep",
+      "cypher": "MATCH (a:Account {_workspace_id:$ws}) WHERE a._out_degree >= $tier RETURN count(a) AS n, max(a._out_degree) AS worst"
+    }
+  ],
+  "routing_table": [
+    {
+      "id": "incoming_count",
+      "class": "point",
+      "leaf_estimated_rows_max": 1.0,
+      "sweep_shaped": false,
+      "runtime_when_free": "pipelined",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "two_hop_reach",
+      "class": "point",
+      "leaf_estimated_rows_max": 1.0,
+      "sweep_shaped": false,
+      "runtime_when_free": "pipelined",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "recent_page",
+      "class": "point",
+      "leaf_estimated_rows_max": 1.0,
+      "sweep_shaped": false,
+      "runtime_when_free": "pipelined",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "portfolio_risk",
+      "class": "sweep",
+      "leaf_estimated_rows_max": 40094.0,
+      "sweep_shaped": true,
+      "runtime_when_free": "parallel",
+      "runtime_when_saturated": "pipelined"
+    },
+    {
+      "id": "flagged_total",
+      "class": "sweep",
+      "leaf_estimated_rows_max": 200470.0,
+      "sweep_shaped": true,
+      "runtime_when_free": "parallel",
+      "runtime_when_saturated": "pipelined"
+    }
+  ],
+  "plan_review_ms_per_template": 2.15,
+  "cells": [
+    {
+      "policy": "slotted",
+      "workers": 1,
+      "calls": 400,
+      "throughput_per_s": 150.72,
+      "wall_s": 2.6539,
+      "db_cores_busy": 0.986,
+      "p50_ms": 0.789,
+      "p90_ms": 38.99,
+      "p99_ms": 60.388,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 0.753,
+          "p90_ms": 1.11,
+          "p99_ms": 1.392,
+          "mean_ms": 0.832
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 57.825,
+          "p90_ms": 60.255,
+          "p99_ms": 64.267,
+          "mean_ms": 50.087
+        }
+      },
+      "routed_counts": {
+        "point:slotted": 353,
+        "sweep:slotted": 47
+      }
+    },
+    {
+      "policy": "pipelined",
+      "workers": 1,
+      "calls": 400,
+      "throughput_per_s": 177.6,
+      "wall_s": 2.2523,
+      "db_cores_busy": 1.531,
+      "p50_ms": 0.779,
+      "p90_ms": 30.084,
+      "p99_ms": 52.345,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 0.729,
+          "p90_ms": 1.229,
+          "p99_ms": 1.755,
+          "mean_ms": 0.803
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 48.303,
+          "p90_ms": 52.071,
+          "p99_ms": 54.805,
+          "mean_ms": 41.741
+        }
+      },
+      "routed_counts": {
+        "point:pipelined": 353,
+        "sweep:pipelined": 47
+      }
+    },
+    {
+      "policy": "parallel",
+      "workers": 1,
+      "calls": 400,
+      "throughput_per_s": 584.97,
+      "wall_s": 0.6838,
+      "db_cores_busy": 3.686,
+      "p50_ms": 0.762,
+      "p90_ms": 5.614,
+      "p99_ms": 12.132,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 0.74,
+          "p90_ms": 1.081,
+          "p99_ms": 1.49,
+          "mean_ms": 0.78
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 8.331,
+          "p90_ms": 11.899,
+          "p99_ms": 12.588,
+          "mean_ms": 8.551
+        }
+      },
+      "routed_counts": {
+        "point:parallel": 353,
+        "sweep:parallel": 47
+      }
+    },
+    {
+      "policy": "routed",
+      "workers": 1,
+      "calls": 400,
+      "throughput_per_s": 566.41,
+      "wall_s": 0.7062,
+      "db_cores_busy": 3.911,
+      "p50_ms": 0.674,
+      "p90_ms": 5.664,
+      "p99_ms": 13.522,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 0.651,
+          "p90_ms": 0.954,
+          "p99_ms": 1.322,
+          "mean_ms": 0.718
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 8.614,
+          "p90_ms": 13.491,
+          "p99_ms": 15.274,
+          "mean_ms": 9.287
+        }
+      },
+      "routed_counts": {
+        "point:pipelined": 353,
+        "sweep:parallel": 47
+      },
+      "router": {
+        "templates_reviewed": 5,
+        "cache_hits": 395,
+        "lookups": 400,
+        "hit_rate": 0.9875,
+        "explain_ms_total": 9.259,
+        "explain_ms_per_call": 0.0231
+      }
+    },
+    {
+      "policy": "slotted",
+      "workers": 2,
+      "calls": 400,
+      "throughput_per_s": 299.72,
+      "wall_s": 1.3346,
+      "db_cores_busy": 1.92,
+      "p50_ms": 0.729,
+      "p90_ms": 39.515,
+      "p99_ms": 59.38,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 0.698,
+          "p90_ms": 0.942,
+          "p99_ms": 1.21,
+          "mean_ms": 0.722
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 57.566,
+          "p90_ms": 58.663,
+          "p99_ms": 60.825,
+          "mean_ms": 50.125
+        }
+      },
+      "routed_counts": {
+        "point:slotted": 353,
+        "sweep:slotted": 47
+      }
+    },
+    {
+      "policy": "pipelined",
+      "workers": 2,
+      "calls": 400,
+      "throughput_per_s": 357.33,
+      "wall_s": 1.1194,
+      "db_cores_busy": 1.883,
+      "p50_ms": 0.725,
+      "p90_ms": 30.318,
+      "p99_ms": 51.234,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 0.699,
+          "p90_ms": 0.987,
+          "p99_ms": 1.229,
+          "mean_ms": 0.733
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 49.375,
+          "p90_ms": 51.006,
+          "p99_ms": 52.08,
+          "mean_ms": 41.207
+        }
+      },
+      "routed_counts": {
+        "point:pipelined": 353,
+        "sweep:pipelined": 47
+      }
+    },
+    {
+      "policy": "parallel",
+      "workers": 2,
+      "calls": 400,
+      "throughput_per_s": 753.44,
+      "wall_s": 0.5309,
+      "db_cores_busy": 5.203,
+      "p50_ms": 0.921,
+      "p90_ms": 8.405,
+      "p99_ms": 15.69,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 0.893,
+          "p90_ms": 3.324,
+          "p99_ms": 7.699,
+          "mean_ms": 1.437
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 11.456,
+          "p90_ms": 15.449,
+          "p99_ms": 19.674,
+          "mean_ms": 11.59
+        }
+      },
+      "routed_counts": {
+        "point:parallel": 353,
+        "sweep:parallel": 47
+      }
+    },
+    {
+      "policy": "routed",
+      "workers": 2,
+      "calls": 400,
+      "throughput_per_s": 848.72,
+      "wall_s": 0.4713,
+      "db_cores_busy": 6.292,
+      "p50_ms": 0.795,
+      "p90_ms": 9.97,
+      "p99_ms": 18.564,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 0.753,
+          "p90_ms": 1.068,
+          "p99_ms": 1.287,
+          "mean_ms": 0.795
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 12.926,
+          "p90_ms": 17.861,
+          "p99_ms": 22.587,
+          "mean_ms": 13.519
+        }
+      },
+      "routed_counts": {
+        "point:pipelined": 353,
+        "sweep:parallel": 47
+      },
+      "router": {
+        "templates_reviewed": 5,
+        "cache_hits": 395,
+        "lookups": 400,
+        "hit_rate": 0.9875,
+        "explain_ms_total": 10.203,
+        "explain_ms_per_call": 0.0255
+      }
+    },
+    {
+      "policy": "slotted",
+      "workers": 4,
+      "calls": 400,
+      "throughput_per_s": 565.05,
+      "wall_s": 0.7079,
+      "db_cores_busy": 3.763,
+      "p50_ms": 0.731,
+      "p90_ms": 40.736,
+      "p99_ms": 62.414,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 0.698,
+          "p90_ms": 1.076,
+          "p99_ms": 2.496,
+          "mean_ms": 0.797
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 58.709,
+          "p90_ms": 61.92,
+          "p99_ms": 66.274,
+          "mean_ms": 52.184
+        }
+      },
+      "routed_counts": {
+        "point:slotted": 353,
+        "sweep:slotted": 47
+      }
+    },
+    {
+      "policy": "pipelined",
+      "workers": 4,
+      "calls": 400,
+      "throughput_per_s": 633.51,
+      "wall_s": 0.6314,
+      "db_cores_busy": 3.61,
+      "p50_ms": 0.757,
+      "p90_ms": 32.181,
+      "p99_ms": 54.962,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 0.723,
+          "p90_ms": 1.038,
+          "p99_ms": 4.187,
+          "mean_ms": 0.869
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 51.885,
+          "p90_ms": 54.711,
+          "p99_ms": 60.491,
+          "mean_ms": 44.647
+        }
+      },
+      "routed_counts": {
+        "point:pipelined": 353,
+        "sweep:pipelined": 47
+      }
+    },
+    {
+      "policy": "parallel",
+      "workers": 4,
+      "calls": 400,
+      "throughput_per_s": 900.9,
+      "wall_s": 0.444,
+      "db_cores_busy": 7.04,
+      "p50_ms": 1.677,
+      "p90_ms": 11.624,
+      "p99_ms": 22.318,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 1.498,
+          "p90_ms": 7.456,
+          "p99_ms": 9.679,
+          "mean_ms": 2.871
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 15.523,
+          "p90_ms": 21.892,
+          "p99_ms": 23.63,
+          "mean_ms": 15.815
+        }
+      },
+      "routed_counts": {
+        "point:parallel": 353,
+        "sweep:parallel": 47
+      }
+    },
+    {
+      "policy": "routed",
+      "workers": 4,
+      "calls": 400,
+      "throughput_per_s": 911.99,
+      "wall_s": 0.4386,
+      "db_cores_busy": 7.705,
+      "p50_ms": 0.855,
+      "p90_ms": 10.673,
+      "p99_ms": 68.26,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 0.805,
+          "p90_ms": 1.229,
+          "p99_ms": 1.822,
+          "mean_ms": 0.898
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 16.246,
+          "p90_ms": 56.46,
+          "p99_ms": 92.588,
+          "mean_ms": 26.978
+        }
+      },
+      "routed_counts": {
+        "point:pipelined": 353,
+        "sweep:parallel": 36,
+        "sweep:pipelined": 11
+      },
+      "router": {
+        "templates_reviewed": 6,
+        "cache_hits": 394,
+        "lookups": 400,
+        "hit_rate": 0.985,
+        "explain_ms_total": 24.204,
+        "explain_ms_per_call": 0.0605
+      }
+    },
+    {
+      "policy": "slotted",
+      "workers": 8,
+      "calls": 400,
+      "throughput_per_s": 884.17,
+      "wall_s": 0.4524,
+      "db_cores_busy": 6.69,
+      "p50_ms": 0.958,
+      "p90_ms": 43.911,
+      "p99_ms": 80.077,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 0.907,
+          "p90_ms": 1.747,
+          "p99_ms": 20.693,
+          "mean_ms": 1.482
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 63.297,
+          "p90_ms": 79.211,
+          "p99_ms": 82.922,
+          "mean_ms": 60.217
+        }
+      },
+      "routed_counts": {
+        "point:slotted": 353,
+        "sweep:slotted": 47
+      }
+    },
+    {
+      "policy": "pipelined",
+      "workers": 8,
+      "calls": 400,
+      "throughput_per_s": 980.63,
+      "wall_s": 0.4079,
+      "db_cores_busy": 7.114,
+      "p50_ms": 0.976,
+      "p90_ms": 35.09,
+      "p99_ms": 76.093,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 0.899,
+          "p90_ms": 1.795,
+          "p99_ms": 5.825,
+          "mean_ms": 1.195
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 56.362,
+          "p90_ms": 75.052,
+          "p99_ms": 95.713,
+          "mean_ms": 55.337
+        }
+      },
+      "routed_counts": {
+        "point:pipelined": 353,
+        "sweep:pipelined": 47
+      }
+    },
+    {
+      "policy": "parallel",
+      "workers": 8,
+      "calls": 400,
+      "throughput_per_s": 925.71,
+      "wall_s": 0.4321,
+      "db_cores_busy": 7.035,
+      "p50_ms": 6.858,
+      "p90_ms": 18.223,
+      "p99_ms": 26.996,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 6.29,
+          "p90_ms": 13.418,
+          "p99_ms": 24.381,
+          "mean_ms": 7.139
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 17.398,
+          "p90_ms": 26.443,
+          "p99_ms": 28.56,
+          "mean_ms": 18.15
+        }
+      },
+      "routed_counts": {
+        "point:parallel": 353,
+        "sweep:parallel": 47
+      }
+    },
+    {
+      "policy": "routed",
+      "workers": 8,
+      "calls": 400,
+      "throughput_per_s": 1101.32,
+      "wall_s": 0.3632,
+      "db_cores_busy": 10.777,
+      "p50_ms": 1.221,
+      "p90_ms": 15.255,
+      "p99_ms": 102.564,
+      "by_class": {
+        "point": {
+          "calls": 353,
+          "p50_ms": 1.124,
+          "p90_ms": 2.854,
+          "p99_ms": 6.452,
+          "mean_ms": 1.598
+        },
+        "sweep": {
+          "calls": 47,
+          "p50_ms": 22.084,
+          "p90_ms": 99.724,
+          "p99_ms": 110.575,
+          "mean_ms": 43.414
+        }
+      },
+      "routed_counts": {
+        "point:pipelined": 353,
+        "sweep:parallel": 28,
+        "sweep:pipelined": 19
+      },
+      "router": {
+        "templates_reviewed": 10,
+        "cache_hits": 390,
+        "lookups": 400,
+        "hit_rate": 0.975,
+        "explain_ms_total": 58.49,
+        "explain_ms_per_call": 0.1462
+      }
+    }
+  ]
+}
