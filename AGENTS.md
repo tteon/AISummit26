@@ -79,6 +79,22 @@ failed at least once, and all but the last fail *silently*:
 | cache A/B | the stable arm's warm `cached_tokens` is near `prompt_tokens` **and** the salted arm's is 0 |
 | durability | `results/runs/<id>/metrics.jsonl` is non-empty, and the destroy gate passed before the instance was destroyed |
 
+## Before reporting a number
+
+Every trap below is the same mistake: a number was reported before checking that the
+measurement measured what it was believed to measure. So, in order, every time:
+
+1. **Cross-check against something already known.** A running database cannot use 0 cores. One
+   worker cannot keep 4.6 cores busy. A config value cannot disagree with the edit just made.
+   A plan reading 200,470 rows is not a point lookup. Each of those was visible in the output
+   and shipped anyway.
+2. **If two methods disagree, one is wrong — find out which before reporting either.** A 3x gap
+   between a probe and the benchmark was a pool that had not warmed, not a real difference.
+3. **Reproduce before attributing.** A field in a stored result (`db_hits`, `db_ms`) is not a
+   claim about a cause until the query has been re-run and the number comes back.
+4. **Ask whether the re-run is worth it.** Re-running a sweep to fill in one column, when the
+   conclusion was already settled by the first run, spends someone else's time.
+
 ## Traps with receipts
 
 Each of these cost real time once. They are documented so they cost it only once.
