@@ -236,6 +236,22 @@ class SeochoGraphAgent:
                  database: str, row_cap: Optional[int] = None,
                  tx_timeout_s: Optional[float] = None):
         self.backend = make_llm_backend(cfg)
+        # Every inner completion's token usage, accumulated by a wrapper around the backend's
+        # own acomplete. seocho already returns usage (prompt/completion/cached_tokens) on its
+        # LLMResponse and exports it to OTel, but the episode JSON had no per-call record of
+        # it — which made the KV-reuse claim for the inner stage unprovable from the runs
+        # alone. `ask` drains this list into its result.
+        self._usage_events: list = []
+        _orig_acomplete = self.backend.acomplete
+
+        async def _tracking_acomplete(*a: Any, **kw: Any):
+            r = await _orig_acomplete(*a, **kw)
+            u = getattr(r, "usage", None)
+            if u:
+                self._usage_events.append(dict(u))
+            return r
+
+        self.backend.acomplete = _tracking_acomplete  # type: ignore[method-assign]
         self.model = cfg.model_name
         self.policy = policy
         self.schema = schema_map_from_ontology(ontology)
@@ -286,11 +302,19 @@ class SeochoGraphAgent:
             # so a query that then fails at the database must not re-book that time as db_ms.
             exc.generate_ms = round(gen_ms, 3)  # type: ignore[attr-defined]
             raise
+        usage_events, self._usage_events = self._usage_events, []
+        gen_usage = {
+            "llm_calls": len(usage_events),
+            "prompt_tokens": sum(u.get("prompt_tokens", 0) for u in usage_events),
+            "completion_tokens": sum(u.get("completion_tokens", 0) for u in usage_events),
+            "cached_tokens": sum(u.get("cached_tokens", 0) for u in usage_events),
+        }
         return {
             "cypher": gen.cypher, "params": dict(gen.params),
             "attempts": gen.attempts, "explained": gen.explained,
             "prompt_version": gen.prompt_version,
             "generate_ms": round(gen_ms, 3),
+            "generate_usage": gen_usage,
             "rows": res["rows"], "stages": res["stages"], "rejected": res["rejected"],
         }
 

@@ -511,6 +511,7 @@ def make_graph_question_tool(agent, *, calls: List[Dict[str, Any]], anchor: Opti
         record["ms"] = (time.perf_counter() - t0) * 1000
         record["cypher"] = out["cypher"]
         record["generate_ms"] = out["generate_ms"]
+        record["generate_usage"] = out.get("generate_usage")
         record["attempts"] = out["attempts"]
         record["explained"] = out["explained"]
         record["prompt_version"] = out["prompt_version"]
