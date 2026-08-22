@@ -106,14 +106,28 @@ async def run_suite(args: Any) -> None:
         # A fresh backend per question so the grammar (when enforced) carries exactly this
         # question's parameter names — the executor's contract, measured the hard way.
         backend = make_llm_backend(cfg)
-        if args.grammar_mode:
+        use_grammar = (args.mode == "grammar"
+                       or (args.mode == "routed" and bool(q["in_subset"])))
+        if use_grammar:
             grammar = grammar_from_policy(policy, params=sorted(bound))
             backend = guide_backend_with_grammar(backend, grammar)
+        # Per-generation token usage, cached tokens included: without it the KV-reuse half of
+        # the claim is unprovable from the run. Same wrapper the e2e bridge uses.
+        usage_events: List[Dict[str, Any]] = []
+        _orig = backend.acomplete
+        async def _tracking(*a: Any, _orig=_orig, _sink=usage_events, **kw: Any):
+            r = await _orig(*a, **kw)
+            u = getattr(r, "usage", None)
+            if u:
+                _sink.append(dict(u))
+            return r
+        backend.acomplete = _tracking  # type: ignore[method-assign]
 
         for rep in range(args.repeats):
             rec: Dict[str, Any] = {"id": q["id"], "family": q["family"],
                                    "in_subset": bool(q["in_subset"]), "repeat": rep,
-                                   "grammar_mode": bool(args.grammar_mode)}
+                                   "mode": args.mode, "grammar_used": use_grammar}
+            usage_events.clear()
             t0 = time.perf_counter()
             try:
                 gen = await generate_validated_cypher(
@@ -130,6 +144,12 @@ async def run_suite(args: Any) -> None:
                 rec["generate_ms"] = round((time.perf_counter() - t0) * 1000, 1)
                 rec["error"] = f"{type(exc).__name__}: {str(exc)[:160]}"
                 rec["correct"] = False
+            rec["generate_usage"] = {
+                "llm_calls": len(usage_events),
+                "prompt_tokens": sum(u.get("prompt_tokens", 0) for u in usage_events),
+                "completion_tokens": sum(u.get("completion_tokens", 0) for u in usage_events),
+                "cached_tokens": sum(u.get("cached_tokens", 0) for u in usage_events),
+            }
             rows_out.append(rec)
             print(f'  {q["id"]:24s} {"in " if q["in_subset"] else "out"} r{rep} '
                   f'correct={str(rec["correct"]):5s} attempts={rec.get("attempts")} '
@@ -146,9 +166,15 @@ async def run_suite(args: Any) -> None:
                 "generate_ms_mean": round(sum(r["generate_ms"] for r in sel) / len(sel), 1)}
 
     summary = {
+        "mode": args.mode,
         "all": agg(lambda r: True),
         "inside_subset": agg(lambda r: r["in_subset"]),
         "outside_subset": agg(lambda r: not r["in_subset"]),
+        "usage": {
+            "prompt_tokens": sum(r.get("generate_usage", {}).get("prompt_tokens", 0) for r in rows_out),
+            "completion_tokens": sum(r.get("generate_usage", {}).get("completion_tokens", 0) for r in rows_out),
+            "cached_tokens": sum(r.get("generate_usage", {}).get("cached_tokens", 0) for r in rows_out),
+        },
     }
     report = {
         "schema_version": "seocho.fibo.suite-run.v1",
@@ -181,9 +207,11 @@ def main() -> None:
     ap.add_argument("--ontology", default="ontology/finbench.ontology.yaml")
     ap.add_argument("--anchor", type=int, default=None)
     ap.add_argument("--repeats", type=int, default=2)
-    ap.add_argument("--grammar-mode", action="store_true",
-                    help="decode under the per-question grammar (needs an endpoint that "
-                         "honors structured outputs — MARA does not)")
+    ap.add_argument("--mode", choices=("plain", "grammar", "routed"), default="plain",
+                    help="plain: unconstrained. grammar: every question decodes under the "
+                         "per-question grammar. routed: grammar only where the suite's "
+                         "in_subset label says the gold is expressible — the routing "
+                         "hypothesis, using the label as the router")
     ap.add_argument("--seocho-src", default=None)
     ap.add_argument("--seocho-otlp", default=None)
     ap.add_argument("--db-container", default="aisummit-simtest")

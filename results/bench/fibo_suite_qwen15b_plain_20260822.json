@@ -1,0 +1,585 @@
+{
+  "schema_version": "seocho.fibo.suite-run.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-22T06:28:02+00:00",
+    "git_commit": "59bb0716c3b4da7f7d00acfa305686ac22507291",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/run_fibo_suite.py",
+      "--provider",
+      "vllm",
+      "--model",
+      "Qwen/Qwen2.5-1.5B-Instruct",
+      "--base-url",
+      "http://127.0.0.1:8000/v1",
+      "--password",
+      "testpass1234",
+      "--repeats",
+      "2",
+      "--mode",
+      "plain",
+      "--seocho-src",
+      "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean",
+      "--seocho-otlp",
+      "http://127.0.0.1:4317",
+      "--out",
+      "results/bench/fibo_suite_qwen15b_plain_20260822.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "1ac98b0dc1b2",
+    "db_container": "aisummit-simtest",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6520",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null
+  },
+  "config": {
+    "provider": "vllm",
+    "model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "base_url": "http://127.0.0.1:8000/v1",
+    "native_context": null,
+    "max_model_len": null,
+    "pi_factor": null,
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "database": "finbenchl1",
+    "suite": "configs/fibo_text2cypher_suite.yaml",
+    "ontology": "ontology/finbench.ontology.yaml",
+    "anchor": null,
+    "repeats": 2,
+    "mode": "plain",
+    "seocho_src": "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean",
+    "seocho_otlp": "http://127.0.0.1:4317",
+    "db_container": "aisummit-simtest",
+    "out": "results/bench/fibo_suite_qwen15b_plain_20260822.json"
+  },
+  "endpoint": {
+    "provider": "vllm",
+    "model_name": "Qwen/Qwen2.5-1.5B-Instruct",
+    "base_url": "http://127.0.0.1:8000/v1",
+    "temperature": 0.0,
+    "max_tokens": 1000,
+    "extra_body": null,
+    "api_key_present": false,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "seocho": {
+    "seocho_version": "0.2.0",
+    "seocho_path": "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean/src/seocho/__init__.py",
+    "source_prepended": "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean/src",
+    "backend": "otlp",
+    "endpoint": "http://127.0.0.1:4317",
+    "service_name": "seocho-aisummit26",
+    "metrics_enabled": true,
+    "tracing_enabled": true,
+    "tracing_backends": [
+      "otlp"
+    ],
+    "degraded_reasons": [],
+    "errors": null
+  },
+  "anchor": 108,
+  "summary": {
+    "mode": "plain",
+    "all": {
+      "n": 26,
+      "correct": 0,
+      "attempts_mean": 0.0,
+      "generate_ms_mean": 5142.3
+    },
+    "inside_subset": {
+      "n": 18,
+      "correct": 0,
+      "attempts_mean": 0.0,
+      "generate_ms_mean": 2973.4
+    },
+    "outside_subset": {
+      "n": 8,
+      "correct": 0,
+      "attempts_mean": 0.0,
+      "generate_ms_mean": 10022.2
+    },
+    "usage": {
+      "prompt_tokens": 18466,
+      "completion_tokens": 7830,
+      "cached_tokens": 11664
+    }
+  },
+  "rows": [
+    {
+      "id": "in_transfer_total",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 3184.1,
+      "error": "ValueError: text2cypher rejected: missing_parameterized_limit,missing_parameter:limit,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 740,
+        "completion_tokens": 145,
+        "cached_tokens": 160
+      }
+    },
+    {
+      "id": "in_transfer_total",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 3071.0,
+      "error": "ValueError: text2cypher rejected: missing_parameter:workspace_id,unknown_properties:from_acct_no,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 740,
+        "completion_tokens": 181,
+        "cached_tokens": 720
+      }
+    },
+    {
+      "id": "two_hop_reach",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 2060.9,
+      "error": "ValueError: text2cypher rejected: missing_return_clause,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 749,
+        "completion_tokens": 120,
+        "cached_tokens": 320
+      }
+    },
+    {
+      "id": "two_hop_reach",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 2046.8,
+      "error": "ValueError: text2cypher rejected: missing_return_clause,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 749,
+        "completion_tokens": 120,
+        "cached_tokens": 720
+      }
+    },
+    {
+      "id": "owner_portfolio",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 2557.2,
+      "error": "ValueError: text2cypher rejected: missing_parameterized_limit,missing_parameter:limit,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 736,
+        "completion_tokens": 150,
+        "cached_tokens": 320
+      }
+    },
+    {
+      "id": "owner_portfolio",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 3448.4,
+      "error": "ValueError: text2cypher rejected: missing_parameterized_limit,missing_parameter:limit,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 729,
+        "completion_tokens": 204,
+        "cached_tokens": 528
+      }
+    },
+    {
+      "id": "recent_page",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 2595.6,
+      "error": "ValueError: text2cypher rejected: missing_parameter:workspace_id,unknown_labels:Transfer,unknown_properties:counterparty,timestamp,inlined_literal:> 0,missing_workspace_sco",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 749,
+        "completion_tokens": 150,
+        "cached_tokens": 320
+      }
+    },
+    {
+      "id": "recent_page",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 2545.6,
+      "error": "ValueError: text2cypher rejected: missing_parameter:workspace_id,unknown_labels:Transfer,unknown_properties:counterparty,timestamp,inlined_literal:> 0,missing_workspace_sco",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 749,
+        "completion_tokens": 150,
+        "cached_tokens": 736
+      }
+    },
+    {
+      "id": "ubo_chain",
+      "family": "ubo",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 3969.5,
+      "error": "ValueError: text2cypher rejected: missing_return_clause,missing_parameter:workspace_id,unknown_labels:Investment,inlined_literal:> 0,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 730,
+        "completion_tokens": 236,
+        "cached_tokens": 272
+      }
+    },
+    {
+      "id": "ubo_chain",
+      "family": "ubo",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 2964.3,
+      "error": "ValueError: text2cypher rejected: missing_parameterized_limit,missing_parameter:workspace_id,missing_parameter:limit,inlined_literal:='USA',missing_workspace_scope_expressi",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 730,
+        "completion_tokens": 174,
+        "cached_tokens": 704
+      }
+    },
+    {
+      "id": "ubo_depth",
+      "family": "ubo",
+      "in_subset": false,
+      "repeat": 0,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 1746.8,
+      "error": "ValueError: text2cypher rejected: missing_return_clause,missing_parameter:workspace_id,unknown_labels:Owner,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 739,
+        "completion_tokens": 102,
+        "cached_tokens": 288
+      }
+    },
+    {
+      "id": "ubo_depth",
+      "family": "ubo",
+      "in_subset": false,
+      "repeat": 1,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 2005.0,
+      "error": "ValueError: text2cypher rejected: missing_return_clause,missing_parameter:workspace_id,unknown_labels:Owner,inlined_literal:>= 2,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 739,
+        "completion_tokens": 117,
+        "cached_tokens": 720
+      }
+    },
+    {
+      "id": "guarantee_chain",
+      "family": "ubo",
+      "in_subset": false,
+      "repeat": 0,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 33320.4,
+      "error": "StructuredOutputError: no JSON object found in response (head: '{\\n  \"cypher\": \"MATCH (n)-[r:GUARANTEE|APPLY|INVEST|WITHDRAW|REPAY|DEPOSIT|TRANSFER|USES_CHANNEL|OWN|APPLY|APPLY|APPLY|",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 350,
+        "completion_tokens": 2000,
+        "cached_tokens": 160
+      }
+    },
+    {
+      "id": "guarantee_chain",
+      "family": "ubo",
+      "in_subset": false,
+      "repeat": 1,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 33920.9,
+      "error": "StructuredOutputError: no JSON object found in response (head: '{\\n  \"cypher\": \"MATCH (n)-[r:GUARANTEE|APPLY|INVEST|WITHDRAW|REPAY|DEPOSIT|TRANSFER|USES_CHANNEL|OWN|APPLY|APPLY|APPLY|",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 350,
+        "completion_tokens": 2000,
+        "cached_tokens": 336
+      }
+    },
+    {
+      "id": "rail_mix",
+      "family": "rail",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 3030.4,
+      "error": "ValueError: text2cypher rejected: missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 728,
+        "completion_tokens": 177,
+        "cached_tokens": 320
+      }
+    },
+    {
+      "id": "rail_mix",
+      "family": "rail",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 2074.5,
+      "error": "ValueError: text2cypher rejected: missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 717,
+        "completion_tokens": 118,
+        "cached_tokens": 512
+      }
+    },
+    {
+      "id": "risky_rail_senders",
+      "family": "rail",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 7119.5,
+      "error": "ValueError: text2cypher rejected: missing_parameterized_limit,missing_parameter:limit,unknown_labels:Transfer,unknown_relationships:USED_CHANNEL,unknown_properties:workspac",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 760,
+        "completion_tokens": 418,
+        "cached_tokens": 304
+      }
+    },
+    {
+      "id": "risky_rail_senders",
+      "family": "rail",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 3460.5,
+      "error": "ValueError: text2cypher rejected: missing_parameterized_limit,missing_parameter:workspace_id,missing_parameter:limit,unknown_labels:Transfer,unknown_relationships:USED_CHAN",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 770,
+        "completion_tokens": 198,
+        "cached_tokens": 512
+      }
+    },
+    {
+      "id": "structuring_fanin",
+      "family": "rail",
+      "in_subset": false,
+      "repeat": 0,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 2388.0,
+      "error": "ValueError: text2cypher rejected: missing_return_clause,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 726,
+        "completion_tokens": 136,
+        "cached_tokens": 304
+      }
+    },
+    {
+      "id": "structuring_fanin",
+      "family": "rail",
+      "in_subset": false,
+      "repeat": 1,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 2905.1,
+      "error": "ValueError: text2cypher rejected: missing_return_clause,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 737,
+        "completion_tokens": 168,
+        "cached_tokens": 512
+      }
+    },
+    {
+      "id": "sub_threshold_inflow",
+      "family": "rail",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 2160.3,
+      "error": "ValueError: text2cypher rejected: missing_parameter:workspace_id,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 746,
+        "completion_tokens": 124,
+        "cached_tokens": 304
+      }
+    },
+    {
+      "id": "sub_threshold_inflow",
+      "family": "rail",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 2168.8,
+      "error": "ValueError: text2cypher rejected: missing_parameter:workspace_id,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 746,
+        "completion_tokens": 124,
+        "cached_tokens": 720
+      }
+    },
+    {
+      "id": "loan_disbursement_path",
+      "family": "loan",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 2482.3,
+      "error": "ValueError: text2cypher rejected: missing_parameterized_limit,missing_parameter:workspace_id,missing_parameter:limit,unbounded_graph_path,inlined_literal:= '108',missing_wo",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 752,
+        "completion_tokens": 143,
+        "cached_tokens": 336
+      }
+    },
+    {
+      "id": "loan_disbursement_path",
+      "family": "loan",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 2582.3,
+      "error": "ValueError: text2cypher rejected: unbounded_graph_path,unknown_properties:workspace_id,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 735,
+        "completion_tokens": 151,
+        "cached_tokens": 528
+      }
+    },
+    {
+      "id": "loan_repay_imbalance",
+      "family": "loan",
+      "in_subset": false,
+      "repeat": 0,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 2000.6,
+      "error": "ValueError: text2cypher rejected: missing_parameter:workspace_id,unknown_labels:Repayment,unknown_properties:REPAY,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 735,
+        "completion_tokens": 114,
+        "cached_tokens": 288
+      }
+    },
+    {
+      "id": "loan_repay_imbalance",
+      "family": "loan",
+      "in_subset": false,
+      "repeat": 1,
+      "mode": "plain",
+      "grammar_used": false,
+      "generate_ms": 1891.1,
+      "error": "ValueError: text2cypher rejected: missing_parameter:workspace_id,unknown_properties:repaid,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 735,
+        "completion_tokens": 110,
+        "cached_tokens": 720
+      }
+    }
+  ]
+}

@@ -1,0 +1,633 @@
+{
+  "schema_version": "seocho.fibo.suite-run.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-22T06:28:50+00:00",
+    "git_commit": "59bb0716c3b4da7f7d00acfa305686ac22507291",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/run_fibo_suite.py",
+      "--provider",
+      "vllm",
+      "--model",
+      "Qwen/Qwen2.5-1.5B-Instruct",
+      "--base-url",
+      "http://127.0.0.1:8000/v1",
+      "--password",
+      "testpass1234",
+      "--repeats",
+      "2",
+      "--mode",
+      "grammar",
+      "--seocho-src",
+      "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean",
+      "--seocho-otlp",
+      "http://127.0.0.1:4317",
+      "--out",
+      "results/bench/fibo_suite_qwen15b_grammar_20260822.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "1ac98b0dc1b2",
+    "db_container": "aisummit-simtest",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6520",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null
+  },
+  "config": {
+    "provider": "vllm",
+    "model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "base_url": "http://127.0.0.1:8000/v1",
+    "native_context": null,
+    "max_model_len": null,
+    "pi_factor": null,
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "database": "finbenchl1",
+    "suite": "configs/fibo_text2cypher_suite.yaml",
+    "ontology": "ontology/finbench.ontology.yaml",
+    "anchor": null,
+    "repeats": 2,
+    "mode": "grammar",
+    "seocho_src": "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean",
+    "seocho_otlp": "http://127.0.0.1:4317",
+    "db_container": "aisummit-simtest",
+    "out": "results/bench/fibo_suite_qwen15b_grammar_20260822.json"
+  },
+  "endpoint": {
+    "provider": "vllm",
+    "model_name": "Qwen/Qwen2.5-1.5B-Instruct",
+    "base_url": "http://127.0.0.1:8000/v1",
+    "temperature": 0.0,
+    "max_tokens": 1000,
+    "extra_body": null,
+    "api_key_present": false,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "seocho": {
+    "seocho_version": "0.2.0",
+    "seocho_path": "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean/src/seocho/__init__.py",
+    "source_prepended": "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean/src",
+    "backend": "otlp",
+    "endpoint": "http://127.0.0.1:4317",
+    "service_name": "seocho-aisummit26",
+    "metrics_enabled": true,
+    "tracing_enabled": true,
+    "tracing_backends": [
+      "otlp"
+    ],
+    "degraded_reasons": [],
+    "errors": null
+  },
+  "anchor": 108,
+  "summary": {
+    "mode": "grammar",
+    "all": {
+      "n": 26,
+      "correct": 0,
+      "attempts_mean": 0.62,
+      "generate_ms_mean": 1780.5
+    },
+    "inside_subset": {
+      "n": 18,
+      "correct": 0,
+      "attempts_mean": 0.78,
+      "generate_ms_mean": 1504.3
+    },
+    "outside_subset": {
+      "n": 8,
+      "correct": 0,
+      "attempts_mean": 0.25,
+      "generate_ms_mean": 2402.0
+    },
+    "usage": {
+      "prompt_tokens": 13000,
+      "completion_tokens": 2592,
+      "cached_tokens": 11680
+    }
+  },
+  "rows": [
+    {
+      "id": "in_transfer_total",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 1374.3,
+      "attempts": 1,
+      "cypher": "MATCH (n:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[r:TRANSFER]->(m) WHERE r.amount > $limit RETURN count(r), sum(r.amount) AS total_amount ORDER BY total_amount DESC LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 358,
+        "completion_tokens": 61,
+        "cached_tokens": 352
+      }
+    },
+    {
+      "id": "in_transfer_total",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 1040.3,
+      "attempts": 1,
+      "cypher": "MATCH (n:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[r:TRANSFER]->(m) WHERE r.amount > $limit RETURN count(r), sum(r.amount) AS total_amount ORDER BY total_amount DESC LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 358,
+        "completion_tokens": 61,
+        "cached_tokens": 352
+      }
+    },
+    {
+      "id": "two_hop_reach",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 2314.4,
+      "error": "ValueError: text2cypher rejected: missing_parameter:workspace_id,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 740,
+        "completion_tokens": 130,
+        "cached_tokens": 512
+      }
+    },
+    {
+      "id": "two_hop_reach",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 2258.3,
+      "error": "ValueError: text2cypher rejected: missing_parameter:workspace_id,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 740,
+        "completion_tokens": 126,
+        "cached_tokens": 720
+      }
+    },
+    {
+      "id": "owner_portfolio",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 1138.7,
+      "attempts": 1,
+      "cypher": "MATCH (n:Account { _workspace_id: $workspace_id }) WHERE n.acct_no = $acct_no AND n.owner_id = $acct_no RETURN count(n) AS total_accounts, collect(DISTINCT n.owner_id) AS owners ORDER BY total_accounts DESC LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 356,
+        "completion_tokens": 63,
+        "cached_tokens": 352
+      }
+    },
+    {
+      "id": "owner_portfolio",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 1124.7,
+      "attempts": 1,
+      "cypher": "MATCH (n:Account { _workspace_id: $workspace_id }) WHERE n.acct_no = $acct_no AND n.owner_id = $acct_no RETURN count(n) AS total_accounts, collect(DISTINCT n.owner_id) AS owners ORDER BY total_accounts DESC LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 356,
+        "completion_tokens": 63,
+        "cached_tokens": 352
+      }
+    },
+    {
+      "id": "recent_page",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 979.2,
+      "attempts": 1,
+      "cypher": "MATCH (n:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[r:TRANSFER]->(m) WHERE r.amount > $limit RETURN m AS transfer ORDER BY r.ts DESC LIMIT $limit",
+      "rows": 13,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 357,
+        "completion_tokens": 55,
+        "cached_tokens": 352
+      }
+    },
+    {
+      "id": "recent_page",
+      "family": "anchored",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 974.5,
+      "attempts": 1,
+      "cypher": "MATCH (n:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[r:TRANSFER]->(m) WHERE r.amount > $limit RETURN m AS transfer ORDER BY r.ts DESC LIMIT $limit",
+      "rows": 13,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 357,
+        "completion_tokens": 55,
+        "cached_tokens": 352
+      }
+    },
+    {
+      "id": "ubo_chain",
+      "family": "ubo",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 1022.5,
+      "attempts": 1,
+      "cypher": "MATCH (n:Person { _workspace_id: $workspace_id })-[r:OWN]->(c:Company { _workspace_id: $workspace_id }) WHERE r.owner_id = $limit RETURN count(n) AS num_people LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 349,
+        "completion_tokens": 56,
+        "cached_tokens": 336
+      }
+    },
+    {
+      "id": "ubo_chain",
+      "family": "ubo",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 981.7,
+      "attempts": 1,
+      "cypher": "MATCH (n:Person { _workspace_id: $workspace_id })-[r:OWN]->(c:Company { _workspace_id: $workspace_id }) WHERE r.owner_id = $limit RETURN count(n) AS num_people LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 349,
+        "completion_tokens": 56,
+        "cached_tokens": 336
+      }
+    },
+    {
+      "id": "ubo_depth",
+      "family": "ubo",
+      "in_subset": false,
+      "repeat": 0,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 2716.2,
+      "error": "ValueError: text2cypher rejected: explain_failed:CypherSyntaxError",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 724,
+        "completion_tokens": 151,
+        "cached_tokens": 512
+      }
+    },
+    {
+      "id": "ubo_depth",
+      "family": "ubo",
+      "in_subset": false,
+      "repeat": 1,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 2688.0,
+      "error": "ValueError: text2cypher rejected: explain_failed:CypherSyntaxError",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 724,
+        "completion_tokens": 151,
+        "cached_tokens": 704
+      }
+    },
+    {
+      "id": "guarantee_chain",
+      "family": "ubo",
+      "in_subset": false,
+      "repeat": 0,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 2426.1,
+      "error": "ValueError: text2cypher rejected: missing_parameter:workspace_id,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 712,
+        "completion_tokens": 135,
+        "cached_tokens": 496
+      }
+    },
+    {
+      "id": "guarantee_chain",
+      "family": "ubo",
+      "in_subset": false,
+      "repeat": 1,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 2396.9,
+      "error": "ValueError: text2cypher rejected: missing_parameter:workspace_id,missing_workspace_scope_expression",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 712,
+        "completion_tokens": 135,
+        "cached_tokens": 688
+      }
+    },
+    {
+      "id": "rail_mix",
+      "family": "rail",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 1678.1,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[r:USES_CHANNEL]->(c:Channel { _workspace_id: $workspace_id }) WHERE r.risk_weight <= $acct_no AND c.share > $acct_no RETURN collect(DISTINCT c.code) AS channels, count(c.code) AS transaction_count ORDER BY transaction_count DESC LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 356,
+        "completion_tokens": 94,
+        "cached_tokens": 352
+      }
+    },
+    {
+      "id": "rail_mix",
+      "family": "rail",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 1664.6,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account { _workspace_id: $workspace_id, acct_no: $acct_no })-[r:USES_CHANNEL]->(c:Channel { _workspace_id: $workspace_id }) WHERE r.risk_weight <= $acct_no AND c.share > $acct_no RETURN collect(DISTINCT c.code) AS channels, count(c.code) AS transaction_count ORDER BY transaction_count DESC LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 356,
+        "completion_tokens": 94,
+        "cached_tokens": 352
+      }
+    },
+    {
+      "id": "risky_rail_senders",
+      "family": "rail",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 1405.3,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account { _workspace_id: $workspace_id })-[r:TRANSFER]->(c:Channel { _workspace_id: $workspace_id }) WHERE r.risk_weight >= $risk_weight AND c.acct_no = $acct_no RETURN count(r) AS transfer_count, sum(c.share) AS total_share LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 366,
+        "completion_tokens": 79,
+        "cached_tokens": 352
+      }
+    },
+    {
+      "id": "risky_rail_senders",
+      "family": "rail",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 1393.4,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account { _workspace_id: $workspace_id })-[r:TRANSFER]->(c:Channel { _workspace_id: $workspace_id }) WHERE r.risk_weight >= $risk_weight AND c.acct_no = $acct_no RETURN count(r) AS transfer_count, sum(c.share) AS total_share LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 366,
+        "completion_tokens": 79,
+        "cached_tokens": 352
+      }
+    },
+    {
+      "id": "structuring_fanin",
+      "family": "rail",
+      "in_subset": false,
+      "repeat": 0,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 3279.2,
+      "error": "ValueError: text2cypher rejected: explain_failed:CypherSyntaxError",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 724,
+        "completion_tokens": 185,
+        "cached_tokens": 512
+      }
+    },
+    {
+      "id": "structuring_fanin",
+      "family": "rail",
+      "in_subset": false,
+      "repeat": 1,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 3269.9,
+      "error": "ValueError: text2cypher rejected: explain_failed:CypherSyntaxError",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 724,
+        "completion_tokens": 185,
+        "cached_tokens": 704
+      }
+    },
+    {
+      "id": "sub_threshold_inflow",
+      "family": "rail",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 1365.6,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account { _workspace_id: $workspace_id })-[r:TRANSFER]->(t:Account { _workspace_id: $workspace_id }) WHERE r.acct_no = $acct_no AND t.amount < $amount_max RETURN count(r) AS transfer_count, sum(t.amount) AS total_amount LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 367,
+        "completion_tokens": 76,
+        "cached_tokens": 352
+      }
+    },
+    {
+      "id": "sub_threshold_inflow",
+      "family": "rail",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 1317.7,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account { _workspace_id: $workspace_id })-[r:TRANSFER]->(t:Account { _workspace_id: $workspace_id }) WHERE r.acct_no = $acct_no AND t.amount < $amount_max RETURN count(r) AS transfer_count, sum(t.amount) AS total_amount LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 367,
+        "completion_tokens": 76,
+        "cached_tokens": 352
+      }
+    },
+    {
+      "id": "loan_disbursement_path",
+      "family": "loan",
+      "in_subset": true,
+      "repeat": 0,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 2528.2,
+      "error": "ValueError: text2cypher rejected: explain_failed:CypherSyntaxError",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 726,
+        "completion_tokens": 145,
+        "cached_tokens": 528
+      }
+    },
+    {
+      "id": "loan_disbursement_path",
+      "family": "loan",
+      "in_subset": true,
+      "repeat": 1,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 2515.7,
+      "error": "ValueError: text2cypher rejected: explain_failed:CypherSyntaxError",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 726,
+        "completion_tokens": 145,
+        "cached_tokens": 704
+      }
+    },
+    {
+      "id": "loan_repay_imbalance",
+      "family": "loan",
+      "in_subset": false,
+      "repeat": 0,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 1232.5,
+      "attempts": 1,
+      "cypher": "MATCH (n:Loan { _workspace_id: $workspace_id }) WHERE n.principal < $repaid_ratio AND n.term_years > $repaid_ratio RETURN n.id AS loan_id, n.principal AS principal, n.term_years AS term_years ORDER BY n.principal DESC LIMIT $limit",
+      "rows": 0,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 365,
+        "completion_tokens": 68,
+        "cached_tokens": 352
+      }
+    },
+    {
+      "id": "loan_repay_imbalance",
+      "family": "loan",
+      "in_subset": false,
+      "repeat": 1,
+      "mode": "grammar",
+      "grammar_used": true,
+      "generate_ms": 1207.6,
+      "attempts": 1,
+      "cypher": "MATCH (n:Loan { _workspace_id: $workspace_id }) WHERE n.principal < $repaid_ratio AND n.term_years > $repaid_ratio RETURN n.id AS loan_id, n.principal AS principal, n.term_years AS term_years ORDER BY n.principal DESC LIMIT $limit",
+      "rows": 0,
+      "correct": false,
+      "nonempty_overlap": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 365,
+        "completion_tokens": 68,
+        "cached_tokens": 352
+      }
+    }
+  ]
+}

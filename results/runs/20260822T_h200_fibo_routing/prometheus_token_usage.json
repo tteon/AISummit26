@@ -1,0 +1,1 @@
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"gen_ai_token_type":"output"},"value":[1787380898.268,"34947"]},{"metric":{"gen_ai_token_type":"input"},"value":[1787380898.268,"26084"]},{"metric":{"gen_ai_token_type":"cached_input"},"value":[1787380898.268,"25008"]}]}}
