@@ -25,6 +25,10 @@ nodes:
         type: INTEGER
       acct_type:
         type: INTEGER
+      owner_id:
+        type: INTEGER
+        description: Index of the owning Party; denormalized copy of the OWN edge. Prefer
+          traversing OWN for ownership questions — this exists for bulk loading.
   Person:
     description: An individual who may own accounts
     properties:
@@ -35,6 +39,9 @@ nodes:
         type: STRING
       country:
         type: STRING
+      age:
+        type: INTEGER
+        description: Age in years (18-78 in the generated data)
   Company:
     description: A company or organization that may own accounts
     properties:
@@ -53,6 +60,9 @@ nodes:
         constraint: UNIQUE
       principal:
         type: INTEGER
+      term_years:
+        type: INTEGER
+        description: Loan term in years; yearly REPAY amount is principal / term_years
   Channel:
     description: 'The means by which money moved (전자금융거래법 §2 channel inventory plus FATF-recognized high-risk
       rails). Channel choice carries most of the AML signal because channels differ in traceability, limits,
@@ -70,6 +80,10 @@ nodes:
       risk_weight:
         type: INTEGER
         description: Ordinal AML risk hint, 1 (low) to 5 (high)
+      share:
+        type: INTEGER
+        description: Relative frequency weight of this channel in the traffic mix, not a
+          percentage
   Medium:
     description: >
       A login device or terminal a session came from — FinBench's `Medium`. Distinct from
@@ -86,6 +100,10 @@ nodes:
       risk_level:
         type: INTEGER
         description: Ordinal device risk, 1 (low) to 5 (high)
+      is_blocked:
+        type: BOOLEAN
+        description: Whether the device has been blocked for AML reasons (FinBench's
+          blocked-medium flag; all false in the generated data so far)
 relationships:
   TRANSFER:
     source: Account

@@ -2,8 +2,8 @@
   "schema_version": "seocho.finbench.ontology-conformance.v1",
   "question": "does the declared ontology describe the graph that is loaded?",
   "manifest": {
-    "timestamp_utc": "2026-08-22T02:30:42+00:00",
-    "git_commit": "21fa7ce913b33646c83909c0883e302fec8ce9fd",
+    "timestamp_utc": "2026-08-22T02:45:21+00:00",
+    "git_commit": "8e552b819cece75d6fc78e8f4e4cf3237d8c3eb7",
     "git_dirty": true,
     "argv": [
       "scripts/analysis/ontology_conformance.py",
@@ -14,7 +14,7 @@
       "--database",
       "finbenchl1",
       "--seocho-src",
-      "../seocho-room/seocho",
+      "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean",
       "--db-container",
       "aisummit-simtest",
       "--out",
@@ -60,7 +60,7 @@
     "user": "neo4j",
     "database": "finbenchl1",
     "ontology": "ontology/finbench.ontology.yaml",
-    "seocho_src": "../seocho-room/seocho",
+    "seocho_src": "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean",
     "db_container": "aisummit-simtest",
     "out": "results/analysis/ontology_conformance_sf1_20260822.json"
   },
@@ -89,6 +89,7 @@
       "_workspace_id",
       "acct_no",
       "acct_type",
+      "age",
       "amount",
       "channel",
       "channel_risk",
@@ -98,14 +99,18 @@
       "flagged",
       "iban",
       "id",
+      "is_blocked",
       "label",
       "limit",
       "name",
+      "owner_id",
       "principal",
       "risk_level",
       "risk_tier",
       "risk_weight",
       "sector",
+      "share",
+      "term_years",
       "ts",
       "tx_count",
       "type"
@@ -423,9 +428,11 @@
         "flagged",
         "iban",
         "id",
+        "owner_id",
         "risk_tier"
       ],
       "Person": [
+        "age",
         "country",
         "id",
         "name"
@@ -437,15 +444,18 @@
       ],
       "Loan": [
         "id",
-        "principal"
+        "principal",
+        "term_years"
       ],
       "Channel": [
         "code",
         "label",
-        "risk_weight"
+        "risk_weight",
+        "share"
       ],
       "Medium": [
         "id",
+        "is_blocked",
         "risk_level",
         "type"
       ]
@@ -542,15 +552,14 @@
       "node_count": 2470,
       "scope": "properties:Account",
       "declared_but_absent": [],
-      "present_but_undeclared": [
-        "owner_id"
-      ],
+      "present_but_undeclared": [],
       "agreed": [
         "acct_no",
         "acct_type",
         "flagged",
         "iban",
         "id",
+        "owner_id",
         "risk_tier"
       ],
       "infrastructure_properties": [
@@ -563,13 +572,12 @@
       "node_count": 12,
       "scope": "properties:Channel",
       "declared_but_absent": [],
-      "present_but_undeclared": [
-        "share"
-      ],
+      "present_but_undeclared": [],
       "agreed": [
         "code",
         "label",
-        "risk_weight"
+        "risk_weight",
+        "share"
       ],
       "infrastructure_properties": [
         "_workspace_id"
@@ -595,12 +603,11 @@
       "node_count": 201,
       "scope": "properties:Loan",
       "declared_but_absent": [],
-      "present_but_undeclared": [
-        "term_years"
-      ],
+      "present_but_undeclared": [],
       "agreed": [
         "id",
-        "principal"
+        "principal",
+        "term_years"
       ],
       "infrastructure_properties": [
         "_workspace_id"
@@ -611,11 +618,10 @@
       "node_count": 300,
       "scope": "properties:Medium",
       "declared_but_absent": [],
-      "present_but_undeclared": [
-        "is_blocked"
-      ],
+      "present_but_undeclared": [],
       "agreed": [
         "id",
+        "is_blocked",
         "risk_level",
         "type"
       ],
@@ -628,10 +634,9 @@
       "node_count": 1000,
       "scope": "properties:Person",
       "declared_but_absent": [],
-      "present_but_undeclared": [
-        "age"
-      ],
+      "present_but_undeclared": [],
       "agreed": [
+        "age",
         "country",
         "id",
         "name"
@@ -787,12 +792,6 @@
       "Person-[OWN]->Account"
     ]
   },
-  "problems": [
-    "Account: graph properties undeclared ['owner_id']",
-    "Channel: graph properties undeclared ['share']",
-    "Loan: graph properties undeclared ['term_years']",
-    "Medium: graph properties undeclared ['is_blocked']",
-    "Person: graph properties undeclared ['age']"
-  ],
-  "conformant": false
+  "problems": [],
+  "conformant": true
 }
