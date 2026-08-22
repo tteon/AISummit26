@@ -2,9 +2,11 @@
 """Turn measured episodes into an LLMServingSim agentic workload.
 
 Why this exists: the questions left over from the H200 run are all about scale — 100 tenants
-instead of 36, a CXL tier that no rental offers, weights pushed off the accelerator so the KV
-budget doubles. None of them can be bought; all of them are configuration in a serving
-simulator. What the simulator cannot invent is the workload: how many LLM calls an episode
+instead of 36, weights pushed off the accelerator so the KV budget doubles. None of them can be
+bought; all of them are configuration in a serving simulator. (A CXL memory tier is also plain
+config here, and was on this list once. It is not any more: the bottleneck this work is chasing
+turned out to be Cypher and the graph client, not the KV budget, so a tier no rental offers is
+a counterfactual about the wrong side of the exchange.) What the simulator cannot invent is the workload: how many LLM calls an episode
 takes, how long each prompt is, how long the tool runs between calls, and — the part that
 decides everything about caching — *which spans of tokens are shared* between calls and
 between sessions.

@@ -440,8 +440,8 @@ splits into four stages with very different costs — but the order that looks o
 | # | Stage | Endpoint / tool | Cost | Answers | Cannot answer |
 | --- | --- | --- | --- | --- | --- |
 | 1 | **Workload extraction** | MARA **or** a self-hosted vLLM, through `harness/llm.py` | API tokens only | how many LLM calls an episode takes, how long each prompt and generation is, how long the tool runs between them, which spans are shared | anything about caching, if the endpoint has none |
-| 2 | **Simulation** | LLMServingSim, local, CPU-only | free | 100 tenants, a CXL tier, weights off the accelerator, TP/PP/PD layouts — every counterfactual | absolute latency, unless calibrated against stage 3 |
-| 3 | **Real measurement** | rented GPU | \$4–15/hr | what the hardware actually does, and the constants stage 2 needs | anything the rental cannot hold: more GPUs, a CXL device, 100 tenants |
+| 2 | **Simulation** | LLMServingSim, local, CPU-only | free | 100 tenants, weights off the accelerator, TP/PP/PD layouts — every counterfactual | absolute latency, unless calibrated against stage 3 |
+| 3 | **Real measurement** | rented GPU | \$4–15/hr | what the hardware actually does, and the constants stage 2 needs | anything the rental cannot hold: more GPUs, 100 tenants |
 | 4 | **Kernel work** | Nsight + CUDA docs | rental time | where a kernel's time goes and whether it can be moved | whether moving it changes the system-level answer |
 
 **Stage 1 works from either endpoint, and that is the point.** MARA is the cheap way to get
@@ -473,8 +473,8 @@ long context, and the KV transfer path an offload tier depends on.
 ## Hardware available to the simulator
 
 Three tiers, and one distinction that matters more than the list: **memory is free to
-change, compute is not.** `npu_mem.mem_size` / `mem_bw` / `mem_util`, `cpu_mem`, `cxl_mem`
-and the whole `placement` block are plain config. Compute latency comes only from a profile
+change, compute is not.** `npu_mem.mem_size` / `mem_bw` / `mem_util`, `cpu_mem` and the whole
+`placement` block are plain config. Compute latency comes only from a profile
 bundle under `profiler/perf/<HARDWARE>/`. Raising `mem_size` from 96 to 143 and calling it an
 H200 gives H200 memory with RTX PRO 6000 compute — fine for a capacity study, not something
 to label with a GPU's name.
