@@ -1281,13 +1281,30 @@ async def main_async(args) -> None:
         from harness.seocho_bridge import SeochoGraphAgent
         _agents: Dict[str, Any] = {}
 
+        grammar_text: Optional[str] = None
+        if args.seocho_grammar:
+            from harness.cypher_grammar import grammar_from_policy
+            from harness.seocho_bridge import guide_backend_with_grammar
+            # The parameters the harness binds for every question, so the grammar's `param`
+            # rule admits exactly what a generated query may reference.
+            grammar_text = grammar_from_policy(
+                policy, params=sorted(("workspace_id", "limit", "acct_no", "a", "n")))
+            if args.provider == "mara":
+                raise SystemExit("--seocho-grammar on MARA would be a false null: the endpoint "
+                                 "accepts structured_outputs and ignores it (measured; see "
+                                 "bench_text2cypher_guidance --provider mara). Use --provider "
+                                 "vllm against a server that honors grammars.")
+
         def _mk_agent(db: str):
             # One agent per database: it holds the backend and the policy, and the policy is
             # where the row cap comes from in this arm.
             if db not in _agents:
-                _agents[db] = SeochoGraphAgent(driver, cfg=_MODEL_CFG, ontology=ontology,
-                                               policy=policy, workspace_id=WS, database=db,
-                                               tx_timeout_s=TX_TIMEOUT_S)
+                agent = SeochoGraphAgent(driver, cfg=_MODEL_CFG, ontology=ontology,
+                                         policy=policy, workspace_id=WS, database=db,
+                                         tx_timeout_s=TX_TIMEOUT_S)
+                if grammar_text is not None:
+                    agent.backend = guide_backend_with_grammar(agent.backend, grammar_text)
+                _agents[db] = agent
             return _agents[db]
         seocho_agent_factory = _mk_agent
     targets = []
@@ -1406,6 +1423,7 @@ async def main_async(args) -> None:
         "model": _MODEL_CFG.model_name if _MODEL_CFG else args.model,
         "endpoint": _MODEL_CFG.descriptor() if _MODEL_CFG else None,
         "arms": list(args.arms), "row_cap": ROW_CAP,
+        "seocho_grammar": bool(getattr(args, "seocho_grammar", False)),
         "seocho_observability": seocho_obs,
         "executed_via": "seocho.QueryProxy" if seocho_obs is not None else "raw_bolt",
         "row_cap_configured": args.row_cap,
@@ -1463,6 +1481,11 @@ def main() -> None:
                         "while the run is still going.")
     p.add_argument("--resume", action="store_true",
                    help="skip episodes already present in the episode log")
+    p.add_argument("--seocho-grammar", action="store_true",
+                   help="constrain seocho's text2cypher decoding with the ontology-derived "
+                        "EBNF (vLLM structured outputs). Only meaningful with --via-seocho "
+                        "on an endpoint that honors grammars — MARA silently ignores them, "
+                        "so the run aborts there rather than reporting a false null")
     p.add_argument("--via-seocho", action="store_true",
                    help="run every Cypher through seocho's instrumented QueryProxy instead of "
                         "the raw driver, so the orchestrator tier emits its own metrics and "
