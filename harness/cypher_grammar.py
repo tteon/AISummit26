@@ -18,6 +18,31 @@ grammar produces *that*, with the query inside the string. That is only safe bec
 already forbids inlined literals — parameters instead — so a conforming query contains no
 double quote to escape.
 
+Relationship variables are mandatory (`[t:TRANSFER]`, never `[:TRANSFER]`). "A variable an
+aggregate references must be bound in the pattern" is context-sensitive and no CFG can say
+it — and gpt-oss-120b hit exactly that hole twice in a row on the same question, writing
+`count(t)` over an anonymous relationship, failing EXPLAIN, and repeating the mistake in the
+repair turn. Forcing a name on every relationship does not *prove* the RETURN uses it, but
+the model reuses the name it was made to write, and the failure class stopped reproducing.
+The cost is one or two tokens on queries that never reference the relationship.
+
+EVERY repetition is bounded — `{0,N}` instead of `*` — because under constrained decoding an
+unbounded repetition is an attractor. Measured twice on gpt-oss-120b before the rule became
+absolute: unbounded whitespace produced a run of spaces until the token cap truncated the
+envelope, and after that was bounded, the repair turn fell into the AND-chain instead —
+19,390 characters of `AND a.acct_no = $acct_no` repeated until an 8,000-token cap. The
+repetition itself is self-reinforcing: once the model has emitted the same clause twice, the
+highest-probability continuation is a third. Bounds turn the failure into a forced stop the
+envelope survives. The specific caps (3 extra MATCHes, 5 extra predicates, 7 extra return
+items, 4 extra hops in a pattern, 24-char identifiers) cover every query the benchmark
+corpus has produced.
+
+Whitespace is bounded to at most one space. `" "*` looked harmless and was a decoding trap:
+under constrained decoding the space is always a legal next token, and gpt-oss-120b fell into
+it — emitting spaces until max_tokens truncated the JSON envelope mid-query, which surfaced as
+`explain_failed:CypherSyntaxError` two questions out of eight. Same family as the digit
+runaway below: any unbounded repetition in the grammar is an attractor the model can circle.
+
 A comparison may only be against a parameter, never a number. That rule was missing in the
 first version and the benchmark found it immediately: every remaining grammar-mode failure was
 `inlined_literal:< 3` / `>= 3` / `= 1`, i.e. the model taking the one door the grammar left
@@ -61,26 +86,26 @@ def grammar_from_policy(policy: Any, *, params: Sequence[str],
 
     return f'''root ::= "{{" ws "\\"cypher\\"" ws ":" ws "\\"" query "\\"" ws "}}"
 
-query ::= match_clause (ws match_clause)* (ws where_clause)? ws return_clause (ws order_clause)? ws limit_clause
+query ::= match_clause (ws match_clause){{0,3}} (ws where_clause)? ws return_clause (ws order_clause)? ws limit_clause
 
 match_clause ::= "MATCH " pattern
-pattern ::= node (rel node)*
+pattern ::= node (rel node){{0,4}}
 node ::= "(" var? label_part scope ")"
 label_part ::= ":" label
 scope ::= " {{" wsp "{ws_prop}" wsp ":" wsp "$workspace_id" wsp "}}"
 rel ::= arrow_l rel_detail arrow_r
 arrow_l ::= "-" | "<-"
 arrow_r ::= "->" | "-"
-rel_detail ::= "[" var? ":" reltype hop_bound? "]"
+rel_detail ::= "[" var ":" reltype hop_bound? "]"
 hop_bound ::= "*1.." digit
 digit ::= {_alt(str(i) for i in range(1, hops + 1))}
 
-where_clause ::= "WHERE " predicate (" AND " predicate)*
+where_clause ::= "WHERE " predicate (" AND " predicate){{0,5}}
 predicate ::= ref ws comparator ws param
 comparator ::= "=" | ">=" | "<=" | ">" | "<" | "<>"
 param ::= {_alt("$" + p for p in param_names) if param_names else '"$limit"'}
 
-return_clause ::= "RETURN " ret_item (", " ret_item)*
+return_clause ::= "RETURN " ret_item (", " ret_item){{0,7}}
 ret_item ::= (aggregate | ref | "DISTINCT " ref) (" AS " var)?
 aggregate ::= agg_fn "(" ("DISTINCT " )? ref ")"
 agg_fn ::= {_alt(_AGGREGATES)}
@@ -92,9 +117,9 @@ ref ::= var ("." prop)?
 label ::= {_alt(labels)}
 reltype ::= {_alt(rels)}
 prop ::= {_alt(props)}
-var ::= [a-z] [a-z0-9_]*
-ws ::= " "*
-wsp ::= " "*
+var ::= [a-z] [a-z0-9_]{{0,24}}
+ws ::= " "?
+wsp ::= " "?
 '''
 
 

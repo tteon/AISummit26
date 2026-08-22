@@ -94,13 +94,22 @@ async def grammar_is_honored(backend, model: str) -> Dict[str, Any]:
     from harness.seocho_bridge import guide_backend_with_grammar
     probe = guide_backend_with_grammar(backend, 'root ::= "GRAMMAR_WAS_HONORED"')
     try:
+        # 64 tokens was enough for the sentinel and wrong for the model: gpt-oss spends its
+        # first ~70 tokens in the reasoning channel, so the constrained final channel came
+        # back truncated to 'GRAMMAR_WAS_H' and a grammar that WAS honored was reported as
+        # ignored — a false null in the opposite direction from the one this probe exists to
+        # catch. Confirmed against the live server: with room to finish, the output is
+        # 'GRAMMAR_WAS_HONORED<|end|>' (finish_reason=stop, 74 completion tokens).
         r = await probe.acomplete(system="", user="Say hello in one sentence.",
-                                  temperature=0.0, max_tokens=64, task_hint="probe",
+                                  temperature=0.0, max_tokens=2048, task_hint="probe",
                                   mode="pipeline")
         text = (getattr(r, "text", None) or str(r)).strip()
     except Exception as exc:
         return {"honored": False, "error": f"{type(exc).__name__}: {str(exc)[:160]}"}
-    return {"honored": text == "GRAMMAR_WAS_HONORED", "output": text[:120]}
+    # Containment, not equality: harmony models append channel-terminator artifacts like
+    # '<|end|>'. An unconstrained model asked to say hello never emits the sentinel, so
+    # containment cannot produce a false positive.
+    return {"honored": "GRAMMAR_WAS_HONORED" in text, "output": text[:120]}
 
 
 def main() -> None:

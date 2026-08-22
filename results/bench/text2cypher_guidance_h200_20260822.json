@@ -1,0 +1,319 @@
+{
+  "schema_version": "seocho.finbench.text2cypher-guidance.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-22T03:11:39+00:00",
+    "git_commit": "4ce51fd9b1570026924c6077df86997d63c64ae5",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/bench_text2cypher_guidance.py",
+      "--provider",
+      "vllm",
+      "--model",
+      "openai/gpt-oss-120b",
+      "--base-url",
+      "http://127.0.0.1:8100/v1",
+      "--uri",
+      "bolt://localhost:7688",
+      "--password",
+      "testpass1234",
+      "--database",
+      "finbenchl1",
+      "--seocho-src",
+      "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean",
+      "--repeats",
+      "2",
+      "--out",
+      "results/bench/text2cypher_guidance_h200_20260822.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": null,
+    "db_heap_max": null,
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6520",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null
+  },
+  "endpoint": {
+    "provider": "vllm",
+    "model_name": "openai/gpt-oss-120b",
+    "base_url": "http://127.0.0.1:8100/v1",
+    "temperature": 0.0,
+    "max_tokens": 1000,
+    "extra_body": null,
+    "api_key_present": false,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "seocho": {
+    "seocho_version": "0.2.0",
+    "seocho_path": "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean/src/seocho/__init__.py",
+    "source_prepended": "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean/src",
+    "backend": "otlp",
+    "endpoint": "http://127.0.0.1:4317",
+    "service_name": "seocho-aisummit26",
+    "metrics_enabled": true,
+    "tracing_enabled": true,
+    "tracing_backends": [
+      "otlp"
+    ],
+    "degraded_reasons": [],
+    "errors": null
+  },
+  "anchor": 108,
+  "grammar_chars": 1778,
+  "grammar": "root ::= \"{\" ws \"\\\"cypher\\\"\" ws \":\" ws \"\\\"\" query \"\\\"\" ws \"}\"\n\nquery ::= match_clause (ws match_clause){0,3} (ws where_clause)? ws return_clause (ws order_clause)? ws limit_clause\n\nmatch_clause ::= \"MATCH \" pattern\npattern ::= node (rel node){0,4}\nnode ::= \"(\" var? label_part scope \")\"\nlabel_part ::= \":\" label\nscope ::= \" {\" wsp \"_workspace_id\" wsp \":\" wsp \"$workspace_id\" wsp \"}\"\nrel ::= arrow_l rel_detail arrow_r\narrow_l ::= \"-\" | \"<-\"\narrow_r ::= \"->\" | \"-\"\nrel_detail ::= \"[\" var \":\" reltype hop_bound? \"]\"\nhop_bound ::= \"*1..\" digit\ndigit ::= \"1\" | \"2\" | \"3\" | \"4\"\n\nwhere_clause ::= \"WHERE \" predicate (\" AND \" predicate){0,5}\npredicate ::= ref ws comparator ws param\ncomparator ::= \"=\" | \">=\" | \"<=\" | \">\" | \"<\" | \"<>\"\nparam ::= \"$channel_risk\" | \"$risk_tier\" | \"$acct_no\" | \"$amount\" | \"$limit\" | \"$ts\" | \"$a\" | \"$n\"\n\nreturn_clause ::= \"RETURN \" ret_item (\", \" ret_item){0,7}\nret_item ::= (aggregate | ref | \"DISTINCT \" ref) (\" AS \" var)?\naggregate ::= agg_fn \"(\" (\"DISTINCT \" )? ref \")\"\nagg_fn ::= \"collect\" | \"count\" | \"avg\" | \"max\" | \"min\" | \"sum\"\n\norder_clause ::= \"ORDER BY \" ref (\" DESC\" | \" ASC\")?\nlimit_clause ::= \"LIMIT $limit\"\n\nref ::= var (\".\" prop)?\nlabel ::= \"Account\" | \"Channel\" | \"Company\" | \"Medium\" | \"Person\" | \"Loan\"\nreltype ::= \"USES_CHANNEL\" | \"GUARANTEE\" | \"TRANSFER\" | \"WITHDRAW\" | \"DEPOSIT\" | \"SIGN_IN\" | \"INVEST\" | \"APPLY\" | \"REPAY\" | \"OWN\"\nprop ::= \"_workspace_id\" | \"channel_risk\" | \"cross_border\" | \"risk_weight\" | \"is_blocked\" | \"risk_level\" | \"term_years\" | \"acct_type\" | \"principal\" | \"risk_tier\" | \"owner_id\" | \"tx_count\" | \"acct_no\" | \"channel\" | \"country\" | \"flagged\" | \"amount\" | \"sector\" | \"label\" | \"limit\" | \"share\" | \"code\" | \"iban\" | \"name\" | \"type\" | \"age\" | \"id\" | \"ts\"\nvar ::= [a-z] [a-z0-9_]{0,24}\nws ::= \" \"?\nwsp ::= \" \"?\n",
+  "grammar_honored_probe": {
+    "honored": true,
+    "output": "GRAMMAR_WAS_HONORED<|end|>"
+  },
+  "by_mode": {
+    "json": {
+      "generations": 8,
+      "validated": 8,
+      "failed": 0,
+      "attempts_total": 8,
+      "attempts_mean": 1,
+      "repairs": 0,
+      "ms_mean": 2766.0,
+      "ms_total": 22128.1,
+      "in_subset": 8
+    },
+    "grammar": {
+      "generations": 8,
+      "validated": 8,
+      "failed": 0,
+      "attempts_total": 8,
+      "attempts_mean": 1,
+      "repairs": 0,
+      "ms_mean": 2808.1,
+      "ms_total": 22464.8,
+      "in_subset": 8
+    }
+  },
+  "samples": [
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 3063.7,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[r:TRANSFER]->(target:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nRETURN count(r) AS transfer_count, sum(r.amount) AS total_amount\nLIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "json",
+      "question_id": "incoming_count",
+      "repeat": 0
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 2631.8,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[r:TRANSFER]->(target:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nRETURN count(r) AS transfer_count, sum(r.amount) AS total_amount\nLIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "json",
+      "question_id": "incoming_count",
+      "repeat": 1
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 1857.4,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, acct_no: $acct_no})- [r:TRANSFER]-> (b {_workspace_id: $workspace_id})\nRETURN count(r) AS transfer_count, max(r.amount) AS max_amount\nLIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "json",
+      "question_id": "largest_out",
+      "repeat": 0
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 1842.2,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, acct_no: $acct_no})- [r:TRANSFER]-> (b {_workspace_id: $workspace_id})\nRETURN count(r) AS transfer_count, max(r.amount) AS max_amount\nLIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "json",
+      "question_id": "largest_out",
+      "repeat": 1
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 3598.3,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[:TRANSFER]->(dst:Account {_workspace_id: $workspace_id})\nWHERE dst.acct_no = $acct_no\nMATCH (src)-[:USES_CHANNEL]->(ch:Channel {_workspace_id: $workspace_id})\nWHERE ch.risk_weight >= $channel_risk\nRETURN src.acct_no AS sender_acct_no, src.id AS sender_id\nLIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "json",
+      "question_id": "risky_senders",
+      "repeat": 0
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 3596.9,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[:TRANSFER]->(dst:Account {_workspace_id: $workspace_id})\nWHERE dst.acct_no = $acct_no\nMATCH (src)-[:USES_CHANNEL]->(ch:Channel {_workspace_id: $workspace_id})\nWHERE ch.risk_weight >= $channel_risk\nRETURN src.acct_no AS sender_acct_no, src.id AS sender_id\nLIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "json",
+      "question_id": "risky_senders",
+      "repeat": 1
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 2765.2,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $a})\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nMATCH (owner:Person|Company {_workspace_id: $workspace_id})-[:OWN]->(dest)\nRETURN owner.id AS owner_id, owner.name AS owner_name, labels(owner) AS owner_labels\nLIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "json",
+      "question_id": "owners_two_hops",
+      "repeat": 0
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 2772.6,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $a})\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nMATCH (owner:Person|Company {_workspace_id: $workspace_id})-[:OWN]->(dest)\nRETURN owner.id AS owner_id, owner.name AS owner_name, labels(owner) AS owner_labels\nLIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "json",
+      "question_id": "owners_two_hops",
+      "repeat": 1
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 2961.1,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[r:TRANSFER]->(target:Account {_workspace_id: $workspace_id })-[t:TRANSFER]->(target2:Account {_workspace_id: $workspace_id}) WHERE target.acct_no = $acct_no RETURN count(r) AS transfer_count, sum(r.amount) AS total_amount LIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "grammar",
+      "question_id": "incoming_count",
+      "repeat": 0
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 2700.5,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[r:TRANSFER]->(target:Account {_workspace_id: $workspace_id })-[t:TRANSFER]->(target2:Account {_workspace_id: $workspace_id}) WHERE target.acct_no = $acct_no RETURN count(r) AS transfer_count, sum(r.amount) AS total_amount LIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "grammar",
+      "question_id": "incoming_count",
+      "repeat": 1
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 1858.8,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id})<-[r:TRANSFER]-(b:Account {_workspace_id: $workspace_id}) WHERE a.acct_no = $acct_no RETURN count(r) AS transfer_count, max(r.amount) AS max_amount LIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "grammar",
+      "question_id": "largest_out",
+      "repeat": 0
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 1835.8,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id})<-[r:TRANSFER]-(b:Account {_workspace_id: $workspace_id}) WHERE a.acct_no = $acct_no RETURN count(r) AS transfer_count, max(r.amount) AS max_amount LIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "grammar",
+      "question_id": "largest_out",
+      "repeat": 1
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 3661.4,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(dst:Account {_workspace_id: $workspace_id}) WHERE dst.acct_no = $acct_no AND t.amount >= $amount AND t.ts >= $ts AND t.channel_risk >= $channel_risk AND t.risk_tier = $risk_tier AND t.name = $n RETURN src.acct_no AS sender_acct_no, src.id AS sender_id LIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "grammar",
+      "question_id": "risky_senders",
+      "repeat": 0
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 3631.2,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(dst:Account {_workspace_id: $workspace_id}) WHERE dst.acct_no = $acct_no AND t.amount >= $amount AND t.ts >= $ts AND t.channel_risk >= $channel_risk AND t.risk_tier = $risk_tier AND t.name = $n RETURN src.acct_no AS sender_acct_no, src.id AS sender_id LIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "grammar",
+      "question_id": "risky_senders",
+      "repeat": 1
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 2927.9,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id })-[t:TRANSFER]->(dest:Account {_workspace_id: $workspace_id}) WHERE src.acct_no = $a AND t._workspace_id = $channel_risk AND dest._workspace_id = $risk_tier AND src._workspace_id = $n AND src._workspace_id = $ts AND src._workspace_id = $acct_no RETURN dest.id AS dest_account_id, dest.acct_no AS dest_acct_no, dest.owner_id AS dest_owner_id LIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "grammar",
+      "question_id": "owners_two_hops",
+      "repeat": 0
+    },
+    {
+      "ok": true,
+      "attempts": 1,
+      "explained": true,
+      "ms": 2888.1,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id })-[t:TRANSFER]->(dest:Account {_workspace_id: $workspace_id}) WHERE src.acct_no = $a AND t._workspace_id = $channel_risk AND dest._workspace_id = $risk_tier AND src._workspace_id = $n AND src._workspace_id = $ts AND src._workspace_id = $acct_no RETURN dest.id AS dest_account_id, dest.acct_no AS dest_acct_no, dest.owner_id AS dest_owner_id LIMIT $limit",
+      "in_subset": true,
+      "subset_reasons": [],
+      "mode": "grammar",
+      "question_id": "owners_two_hops",
+      "repeat": 1
+    }
+  ]
+}
