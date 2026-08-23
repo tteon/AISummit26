@@ -66,6 +66,11 @@ trips, context) and what the database spends (db hits, latency, lock queueing).
 
 ## Reproducing on a rented GPU
 
+The operational runbook — credentials, offer-search field traps, the hybrid tunnel
+pattern, the paid-run pre-flight, and the teardown procedure — lives in
+`docs/vastai_handoff.md`. Read it before touching `vastai`; every rule in it was paid for
+once.
+
 Procedure: `docs/testbed.md`. Before trusting a run, check these, in order — each one has
 failed at least once, and all but the last fail *silently*:
 
