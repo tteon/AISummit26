@@ -1,0 +1,1002 @@
+{
+  "schema_version": "seocho.fibo.sessions-run.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-23T08:46:01+00:00",
+    "git_commit": "f17bb8126d640817ade3c37764607da6643b19c8",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/run_fibo_sessions.py",
+      "--provider",
+      "mara",
+      "--password",
+      "testpass1234",
+      "--arms",
+      "full_history,window,case_file",
+      "--seocho-src",
+      "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean",
+      "--seocho-otlp",
+      "http://127.0.0.1:4317",
+      "--out",
+      "results/bench/fibo_sessions_mara_20260822.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "1ac98b0dc1b2",
+    "db_container": "aisummit-simtest",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6520",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null
+  },
+  "config": {
+    "provider": "mara",
+    "model": null,
+    "base_url": null,
+    "native_context": null,
+    "max_model_len": null,
+    "pi_factor": null,
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "database": "finbenchl1",
+    "sessions": "configs/fibo_investigation_sessions.yaml",
+    "ontology": "ontology/finbench.ontology.yaml",
+    "anchor": null,
+    "arms": "full_history,window,case_file",
+    "validate_only": false,
+    "seocho_src": "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean",
+    "seocho_otlp": "http://127.0.0.1:4317",
+    "db_container": "aisummit-simtest",
+    "out": "results/bench/fibo_sessions_mara_20260822.json"
+  },
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "gpt-oss-120b",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 1000,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "seocho": {
+    "seocho_version": "0.2.0",
+    "seocho_path": "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean/src/seocho/__init__.py",
+    "source_prepended": "/tmp/claude-1000/-home-hadry-lab-AIsummit26/3a981bba-d21b-49e9-b20c-442c373c2d95/scratchpad/seocho-clean/src",
+    "backend": "otlp",
+    "endpoint": "http://127.0.0.1:4317",
+    "service_name": "seocho-aisummit26",
+    "metrics_enabled": true,
+    "tracing_enabled": true,
+    "tracing_backends": [
+      "otlp"
+    ],
+    "degraded_reasons": [],
+    "errors": null
+  },
+  "anchor": 108,
+  "summary": {
+    "full_history": {
+      "n": 17,
+      "correct": 10,
+      "generate_ms_mean": 56554.8,
+      "prompt_tokens": 10489,
+      "cached_tokens": 0,
+      "cache_rate": 0.0
+    },
+    "window": {
+      "n": 17,
+      "correct": 7,
+      "generate_ms_mean": 56135.3,
+      "prompt_tokens": 9215,
+      "cached_tokens": 0,
+      "cache_rate": 0.0
+    },
+    "case_file": {
+      "n": 17,
+      "correct": 8,
+      "generate_ms_mean": 3072.6,
+      "prompt_tokens": 8879,
+      "cached_tokens": 0,
+      "cache_rate": 0.0
+    }
+  },
+  "rows": [
+    {
+      "arm": "full_history",
+      "session": "follow_the_money",
+      "turn": "t1_top_sender",
+      "context_chars": 0,
+      "generate_ms": 3043.6,
+      "attempts": 1,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(tgt:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nWITH src, sum(t.amount) AS total_sent\nORDER BY total_sent DESC\nRETURN src.acct_no AS account_number, total_sent\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 456,
+        "completion_tokens": 616,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "follow_the_money",
+      "turn": "t2_owner",
+      "context_chars": 162,
+      "generate_ms": 2302.8,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id}) WHERE a.acct_no = $acct_no RETURN a.owner_id AS owner_id LIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 495,
+        "completion_tokens": 445,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "follow_the_money",
+      "turn": "t3_portfolio",
+      "context_chars": 232,
+      "generate_ms": 2094.3,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, owner_id: $owner_id}) RETURN a.owner_id AS owner, count(a) AS total_accounts LIMIT $limit",
+      "rows": 0,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 520,
+        "completion_tokens": 372,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "follow_the_money",
+      "turn": "t4_inflow_profile",
+      "context_chars": 305,
+      "generate_ms": 3004.6,
+      "attempts": 1,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[r:TRANSFER]->(dest:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nRETURN count(r) AS incoming_transfers, sum(r.amount) AS total_amount\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 554,
+        "completion_tokens": 657,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "follow_the_money",
+      "turn": "t5_sub_threshold",
+      "context_chars": 435,
+      "generate_ms": 907057.3,
+      "attempts": 2,
+      "cypher": "MATCH (target:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(target)\nWHERE t.amount < $amount_max\nRETURN count(t) AS inflows, sum(t.amount) AS total\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 1217,
+        "completion_tokens": 1628,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "follow_the_money",
+      "turn": "t6_rails",
+      "context_chars": 559,
+      "generate_ms": 5304.1,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, acct_no: $acct_no})-[:TRANSFER]-(b:Account {_workspace_id: $workspace_id})\nMATCH (a)-[:USES_CHANNEL]->(c:Channel {_workspace_id: $workspace_id})\nRETURN c.code AS channel, count(*) AS transactions\nORDER BY transactions DESC\nLIMIT $limit",
+      "rows": 2,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 636,
+        "completion_tokens": 1408,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "layering_reach",
+      "turn": "t1_top_beneficiary",
+      "context_chars": 0,
+      "generate_ms": 2844.4,
+      "attempts": 1,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src)-[t:TRANSFER]->(dst:Account {_workspace_id: $workspace_id})\nWITH dst.acct_no AS acct_no, sum(t.amount) AS total\nORDER BY total DESC\nLIMIT $limit\nRETURN acct_no, total",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 456,
+        "completion_tokens": 605,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "layering_reach",
+      "turn": "t2_reach",
+      "context_chars": 159,
+      "generate_ms": 3166.3,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id})\nWHERE a.acct_no = $acct_no\nMATCH (a)-[:TRANSFER*1..2]->(dest:Account {_workspace_id: $workspace_id})\nWHERE dest <> a\nRETURN count(DISTINCT dest) AS reachable_count\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 506,
+        "completion_tokens": 656,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "layering_reach",
+      "turn": "t3_owner",
+      "context_chars": 319,
+      "generate_ms": 2411.0,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nRETURN a.owner_id AS owner_id\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 532,
+        "completion_tokens": 429,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "layering_reach",
+      "turn": "t4_loans_nearby",
+      "context_chars": 402,
+      "generate_ms": 3120.1,
+      "attempts": 1,
+      "cypher": "MATCH (l:Loan {_workspace_id: $workspace_id})-[:DEPOSIT]->(start:Account {_workspace_id: $workspace_id})-[:TRANSFER*1..3]->(beneficiary:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) RETURN count(DISTINCT l) AS loanCount LIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 570,
+        "completion_tokens": 693,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "layering_reach",
+      "turn": "t5_owner_portfolio",
+      "context_chars": 540,
+      "generate_ms": 2729.5,
+      "attempts": 1,
+      "cypher": "MATCH (owner:Person {_workspace_id: $workspace_id, id: $owner_id})\nMATCH (a:Account {_workspace_id: $workspace_id, owner_id: $owner_id})\nRETURN count(a) AS account_count\nLIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 596,
+        "completion_tokens": 578,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "layering_reach",
+      "turn": "t6_risky_inflows",
+      "context_chars": 617,
+      "generate_ms": 9987.8,
+      "attempts": 2,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(beneficiary:Account {_workspace_id: $workspace_id, acct_no: $acct_no})-[:USES_CHANNEL]->(c:Channel {_workspace_id: $workspace_id})\nWHERE c.risk_weight >= $risk_weight\nRETURN count(t) AS transfers, sum(t.amount) AS total\nLIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 1286,
+        "completion_tokens": 2643,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "ubo_concentration",
+      "turn": "t1_top_holder",
+      "context_chars": 0,
+      "generate_ms": 2173.4,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id})\nWITH a.owner_id AS owner_id, count(a) AS account_count\nORDER BY account_count DESC\nRETURN owner_id, account_count\nLIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 449,
+        "completion_tokens": 376,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "ubo_concentration",
+      "turn": "t2_holdings",
+      "context_chars": 151,
+      "generate_ms": 1881.1,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, owner_id: $owner_id}) RETURN a.acct_no AS acct_no LIMIT $limit",
+      "rows": 0,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 485,
+        "completion_tokens": 298,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "ubo_concentration",
+      "turn": "t3_risky_exposure",
+      "context_chars": 244,
+      "generate_ms": 3284.5,
+      "attempts": 1,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(dst:Account {_workspace_id: $workspace_id, owner_id: $owner_id})-[:USES_CHANNEL]->(ch:Channel {_workspace_id: $workspace_id})\nWHERE ch.risk_weight >= $risk_weight\nRETURN count(t) AS incoming_transfer_count\nLIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 543,
+        "completion_tokens": 733,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "ubo_concentration",
+      "turn": "t4_login_devices",
+      "context_chars": 373,
+      "generate_ms": 4172.7,
+      "attempts": 1,
+      "cypher": "MATCH (owner:Person {_workspace_id: $workspace_id, id: $owner_id})-[:OWN]->(a:Account {_workspace_id: $workspace_id})\nMATCH (d:Medium {_workspace_id: $workspace_id})-[:SIGN_IN]->(a)\nRETURN count(DISTINCT d) AS device_count, count(*) AS sign_in_count\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 574,
+        "completion_tokens": 626,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "full_history",
+      "session": "ubo_concentration",
+      "turn": "t5_sub_threshold",
+      "context_chars": 506,
+      "generate_ms": 2854.2,
+      "attempts": 1,
+      "cypher": "MATCH (owner:Person {_workspace_id: $workspace_id, id: $owner_id})-[:OWN]->(a:Account {_workspace_id: $workspace_id})\nMATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER {_workspace_id: $workspace_id}]->(a)\nWHERE t.amount < $amount_max\nRETURN count(t) AS incoming_under_10000\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 614,
+        "completion_tokens": 609,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "follow_the_money",
+      "turn": "t1_top_sender",
+      "context_chars": 0,
+      "generate_ms": 2870.2,
+      "attempts": 1,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(tgt:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nWITH src, sum(t.amount) AS total_sent\nORDER BY total_sent DESC\nRETURN src.acct_no AS account_number, total_sent\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 456,
+        "completion_tokens": 616,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "follow_the_money",
+      "turn": "t2_owner",
+      "context_chars": 162,
+      "generate_ms": 2037.6,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nRETURN a.owner_id AS owner_id\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 494,
+        "completion_tokens": 334,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "follow_the_money",
+      "turn": "t3_portfolio",
+      "context_chars": 232,
+      "generate_ms": 2109.6,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id}) WHERE a.owner_id = $owner_id RETURN count(a) AS total_accounts LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 519,
+        "completion_tokens": 333,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "follow_the_money",
+      "turn": "t4_inflow_profile",
+      "context_chars": 165,
+      "generate_ms": 3425.0,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id}) WHERE a.acct_no = $acct_no\nMATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(a)\nRETURN count(t) AS incoming_transfers, count(DISTINCT src) AS distinct_senders\nLIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 510,
+        "completion_tokens": 790,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "follow_the_money",
+      "turn": "t5_sub_threshold",
+      "context_chars": 225,
+      "generate_ms": 3470.2,
+      "attempts": 1,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})- [t:TRANSFER]-> (target:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) WHERE t.amount < $amount_max RETURN count(t) AS inflows, sum(t.amount) AS total LIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 534,
+        "completion_tokens": 813,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "follow_the_money",
+      "turn": "t6_rails",
+      "context_chars": 276,
+      "generate_ms": 3677.4,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, acct_no: $acct_no})-[:USES_CHANNEL]->(c:Channel {_workspace_id: $workspace_id})\nOPTIONAL MATCH (a)-[t:TRANSFER]->()\nRETURN c.code AS channel, count(t) AS txCount\nORDER BY txCount DESC\nLIMIT $limit",
+      "rows": 2,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 542,
+        "completion_tokens": 880,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "layering_reach",
+      "turn": "t1_top_beneficiary",
+      "context_chars": 0,
+      "generate_ms": 3161.8,
+      "attempts": 1,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src)-[t:TRANSFER]->(dst:Account {_workspace_id: $workspace_id})\nWITH dst.acct_no AS acct_no, sum(t.amount) AS total\nORDER BY total DESC\nLIMIT $limit\nRETURN acct_no, total",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 456,
+        "completion_tokens": 605,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "layering_reach",
+      "turn": "t2_reach",
+      "context_chars": 159,
+      "generate_ms": 3423.0,
+      "attempts": 1,
+      "cypher": "MATCH (start:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (start)-[:TRANSFER*1..2]->(reach:Account {_workspace_id: $workspace_id})\nWHERE reach <> start\nWITH collect(DISTINCT reach) AS accounts\nRETURN size(accounts) AS distinct_account_count\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 505,
+        "completion_tokens": 749,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "layering_reach",
+      "turn": "t3_owner",
+      "context_chars": 319,
+      "generate_ms": 2368.7,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) RETURN a.owner_id AS owner_id LIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 531,
+        "completion_tokens": 419,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "layering_reach",
+      "turn": "t4_loans_nearby",
+      "context_chars": 265,
+      "generate_ms": 2840.4,
+      "attempts": 1,
+      "cypher": "MATCH (l:Loan {_workspace_id: $workspace_id})-[:DEPOSIT]->(src:Account {_workspace_id: $workspace_id})-[:TRANSFER*1..3]->(benef:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nRETURN count(DISTINCT l.id) AS loan_count\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 527,
+        "completion_tokens": 609,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "layering_reach",
+      "turn": "t5_owner_portfolio",
+      "context_chars": 243,
+      "generate_ms": 1959.6,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id}) WHERE a.owner_id = $owner_id RETURN count(a) AS total_accounts LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 516,
+        "completion_tokens": 331,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "layering_reach",
+      "turn": "t6_risky_inflows",
+      "context_chars": 237,
+      "generate_ms": 3786.2,
+      "attempts": 1,
+      "cypher": "MATCH (beneficiary:Account {_workspace_id: $workspace_id, acct_no: $acct_no})<- [t:TRANSFER]-(src:Account {_workspace_id: $workspace_id})-[:USES_CHANNEL]->(ch:Channel {_workspace_id: $workspace_id})\nWHERE ch.risk_weight >= $risk_weight\nRETURN count(t) AS transferCount, sum(t.amount) AS totalAmount\nLIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 532,
+        "completion_tokens": 932,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "ubo_concentration",
+      "turn": "t1_top_holder",
+      "context_chars": 0,
+      "generate_ms": 2136.1,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id})\nWITH a.owner_id AS owner_id, count(a) AS account_count\nORDER BY account_count DESC\nRETURN owner_id, account_count\nLIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 449,
+        "completion_tokens": 376,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "ubo_concentration",
+      "turn": "t2_holdings",
+      "context_chars": 151,
+      "generate_ms": 1958.6,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id}) WHERE a.owner_id = $owner_id RETURN a.acct_no AS acct_no LIMIT $limit",
+      "rows": 0,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 484,
+        "completion_tokens": 311,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "ubo_concentration",
+      "turn": "t3_risky_exposure",
+      "context_chars": 244,
+      "generate_ms": 3801.5,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, owner_id: $owner_id})\nMATCH (src:Account {_workspace_id: $workspace_id})-[:TRANSFER]->(a)\nMATCH (src)-[:USES_CHANNEL]->(c:Channel {_workspace_id: $workspace_id})\nWHERE c.risk_weight >= $risk_weight\nRETURN count(*) AS incoming_transfer_count\nLIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 542,
+        "completion_tokens": 910,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "ubo_concentration",
+      "turn": "t4_login_devices",
+      "context_chars": 244,
+      "generate_ms": 904909.5,
+      "attempts": 1,
+      "cypher": "MATCH (dev:Medium {_workspace_id: $workspace_id})-[:SIGN_IN]->(acct:Account {_workspace_id: $workspace_id})\nWHERE acct.owner_id = $owner_id\nRETURN count(DISTINCT dev) AS device_count, count(*) AS sign_in_total\nLIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 535,
+        "completion_tokens": 804,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "window",
+      "session": "ubo_concentration",
+      "turn": "t5_sub_threshold",
+      "context_chars": 284,
+      "generate_ms": 6365.1,
+      "attempts": 2,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, owner_id: $owner_id})\nMATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(a)\nWHERE t.amount < $amount_max\nRETURN count(t) AS incoming_transfers\nLIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 1083,
+        "completion_tokens": 1536,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "follow_the_money",
+      "turn": "t1_top_sender",
+      "context_chars": 0,
+      "generate_ms": 2886.2,
+      "attempts": 1,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(tgt:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nWITH src, sum(t.amount) AS total_sent\nORDER BY total_sent DESC\nRETURN src.acct_no AS account_number, total_sent\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 456,
+        "completion_tokens": 616,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "follow_the_money",
+      "turn": "t2_owner",
+      "context_chars": 80,
+      "generate_ms": 1907.2,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) RETURN a.owner_id AS owner_id LIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 473,
+        "completion_tokens": 298,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "follow_the_money",
+      "turn": "t3_portfolio",
+      "context_chars": 102,
+      "generate_ms": 1965.8,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, owner_id: $owner_id}) RETURN count(a) AS account_count LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 481,
+        "completion_tokens": 318,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "follow_the_money",
+      "turn": "t4_inflow_profile",
+      "context_chars": 129,
+      "generate_ms": 2897.6,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER]->(a)\nRETURN count(t) AS transfer_count, sum(t.amount) AS total_amount\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 501,
+        "completion_tokens": 586,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "follow_the_money",
+      "turn": "t5_sub_threshold",
+      "context_chars": 174,
+      "generate_ms": 3061.5,
+      "attempts": 1,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})- [r:TRANSFER]-> (dest:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nWHERE r.amount < $amount_max\nRETURN count(r) AS inflow_count, sum(r.amount) AS inflow_total\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 526,
+        "completion_tokens": 685,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "follow_the_money",
+      "turn": "t6_rails",
+      "context_chars": 211,
+      "generate_ms": 3321.5,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, acct_no: $acct_no})-[:USES_CHANNEL]->(c:Channel {_workspace_id: $workspace_id}) RETURN c.code AS channel, count(*) AS transactions ORDER BY transactions DESC LIMIT $limit",
+      "rows": 2,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 528,
+        "completion_tokens": 749,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "layering_reach",
+      "turn": "t1_top_beneficiary",
+      "context_chars": 0,
+      "generate_ms": 2919.3,
+      "attempts": 1,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src)-[t:TRANSFER]->(dst:Account {_workspace_id: $workspace_id})\nWITH dst.acct_no AS acct_no, sum(t.amount) AS total\nORDER BY total DESC\nLIMIT $limit\nRETURN acct_no, total",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 456,
+        "completion_tokens": 605,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "layering_reach",
+      "turn": "t2_reach",
+      "context_chars": 84,
+      "generate_ms": 3108.5,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (a)-[:TRANSFER*1..2]->(dest:Account {_workspace_id: $workspace_id})\nWHERE dest <> a\nRETURN count(DISTINCT dest) AS reachable_accounts\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 486,
+        "completion_tokens": 724,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "layering_reach",
+      "turn": "t3_owner",
+      "context_chars": 109,
+      "generate_ms": 2383.2,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, acct_no: $acct_no})-[:OWN]->(owner {_workspace_id: $workspace_id}) RETURN owner.id AS owner_id LIMIT $limit",
+      "rows": 0,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 485,
+        "completion_tokens": 459,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "layering_reach",
+      "turn": "t4_loans_nearby",
+      "context_chars": 132,
+      "generate_ms": 3064.5,
+      "attempts": 1,
+      "cypher": "MATCH (l:Loan {_workspace_id: $workspace_id})-[:DEPOSIT]->(src:Account {_workspace_id: $workspace_id})\nMATCH (src)-[:TRANSFER*1..3]->(benef:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nRETURN count(DISTINCT l) AS loan_count\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 505,
+        "completion_tokens": 704,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "layering_reach",
+      "turn": "t5_owner_portfolio",
+      "context_chars": 160,
+      "generate_ms": 2009.9,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, owner_id: $owner_id}) RETURN count(a) AS total_accounts LIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 507,
+        "completion_tokens": 342,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "layering_reach",
+      "turn": "t6_risky_inflows",
+      "context_chars": 193,
+      "generate_ms": 3661.9,
+      "attempts": 1,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})-[:TRANSFER {_workspace_id: $workspace_id}]->(dst:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (t)-[:USES_CHANNEL {_workspace_id: $workspace_id}]->(c:Channel {_workspace_id: $workspace_id})\nWHERE c.risk_weight >= $risk_weight\nRETURN count(t) AS transfer_count, sum(c.share) AS total_share\nLIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 537,
+        "completion_tokens": 875,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "ubo_concentration",
+      "turn": "t1_top_holder",
+      "context_chars": 0,
+      "generate_ms": 2108.4,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id})\nWITH a.owner_id AS owner_id, count(a) AS account_count\nORDER BY account_count DESC\nRETURN owner_id, account_count\nLIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 449,
+        "completion_tokens": 376,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "ubo_concentration",
+      "turn": "t2_holdings",
+      "context_chars": 74,
+      "generate_ms": 2150.9,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, owner_id: $owner_id}) RETURN a.acct_no AS acct_no LIMIT $limit",
+      "rows": 0,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 466,
+        "completion_tokens": 388,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "ubo_concentration",
+      "turn": "t3_risky_exposure",
+      "context_chars": 99,
+      "generate_ms": 7559.3,
+      "error": "ValueError: text2cypher rejected: explain_failed:CypherSyntaxError",
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 2,
+        "prompt_tokens": 1003,
+        "completion_tokens": 1946,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "ubo_concentration",
+      "turn": "t4_login_devices",
+      "context_chars": 130,
+      "generate_ms": 3047.9,
+      "attempts": 1,
+      "cypher": "MATCH (a:Account {_workspace_id: $workspace_id, owner_id: $owner_id})-[:SIGN_IN]->(d {_workspace_id: $workspace_id})\nRETURN count(DISTINCT d) AS device_count, count(*) AS sign_in_total\nLIMIT $limit",
+      "rows": 1,
+      "correct": false,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 503,
+        "completion_tokens": 672,
+        "cached_tokens": 0
+      }
+    },
+    {
+      "arm": "case_file",
+      "session": "ubo_concentration",
+      "turn": "t5_sub_threshold",
+      "context_chars": 171,
+      "generate_ms": 4180.6,
+      "attempts": 1,
+      "cypher": "MATCH (owner:Person {_workspace_id: $workspace_id, id: $owner_id})-[:OWN {_workspace_id: $workspace_id}]->(account:Account {_workspace_id: $workspace_id})\nMATCH (src:Account {_workspace_id: $workspace_id})-[t:TRANSFER {_workspace_id: $workspace_id}]->(account)\nWHERE t.amount < $amount_max\nRETURN count(t) AS incoming_transfer_count\nLIMIT $limit",
+      "rows": 1,
+      "correct": true,
+      "generate_usage": {
+        "llm_calls": 1,
+        "prompt_tokens": 517,
+        "completion_tokens": 934,
+        "cached_tokens": 0
+      }
+    }
+  ]
+}

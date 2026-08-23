@@ -171,10 +171,13 @@ async def main_async(args: Any) -> None:
                 usage_events: List[Dict[str, Any]] = []
                 _orig = backend.acomplete
                 async def _tracking(*a: Any, _o=_orig, _s=usage_events, **kw: Any):
+                    t_att = time.perf_counter()
                     r = await _o(*a, **kw)
                     u = getattr(r, "usage", None)
                     if u:
                         _s.append(dict(u))
+                    print(f'      [attempt {len(_s)}] {time.perf_counter()-t_att:.1f}s '
+                          f'out={u.get("completion_tokens") if u else "?"}tok', flush=True)
                     return r
                 backend.acomplete = _tracking  # type: ignore[method-assign]
 
