@@ -1,0 +1,138 @@
+{
+  "schema_version": "seocho.finbench.agent-topology.v1",
+  "run_id": "20260829T_failure_accounting_gate_v2",
+  "manifest": {
+    "timestamp_utc": "2026-08-29T07:36:42+00:00",
+    "git_commit": "6ca457b16eff3bf2910840ac31340f7b85db5c5f",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/bench_agent_topology.py",
+      "--password",
+      "<redacted>",
+      "--provider",
+      "mara",
+      "--databases",
+      "finbenchl1:1",
+      "--only",
+      "int_med_1",
+      "--arms",
+      "multi_typed",
+      "--repeats",
+      "1",
+      "--verifier-mode",
+      "advisory",
+      "--run-id",
+      "20260829T_failure_accounting_gate_v2"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "1ac98b0dc1b2",
+    "db_container": "aisummit-simtest",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6594",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "experiment": "agent-context-topology",
+    "schema_version": "seocho.finbench.agent-topology.v1"
+  },
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "gpt-oss-120b",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 1000,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "observability": {
+    "seocho_version": "0.6.0",
+    "seocho_path": "/home/hadry/lab/seocho-room/seocho/src/seocho/__init__.py",
+    "source_prepended": "/home/hadry/lab/seocho-room/seocho/src",
+    "backend": "otlp",
+    "endpoint": "http://127.0.0.1:4317",
+    "service_name": "seocho-agent-topology",
+    "metrics_enabled": false,
+    "tracing_enabled": true,
+    "tracing_backends": [
+      "otlp"
+    ],
+    "degraded_reasons": [],
+    "errors": null
+  },
+  "config": {
+    "provider": "mara",
+    "model": null,
+    "base_url": null,
+    "native_context": null,
+    "max_model_len": null,
+    "pi_factor": null,
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "databases": [
+      "finbenchl1:1"
+    ],
+    "ontology": "ontology/finbench.ontology.yaml",
+    "seocho_src": null,
+    "db_container": "aisummit-simtest",
+    "arms": [
+      "multi_typed"
+    ],
+    "only": [
+      "int_med_1"
+    ],
+    "repeats": 1,
+    "row_cap": 50,
+    "decision_tokens": 500,
+    "executor_tokens": 1000,
+    "verifier_mode": "advisory",
+    "seed": 29,
+    "run_id": "20260829T_failure_accounting_gate_v2",
+    "output_dir": "results/episodes/agent_topology",
+    "otlp_endpoint": "http://127.0.0.1:4317",
+    "tempo_url": "http://127.0.0.1:3200",
+    "validate_only": false,
+    "resume": false,
+    "samples": null,
+    "conversations": null,
+    "manifest_out": null,
+    "out": null
+  },
+  "graph": {
+    "finbenchl1:sf1": {
+      "anchor": 108
+    }
+  }
+}

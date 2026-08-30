@@ -58,6 +58,9 @@ def add_provider_args(parser: argparse.ArgumentParser, *, default_model: Optiona
                         help="served model name; for vllm it must match GET /v1/models")
     parser.add_argument("--base-url", default=None,
                         help="override the provider's base_url (default from *_BASE_URL)")
+    parser.add_argument("--request-timeout-s", type=float,
+                        default=float(os.getenv("MODEL_REQUEST_TIMEOUT_S", "180")),
+                        help="per-model-request timeout; recorded in the endpoint descriptor")
     # Position Interpolation is a server-side flag (--rope-scaling), so the harness cannot
     # turn it on from here — but it must record which window it ran against, or a run at 4x
     # the native context is indistinguishable from one at native in the results.
@@ -77,6 +80,7 @@ def model_config(args: Any = None, /, **overrides: Any) -> ModelConfig:
     if args is not None:
         for src, dest in (("provider", "provider"), ("model", "model_name"),
                           ("base_url", "base_url"), ("max_tokens", "max_tokens"),
+                          ("request_timeout_s", "request_timeout_s"),
                           ("temperature", "temperature"),
                           ("native_context", "native_context"),
                           ("max_model_len", "max_model_len"), ("pi_factor", "pi_factor")):

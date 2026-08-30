@@ -1,0 +1,125 @@
+{
+  "schema_version": "seocho.finbench.agent-topology.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-29T01:41:28+00:00",
+    "git_commit": "6ca457b16eff3bf2910840ac31340f7b85db5c5f",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/bench_agent_topology.py",
+      "--provider",
+      "mara",
+      "--model",
+      "gpt-oss-120b",
+      "--password",
+      "<redacted>",
+      "--databases",
+      "finbenchl1:1",
+      "--only",
+      "ext_med_2",
+      "--repeats",
+      "1",
+      "--samples",
+      "results/episodes/agent_topology_mara_pilot_20260829.samples.jsonl",
+      "--conversations",
+      "results/episodes/agent_topology_mara_pilot_20260829.conversations.jsonl",
+      "--manifest-out",
+      "results/episodes/agent_topology_mara_pilot_20260829.manifest.json",
+      "--out",
+      "results/episodes/agent_topology_mara_pilot_20260829.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "1ac98b0dc1b2",
+    "db_container": "aisummit-simtest",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6594",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "experiment": "agent-context-topology",
+    "schema_version": "seocho.finbench.agent-topology.v1"
+  },
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "gpt-oss-120b",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 1000,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "config": {
+    "provider": "mara",
+    "model": "gpt-oss-120b",
+    "base_url": null,
+    "native_context": null,
+    "max_model_len": null,
+    "pi_factor": null,
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "databases": [
+      "finbenchl1:1"
+    ],
+    "ontology": "ontology/finbench.ontology.yaml",
+    "seocho_src": null,
+    "db_container": "aisummit-simtest",
+    "arms": [
+      "direct_single",
+      "staged_single",
+      "multi_full",
+      "multi_typed",
+      "multi_envelope"
+    ],
+    "only": [
+      "ext_med_2"
+    ],
+    "repeats": 1,
+    "row_cap": 50,
+    "decision_tokens": 500,
+    "executor_tokens": 1000,
+    "seed": 29,
+    "validate_only": false,
+    "resume": false,
+    "samples": "results/episodes/agent_topology_mara_pilot_20260829.samples.jsonl",
+    "conversations": "results/episodes/agent_topology_mara_pilot_20260829.conversations.jsonl",
+    "manifest_out": "results/episodes/agent_topology_mara_pilot_20260829.manifest.json",
+    "out": "results/episodes/agent_topology_mara_pilot_20260829.json"
+  },
+  "graph": {
+    "finbenchl1:sf1": {
+      "anchor": 108
+    }
+  }
+}

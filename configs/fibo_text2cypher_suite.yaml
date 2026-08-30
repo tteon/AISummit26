@@ -27,7 +27,7 @@ questions:
   # ---- anchored basics -----------------------------------------------------------------
   - id: in_transfer_total
     family: anchored
-    fibo_anchor: "fibo-bp-prc:PaymentExecution"
+    fibo_anchor: "local:TRANSFER informed by fibo-fbc-pas-caa:IndividualTransaction"
     difficulty: easy
     question: "For account number {a}: how many incoming transfers are there and what is their total amount?"
     gold: >-
@@ -38,7 +38,7 @@ questions:
 
   - id: two_hop_reach
     family: anchored
-    fibo_anchor: "fibo-bp-prc:PaymentExecution (layering reach)"
+    fibo_anchor: "local:TRANSFER / fibo-fbc-pas-caa:IndividualTransaction (layering reach)"
     difficulty: medium
     question: "Starting from account {a}, how many distinct accounts can be reached in one or two outgoing transfers, excluding {a} itself?"
     gold: >-
@@ -66,7 +66,7 @@ questions:
 
   - id: recent_page
     family: anchored
-    fibo_anchor: "fibo-bp-prc:PaymentExecution"
+    fibo_anchor: "local:TRANSFER informed by fibo-fbc-pas-caa:IndividualTransaction"
     difficulty: easy
     question: "Show the most recent outgoing transfers of account {a}: counterparty, amount, timestamp."
     gold: >-
@@ -106,7 +106,7 @@ questions:
 
   - id: guarantee_chain
     family: ubo
-    fibo_anchor: "fibo-fbc-dae-dbt:ThirdPartyGuarantee (chained exposure)"
+    fibo_anchor: "fibo-fbc-dae-gty:Guaranty proxy (chained exposure)"
     difficulty: hard
     # Mutual (length-two) circles are zero on SF1, which would score blind; chains of two
     # guarantees exist (146 on SF1) and carry the same layered-exposure semantics. Stays
@@ -123,7 +123,7 @@ questions:
   # ---- FIBO payment-rail family (fibo-bp-prc) --------------------------------------------
   - id: rail_mix
     family: rail
-    fibo_anchor: "fibo-bp-prc:SettlementRail"
+    fibo_anchor: "local:PaymentRail informed by fibo-bp-prc-fcp:ClearingAndSettlement"
     difficulty: medium
     question: "Over which channels does account {a} transact, and how many transactions per channel?"
     gold: >-
@@ -134,7 +134,7 @@ questions:
 
   - id: risky_rail_senders
     family: rail
-    fibo_anchor: "fibo-bp-prc:SettlementRail (FATF high-risk)"
+    fibo_anchor: "local:PaymentRail / fibo-bp-prc-fcp:ClearingAndSettlement (FATF high-risk)"
     difficulty: medium
     # risk_weight defaults to 2 because the SF1 anchor's incoming transfers top out at
     # channel_risk 2 (4 of 5 qualify); on SF10+ raise it back toward FATF-high (4-5).
@@ -148,7 +148,7 @@ questions:
 
   - id: structuring_fanin
     family: rail
-    fibo_anchor: "fibo-bp-prc:PaymentExecution (structuring / smurfing fan-in)"
+    fibo_anchor: "local:TRANSFER / fibo-fbc-pas-caa:IndividualTransaction (structuring / smurfing fan-in)"
     difficulty: hard
     # min_count defaults to 1 because SF1's max fan-in is 1; raise it on SF10+ where senders
     # repeat. An empty gold answer is a scoring blind spot (empty == empty scores correct), so
@@ -163,7 +163,7 @@ questions:
 
   - id: sub_threshold_inflow
     family: rail
-    fibo_anchor: "fibo-bp-prc:PaymentExecution (sub-threshold placement)"
+    fibo_anchor: "local:TRANSFER / fibo-fbc-pas-caa:IndividualTransaction (sub-threshold placement)"
     difficulty: medium
     question: "How many transfers into account {a} stayed under {amount_max}, and what do they add up to?"
     gold: >-

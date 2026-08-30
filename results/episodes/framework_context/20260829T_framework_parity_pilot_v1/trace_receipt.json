@@ -1,0 +1,37 @@
+{
+  "schema_version": "seocho.trace-receipt.v1",
+  "trace_ids": [
+    "a749ca902647ba773f2ba8c4dc4e640e",
+    "b701b7cc898e0a50669192cb8053502a",
+    "b87ac86fe28944eccadc7531d5033476",
+    "bd5d27c31324333570825acd82419bb0"
+  ],
+  "local_jsonl": "results/episodes/framework_context/20260829T_framework_parity_pilot_v1/spans.jsonl",
+  "local_span_counts": {
+    "a749ca902647ba773f2ba8c4dc4e640e": 5,
+    "b701b7cc898e0a50669192cb8053502a": 5,
+    "b87ac86fe28944eccadc7531d5033476": 5,
+    "bd5d27c31324333570825acd82419bb0": 5
+  },
+  "local_complete": true,
+  "tempo_url": "http://127.0.0.1:3200",
+  "tempo": {
+    "a749ca902647ba773f2ba8c4dc4e640e": {
+      "found": true,
+      "detail": "batches=2"
+    },
+    "b701b7cc898e0a50669192cb8053502a": {
+      "found": true,
+      "detail": "batches=2"
+    },
+    "b87ac86fe28944eccadc7531d5033476": {
+      "found": true,
+      "detail": "batches=1"
+    },
+    "bd5d27c31324333570825acd82419bb0": {
+      "found": true,
+      "detail": "batches=1"
+    }
+  },
+  "tempo_complete": true
+}

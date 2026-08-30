@@ -16,6 +16,40 @@ from pathlib import Path
 from typing import Any, Dict
 
 
+_SECRET_FLAGS = frozenset({
+    "--password", "--api-key", "--api_key", "--token", "--access-token",
+    "--secret", "--client-secret",
+})
+
+
+def redacted_argv(argv: list[str] | None = None) -> list[str]:
+    """Return an argv safe to persist in a public measurement manifest.
+
+    Benchmark commands often take a database password even when the model key comes from
+    the environment.  Recording raw ``sys.argv`` therefore turned provenance into a secret
+    leak.  Preserve the flag and argument shape, but never its value.  Both ``--flag value``
+    and ``--flag=value`` forms are handled.
+    """
+    source = list(sys.argv if argv is None else argv)
+    out: list[str] = []
+    redact_next = False
+    for arg in source:
+        if redact_next:
+            out.append("<redacted>")
+            redact_next = False
+            continue
+        name, sep, _value = arg.partition("=")
+        if name.lower() in _SECRET_FLAGS:
+            if sep:
+                out.append(f"{name}=<redacted>")
+            else:
+                out.append(arg)
+                redact_next = True
+            continue
+        out.append(arg)
+    return out
+
+
 def _cmd(*args: str) -> str | None:
     try:
         return subprocess.check_output(list(args), text=True,
@@ -71,7 +105,7 @@ def manifest(db_container: str | None = None, **extra: Any) -> Dict[str, Any]:
                                           .isoformat(timespec="seconds"),
         "git_commit": _cmd("git", "-C", str(repo), "rev-parse", "HEAD"),
         "git_dirty": bool(_cmd("git", "-C", str(repo), "status", "--porcelain")),
-        "argv": sys.argv,
+        "argv": redacted_argv(),
         "python": sys.version.split()[0],
         "venv": sys.prefix,
         "kernel": platform.release(),

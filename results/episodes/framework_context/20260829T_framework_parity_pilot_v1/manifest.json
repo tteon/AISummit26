@@ -1,0 +1,128 @@
+{
+  "schema_version": "seocho.finbench.framework-context.v1",
+  "run_id": "20260829T_framework_parity_pilot_v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-29T07:15:03+00:00",
+    "git_commit": "6ca457b16eff3bf2910840ac31340f7b85db5c5f",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/bench_framework_context.py",
+      "--password",
+      "<redacted>",
+      "--provider",
+      "mara",
+      "--schedulers",
+      "procedural",
+      "langgraph",
+      "--context-policies",
+      "full_transcript",
+      "typed_isolated",
+      "--run-id",
+      "20260829T_framework_parity_pilot_v1"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "512M",
+    "db_heap_max": "",
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6594",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "experiment": "framework-context-parity"
+  },
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "gpt-oss-120b",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 1200,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "observability": {
+    "seocho_version": "0.6.0",
+    "seocho_path": "/home/hadry/lab/seocho-room/seocho/src/seocho/__init__.py",
+    "source_prepended": "/home/hadry/lab/seocho-room/seocho/src",
+    "backend": "otlp",
+    "endpoint": "http://127.0.0.1:4317",
+    "service_name": "seocho-framework-context",
+    "metrics_enabled": false,
+    "tracing_enabled": true,
+    "tracing_backends": [
+      "otlp"
+    ],
+    "degraded_reasons": [],
+    "errors": null
+  },
+  "config": {
+    "provider": "mara",
+    "model": null,
+    "base_url": null,
+    "native_context": null,
+    "max_model_len": null,
+    "pi_factor": null,
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "database": "finbenchl1",
+    "ontology": "ontology/finbench.ontology.yaml",
+    "seocho_src": null,
+    "question": "ext_med_2",
+    "schedulers": [
+      "procedural",
+      "langgraph"
+    ],
+    "context_policies": [
+      "full_transcript",
+      "typed_isolated"
+    ],
+    "row_cap": 50,
+    "max_tokens": 1200,
+    "run_id": "20260829T_framework_parity_pilot_v1",
+    "output_dir": "results/episodes/framework_context",
+    "otlp_endpoint": "http://127.0.0.1:4317",
+    "tempo_url": "http://127.0.0.1:3200",
+    "validate_only": false,
+    "resume": false
+  },
+  "graph": {
+    "database": "finbenchl1",
+    "anchor": 108
+  },
+  "frameworks": {
+    "openai_agents_sdk": "0.13.6",
+    "langgraph": "0.6.11"
+  }
+}

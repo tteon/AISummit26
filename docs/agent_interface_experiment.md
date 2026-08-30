@@ -1,0 +1,152 @@
+# FinBench in the agentic RAG era: Agent API ↔ Bolt interface experiment
+
+## Outcome
+
+The SF1/MARA pilot does **not** support “more agents” or “more ontology” as general
+improvements. It supports a narrower engineering claim:
+
+> FinBench is a useful agentic workload, but Bolt rows and exceptions are not by themselves
+> an agent coordination contract. Correctness and cost depend on the context and result
+> envelopes placed around Bolt.
+
+This is an exploratory pilot (one repeat, SF1), not a confidence-interval claim. Every number
+below is derived from raw samples in this repository; all 78 main episodes have both a local
+JSONL trace and a Tempo-resolvable trace ID.
+
+## Treatments
+
+The topology run holds the MARA endpoint/model, question, physical ontology, anchor,
+workspace, row cap, validator, temperature and database fixed.
+
+| Arm | Topology | Context | Bolt result contract |
+| --- | --- | --- | --- |
+| `direct_single` | one generation | question only | legacy rows |
+| `staged_single` | one logical agent, three stages | full transcript | legacy rows |
+| `multi_full` | three role labels | full transcript | legacy rows |
+| `multi_typed` | three role labels | typed isolated handoff | legacy rows |
+| `multi_envelope` | three role labels | typed isolated handoff | exact `ResultEnvelope` |
+
+`staged_single` and `multi_full` intentionally receive byte-identical visible inputs. On a
+stateless Chat Completions endpoint, separate Python Agent objects are not a treatment unless
+instructions, history, tools, state or concurrency differ. Their equality is a manipulation
+check, not evidence that multi-agent systems never matter.
+
+The FIBO run fixes the physical schema and changes only semantic context:
+
+| Arm | Semantic context |
+| --- | --- |
+| `physical_only` | executable FinBench schema only |
+| `compiled_fibo` | the complete versioned logical→physical projection |
+| `retrieved_fibo` | top lexical semantic cards selected from the question and FIBO anchor |
+
+FIBO is pinned to EDM Council `master_2026Q2`, commit
+`f59157fe156e3d91b1c045222d0a7dc06b7d78a2`. A card says exact/proxy,
+informative-only, local extension or unsupported. It never silently turns semantic
+similarity into a physical edge.
+
+## Results
+
+### Single agent, role agents and context isolation
+
+MARA endpoint: `gpt-oss-120b`; SF1 anchor: account 108; seven diagnostic questions.
+
+| Arm | Correct | Prompt tokens | Handoff chars | Graph trips | DB hits |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| direct single | 5/7 | 7,227 | 0 | 7 | 1,308,917 |
+| staged single | 4/7 | 30,519 | 57,862 | 7 | 531,749 |
+| multi full | 4/7 | 30,519 | 57,862 | 7 | 531,749 |
+| multi typed | 3/7, one refusal | 25,327 | 42,158 | 6 | 1,032,710 |
+| multi envelope | 3/7, one refusal | 25,748 | 43,524 | 6 | 1,032,710 |
+
+Interpretation:
+
+- Staged single and multi-full produced identical correctness, prompt tokens, handoff bytes
+  and initial Cypher on all seven pairs. Merely renaming stateless calls as agents changes
+  nothing.
+- Typed isolation reduced prompt tokens 17.01% and handoff characters 27.14% versus full
+  transcript, but lost one correct answer. On `int_med_1`, the planner invented
+  `account_id`; the typed handoff made that compression error authoritative and both
+  executor attempts were correctly refused.
+- Among the six questions executed by both full and typed arms, the median paired DB-hit
+  change was 0%. One correct typed query nevertheless increased hits from 177,500 to
+  812,155, so result correctness alone is not enough to approve an agent handoff.
+- The exact ResultEnvelope did not change initial Cypher or correctness in this pilot. Its
+  value is downstream: explicit completeness, evidence identity and pagination, which the
+  current answer scorer does not reward.
+- The LLM verifier falsely rejected eight correct results among 26 completed evaluations.
+  It is therefore advisory. An earlier invalid gate let it trigger repairs and demonstrated
+  a correct query being damaged; no production design should give this verifier write or
+  re-query authority without a deterministic policy gate.
+
+### OpenAI Agents SDK and LangGraph
+
+The same three OpenAI Agents SDK 0.13.6 role agents were executed with a procedural scheduler
+and LangGraph 0.6.11. For both full and typed context, the two schedulers produced identical
+Cypher, token counts and correctness. Scheduler choice is not a quality treatment when the
+state and calls are the same.
+
+On the one-question framework manipulation check, typed context succeeded while full history
+failed and used 23.26% fewer prompt tokens. This is directional evidence only; the seven-case
+topology run shows that typed compression can also make an incorrect plan harder to recover.
+
+### FIBO schema augmentation
+
+| Arm | Correct | Errors | Prompt tokens | Semantic chars | DB hits |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| physical only | 8/13 | 1 | 6,847 | 0 | 24,266 |
+| compiled FIBO | 6/13 | 0 | 19,274 | 49,725 | 694,017 |
+| retrieved FIBO | 6/13 | 1 | 14,310 | 17,250 | 693,438 |
+
+Full FIBO context added 181.5% prompt tokens, gained no questions and lost two that the
+physical schema answered. Retrieved cards reduced semantic context 65.31% and prompt tokens
+25.75% relative to the full projection, but retained the same 6/13 accuracy and nearly the
+same DB work.
+
+The strongest counterexample was `ubo_chain`: physical context was correct at 2,514 DB hits;
+both semantic arms invented an `Account.owner_id` join, were wrong, and consumed 668,225 hits.
+This is why a valid ontology term is not automatically a valid executable mapping.
+
+## Required interface
+
+The results motivate a versioned contract between an Agent API and Bolt/GDBMS:
+
+1. `QueryIntent`
+   - requested entities, direction, predicates, aggregation, ordering and expected shape;
+   - each semantic binding marked `exact`, `proxy`, `informative`, `unsupported` or
+     `unresolved` with source/version and confidence;
+   - uncertainties remain first-class instead of being compressed into authoritative names.
+2. `ExecutionRequest`
+   - physical Cypher template and typed named parameters;
+   - workspace, anchor, row cap, timeout and budget owned by the harness/service;
+   - ontology/projection version and accepted logical→physical rewrites;
+   - read-only and plan-quality policy applied before Bolt execution.
+3. `ResultEnvelope`
+   - rows plus columns/types/units, returned count, cap, `complete|partial|unknown`, cursor;
+   - evidence ID and query fingerprint;
+   - scope/anchor confirmation, warnings, error taxonomy and contract version;
+   - DB hits, server/client timing and result bytes as side-channel telemetry, not prompt data
+     unless a later stage needs them.
+4. `VerificationDecision`
+   - reason codes, observed evidence and requested revision separated from authority;
+   - deterministic gate decides whether another model or graph trip is permitted.
+5. `TraceContext`
+   - run ID, episode ID, trace ID and parent span propagated Agent→model and Agent→Bolt;
+   - append-only local trace remains available if the collector is unavailable.
+
+## Reproduction and provenance
+
+Primary artifacts:
+
+- topology raw/report: `results/episodes/agent_topology/20260829T_agent_topology_pilot_v2/`
+- Agents SDK/LangGraph parity: `results/episodes/framework_context/20260829T_framework_parity_pilot_v1/`
+- FIBO raw/report: `results/episodes/fibo_schema_context/20260829T_fibo_schema_pilot_v1/`
+- paired derived analysis: `results/analysis/agent_interface_readiness_20260829.json`
+- pinned projection validation: `results/analysis/fibo_projection_validation_20260829.json`
+
+Invalid and interrupted gates are retained under `results/episodes/invalid_*` with an
+`INVALID_REASON.md`; they are not included in any aggregate.
+
+Relevant external references are the
+[OpenAI model/agent evaluation guidance](https://developers.openai.com/api/docs/guides/latest-model),
+[LangGraph subgraph/state-isolation guidance](https://docs.langchain.com/oss/python/langgraph/use-subgraphs),
+and the [official EDM Council FIBO repository](https://github.com/edmcouncil/fibo).

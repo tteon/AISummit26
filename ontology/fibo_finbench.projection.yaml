@@ -1,0 +1,200 @@
+# Executable boundary between FIBO-facing terms and the physical FinBench graph.
+#
+# This is a projection registry, not a claim that the synthetic graph implements all FIBO.
+# `ontology/fibo_finbench.ontology.yaml` is the logical vocabulary; this file says which
+# terms can actually compile to the store.  An unsupported mapping is explicit because an
+# LLM must never turn a semantic resemblance into an executable relationship silently.
+name: fibo_finbench_projection
+version: 1.0.0
+logical_ontology: ontology/fibo_finbench.ontology.yaml
+physical_ontology: ontology/finbench.ontology.yaml
+semantic_source:
+  status: pinned_term_verified_projection_not_conformant
+  repository: https://github.com/edmcouncil/fibo
+  release: master_2026Q2
+  commit: f59157fe156e3d91b1c045222d0a7dc06b7d78a2
+  note: >-
+    Referenced terms were checked against the pinned official release. Mappings remain
+    explicit FinBench projections/proxies, not a claim that the synthetic graph conforms
+    to FIBO.
+  terms:
+    demand_deposit_account:
+      curie: fibo-fbc-pas-caa:DemandDepositAccount
+      file: FBC/ProductsAndServices/ClientsAndAccounts.rdf
+      status: proxy
+    natural_person:
+      curie: fibo-be-le-lp:LegallyCompetentNaturalPerson
+      file: BE/LegalEntities/LegalPersons.rdf
+      status: proxy
+    corporation:
+      curie: fibo-be-le-cb:Corporation
+      file: BE/LegalEntities/CorporateBodies.rdf
+      status: proxy
+    committed_credit_facility:
+      curie: fibo-fbc-dae-dbt:CommittedCreditFacility
+      file: FBC/DebtAndEquities/Debt.rdf
+      status: proxy
+    guaranty:
+      curie: fibo-fbc-dae-gty:Guaranty
+      file: FBC/DebtAndEquities/Guaranty.rdf
+      status: proxy
+    clearing_and_settlement:
+      curie: fibo-bp-prc-fcp:ClearingAndSettlement
+      file: BP/Process/FinancialContextAndProcess.rdf
+      status: informative_only
+    electronic_funds_transfer_service:
+      curie: fibo-fbc-fct-fse:ElectronicFundsTransferService
+      file: FBC/FunctionalEntities/FinancialServicesEntities.rdf
+      status: informative_only
+    individual_transaction:
+      curie: fibo-fbc-pas-caa:IndividualTransaction
+      file: FBC/ProductsAndServices/ClientsAndAccounts.rdf
+      status: informative_only
+
+nodes:
+  Account:
+    physical: Account
+    properties:
+      id: id
+      acct_no: acct_no
+      iban: iban
+      risk_tier: risk_tier
+      flagged: flagged
+      _workspace_id: _workspace_id
+  NaturalPerson:
+    physical: Person
+    properties:
+      id: id
+      name: name
+      country: country
+      _workspace_id: _workspace_id
+  LegalEntity:
+    physical: Company
+    properties:
+      id: id
+      name: name
+      sector: sector
+      jurisdiction:
+        status: unavailable
+        reason: The generated physical graph has no jurisdiction property.
+      _workspace_id: _workspace_id
+  LoanFacility:
+    physical: Loan
+    properties:
+      id: id
+      principal: principal
+      _workspace_id: _workspace_id
+  PaymentRail:
+    physical: Channel
+    properties:
+      code: code
+      label: label
+      risk_weight: risk_weight
+      _workspace_id: _workspace_id
+  LoginMedium:
+    physical: Medium
+    properties:
+      id: id
+      type: type
+      risk_level: risk_level
+      _workspace_id: _workspace_id
+
+relationships:
+  TRANSFER:
+    physical: TRANSFER
+    source: Account
+    target: Account
+    direction: same
+    properties: {amount: amount, ts: ts, channel_risk: channel_risk}
+  BENEFICIAL_OWNER_OF:
+    physical: OWN
+    source: NaturalPerson
+    target: Account
+    direction: same
+    semantic_scope: Natural-person subset of physical Person|Company ownership.
+  CONTROLS_ENTITY:
+    physical: INVEST
+    source: NaturalPerson
+    target: LegalEntity
+    direction: same
+    semantic_scope: >-
+      Candidate-control evidence only. INVEST is a holding relation and does not by itself
+      prove the FIBO legal notion of control.
+  SUBSIDIARY_OF:
+    status: unsupported
+    reason: >-
+      No physical edge proves subsidiary-to-parent semantics. Company-to-Company INVEST is
+      not an equivalent relation and must not be compiled as one.
+  GUARANTEES_PARTY:
+    physical: GUARANTEE
+    source: NaturalPerson
+    target: NaturalPerson
+    direction: same
+    semantic_scope: Natural-person subset of physical Person|Company guarantees.
+  DISBURSED_TO:
+    physical: DEPOSIT
+    source: LoanFacility
+    target: Account
+    direction: same
+  REPAID_BY:
+    physical: REPAY
+    source: Account
+    target: LoanFacility
+    direction: same
+  AUTHENTICATES_TO:
+    physical: SIGN_IN
+    source: LoginMedium
+    target: Account
+    direction: same
+
+# Physical relations required by the AML workload but absent from the narrow logical file.
+# These stay visible as local extensions rather than being assigned invented FIBO identity.
+physical_extensions:
+  USES_CHANNEL:
+    status: local_extension
+    semantic_term: account uses payment rail
+    source: Account
+    target: PaymentRail
+  APPLY:
+    status: local_extension
+    semantic_term: party applies for credit facility
+    source: NaturalPerson|LegalEntity
+    target: LoanFacility
+  INVEST:
+    status: local_extension
+    semantic_term: party holds an investment in legal entity
+    source: NaturalPerson|LegalEntity
+    target: LegalEntity
+  WITHDRAW:
+    status: local_extension
+    semantic_term: cash withdrawal / traceable-system exit
+    source: Account
+    target: Account
+
+role_views:
+  planner:
+    include:
+      - logical names and semantic aliases
+      - endpoint roles and direction
+      - authoritative versus denormalized properties
+      - aggregation semantics
+      - measured degree and selectivity hints with dataset provenance
+    exclude:
+      - physical driver timing
+      - raw execution plans
+  executor:
+    include:
+      - exact physical labels relationships and properties
+      - typed parameters and harness-owned scope anchor and row cap
+      - index and grammar capabilities
+      - logical-to-physical rewrite
+    exclude:
+      - unrelated FIBO vocabulary
+  verifier:
+    include:
+      - immutable QueryIntent
+      - executed physical Cypher and bound-parameter names
+      - expected columns types units and aggregation
+      - ResultEnvelope completeness provenance and error taxonomy
+    exclude:
+      - full conversation transcript by default

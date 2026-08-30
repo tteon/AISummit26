@@ -1,0 +1,179 @@
+{
+  "schema_version": "seocho.fibo.schema-context.v1",
+  "run_id": "20260829T_fibo_schema_gate_v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-29T07:41:12+00:00",
+    "git_commit": "6ca457b16eff3bf2910840ac31340f7b85db5c5f",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/bench_fibo_schema_context.py",
+      "--password",
+      "<redacted>",
+      "--provider",
+      "mara",
+      "--only",
+      "recent_page",
+      "--repeats",
+      "1",
+      "--run-id",
+      "20260829T_fibo_schema_gate_v1",
+      "--request-timeout-s",
+      "180"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "1ac98b0dc1b2",
+    "db_container": "aisummit-simtest",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6594",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "experiment": "fibo-schema-context"
+  },
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "gpt-oss-120b",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 2000,
+    "request_timeout_s": 180.0,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "observability": {
+    "seocho_version": "0.6.0",
+    "seocho_path": "/home/hadry/lab/seocho-room/seocho/src/seocho/__init__.py",
+    "source_prepended": "/home/hadry/lab/seocho-room/seocho/src",
+    "backend": "otlp",
+    "endpoint": "http://127.0.0.1:4317",
+    "service_name": "seocho-fibo-schema-context",
+    "metrics_enabled": false,
+    "tracing_enabled": true,
+    "tracing_backends": [
+      "otlp"
+    ],
+    "degraded_reasons": [],
+    "errors": null
+  },
+  "config": {
+    "provider": "mara",
+    "model": null,
+    "base_url": null,
+    "request_timeout_s": 180.0,
+    "native_context": null,
+    "max_model_len": null,
+    "pi_factor": null,
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "database": "finbenchl1",
+    "suite": "configs/fibo_text2cypher_suite.yaml",
+    "ontology": "ontology/finbench.ontology.yaml",
+    "projection": "ontology/fibo_finbench.projection.yaml",
+    "arms": [
+      "physical_only",
+      "compiled_fibo",
+      "retrieved_fibo"
+    ],
+    "only": [
+      "recent_page"
+    ],
+    "repeats": 1,
+    "retrieval_k": 5,
+    "row_cap": 50,
+    "max_tokens": 2000,
+    "seocho_src": null,
+    "db_container": "aisummit-simtest",
+    "run_id": "20260829T_fibo_schema_gate_v1",
+    "output_dir": "results/episodes/fibo_schema_context",
+    "otlp_endpoint": "http://127.0.0.1:4317",
+    "tempo_url": "http://127.0.0.1:3200",
+    "validate_only": false,
+    "resume": false
+  },
+  "graph": {
+    "database": "finbenchl1",
+    "anchor": 108
+  },
+  "semantic_source": {
+    "status": "pinned_term_verified_projection_not_conformant",
+    "repository": "https://github.com/edmcouncil/fibo",
+    "release": "master_2026Q2",
+    "commit": "f59157fe156e3d91b1c045222d0a7dc06b7d78a2",
+    "note": "Referenced terms were checked against the pinned official release. Mappings remain explicit FinBench projections/proxies, not a claim that the synthetic graph conforms to FIBO.",
+    "terms": {
+      "demand_deposit_account": {
+        "curie": "fibo-fbc-pas-caa:DemandDepositAccount",
+        "file": "FBC/ProductsAndServices/ClientsAndAccounts.rdf",
+        "status": "proxy"
+      },
+      "natural_person": {
+        "curie": "fibo-be-le-lp:LegallyCompetentNaturalPerson",
+        "file": "BE/LegalEntities/LegalPersons.rdf",
+        "status": "proxy"
+      },
+      "corporation": {
+        "curie": "fibo-be-le-cb:Corporation",
+        "file": "BE/LegalEntities/CorporateBodies.rdf",
+        "status": "proxy"
+      },
+      "committed_credit_facility": {
+        "curie": "fibo-fbc-dae-dbt:CommittedCreditFacility",
+        "file": "FBC/DebtAndEquities/Debt.rdf",
+        "status": "proxy"
+      },
+      "guaranty": {
+        "curie": "fibo-fbc-dae-gty:Guaranty",
+        "file": "FBC/DebtAndEquities/Guaranty.rdf",
+        "status": "proxy"
+      },
+      "clearing_and_settlement": {
+        "curie": "fibo-bp-prc-fcp:ClearingAndSettlement",
+        "file": "BP/Process/FinancialContextAndProcess.rdf",
+        "status": "informative_only"
+      },
+      "electronic_funds_transfer_service": {
+        "curie": "fibo-fbc-fct-fse:ElectronicFundsTransferService",
+        "file": "FBC/FunctionalEntities/FinancialServicesEntities.rdf",
+        "status": "informative_only"
+      },
+      "individual_transaction": {
+        "curie": "fibo-fbc-pas-caa:IndividualTransaction",
+        "file": "FBC/ProductsAndServices/ClientsAndAccounts.rdf",
+        "status": "informative_only"
+      }
+    }
+  }
+}

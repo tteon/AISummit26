@@ -1,0 +1,31 @@
+{
+  "schema_version": "seocho.trace-receipt.v1",
+  "trace_ids": [
+    "2311e6b41cfb4fdc9a33577d61bf99ad",
+    "f0e43901fcf9f385de688fad72c2ec94",
+    "f80b03a4786dece8464b5599d6fb44f8"
+  ],
+  "local_jsonl": "results/episodes/fibo_schema_context/20260829T_fibo_schema_gate_v2/spans.jsonl",
+  "local_span_counts": {
+    "f0e43901fcf9f385de688fad72c2ec94": 3,
+    "2311e6b41cfb4fdc9a33577d61bf99ad": 4,
+    "f80b03a4786dece8464b5599d6fb44f8": 4
+  },
+  "local_complete": true,
+  "tempo_url": "http://127.0.0.1:3200",
+  "tempo": {
+    "2311e6b41cfb4fdc9a33577d61bf99ad": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "f0e43901fcf9f385de688fad72c2ec94": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "f80b03a4786dece8464b5599d6fb44f8": {
+      "found": true,
+      "detail": "batches=2"
+    }
+  },
+  "tempo_complete": true
+}

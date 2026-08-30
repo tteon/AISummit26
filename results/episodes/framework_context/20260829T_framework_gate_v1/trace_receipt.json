@@ -1,0 +1,19 @@
+{
+  "schema_version": "seocho.trace-receipt.v1",
+  "trace_ids": [
+    "b7673e665de8300af5e45005cb231b53"
+  ],
+  "local_jsonl": "results/episodes/framework_context/20260829T_framework_gate_v1/spans.jsonl",
+  "local_span_counts": {
+    "b7673e665de8300af5e45005cb231b53": 5
+  },
+  "local_complete": true,
+  "tempo_url": "http://127.0.0.1:3200",
+  "tempo": {
+    "b7673e665de8300af5e45005cb231b53": {
+      "found": true,
+      "detail": "batches=1"
+    }
+  },
+  "tempo_complete": true
+}

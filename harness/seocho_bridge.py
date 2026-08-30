@@ -62,7 +62,8 @@ def _ensure_seocho_on_path(source: Optional[str]) -> Optional[str]:
 
 def enable_observability(*, backend: str = "otlp", endpoint: Optional[str] = None,
                          service_name: str = "seocho-aisummit26",
-                         source: Optional[str] = None) -> Dict[str, Any]:
+                         source: Optional[str] = None,
+                         enable_metrics: bool = True) -> Dict[str, Any]:
     """Turn on seocho's own metrics and tracing, and report what actually came up."""
     used_path = _ensure_seocho_on_path(source)
     endpoint = endpoint or os.getenv("SEOCHO_TRACE_OTLP_ENDPOINT") or DEFAULT_OTLP
@@ -73,11 +74,12 @@ def enable_observability(*, backend: str = "otlp", endpoint: Optional[str] = Non
 
     metrics_on = tracing_on = False
     errors: List[str] = []
-    try:
-        seocho_metrics.enable_metrics(backend=backend, endpoint=endpoint)
-        metrics_on = True
-    except Exception as exc:  # a missing exporter must not take the run down
-        errors.append(f"metrics: {type(exc).__name__}: {exc}")
+    if enable_metrics:
+        try:
+            seocho_metrics.enable_metrics(backend=backend, endpoint=endpoint)
+            metrics_on = True
+        except Exception as exc:  # a missing exporter must not take the run down
+            errors.append(f"metrics: {type(exc).__name__}: {exc}")
     try:
         tracing_on = bool(seocho_tracing.enable_tracing(
             backend=backend, endpoint=endpoint, service_name=service_name))
@@ -201,7 +203,8 @@ def make_llm_backend(cfg) -> Any:
     """
     from seocho.store.llm import create_llm_backend
     return create_llm_backend(provider=cfg.provider, model=cfg.model_name,
-                              api_key=cfg.api_key, base_url=cfg.base_url)
+                              api_key=cfg.api_key, base_url=cfg.base_url,
+                              timeout=cfg.request_timeout_s)
 
 
 def schema_map_from_ontology(ontology: Any) -> Dict[str, Any]:

@@ -1,0 +1,143 @@
+{
+  "schema_version": "seocho.fibo.projection-validation.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-29T07:59:16+00:00",
+    "git_commit": "6ca457b16eff3bf2910840ac31340f7b85db5c5f",
+    "git_dirty": true,
+    "argv": [
+      "scripts/analysis/validate_fibo_projection.py",
+      "--fibo-root",
+      "/tmp/fibo-2026Q2",
+      "--out",
+      "results/analysis/fibo_projection_validation_20260829.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "512M",
+    "db_heap_max": "",
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6594",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "validation": "fibo logical-to-physical projection"
+  },
+  "inputs": {
+    "projection": "ontology/fibo_finbench.projection.yaml",
+    "logical": "ontology/fibo_finbench.ontology.yaml",
+    "physical": "ontology/finbench.ontology.yaml",
+    "suite": "configs/fibo_text2cypher_suite.yaml"
+  },
+  "counts": {
+    "logical_nodes": 6,
+    "logical_relationships": 8,
+    "physical_nodes": 6,
+    "physical_relationships": 10,
+    "suite_questions": 13
+  },
+  "suite_terms": {
+    "labels": [
+      "Account",
+      "Channel",
+      "Company",
+      "Loan",
+      "Person"
+    ],
+    "relationships": [
+      "DEPOSIT",
+      "GUARANTEE",
+      "INVEST",
+      "OWN",
+      "REPAY",
+      "TRANSFER",
+      "USES_CHANNEL"
+    ]
+  },
+  "official_fibo": {
+    "requested_release": "master_2026Q2",
+    "requested_commit": "f59157fe156e3d91b1c045222d0a7dc06b7d78a2",
+    "terms": {
+      "demand_deposit_account": {
+        "curie": "fibo-fbc-pas-caa:DemandDepositAccount",
+        "file": "FBC/ProductsAndServices/ClientsAndAccounts.rdf",
+        "status": "proxy",
+        "defined_as_owl_class": true
+      },
+      "natural_person": {
+        "curie": "fibo-be-le-lp:LegallyCompetentNaturalPerson",
+        "file": "BE/LegalEntities/LegalPersons.rdf",
+        "status": "proxy",
+        "defined_as_owl_class": true
+      },
+      "corporation": {
+        "curie": "fibo-be-le-cb:Corporation",
+        "file": "BE/LegalEntities/CorporateBodies.rdf",
+        "status": "proxy",
+        "defined_as_owl_class": true
+      },
+      "committed_credit_facility": {
+        "curie": "fibo-fbc-dae-dbt:CommittedCreditFacility",
+        "file": "FBC/DebtAndEquities/Debt.rdf",
+        "status": "proxy",
+        "defined_as_owl_class": true
+      },
+      "guaranty": {
+        "curie": "fibo-fbc-dae-gty:Guaranty",
+        "file": "FBC/DebtAndEquities/Guaranty.rdf",
+        "status": "proxy",
+        "defined_as_owl_class": true
+      },
+      "clearing_and_settlement": {
+        "curie": "fibo-bp-prc-fcp:ClearingAndSettlement",
+        "file": "BP/Process/FinancialContextAndProcess.rdf",
+        "status": "informative_only",
+        "defined_as_owl_class": true
+      },
+      "electronic_funds_transfer_service": {
+        "curie": "fibo-fbc-fct-fse:ElectronicFundsTransferService",
+        "file": "FBC/FunctionalEntities/FinancialServicesEntities.rdf",
+        "status": "informative_only",
+        "defined_as_owl_class": true
+      },
+      "individual_transaction": {
+        "curie": "fibo-fbc-pas-caa:IndividualTransaction",
+        "file": "FBC/ProductsAndServices/ClientsAndAccounts.rdf",
+        "status": "informative_only",
+        "defined_as_owl_class": true
+      }
+    },
+    "checkout": "/tmp/fibo-2026Q2",
+    "actual_commit": "f59157fe156e3d91b1c045222d0a7dc06b7d78a2"
+  },
+  "errors": [],
+  "warnings": [
+    "logical node LegalEntity.jurisdiction: explicitly unavailable",
+    "logical relationship SUBSIDIARY_OF: explicitly unsupported"
+  ],
+  "valid": true
+}

@@ -76,6 +76,7 @@ class ModelConfig:
     model_name: Optional[str] = None
     temperature: float = 0.0
     max_tokens: int = 1000
+    request_timeout_s: float = 180.0
     base_url: Optional[str] = None
     api_key: Optional[str] = None
     # The window the server was started with, and how it got there. Position Interpolation
@@ -127,7 +128,8 @@ class ModelConfig:
                 f"provider {self.provider!r} needs a key: set {spec['api_key_env'][0]} in the "
                 "environment or .env"
             )
-        return {"api_key": self.api_key, "base_url": self.base_url}
+        return {"api_key": self.api_key, "base_url": self.base_url,
+                "timeout": self.request_timeout_s}
 
     @property
     def effective_context(self) -> Optional[int]:
@@ -146,6 +148,7 @@ class ModelConfig:
             "base_url": self.base_url,
             "temperature": self.temperature,
             "max_tokens": self.max_tokens,
+            "request_timeout_s": self.request_timeout_s,
             "extra_body": self.extra_body or None,
             "api_key_present": bool(self.api_key and self.api_key != "EMPTY"),
             "context": {

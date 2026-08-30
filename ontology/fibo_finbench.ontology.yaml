@@ -1,7 +1,8 @@
 # FIBO-Aligned Financial AML Domain Ontology (EDM Council FBC & BP Mapping)
 # Maps LDBC-FinBench AML Graph to FIBO (Financial Industry Business Ontology) standards:
 # - FBC (Financial Business & Commerce): fibo-fbc-pas-caa (Accounts), fibo-fbc-dae-dbt (Loans/Guarantees)
-# - BP (Business Process & Context): fibo-bp-prc (Payment Execution, Correspondent Banking, Clearing)
+# - BP/FBC: clearing context and financial-services vocabulary.  A physical Channel is a
+#   local FinBench extension; it is not asserted to be a FIBO class.
 
 name: fibo_finbench_aml
 version: 2.0.0
@@ -11,7 +12,7 @@ description: >
 
 nodes:
   Account:
-    description: "FIBO FBC: Current / Deposit Account (fibo-fbc-pas-caa:CurrentAccount)"
+    description: "FIBO FBC proxy: Demand Deposit Account (fibo-fbc-pas-caa:DemandDepositAccount)"
     properties:
       id: { property_type: STRING, unique: true, required: true }
       acct_no: { property_type: INTEGER, index: true, unique: true, required: true }
@@ -21,7 +22,7 @@ nodes:
       _workspace_id: { property_type: STRING, required: true }
 
   NaturalPerson:
-    description: "FIBO FBC: Individual Party / Ultimate Beneficial Owner (fibo-be-le-lp:NaturalPerson)"
+    description: "FIBO BE proxy: Legally Competent Natural Person (fibo-be-le-lp:LegallyCompetentNaturalPerson)"
     properties:
       id: { property_type: STRING, unique: true, required: true }
       name: { property_type: STRING }
@@ -45,7 +46,7 @@ nodes:
       _workspace_id: { property_type: STRING, required: true }
 
   PaymentRail:
-    description: "FIBO BP: Intermediary Clearing Rail / Channel (fibo-bp-prc:SettlementRail)"
+    description: "Local payment-channel extension informed by FIBO ClearingAndSettlement and ElectronicFundsTransferService"
     properties:
       code: { property_type: STRING, unique: true, required: true }
       label: { property_type: STRING }
@@ -65,7 +66,7 @@ relationships:
     source: Account
     target: Account
     cardinality: MANY_TO_MANY
-    description: "FIBO BP: Funds Transfer / Payment Execution (fibo-bp-prc:PaymentExecution)"
+    description: "Local transfer event; closest FIBO context is IndividualTransaction / ElectronicFundsTransferService"
     properties:
       amount: { property_type: FLOAT, index: true }
       ts: { property_type: TIMESTAMP, index: true }
@@ -93,7 +94,7 @@ relationships:
     source: NaturalPerson
     target: NaturalPerson
     cardinality: MANY_TO_MANY
-    description: "FIBO FBC: Credit Support / Third-Party Guarantee Agreement (fibo-fbc-dae-dbt:ThirdPartyGuarantee)"
+    description: "FIBO FBC proxy: Guaranty (fibo-fbc-dae-gty:Guaranty); party edge is a local projection"
 
   DISBURSED_TO:
     source: LoanFacility

@@ -86,7 +86,7 @@ joins the intermediates, tells the agent that `USING JOIN ON var` builds the joi
 node it picks, and points at the schema's cardinality figures for choosing the smallest-
 degree node. 48 episodes over the four cyclic questions (`int_med_1`, `int_hard_1`,
 `int_hard_1b`, `int_hard_2`) at SF100 and SF1000, against 4b as the control
-(`results/join_hints_ab.json`).
+(`results/scenarios/join_hints_ab.json`).
 
 | | correct | round trips | probes | JOIN-hinted probes | JOIN in settled query | p50 wall | median db hits |
 |---|---|---|---|---|---|---|---|

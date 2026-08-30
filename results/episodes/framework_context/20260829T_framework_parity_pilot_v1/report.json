@@ -1,0 +1,427 @@
+{
+  "schema_version": "seocho.finbench.framework-context.v1",
+  "run_id": "20260829T_framework_parity_pilot_v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-29T07:15:03+00:00",
+    "git_commit": "6ca457b16eff3bf2910840ac31340f7b85db5c5f",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/bench_framework_context.py",
+      "--password",
+      "<redacted>",
+      "--provider",
+      "mara",
+      "--schedulers",
+      "procedural",
+      "langgraph",
+      "--context-policies",
+      "full_transcript",
+      "typed_isolated",
+      "--run-id",
+      "20260829T_framework_parity_pilot_v1"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "512M",
+    "db_heap_max": "",
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6594",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "experiment": "framework-context-parity"
+  },
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "gpt-oss-120b",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 1200,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "observability": {
+    "seocho_version": "0.6.0",
+    "seocho_path": "/home/hadry/lab/seocho-room/seocho/src/seocho/__init__.py",
+    "source_prepended": "/home/hadry/lab/seocho-room/seocho/src",
+    "backend": "otlp",
+    "endpoint": "http://127.0.0.1:4317",
+    "service_name": "seocho-framework-context",
+    "metrics_enabled": false,
+    "tracing_enabled": true,
+    "tracing_backends": [
+      "otlp"
+    ],
+    "degraded_reasons": [],
+    "errors": null
+  },
+  "config": {
+    "provider": "mara",
+    "model": null,
+    "base_url": null,
+    "native_context": null,
+    "max_model_len": null,
+    "pi_factor": null,
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "database": "finbenchl1",
+    "ontology": "ontology/finbench.ontology.yaml",
+    "seocho_src": null,
+    "question": "ext_med_2",
+    "schedulers": [
+      "procedural",
+      "langgraph"
+    ],
+    "context_policies": [
+      "full_transcript",
+      "typed_isolated"
+    ],
+    "row_cap": 50,
+    "max_tokens": 1200,
+    "run_id": "20260829T_framework_parity_pilot_v1",
+    "output_dir": "results/episodes/framework_context",
+    "otlp_endpoint": "http://127.0.0.1:4317",
+    "tempo_url": "http://127.0.0.1:3200",
+    "validate_only": false,
+    "resume": false
+  },
+  "graph": {
+    "database": "finbenchl1",
+    "anchor": 108
+  },
+  "frameworks": {
+    "openai_agents_sdk": "0.13.6",
+    "langgraph": "0.6.11"
+  },
+  "trace_receipt": {
+    "schema_version": "seocho.trace-receipt.v1",
+    "trace_ids": [
+      "a749ca902647ba773f2ba8c4dc4e640e",
+      "b701b7cc898e0a50669192cb8053502a",
+      "b87ac86fe28944eccadc7531d5033476",
+      "bd5d27c31324333570825acd82419bb0"
+    ],
+    "local_jsonl": "results/episodes/framework_context/20260829T_framework_parity_pilot_v1/spans.jsonl",
+    "local_span_counts": {
+      "a749ca902647ba773f2ba8c4dc4e640e": 5,
+      "b701b7cc898e0a50669192cb8053502a": 5,
+      "b87ac86fe28944eccadc7531d5033476": 5,
+      "bd5d27c31324333570825acd82419bb0": 5
+    },
+    "local_complete": true,
+    "tempo_url": "http://127.0.0.1:3200",
+    "tempo": {
+      "a749ca902647ba773f2ba8c4dc4e640e": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "b701b7cc898e0a50669192cb8053502a": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "b87ac86fe28944eccadc7531d5033476": {
+        "found": true,
+        "detail": "batches=1"
+      },
+      "bd5d27c31324333570825acd82419bb0": {
+        "found": true,
+        "detail": "batches=1"
+      }
+    },
+    "tempo_complete": true
+  },
+  "samples": [
+    {
+      "episode_id": "20260829T_framework_parity_pilot_v1:procedural:full_transcript:ext_med_2",
+      "run_id": "20260829T_framework_parity_pilot_v1",
+      "scheduler": "procedural",
+      "context_policy": "full_transcript",
+      "agent_runtime": "openai_agents_sdk",
+      "question_id": "ext_med_2",
+      "trace_id": "a749ca902647ba773f2ba8c4dc4e640e",
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.4444,
+        "recall": 0.8,
+        "precision": 0.3077,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 6405.5,
+      "prompt_tokens": 3698,
+      "completion_tokens": 2597,
+      "model_calls": 3,
+      "handoff_chars": 8241,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $a})-[:TRANSFER]->(dst:Account {_workspace_id: $workspace_id})\nWITH DISTINCT dst.owner_id AS owner_id\nRETURN owner_id\nORDER BY owner_id ASC\nLIMIT $limit",
+      "db_hits": 71,
+      "db_ms": 8.225,
+      "result_bytes": 480,
+      "verifier": {
+        "pass": false,
+        "reason_codes": [
+          "incorrect_relationship_type",
+          "incorrect_property_access",
+          "missing_OWNED_BY_traversal",
+          "limit_not_enforced",
+          "unexpected_result_shape"
+        ],
+        "revision": "Replace the Cypher with a query that follows the planner's model:\n```\nMATCH (src:Account {_workspace_id: $workspace_id, account_number: $account_number})\n      -[:SENT_MONEY]->(dst:Account {_workspace_id: $workspace_id})\nMATCH (dst)-[:OWNED_BY]->(owner:Owner {_workspace_id: $workspace_id})\nWITH DISTINCT owner.owner_id AS owner_id\nRETURN owner_id\nORDER BY owner_id ASC\nLIMIT 5\n```\nUse `$account_number = 108` and ensure the `LIMIT` parameter is set to 5. This query traverses the correct `SENT_MONEY` edge, follows the `OWNED_BY` relationship to Owner nodes, deduplicates owner IDs, orders them ascending, and returns only the five lowest IDs as required."
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "prompt_tokens": 171,
+          "completion_tokens": 1391,
+          "requests": 1,
+          "elapsed_ms": 3171.2
+        },
+        {
+          "stage": "executor",
+          "prompt_tokens": 2075,
+          "completion_tokens": 553,
+          "requests": 1,
+          "elapsed_ms": 1615.8
+        },
+        {
+          "stage": "verifier",
+          "prompt_tokens": 1452,
+          "completion_tokens": 653,
+          "requests": 1,
+          "elapsed_ms": 1588.2
+        }
+      ]
+    },
+    {
+      "episode_id": "20260829T_framework_parity_pilot_v1:procedural:typed_isolated:ext_med_2",
+      "run_id": "20260829T_framework_parity_pilot_v1",
+      "scheduler": "procedural",
+      "context_policy": "typed_isolated",
+      "agent_runtime": "openai_agents_sdk",
+      "question_id": "ext_med_2",
+      "trace_id": "b701b7cc898e0a50669192cb8053502a",
+      "correct": true,
+      "score": {
+        "correct": true,
+        "f1": 0.5556,
+        "recall": 1.0,
+        "precision": 0.3846,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 5794.7,
+      "prompt_tokens": 2838,
+      "completion_tokens": 2617,
+      "model_calls": 3,
+      "handoff_chars": 6230,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $a})\nMATCH (src)-[:TRANSFER]->(rec:Account {_workspace_id: $workspace_id})\nMATCH (ownerNode)-[:OWN]->(rec {_workspace_id: $workspace_id})\nRETURN DISTINCT ownerNode.id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit",
+      "db_hits": 345,
+      "db_ms": 2.636,
+      "result_bytes": 507,
+      "verifier": {
+        "pass": false,
+        "reason_codes": [
+          "incorrect_result_count",
+          "incorrect_ordering",
+          "incorrect_value_type"
+        ],
+        "revision": "Adjust the query (or the parameters passed to it) so that it returns at most 5 owner IDs, sorted in ascending numeric order. Ensure the $limit parameter is set to 5 and that ownerNode.id is cast to integer before ordering, e.g.: \n```\nMATCH (src:Account {_workspace_id: $workspace_id, acct_no: $a})\nMATCH (src)-[:TRANSFER]->(rec:Account {_workspace_id: $workspace_id})\nMATCH (ownerNode)-[:OWN]->(rec {_workspace_id: $workspace_id})\nRETURN DISTINCT toInteger(ownerNode.id) AS owner_id\nORDER BY owner_id ASC\nLIMIT 5\n```"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "prompt_tokens": 171,
+          "completion_tokens": 1391,
+          "requests": 1,
+          "elapsed_ms": 2712.6
+        },
+        {
+          "stage": "executor",
+          "prompt_tokens": 1556,
+          "completion_tokens": 728,
+          "requests": 1,
+          "elapsed_ms": 1690.9
+        },
+        {
+          "stage": "verifier",
+          "prompt_tokens": 1111,
+          "completion_tokens": 498,
+          "requests": 1,
+          "elapsed_ms": 1385.1
+        }
+      ]
+    },
+    {
+      "episode_id": "20260829T_framework_parity_pilot_v1:langgraph:full_transcript:ext_med_2",
+      "run_id": "20260829T_framework_parity_pilot_v1",
+      "scheduler": "langgraph",
+      "context_policy": "full_transcript",
+      "agent_runtime": "openai_agents_sdk",
+      "question_id": "ext_med_2",
+      "trace_id": "b87ac86fe28944eccadc7531d5033476",
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.4444,
+        "recall": 0.8,
+        "precision": 0.3077,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 6266.7,
+      "prompt_tokens": 3698,
+      "completion_tokens": 2597,
+      "model_calls": 3,
+      "handoff_chars": 8241,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $a})-[:TRANSFER]->(dst:Account {_workspace_id: $workspace_id})\nWITH DISTINCT dst.owner_id AS owner_id\nRETURN owner_id\nORDER BY owner_id ASC\nLIMIT $limit",
+      "db_hits": 71,
+      "db_ms": 2.645,
+      "result_bytes": 480,
+      "verifier": {
+        "pass": false,
+        "reason_codes": [
+          "incorrect_relationship_type",
+          "incorrect_property_access",
+          "missing_OWNED_BY_traversal",
+          "limit_not_enforced",
+          "unexpected_result_shape"
+        ],
+        "revision": "Replace the Cypher with a query that follows the planner's model:\n```\nMATCH (src:Account {_workspace_id: $workspace_id, account_number: $account_number})\n      -[:SENT_MONEY]->(dst:Account {_workspace_id: $workspace_id})\nMATCH (dst)-[:OWNED_BY]->(owner:Owner {_workspace_id: $workspace_id})\nWITH DISTINCT owner.owner_id AS owner_id\nRETURN owner_id\nORDER BY owner_id ASC\nLIMIT 5\n```\nUse `$account_number = 108` and ensure the `LIMIT` parameter is set to 5. This query traverses the correct `SENT_MONEY` edge, follows the `OWNED_BY` relationship to Owner nodes, deduplicates owner IDs, orders them ascending, and returns only the five lowest IDs as required."
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "prompt_tokens": 171,
+          "completion_tokens": 1391,
+          "requests": 1,
+          "elapsed_ms": 2572.9
+        },
+        {
+          "stage": "executor",
+          "prompt_tokens": 2075,
+          "completion_tokens": 553,
+          "requests": 1,
+          "elapsed_ms": 1749.9
+        },
+        {
+          "stage": "verifier",
+          "prompt_tokens": 1452,
+          "completion_tokens": 653,
+          "requests": 1,
+          "elapsed_ms": 1692.0
+        }
+      ]
+    },
+    {
+      "episode_id": "20260829T_framework_parity_pilot_v1:langgraph:typed_isolated:ext_med_2",
+      "run_id": "20260829T_framework_parity_pilot_v1",
+      "scheduler": "langgraph",
+      "context_policy": "typed_isolated",
+      "agent_runtime": "openai_agents_sdk",
+      "question_id": "ext_med_2",
+      "trace_id": "bd5d27c31324333570825acd82419bb0",
+      "correct": true,
+      "score": {
+        "correct": true,
+        "f1": 0.5556,
+        "recall": 1.0,
+        "precision": 0.3846,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 5694.4,
+      "prompt_tokens": 2838,
+      "completion_tokens": 2617,
+      "model_calls": 3,
+      "handoff_chars": 6230,
+      "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $a})\nMATCH (src)-[:TRANSFER]->(rec:Account {_workspace_id: $workspace_id})\nMATCH (ownerNode)-[:OWN]->(rec {_workspace_id: $workspace_id})\nRETURN DISTINCT ownerNode.id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit",
+      "db_hits": 345,
+      "db_ms": 2.494,
+      "result_bytes": 507,
+      "verifier": {
+        "pass": false,
+        "reason_codes": [
+          "incorrect_result_count",
+          "incorrect_ordering",
+          "incorrect_value_type"
+        ],
+        "revision": "Adjust the query (or the parameters passed to it) so that it returns at most 5 owner IDs, sorted in ascending numeric order. Ensure the $limit parameter is set to 5 and that ownerNode.id is cast to integer before ordering, e.g.: \n```\nMATCH (src:Account {_workspace_id: $workspace_id, acct_no: $a})\nMATCH (src)-[:TRANSFER]->(rec:Account {_workspace_id: $workspace_id})\nMATCH (ownerNode)-[:OWN]->(rec {_workspace_id: $workspace_id})\nRETURN DISTINCT toInteger(ownerNode.id) AS owner_id\nORDER BY owner_id ASC\nLIMIT 5\n```"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "prompt_tokens": 171,
+          "completion_tokens": 1391,
+          "requests": 1,
+          "elapsed_ms": 2598.8
+        },
+        {
+          "stage": "executor",
+          "prompt_tokens": 1556,
+          "completion_tokens": 728,
+          "requests": 1,
+          "elapsed_ms": 1711.3
+        },
+        {
+          "stage": "verifier",
+          "prompt_tokens": 1111,
+          "completion_tokens": 498,
+          "requests": 1,
+          "elapsed_ms": 1370.8
+        }
+      ]
+    }
+  ]
+}

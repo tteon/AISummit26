@@ -1,0 +1,222 @@
+{
+  "schema_version": "seocho.fibo.suite-validation.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-29T07:59:19+00:00",
+    "git_commit": "6ca457b16eff3bf2910840ac31340f7b85db5c5f",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/validate_fibo_suite.py",
+      "--password",
+      "<redacted>",
+      "--out",
+      "results/analysis/fibo_suite_validation_20260829.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "1ac98b0dc1b2",
+    "db_container": "aisummit-simtest",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6594",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null
+  },
+  "config": {
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "database": "finbenchl1",
+    "suite": "configs/fibo_text2cypher_suite.yaml",
+    "ontology": "ontology/finbench.ontology.yaml",
+    "anchor": null,
+    "seocho_src": null,
+    "db_container": "aisummit-simtest",
+    "out": "results/analysis/fibo_suite_validation_20260829.json"
+  },
+  "anchor": 108,
+  "counts": {
+    "questions": 13,
+    "inside_subset": 9,
+    "outside_subset": 4
+  },
+  "rows": [
+    {
+      "id": "in_transfer_total",
+      "family": "anchored",
+      "declared_in_subset": true,
+      "params_missing": [],
+      "inlined_literals": [],
+      "runs": true,
+      "rows": 1,
+      "sample": "[{\"n\": 5, \"total\": 163488}]",
+      "grammar_member": true,
+      "seocho_violations": []
+    },
+    {
+      "id": "two_hop_reach",
+      "family": "anchored",
+      "declared_in_subset": true,
+      "params_missing": [],
+      "inlined_literals": [],
+      "runs": true,
+      "rows": 1,
+      "sample": "[{\"reachable\": 77}]",
+      "grammar_member": true,
+      "seocho_violations": []
+    },
+    {
+      "id": "owner_portfolio",
+      "family": "anchored",
+      "declared_in_subset": true,
+      "params_missing": [],
+      "inlined_literals": [],
+      "runs": true,
+      "rows": 1,
+      "sample": "[{\"owner\": \"757\", \"accounts\": 1}]",
+      "grammar_member": true,
+      "seocho_violations": []
+    },
+    {
+      "id": "recent_page",
+      "family": "anchored",
+      "declared_in_subset": true,
+      "params_missing": [],
+      "inlined_literals": [],
+      "runs": true,
+      "rows": 13,
+      "sample": "[{\"acct\": 1823, \"amount\": 12600, \"ts\": 1729587370}, {\"acct\": 405, \"amount\": 1125, \"ts\": 1727422792}]",
+      "grammar_member": true,
+      "seocho_violations": []
+    },
+    {
+      "id": "ubo_chain",
+      "family": "ubo",
+      "declared_in_subset": true,
+      "params_missing": [],
+      "inlined_literals": [],
+      "runs": true,
+      "rows": 1,
+      "sample": "[{\"ubo_candidates\": 111}]",
+      "grammar_member": true,
+      "seocho_violations": []
+    },
+    {
+      "id": "ubo_depth",
+      "family": "ubo",
+      "declared_in_subset": false,
+      "params_missing": [],
+      "inlined_literals": [],
+      "runs": true,
+      "rows": 50,
+      "sample": "[{\"owner\": \"21\", \"held\": 27}, {\"owner\": \"135\", \"held\": 8}]",
+      "grammar_member": false
+    },
+    {
+      "id": "guarantee_chain",
+      "family": "ubo",
+      "declared_in_subset": false,
+      "params_missing": [],
+      "inlined_literals": [],
+      "runs": true,
+      "rows": 1,
+      "sample": "[{\"chain_starters\": 115, \"chains\": 146}]",
+      "grammar_member": false
+    },
+    {
+      "id": "rail_mix",
+      "family": "rail",
+      "declared_in_subset": true,
+      "params_missing": [],
+      "inlined_literals": [],
+      "runs": true,
+      "rows": 6,
+      "sample": "[{\"channel\": \"INTERNET_BANKING\", \"transactions\": 4}, {\"channel\": \"OPEN_BANKING\", \"transactions\": 3}]",
+      "grammar_member": true,
+      "seocho_violations": []
+    },
+    {
+      "id": "risky_rail_senders",
+      "family": "rail",
+      "declared_in_subset": true,
+      "params_missing": [],
+      "inlined_literals": [],
+      "runs": true,
+      "rows": 1,
+      "sample": "[{\"risky_transfers\": 4, \"risky_amount\": 157871}]",
+      "grammar_member": true,
+      "seocho_violations": []
+    },
+    {
+      "id": "structuring_fanin",
+      "family": "rail",
+      "declared_in_subset": false,
+      "params_missing": [],
+      "inlined_literals": [],
+      "runs": true,
+      "rows": 5,
+      "sample": "[{\"sender\": 1723, \"k\": 1}, {\"sender\": 255, \"k\": 1}]",
+      "grammar_member": false
+    },
+    {
+      "id": "sub_threshold_inflow",
+      "family": "rail",
+      "declared_in_subset": true,
+      "params_missing": [],
+      "inlined_literals": [],
+      "runs": true,
+      "rows": 1,
+      "sample": "[{\"n\": 2, \"total\": 6085}]",
+      "grammar_member": true,
+      "seocho_violations": []
+    },
+    {
+      "id": "loan_disbursement_path",
+      "family": "loan",
+      "declared_in_subset": true,
+      "params_missing": [],
+      "inlined_literals": [],
+      "runs": true,
+      "rows": 1,
+      "sample": "[{\"loans\": 5}]",
+      "grammar_member": true,
+      "seocho_violations": []
+    },
+    {
+      "id": "loan_repay_imbalance",
+      "family": "loan",
+      "declared_in_subset": false,
+      "params_missing": [],
+      "inlined_literals": [],
+      "runs": true,
+      "rows": 50,
+      "sample": "[{\"loan\": \"20175\", \"principal\": 1867, \"repaid\": 187}, {\"loan\": \"20190\", \"principal\": 1717, \"repaid\": 191}]",
+      "grammar_member": false
+    }
+  ],
+  "problems": [],
+  "valid": true
+}

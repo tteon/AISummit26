@@ -1,0 +1,421 @@
+{
+  "schema_version": "seocho.finbench.agent-topology.v1",
+  "run_id": "20260829T_failure_accounting_gate_v2",
+  "manifest": {
+    "timestamp_utc": "2026-08-29T07:36:42+00:00",
+    "git_commit": "6ca457b16eff3bf2910840ac31340f7b85db5c5f",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/bench_agent_topology.py",
+      "--password",
+      "<redacted>",
+      "--provider",
+      "mara",
+      "--databases",
+      "finbenchl1:1",
+      "--only",
+      "int_med_1",
+      "--arms",
+      "multi_typed",
+      "--repeats",
+      "1",
+      "--verifier-mode",
+      "advisory",
+      "--run-id",
+      "20260829T_failure_accounting_gate_v2"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "1ac98b0dc1b2",
+    "db_container": "aisummit-simtest",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6594",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "experiment": "agent-context-topology",
+    "schema_version": "seocho.finbench.agent-topology.v1"
+  },
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "gpt-oss-120b",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 1000,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "observability": {
+    "seocho_version": "0.6.0",
+    "seocho_path": "/home/hadry/lab/seocho-room/seocho/src/seocho/__init__.py",
+    "source_prepended": "/home/hadry/lab/seocho-room/seocho/src",
+    "backend": "otlp",
+    "endpoint": "http://127.0.0.1:4317",
+    "service_name": "seocho-agent-topology",
+    "metrics_enabled": false,
+    "tracing_enabled": true,
+    "tracing_backends": [
+      "otlp"
+    ],
+    "degraded_reasons": [],
+    "errors": null
+  },
+  "config": {
+    "provider": "mara",
+    "model": null,
+    "base_url": null,
+    "native_context": null,
+    "max_model_len": null,
+    "pi_factor": null,
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "databases": [
+      "finbenchl1:1"
+    ],
+    "ontology": "ontology/finbench.ontology.yaml",
+    "seocho_src": null,
+    "db_container": "aisummit-simtest",
+    "arms": [
+      "multi_typed"
+    ],
+    "only": [
+      "int_med_1"
+    ],
+    "repeats": 1,
+    "row_cap": 50,
+    "decision_tokens": 500,
+    "executor_tokens": 1000,
+    "verifier_mode": "advisory",
+    "seed": 29,
+    "run_id": "20260829T_failure_accounting_gate_v2",
+    "output_dir": "results/episodes/agent_topology",
+    "otlp_endpoint": "http://127.0.0.1:4317",
+    "tempo_url": "http://127.0.0.1:3200",
+    "validate_only": false,
+    "resume": false,
+    "samples": null,
+    "conversations": null,
+    "manifest_out": null,
+    "out": null
+  },
+  "graph": {
+    "finbenchl1:sf1": {
+      "anchor": 108
+    }
+  },
+  "trace_receipt": {
+    "schema_version": "seocho.trace-receipt.v1",
+    "trace_ids": [
+      "bd73c6e7ee811a8e87c319ea86180958"
+    ],
+    "local_jsonl": "results/episodes/agent_topology/20260829T_failure_accounting_gate_v2/spans.jsonl",
+    "local_span_counts": {
+      "bd73c6e7ee811a8e87c319ea86180958": 4
+    },
+    "local_complete": true,
+    "tempo_url": "http://127.0.0.1:3200",
+    "tempo": {
+      "bd73c6e7ee811a8e87c319ea86180958": {
+        "found": true,
+        "detail": "batches=2"
+      }
+    },
+    "tempo_complete": true
+  },
+  "summary": {
+    "multi_typed": {
+      "n": 1,
+      "errors": 1,
+      "correct": 0,
+      "correct_rate": 0.0,
+      "model_calls": 3,
+      "prompt_tokens": 3514,
+      "completion_tokens": 3070,
+      "handoff_chars": 2546,
+      "graph_trips": 0,
+      "db_hits": 0,
+      "wall_ms_median": 0.0,
+      "db_ms_median": 0.0
+    }
+  },
+  "samples": [
+    {
+      "episode_id": "20260829T_failure_accounting_gate_v2:sf1:finbenchl1:int_med_1:r0:multi_typed",
+      "run_id": "20260829T_failure_accounting_gate_v2",
+      "arm": "multi_typed",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "typed_isolated",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "int_med_1",
+      "audience": "internal",
+      "difficulty": "medium",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": false,
+      "model_calls": 3,
+      "prompt_tokens": 3514,
+      "completion_tokens": 3070,
+      "cached_tokens": 0,
+      "handoff_chars": 2546,
+      "graph_trips": 0,
+      "unique_graph_queries": 0,
+      "redundant_graph_queries": 0,
+      "db_hits": 0,
+      "db_ms": 0.0,
+      "rows_into_context": 0,
+      "result_bytes": 0,
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            {
+              "name": "Account",
+              "type": "node",
+              "attributes": [
+                "account_id"
+              ]
+            },
+            {
+              "name": "Party",
+              "type": "node",
+              "attributes": [
+                "party_id"
+              ]
+            },
+            {
+              "name": "Transfer",
+              "type": "node",
+              "attributes": [
+                "transfer_id"
+              ]
+            }
+          ],
+          "relationships": [
+            {
+              "name": "OWNED_BY",
+              "from": "Account",
+              "to": "Party",
+              "direction": "outgoing"
+            },
+            {
+              "name": "FROM",
+              "from": "Transfer",
+              "to": "Account",
+              "direction": "outgoing"
+            },
+            {
+              "name": "TO",
+              "from": "Transfer",
+              "to": "Account",
+              "direction": "outgoing"
+            }
+          ],
+          "predicates": [
+            {
+              "description": "Source and destination accounts are distinct",
+              "expression": "src.account_id <> dst.account_id"
+            },
+            {
+              "description": "Both accounts share the same owning party",
+              "expression": "src-[:OWNED_BY]->p AND dst-[:OWNED_BY]->p"
+            },
+            {
+              "description": "There exists at least one direct transfer from source to destination",
+              "expression": "EXISTS ( (t:Transfer)-[:FROM]->src AND (t)-[:TO]->dst )"
+            }
+          ],
+          "aggregation": {
+            "type": "count_distinct",
+            "target": [
+              "src.account_id",
+              "dst.account_id"
+            ],
+            "alias": "ordered_pair_count"
+          },
+          "ordering": null,
+          "expected_shape": {
+            "type": "single_row",
+            "columns": [
+              {
+                "name": "ordered_pair_count",
+                "type": "integer"
+              }
+            ]
+          },
+          "assumptions": [
+            "Each Account node has exactly one outgoing OWNED_BY edge to a Party node.",
+            "Transfer nodes have exactly one outgoing FROM edge to the source Account and one outgoing TO edge to the destination Account.",
+            "Self\u2011transfers (source = destination) are possible in the data but must be excluded by the query."
+          ],
+          "uncertainties": [
+            "Whether ownership is modeled via a property on Account instead of an OWNED_BY edge.",
+            "If multiple Transfer nodes can represent the same logical transfer (duplicate records)."
+          ],
+          "acceptance_tests": [
+            {
+              "description": "Simple graph with two parties, each owning two accounts, and one transfer from A1\u2192A2 and another from B1\u2192B2.",
+              "graph": {
+                "accounts": [
+                  "A1",
+                  "A2",
+                  "B1",
+                  "B2"
+                ],
+                "parties": [
+                  "P1",
+                  "P2"
+                ],
+                "ownership": [
+                  [
+                    "A1",
+                    "P1"
+                  ],
+                  [
+                    "A2",
+                    "P1"
+                  ],
+                  [
+                    "B1",
+                    "P2"
+                  ],
+                  [
+                    "B2",
+                    "P2"
+                  ]
+                ],
+                "transfers": [
+                  [
+                    "T1",
+                    "A1",
+                    "A2"
+                  ],
+                  [
+                    "T2",
+                    "B1",
+                    "B2"
+                  ]
+                ]
+              },
+              "expected_result": 2
+            },
+            {
+              "description": "Graph where three accounts belong to the same party and there are transfers A\u2192B, A\u2192C, B\u2192C, plus a duplicate transfer A\u2192B.",
+              "graph": {
+                "accounts": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "party": "P",
+                "ownership": [
+                  [
+                    "A",
+                    "P"
+                  ],
+                  [
+                    "B",
+                    "P"
+                  ],
+                  [
+                    "C",
+                    "P"
+                  ]
+                ],
+                "transfers": [
+                  [
+                    "T1",
+                    "A",
+                    "B"
+                  ],
+                  [
+                    "T2",
+                    "A",
+                    "B"
+                  ],
+                  "duplicate",
+                  [
+                    "T3",
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "T4",
+                    "B",
+                    "C"
+                  ]
+                ]
+              },
+              "expected_result": 3
+            }
+          ]
+        },
+        "executor_failed": true
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "prompt_tokens": 222,
+          "completion_tokens": 1125,
+          "cached_tokens": 0,
+          "elapsed_ms": 6986.2
+        },
+        {
+          "stage": "executor",
+          "prompt_tokens": 1643,
+          "completion_tokens": 734,
+          "cached_tokens": 0,
+          "elapsed_ms": 3222.0
+        },
+        {
+          "stage": "executor",
+          "prompt_tokens": 1649,
+          "completion_tokens": 1211,
+          "cached_tokens": 0,
+          "elapsed_ms": 4422.5
+        }
+      ],
+      "executions": [],
+      "error": "ValueError: text2cypher rejected: unknown_properties:account_id",
+      "trace_id": "bd73c6e7ee811a8e87c319ea86180958",
+      "root_span_id": "1c43618821f7a651"
+    }
+  ]
+}

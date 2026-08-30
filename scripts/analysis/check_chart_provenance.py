@@ -39,8 +39,8 @@ def main() -> None:
     check("markdown tokens", 6221, tokens["markdown_table"], "format_tokens.json", 0)
     check("CSV tokens", 5211, tokens["csv"], "format_tokens.json", 0)
 
-    print("[transport panel] <- results/interface_bridge2_20260808.txt")
-    txt = Path("results/interface_bridge2_20260808.txt").read_text()
+    print("[transport panel] <- results/interface/bench_bridge2_20260808.txt")
+    txt = (bench / "bench_bridge2_20260808.txt").read_text()
     med = {m.group(1).strip(): float(m.group(2))
            for m in re.finditer(r"^\s{2}(\S.*?)\s{2,}median\s+([\d.]+) ms", txt, re.M)}
     check("HTTP full body ms", 397.65, med["http full body"], "bridge2 txt", 0)
@@ -140,9 +140,9 @@ def main() -> None:
     check("worst under-estimate (x)", 1067333, round(ratios[-1]),
           "agent_interaction.json", 1)
 
-    print("[4c JOIN-hint arm] <- results/join_hints_ab.json")
+    print("[4c JOIN-hint arm] <- results/scenarios/join_hints_ab.json")
     import re as _re
-    jab = json.loads(Path("results/join_hints_ab.json").read_text())["episodes"]
+    jab = json.loads(Path("results/scenarios/join_hints_ab.json").read_text())["episodes"]
     jc = [e for e in jab if e["arm"] == "plan_hints_join"]
     probes = [c for e in jc for c in e.get("engineering_calls", [])
               if _re.search(r"USING\s+JOIN\s+ON", c.get("cypher") or "", _re.I)]

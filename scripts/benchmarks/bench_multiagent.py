@@ -11,16 +11,19 @@ convention as the neo4rs_native results.
 from __future__ import annotations
 
 import datetime
+import importlib.util
 import json
 import subprocess
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
-from runmeta import manifest
-
 REPO = Path(__file__).resolve().parents[2]
 BIN = REPO / "rust-harness/target/release/rust-harness"
+
+_spec = importlib.util.spec_from_file_location(
+    "runmeta", REPO / "scripts" / "analysis" / "runmeta.py")
+runmeta = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(runmeta)  # type: ignore[union-attr]
 
 SWEEPS: dict[str, list[list]] = {
     # consume-side CPU wall: N agents, episode = 1 indexed lookup + 5 stream pages
@@ -52,9 +55,10 @@ def main() -> None:
         ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         path = REPO / "results" / "bench" / f"multiagent_{arm}_{ts}.json"
         path.write_text(json.dumps({
-            "manifest": manifest(bench="multiagent-replay", arm=arm,
-                                 source="rust-harness", neo4j_rust_crate="0.2.0",
-                                 harness="thread-per-agent, session+explicit tx per agent"),
+            "manifest": runmeta.manifest(
+                bench="multiagent-replay", arm=arm,
+                source="rust-harness", neo4j_rust_crate="0.2.0",
+                harness="thread-per-agent, session+explicit tx per agent"),
             "runs": runs,
         }, indent=1))
         print(f"wrote {path}", file=sys.stderr)

@@ -1,0 +1,1751 @@
+{
+  "schema_version": "seocho.finbench.agent-topology.v1",
+  "run_id": "20260829T_agent_topology_gate_v2",
+  "manifest": {
+    "timestamp_utc": "2026-08-29T01:55:11+00:00",
+    "git_commit": "6ca457b16eff3bf2910840ac31340f7b85db5c5f",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/bench_agent_topology.py",
+      "--password",
+      "<redacted>",
+      "--provider",
+      "mara",
+      "--databases",
+      "finbenchl1:1",
+      "--only",
+      "ext_med_2",
+      "--repeats",
+      "1",
+      "--run-id",
+      "20260829T_agent_topology_gate_v2",
+      "--otlp-endpoint",
+      "http://127.0.0.1:4317"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "1ac98b0dc1b2",
+    "db_container": "aisummit-simtest",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6594",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "experiment": "agent-context-topology",
+    "schema_version": "seocho.finbench.agent-topology.v1"
+  },
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "gpt-oss-120b",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 1000,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "observability": {
+    "seocho_version": "0.6.0",
+    "seocho_path": "/home/hadry/lab/seocho-room/seocho/src/seocho/__init__.py",
+    "source_prepended": "/home/hadry/lab/seocho-room/seocho/src",
+    "backend": "otlp",
+    "endpoint": "http://127.0.0.1:4317",
+    "service_name": "seocho-agent-topology",
+    "metrics_enabled": true,
+    "tracing_enabled": true,
+    "tracing_backends": [
+      "otlp"
+    ],
+    "degraded_reasons": [],
+    "errors": null
+  },
+  "config": {
+    "provider": "mara",
+    "model": null,
+    "base_url": null,
+    "native_context": null,
+    "max_model_len": null,
+    "pi_factor": null,
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "databases": [
+      "finbenchl1:1"
+    ],
+    "ontology": "ontology/finbench.ontology.yaml",
+    "seocho_src": null,
+    "db_container": "aisummit-simtest",
+    "arms": [
+      "direct_single",
+      "staged_single",
+      "multi_full",
+      "multi_typed",
+      "multi_envelope"
+    ],
+    "only": [
+      "ext_med_2"
+    ],
+    "repeats": 1,
+    "row_cap": 50,
+    "decision_tokens": 500,
+    "executor_tokens": 1000,
+    "seed": 29,
+    "run_id": "20260829T_agent_topology_gate_v2",
+    "output_dir": "results/episodes/agent_topology",
+    "otlp_endpoint": "http://127.0.0.1:4317",
+    "validate_only": false,
+    "resume": false,
+    "samples": null,
+    "conversations": null,
+    "manifest_out": null,
+    "out": null
+  },
+  "graph": {
+    "finbenchl1:sf1": {
+      "anchor": 108
+    }
+  },
+  "summary": {
+    "direct_single": {
+      "n": 1,
+      "correct": 0,
+      "correct_rate": 0.0,
+      "model_calls": 1,
+      "prompt_tokens": 883,
+      "completion_tokens": 536,
+      "handoff_chars": 0,
+      "graph_trips": 1,
+      "db_hits": 71,
+      "wall_ms_median": 2290.6,
+      "db_ms_median": 5.75
+    },
+    "staged_single": {
+      "n": 1,
+      "correct": 1,
+      "correct_rate": 1.0,
+      "model_calls": 5,
+      "prompt_tokens": 8344,
+      "completion_tokens": 5117,
+      "handoff_chars": 8066,
+      "graph_trips": 2,
+      "db_hits": 729,
+      "wall_ms_median": 22107.5,
+      "db_ms_median": 15.92
+    },
+    "multi_full": {
+      "n": 1,
+      "correct": 0,
+      "correct_rate": 0.0,
+      "model_calls": 5,
+      "prompt_tokens": 8350,
+      "completion_tokens": 4638,
+      "handoff_chars": 8065,
+      "graph_trips": 2,
+      "db_hits": 442,
+      "wall_ms_median": 22610.3,
+      "db_ms_median": 16.49
+    },
+    "multi_typed": {
+      "n": 1,
+      "correct": 0,
+      "correct_rate": 0.0,
+      "model_calls": 5,
+      "prompt_tokens": 6323,
+      "completion_tokens": 3907,
+      "handoff_chars": 6115,
+      "graph_trips": 2,
+      "db_hits": 142,
+      "wall_ms_median": 18382.9,
+      "db_ms_median": 13.35
+    },
+    "multi_envelope": {
+      "n": 1,
+      "correct": 0,
+      "correct_rate": 0.0,
+      "model_calls": 4,
+      "prompt_tokens": 4716,
+      "completion_tokens": 3527,
+      "handoff_chars": 6331,
+      "graph_trips": 2,
+      "db_hits": 142,
+      "wall_ms_median": 16351.8,
+      "db_ms_median": 9.76
+    }
+  },
+  "samples": [
+    {
+      "episode_id": "20260829T_agent_topology_gate_v2:sf1:finbenchl1:ext_med_2:r0:multi_typed",
+      "run_id": "20260829T_agent_topology_gate_v2",
+      "arm": "multi_typed",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "typed_isolated",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_med_2",
+      "audience": "external",
+      "difficulty": "medium",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.4444,
+        "recall": 0.8,
+        "precision": 0.3077,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 18382.9,
+      "model_calls": 5,
+      "prompt_tokens": 6323,
+      "completion_tokens": 3907,
+      "cached_tokens": 0,
+      "handoff_chars": 6115,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 2795,
+        "executor_to_verifier": 3320
+      },
+      "graph_trips": 2,
+      "unique_graph_queries": 2,
+      "redundant_graph_queries": 0,
+      "db_hits": 142,
+      "db_ms": 13.352,
+      "rows_into_context": 26,
+      "result_bytes": 528,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "incorrect_row_count",
+        "exceeds_limit"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            {
+              "name": "Account",
+              "key": "account_number",
+              "attributes": [
+                "account_number"
+              ]
+            },
+            {
+              "name": "Owner",
+              "key": "owner_id",
+              "attributes": [
+                "owner_id"
+              ]
+            }
+          ],
+          "relationships": [
+            {
+              "type": "SENT_MONEY",
+              "from": "Account",
+              "to": "Account",
+              "direction": "outgoing"
+            },
+            {
+              "type": "OWNED_BY",
+              "from": "Account",
+              "to": "Owner",
+              "direction": "outgoing"
+            }
+          ],
+          "predicates": [
+            {
+              "entity": "Account",
+              "attribute": "account_number",
+              "operator": "=",
+              "value": 108,
+              "role": "source"
+            }
+          ],
+          "aggregation": null,
+          "ordering": {
+            "attribute": "owner_id",
+            "direction": "asc",
+            "limit": 5
+          },
+          "expected_shape": {
+            "type": "list",
+            "items": {
+              "type": "integer",
+              "description": "owner_id"
+            },
+            "description": "Five lowest owner IDs owning accounts that received money from account 108, sorted ascending."
+          },
+          "assumptions": [
+            "Account numbers are unique identifiers for accounts.",
+            "Each account has at least one owner; ownership is represented by the OWNED_BY relationship.",
+            "SENT_MONEY edges are directed from the sending account to the receiving account.",
+            "Owner IDs are unique across owners.",
+            "If an account has multiple owners, each owner is considered separately."
+          ],
+          "uncertainties": [
+            "Some destination accounts may lack an OWNED_BY relationship, causing missing owners.",
+            "Accounts could have multiple owners, leading to duplicate owner IDs before deduplication.",
+            "The data source may contain stale or incomplete transaction records."
+          ],
+          "acceptance_tests": [
+            {
+              "description": "Basic scenario with distinct owners",
+              "data": {
+                "accounts": [
+                  {
+                    "account_number": 108
+                  },
+                  {
+                    "account_number": 200
+                  },
+                  {
+                    "account_number": 201
+                  },
+                  {
+                    "account_number": 202
+                  }
+                ],
+                "transactions": [
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 200
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 201
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 202
+                  }
+                ],
+                "ownerships": [
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 200,
+                    "owner_id": 5
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 201,
+                    "owner_id": 3
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 202,
+                    "owner_id": 7
+                  }
+                ]
+              },
+              "expected_result": [
+                3,
+                5,
+                7
+              ]
+            },
+            {
+              "description": "Duplicate owners and limit enforcement",
+              "data": {
+                "accounts": [
+                  {
+                    "account_number": 108
+                  },
+                  {
+                    "account_number": 300
+                  },
+                  {
+                    "account_number": 301
+                  },
+                  {
+                    "account_number": 302
+                  },
+                  {
+                    "account_number": 303
+                  },
+                  {
+                    "account_number": 304
+                  }
+                ],
+                "transactions": [
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 300
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 301
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 302
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 303
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 304
+                  }
+                ],
+                "ownerships": [
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 300,
+                    "owner_id": 10
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 301,
+                    "owner_id": 2
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 302,
+                    "owner_id": 2
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 303,
+                    "owner_id": 8
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 304,
+                    "owner_id": 15
+                  }
+                ]
+              },
+              "expected_result": [
+                2,
+                8,
+                10,
+                15
+              ]
+            }
+          ]
+        },
+        "initial_cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nWHERE dest.owner_id IS NOT NULL\nRETURN DISTINCT dest.owner_id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "incorrect_row_count",
+            "exceeds_limit"
+          ],
+          "revision": "Ensure the query uses LIMIT 5 (or the appropriate limit from the ordering specification) so that only the five lowest distinct owner_id values are returned, ordered ascending. Verify that the $limit parameter is set to 5 before execution."
+        },
+        "repaired_cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $a})-[:TRANSFER]->(dst:Account {_workspace_id: $workspace_id})\nRETURN DISTINCT dst.owner_id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit",
+        "repair_attempts": 2
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "prompt_tokens": 207,
+          "completion_tokens": 1383,
+          "cached_tokens": 0,
+          "elapsed_ms": 7256.3
+        },
+        {
+          "stage": "executor",
+          "prompt_tokens": 1656,
+          "completion_tokens": 875,
+          "cached_tokens": 0,
+          "elapsed_ms": 3717.4
+        },
+        {
+          "stage": "verifier",
+          "prompt_tokens": 1023,
+          "completion_tokens": 431,
+          "cached_tokens": 0,
+          "elapsed_ms": 2284.0
+        },
+        {
+          "stage": "repair_executor",
+          "prompt_tokens": 1714,
+          "completion_tokens": 578,
+          "cached_tokens": 0,
+          "elapsed_ms": 2426.5
+        },
+        {
+          "stage": "repair_executor",
+          "prompt_tokens": 1723,
+          "completion_tokens": 640,
+          "cached_tokens": 0,
+          "elapsed_ms": 2608.5
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "c7d96f0efca366c6",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 13,
+          "db_hits": 71,
+          "elapsed_ms": 7.835,
+          "submit_ms": 6.419,
+          "hydrate_ms": 1.224,
+          "server_available_ms": 6.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 264,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nWHERE dest.owner_id IS NOT NULL\nRETURN DISTINCT dest.owner_id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit"
+        },
+        {
+          "query_fingerprint": "50b1d6fc7f762774",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 13,
+          "db_hits": 71,
+          "elapsed_ms": 5.517,
+          "submit_ms": 1.515,
+          "hydrate_ms": 3.487,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 1.0,
+          "result_bytes": 264,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $a})-[:TRANSFER]->(dst:Account {_workspace_id: $workspace_id})\nRETURN DISTINCT dst.owner_id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit"
+        }
+      ],
+      "trace_id": "f5529c94638f5057e67c7c83cd08aab3",
+      "root_span_id": "a75c69c6359fe67c"
+    },
+    {
+      "episode_id": "20260829T_agent_topology_gate_v2:sf1:finbenchl1:ext_med_2:r0:multi_full",
+      "run_id": "20260829T_agent_topology_gate_v2",
+      "arm": "multi_full",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_med_2",
+      "audience": "external",
+      "difficulty": "medium",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.4444,
+        "recall": 0.8,
+        "precision": 0.3077,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 22610.3,
+      "model_calls": 5,
+      "prompt_tokens": 8350,
+      "completion_tokens": 4638,
+      "cached_tokens": 0,
+      "handoff_chars": 8065,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 3740,
+        "executor_to_verifier": 4325
+      },
+      "graph_trips": 2,
+      "unique_graph_queries": 2,
+      "redundant_graph_queries": 0,
+      "db_hits": 442,
+      "db_ms": 16.493,
+      "rows_into_context": 26,
+      "result_bytes": 555,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "incorrect_relationship_type",
+        "incorrect_node_label",
+        "incorrect_property_name",
+        "missing_limit_enforcement",
+        "incorrect_sort_order",
+        "type_mismatch_string_vs_integer"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            {
+              "name": "Account",
+              "key": "account_number",
+              "attributes": [
+                "account_number"
+              ]
+            },
+            {
+              "name": "Owner",
+              "key": "owner_id",
+              "attributes": [
+                "owner_id"
+              ]
+            }
+          ],
+          "relationships": [
+            {
+              "type": "SENT_MONEY",
+              "from": "Account",
+              "to": "Account",
+              "direction": "outgoing"
+            },
+            {
+              "type": "OWNED_BY",
+              "from": "Account",
+              "to": "Owner",
+              "direction": "outgoing"
+            }
+          ],
+          "predicates": [
+            {
+              "entity": "Account",
+              "attribute": "account_number",
+              "operator": "=",
+              "value": 108,
+              "role": "source"
+            }
+          ],
+          "aggregation": null,
+          "ordering": {
+            "attribute": "owner_id",
+            "direction": "asc",
+            "limit": 5
+          },
+          "expected_shape": {
+            "type": "list",
+            "items": {
+              "type": "integer",
+              "description": "owner_id"
+            },
+            "description": "Five lowest owner IDs owning accounts that received money from account 108, sorted ascending."
+          },
+          "assumptions": [
+            "Account numbers are unique identifiers for accounts.",
+            "Each account has at least one owner; ownership is represented by the OWNED_BY relationship.",
+            "SENT_MONEY edges are directed from the sending account to the receiving account.",
+            "Owner IDs are unique across owners.",
+            "If an account has multiple owners, each owner is considered separately."
+          ],
+          "uncertainties": [
+            "Some destination accounts may lack an OWNED_BY relationship, causing missing owners.",
+            "Accounts could have multiple owners, leading to duplicate owner IDs before deduplication.",
+            "The data source may contain stale or incomplete transaction records."
+          ],
+          "acceptance_tests": [
+            {
+              "description": "Basic scenario with distinct owners",
+              "data": {
+                "accounts": [
+                  {
+                    "account_number": 108
+                  },
+                  {
+                    "account_number": 200
+                  },
+                  {
+                    "account_number": 201
+                  },
+                  {
+                    "account_number": 202
+                  }
+                ],
+                "transactions": [
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 200
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 201
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 202
+                  }
+                ],
+                "ownerships": [
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 200,
+                    "owner_id": 5
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 201,
+                    "owner_id": 3
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 202,
+                    "owner_id": 7
+                  }
+                ]
+              },
+              "expected_result": [
+                3,
+                5,
+                7
+              ]
+            },
+            {
+              "description": "Duplicate owners and limit enforcement",
+              "data": {
+                "accounts": [
+                  {
+                    "account_number": 108
+                  },
+                  {
+                    "account_number": 300
+                  },
+                  {
+                    "account_number": 301
+                  },
+                  {
+                    "account_number": 302
+                  },
+                  {
+                    "account_number": 303
+                  },
+                  {
+                    "account_number": 304
+                  }
+                ],
+                "transactions": [
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 300
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 301
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 302
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 303
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 304
+                  }
+                ],
+                "ownerships": [
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 300,
+                    "owner_id": 10
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 301,
+                    "owner_id": 2
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 302,
+                    "owner_id": 2
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 303,
+                    "owner_id": 8
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 304,
+                    "owner_id": 15
+                  }
+                ]
+              },
+              "expected_result": [
+                2,
+                8,
+                10,
+                15
+              ]
+            }
+          ]
+        },
+        "initial_cypher": "MATCH (src:Account {_workspace_id: $workspace_id}) WHERE src.acct_no = $acct_no\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nMATCH (owner:Person|Company {_workspace_id: $workspace_id})-[:OWN]->(dest)\nRETURN DISTINCT owner.id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "incorrect_relationship_type",
+            "incorrect_node_label",
+            "incorrect_property_name",
+            "missing_limit_enforcement",
+            "incorrect_sort_order",
+            "type_mismatch_string_vs_integer"
+          ],
+          "revision": "Update the Cypher query to match the schema defined in the planner: \n```\nMATCH (src:Account {_workspace_id: $workspace_id})\nWHERE src.account_number = $account_number\nMATCH (src)-[:SENT_MONEY]->(dest:Account {_workspace_id: $workspace_id})\nMATCH (dest)-[:OWNED_BY]->(owner:Owner {_workspace_id: $workspace_id})\nRETURN DISTINCT toInteger(owner.owner_id) AS owner_id\nORDER BY owner_id ASC\nLIMIT 5\n```\nThis query uses the correct relationship types (SENT_MONEY, OWNED_BY), correct node labels (Account, Owner), correct attribute names (account_number, owner_id), enforces a limit of 5, orders ascending, and casts IDs to integers."
+        },
+        "repaired_cypher": "MATCH (src:Account {_workspace_id: $workspace_id})\nWHERE src.acct_no = $acct_no\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nRETURN DISTINCT toInteger(dest.owner_id) AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit",
+        "repair_attempts": 2
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "prompt_tokens": 207,
+          "completion_tokens": 1383,
+          "cached_tokens": 0,
+          "elapsed_ms": 7074.7
+        },
+        {
+          "stage": "executor",
+          "prompt_tokens": 2126,
+          "completion_tokens": 1000,
+          "cached_tokens": 0,
+          "elapsed_ms": 4219.3
+        },
+        {
+          "stage": "verifier",
+          "prompt_tokens": 1374,
+          "completion_tokens": 564,
+          "cached_tokens": 0,
+          "elapsed_ms": 4598.5
+        },
+        {
+          "stage": "repair_executor",
+          "prompt_tokens": 2303,
+          "completion_tokens": 520,
+          "cached_tokens": 0,
+          "elapsed_ms": 2345.1
+        },
+        {
+          "stage": "repair_executor",
+          "prompt_tokens": 2340,
+          "completion_tokens": 1171,
+          "cached_tokens": 0,
+          "elapsed_ms": 4281.1
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "11c448b60b827f8a",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 13,
+          "db_hits": 371,
+          "elapsed_ms": 9.091,
+          "submit_ms": 7.651,
+          "hydrate_ms": 1.243,
+          "server_available_ms": 7.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 291,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {_workspace_id: $workspace_id}) WHERE src.acct_no = $acct_no\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nMATCH (owner:Person|Company {_workspace_id: $workspace_id})-[:OWN]->(dest)\nRETURN DISTINCT owner.id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit"
+        },
+        {
+          "query_fingerprint": "f43a38ff4f2485ce",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 13,
+          "db_hits": 71,
+          "elapsed_ms": 7.402,
+          "submit_ms": 6.12,
+          "hydrate_ms": 1.101,
+          "server_available_ms": 6.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 264,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})\nWHERE src.acct_no = $acct_no\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nRETURN DISTINCT toInteger(dest.owner_id) AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit"
+        }
+      ],
+      "trace_id": "9bb8efead93e1361958d1d0cf1142ed6",
+      "root_span_id": "6b933de558926437"
+    },
+    {
+      "episode_id": "20260829T_agent_topology_gate_v2:sf1:finbenchl1:ext_med_2:r0:staged_single",
+      "run_id": "20260829T_agent_topology_gate_v2",
+      "arm": "staged_single",
+      "factors": {
+        "topology": "single_logical_agent",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_med_2",
+      "audience": "external",
+      "difficulty": "medium",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": true,
+      "score": {
+        "correct": true,
+        "f1": 0.5556,
+        "recall": 1.0,
+        "precision": 0.3846,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 22107.5,
+      "model_calls": 5,
+      "prompt_tokens": 8344,
+      "completion_tokens": 5117,
+      "cached_tokens": 0,
+      "handoff_chars": 8066,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 3741,
+        "executor_to_verifier": 4325
+      },
+      "graph_trips": 2,
+      "unique_graph_queries": 2,
+      "redundant_graph_queries": 0,
+      "db_hits": 729,
+      "db_ms": 15.918,
+      "rows_into_context": 26,
+      "result_bytes": 582,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "incorrect_relationship_type",
+        "incorrect_node_label",
+        "missing_limit_enforcement",
+        "owner_id_type_mismatch"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            {
+              "name": "Account",
+              "key": "account_number",
+              "attributes": [
+                "account_number"
+              ]
+            },
+            {
+              "name": "Owner",
+              "key": "owner_id",
+              "attributes": [
+                "owner_id"
+              ]
+            }
+          ],
+          "relationships": [
+            {
+              "type": "SENT_MONEY",
+              "from": "Account",
+              "to": "Account",
+              "direction": "outgoing"
+            },
+            {
+              "type": "OWNED_BY",
+              "from": "Account",
+              "to": "Owner",
+              "direction": "outgoing"
+            }
+          ],
+          "predicates": [
+            {
+              "entity": "Account",
+              "attribute": "account_number",
+              "operator": "=",
+              "value": 108,
+              "role": "source"
+            }
+          ],
+          "aggregation": null,
+          "ordering": {
+            "attribute": "owner_id",
+            "direction": "asc",
+            "limit": 5
+          },
+          "expected_shape": {
+            "type": "list",
+            "items": {
+              "type": "integer",
+              "description": "owner_id"
+            },
+            "description": "Five lowest owner IDs owning accounts that received money from account 108, sorted ascending."
+          },
+          "assumptions": [
+            "Account numbers are unique identifiers for accounts.",
+            "Each account has at least one owner; ownership is represented by the OWNED_BY relationship.",
+            "SENT_MONEY edges are directed from the sending account to the receiving account.",
+            "Owner IDs are unique across owners.",
+            "If an account has multiple owners, each owner is considered separately."
+          ],
+          "uncertainties": [
+            "Some destination accounts may lack an OWNED_BY relationship, causing missing owners.",
+            "Accounts could have multiple owners, leading to duplicate owner IDs before deduplication.",
+            "The data source may contain stale or incomplete transaction records."
+          ],
+          "acceptance_tests": [
+            {
+              "description": "Basic scenario with distinct owners",
+              "data": {
+                "accounts": [
+                  {
+                    "account_number": 108
+                  },
+                  {
+                    "account_number": 200
+                  },
+                  {
+                    "account_number": 201
+                  },
+                  {
+                    "account_number": 202
+                  }
+                ],
+                "transactions": [
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 200
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 201
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 202
+                  }
+                ],
+                "ownerships": [
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 200,
+                    "owner_id": 5
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 201,
+                    "owner_id": 3
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 202,
+                    "owner_id": 7
+                  }
+                ]
+              },
+              "expected_result": [
+                3,
+                5,
+                7
+              ]
+            },
+            {
+              "description": "Duplicate owners and limit enforcement",
+              "data": {
+                "accounts": [
+                  {
+                    "account_number": 108
+                  },
+                  {
+                    "account_number": 300
+                  },
+                  {
+                    "account_number": 301
+                  },
+                  {
+                    "account_number": 302
+                  },
+                  {
+                    "account_number": 303
+                  },
+                  {
+                    "account_number": 304
+                  }
+                ],
+                "transactions": [
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 300
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 301
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 302
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 303
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 304
+                  }
+                ],
+                "ownerships": [
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 300,
+                    "owner_id": 10
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 301,
+                    "owner_id": 2
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 302,
+                    "owner_id": 2
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 303,
+                    "owner_id": 8
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 304,
+                    "owner_id": 15
+                  }
+                ]
+              },
+              "expected_result": [
+                2,
+                8,
+                10,
+                15
+              ]
+            }
+          ]
+        },
+        "initial_cypher": "MATCH (src:Account {_workspace_id: $workspace_id})\nWHERE src.acct_no = $acct_no\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nMATCH (owner:Person|Company {_workspace_id: $workspace_id})-[:OWN]->(dest)\nRETURN DISTINCT owner.id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "incorrect_relationship_type",
+            "incorrect_node_label",
+            "missing_limit_enforcement",
+            "owner_id_type_mismatch"
+          ],
+          "revision": "Update the Cypher to match the planner's model: \n```\nMATCH (src:Account {_workspace_id: $workspace_id})\nWHERE src.account_number = $account_number   // use the correct attribute name\nMATCH (src)-[:SENT_MONEY]->(dest:Account {_workspace_id: $workspace_id})\nMATCH (dest)-[:OWNED_BY]->(owner:Owner {_workspace_id: $workspace_id})\nRETURN DISTINCT owner.owner_id AS owner_id\nORDER BY owner_id ASC\nLIMIT 5\n```\nEnsure the query uses the `SENT_MONEY` relationship, the `Owner` node label, returns `owner_id` as an integer, and enforces the `LIMIT 5` clause so only the five lowest IDs are returned."
+        },
+        "repaired_cypher": "MATCH (src:Account {_workspace_id: $workspace_id})\nWHERE src.acct_no = $acct_no\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nMATCH (owner {_workspace_id: $workspace_id})-[:OWN]->(dest)\nRETURN DISTINCT owner.id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit",
+        "repair_attempts": 2
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "prompt_tokens": 207,
+          "completion_tokens": 1383,
+          "cached_tokens": 0,
+          "elapsed_ms": 7066.4
+        },
+        {
+          "stage": "executor",
+          "prompt_tokens": 2126,
+          "completion_tokens": 720,
+          "cached_tokens": 0,
+          "elapsed_ms": 3340.5
+        },
+        {
+          "stage": "verifier",
+          "prompt_tokens": 1374,
+          "completion_tokens": 442,
+          "cached_tokens": 0,
+          "elapsed_ms": 2338.7
+        },
+        {
+          "stage": "repair_executor",
+          "prompt_tokens": 2300,
+          "completion_tokens": 1331,
+          "cached_tokens": 0,
+          "elapsed_ms": 4800.7
+        },
+        {
+          "stage": "repair_executor",
+          "prompt_tokens": 2337,
+          "completion_tokens": 1241,
+          "cached_tokens": 0,
+          "elapsed_ms": 4503.0
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "11c448b60b827f8a",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 13,
+          "db_hits": 371,
+          "elapsed_ms": 8.305,
+          "submit_ms": 6.855,
+          "hydrate_ms": 1.247,
+          "server_available_ms": 6.0,
+          "server_consumed_ms": 1.0,
+          "result_bytes": 291,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})\nWHERE src.acct_no = $acct_no\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nMATCH (owner:Person|Company {_workspace_id: $workspace_id})-[:OWN]->(dest)\nRETURN DISTINCT owner.id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit"
+        },
+        {
+          "query_fingerprint": "104151cc62edaead",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 13,
+          "db_hits": 358,
+          "elapsed_ms": 7.613,
+          "submit_ms": 6.249,
+          "hydrate_ms": 1.179,
+          "server_available_ms": 5.0,
+          "server_consumed_ms": 1.0,
+          "result_bytes": 291,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {_workspace_id: $workspace_id})\nWHERE src.acct_no = $acct_no\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nMATCH (owner {_workspace_id: $workspace_id})-[:OWN]->(dest)\nRETURN DISTINCT owner.id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit"
+        }
+      ],
+      "trace_id": "bb2823c80165651675633ce0bc12f6dd",
+      "root_span_id": "1ab2e73511dfe8b4"
+    },
+    {
+      "episode_id": "20260829T_agent_topology_gate_v2:sf1:finbenchl1:ext_med_2:r0:direct_single",
+      "run_id": "20260829T_agent_topology_gate_v2",
+      "arm": "direct_single",
+      "factors": {
+        "topology": "single_call",
+        "context_policy": "question_only",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_med_2",
+      "audience": "external",
+      "difficulty": "medium",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.4444,
+        "recall": 0.8,
+        "precision": 0.3077,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 2290.6,
+      "model_calls": 1,
+      "prompt_tokens": 883,
+      "completion_tokens": 536,
+      "cached_tokens": 0,
+      "handoff_chars": 0,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 0,
+        "executor_to_verifier": 0
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 71,
+      "db_ms": 5.754,
+      "rows_into_context": 13,
+      "result_bytes": 264,
+      "verifier_pass": null,
+      "verifier_reason_codes": [],
+      "decisions": {
+        "initial_cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nRETURN DISTINCT dest.owner_id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit",
+        "executor_attempts": 1
+      },
+      "stages": [
+        {
+          "stage": "executor",
+          "prompt_tokens": 883,
+          "completion_tokens": 536,
+          "cached_tokens": 0,
+          "elapsed_ms": 2279.1
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "9dd8119131efe9af",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 13,
+          "db_hits": 71,
+          "elapsed_ms": 5.754,
+          "submit_ms": 1.634,
+          "hydrate_ms": 3.604,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 264,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nRETURN DISTINCT dest.owner_id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit"
+        }
+      ],
+      "trace_id": "53aacf7e3b4e7607143184176ad48035",
+      "root_span_id": "7a8fa8c99a77f410"
+    },
+    {
+      "episode_id": "20260829T_agent_topology_gate_v2:sf1:finbenchl1:ext_med_2:r0:multi_envelope",
+      "run_id": "20260829T_agent_topology_gate_v2",
+      "arm": "multi_envelope",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "typed_isolated",
+        "result_contract": "result_envelope_v1",
+        "orchestrator": "procedural",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_med_2",
+      "audience": "external",
+      "difficulty": "medium",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.4444,
+        "recall": 0.8,
+        "precision": 0.3077,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 16351.8,
+      "model_calls": 4,
+      "prompt_tokens": 4716,
+      "completion_tokens": 3527,
+      "cached_tokens": 0,
+      "handoff_chars": 6331,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 2795,
+        "executor_to_verifier": 3536
+      },
+      "graph_trips": 2,
+      "unique_graph_queries": 2,
+      "redundant_graph_queries": 0,
+      "db_hits": 142,
+      "db_ms": 9.764,
+      "rows_into_context": 26,
+      "result_bytes": 960,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "incorrect_row_count",
+        "unexpected_owner_ids",
+        "limit_not_applied"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            {
+              "name": "Account",
+              "key": "account_number",
+              "attributes": [
+                "account_number"
+              ]
+            },
+            {
+              "name": "Owner",
+              "key": "owner_id",
+              "attributes": [
+                "owner_id"
+              ]
+            }
+          ],
+          "relationships": [
+            {
+              "type": "SENT_MONEY",
+              "from": "Account",
+              "to": "Account",
+              "direction": "outgoing"
+            },
+            {
+              "type": "OWNED_BY",
+              "from": "Account",
+              "to": "Owner",
+              "direction": "outgoing"
+            }
+          ],
+          "predicates": [
+            {
+              "entity": "Account",
+              "attribute": "account_number",
+              "operator": "=",
+              "value": 108,
+              "role": "source"
+            }
+          ],
+          "aggregation": null,
+          "ordering": {
+            "attribute": "owner_id",
+            "direction": "asc",
+            "limit": 5
+          },
+          "expected_shape": {
+            "type": "list",
+            "items": {
+              "type": "integer",
+              "description": "owner_id"
+            },
+            "description": "Five lowest owner IDs owning accounts that received money from account 108, sorted ascending."
+          },
+          "assumptions": [
+            "Account numbers are unique identifiers for accounts.",
+            "Each account has at least one owner; ownership is represented by the OWNED_BY relationship.",
+            "SENT_MONEY edges are directed from the sending account to the receiving account.",
+            "Owner IDs are unique across owners.",
+            "If an account has multiple owners, each owner is considered separately."
+          ],
+          "uncertainties": [
+            "Some destination accounts may lack an OWNED_BY relationship, causing missing owners.",
+            "Accounts could have multiple owners, leading to duplicate owner IDs before deduplication.",
+            "The data source may contain stale or incomplete transaction records."
+          ],
+          "acceptance_tests": [
+            {
+              "description": "Basic scenario with distinct owners",
+              "data": {
+                "accounts": [
+                  {
+                    "account_number": 108
+                  },
+                  {
+                    "account_number": 200
+                  },
+                  {
+                    "account_number": 201
+                  },
+                  {
+                    "account_number": 202
+                  }
+                ],
+                "transactions": [
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 200
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 201
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 202
+                  }
+                ],
+                "ownerships": [
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 200,
+                    "owner_id": 5
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 201,
+                    "owner_id": 3
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 202,
+                    "owner_id": 7
+                  }
+                ]
+              },
+              "expected_result": [
+                3,
+                5,
+                7
+              ]
+            },
+            {
+              "description": "Duplicate owners and limit enforcement",
+              "data": {
+                "accounts": [
+                  {
+                    "account_number": 108
+                  },
+                  {
+                    "account_number": 300
+                  },
+                  {
+                    "account_number": 301
+                  },
+                  {
+                    "account_number": 302
+                  },
+                  {
+                    "account_number": 303
+                  },
+                  {
+                    "account_number": 304
+                  }
+                ],
+                "transactions": [
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 300
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 301
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 302
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 303
+                  },
+                  {
+                    "type": "SENT_MONEY",
+                    "from": 108,
+                    "to": 304
+                  }
+                ],
+                "ownerships": [
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 300,
+                    "owner_id": 10
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 301,
+                    "owner_id": 2
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 302,
+                    "owner_id": 2
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 303,
+                    "owner_id": 8
+                  },
+                  {
+                    "type": "OWNED_BY",
+                    "account_number": 304,
+                    "owner_id": 15
+                  }
+                ]
+              },
+              "expected_result": [
+                2,
+                8,
+                10,
+                15
+              ]
+            }
+          ]
+        },
+        "initial_cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nWHERE dest.owner_id IS NOT NULL\nRETURN DISTINCT dest.owner_id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "incorrect_row_count",
+            "unexpected_owner_ids",
+            "limit_not_applied"
+          ],
+          "revision": "Adjust the Cypher query to enforce the limit of 5 distinct owner IDs and ensure the correct ordering. For example, set the $limit parameter to 5 and verify that the query returns exactly five rows sorted ascending. Also confirm that the dataset used matches the acceptance test scenarios so that the returned owner IDs correspond to the expected results (e.g., [3,5,7] or [2,8,10,15] depending on the test case)."
+        },
+        "repaired_cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nRETURN DISTINCT dest.owner_id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit",
+        "repair_attempts": 1
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "prompt_tokens": 207,
+          "completion_tokens": 1383,
+          "cached_tokens": 0,
+          "elapsed_ms": 6997.3
+        },
+        {
+          "stage": "executor",
+          "prompt_tokens": 1656,
+          "completion_tokens": 875,
+          "cached_tokens": 0,
+          "elapsed_ms": 3648.9
+        },
+        {
+          "stage": "verifier",
+          "prompt_tokens": 1092,
+          "completion_tokens": 500,
+          "cached_tokens": 0,
+          "elapsed_ms": 2589.1
+        },
+        {
+          "stage": "repair_executor",
+          "prompt_tokens": 1761,
+          "completion_tokens": 769,
+          "cached_tokens": 0,
+          "elapsed_ms": 3095.0
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "733f68b21dde6e1e",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 51
+          },
+          "rows": 13,
+          "db_hits": 71,
+          "elapsed_ms": 5.753,
+          "submit_ms": 1.658,
+          "hydrate_ms": 3.577,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 1.0,
+          "result_bytes": 480,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nWHERE dest.owner_id IS NOT NULL\nRETURN DISTINCT dest.owner_id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit"
+        },
+        {
+          "query_fingerprint": "3355163b9534ec60",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 51
+          },
+          "rows": 13,
+          "db_hits": 71,
+          "elapsed_ms": 4.011,
+          "submit_ms": 0.617,
+          "hydrate_ms": 3.187,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 480,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})\nMATCH (src)-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id})\nRETURN DISTINCT dest.owner_id AS owner_id\nORDER BY owner_id ASC\nLIMIT $limit"
+        }
+      ],
+      "trace_id": "d0607966edf807147dd983f34c3fcf81",
+      "root_span_id": "529df711977236f3"
+    }
+  ]
+}
