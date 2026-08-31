@@ -1,9 +1,9 @@
 {
   "schema_version": "seocho.agent-model-matrix-analysis.v1",
   "manifest": {
-    "timestamp_utc": "2026-08-31T02:42:45+00:00",
-    "git_commit": "464ed24337fc74d2d8f2ba60b0921126a8e5a9a4",
-    "git_dirty": true,
+    "timestamp_utc": "2026-08-31T05:23:35+00:00",
+    "git_commit": "dee7b9ba3b3bc96adc78c7196404b6e64e03bf93",
+    "git_dirty": false,
     "argv": [
       "scripts/analysis/analyze_agent_model_matrix.py",
       "--matrix",
