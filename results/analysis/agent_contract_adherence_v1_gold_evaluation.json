@@ -1,0 +1,142 @@
+{
+  "schema_version": "finbench.agent-contract-adherence.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T11:34:59+00:00",
+    "git_commit": "c807442d32315b2d20a9ab83b0eeba37d4f98e96",
+    "git_dirty": true,
+    "argv": [
+      "scripts/analysis/evaluate_agent_contract_adherence.py",
+      "--predictions",
+      "results/analysis/agent_contract_adherence_v1_gold_predictions.jsonl",
+      "--out",
+      "results/analysis/agent_contract_adherence_v1_gold_evaluation.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "512M",
+    "db_heap_max": "",
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "394",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "validation": "agent policy/router adherence"
+  },
+  "metrics": {
+    "cases": 6,
+    "route_accuracy": 1.0,
+    "policy_conformance": 1.0,
+    "avoidable_repair_rate": 0.0
+  },
+  "episodes": [
+    {
+      "id": "recent_counterparties",
+      "route_correct": true,
+      "policy_conformant": true,
+      "mismatches": {},
+      "prediction": {
+        "id": "recent_counterparties",
+        "route": "interactive_recent_counterparties",
+        "completeness": "bounded_deterministic_sample",
+        "truncation_limit": 100,
+        "truncation_order": "TIMESTAMP_DESCENDING",
+        "budget_action": "return_partial"
+      }
+    },
+    {
+      "id": "all_counterparties",
+      "route_correct": true,
+      "policy_conformant": true,
+      "mismatches": {},
+      "prediction": {
+        "id": "all_counterparties",
+        "route": "aml_complete_counterparty_investigation",
+        "completeness": "complete_required",
+        "truncation_limit": null,
+        "truncation_order": null,
+        "budget_action": "escalate_async"
+      }
+    },
+    {
+      "id": "recent_layering",
+      "route_correct": true,
+      "policy_conformant": true,
+      "mismatches": {},
+      "prediction": {
+        "id": "recent_layering",
+        "route": "bounded_layering_triage",
+        "completeness": "bounded_deterministic_sample",
+        "truncation_limit": 50,
+        "truncation_order": "TIMESTAMP_DESCENDING",
+        "max_hops": 3,
+        "budget_action": "refuse"
+      }
+    },
+    {
+      "id": "payment_write",
+      "route_correct": true,
+      "policy_conformant": true,
+      "mismatches": {},
+      "prediction": {
+        "id": "payment_write",
+        "route": "payment_insertion",
+        "completeness": "not_applicable",
+        "max_hops": 0,
+        "budget_action": "refuse",
+        "mutation_receipt": true
+      }
+    },
+    {
+      "id": "unsupported_owner_type",
+      "route_correct": true,
+      "policy_conformant": true,
+      "mismatches": {},
+      "prediction": {
+        "id": "unsupported_owner_type",
+        "route": "semantic_refusal",
+        "refusal_code": "UNSUPPORTED_SEMANTIC_FIELD",
+        "repair_allowed": false
+      }
+    },
+    {
+      "id": "bounded_vs_complete_counterfactual",
+      "route_correct": true,
+      "policy_conformant": true,
+      "mismatches": {},
+      "prediction": {
+        "id": "bounded_vs_complete_counterfactual",
+        "route": "interactive_recent_counterparties",
+        "completeness": "bounded_deterministic_sample",
+        "truncation_limit": 100,
+        "truncation_order": "TIMESTAMP_DESCENDING",
+        "budget_action": "return_partial",
+        "disclosure_required": true
+      }
+    }
+  ]
+}

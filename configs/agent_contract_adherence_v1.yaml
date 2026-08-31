@@ -1,0 +1,21 @@
+suite: agent_contract_adherence_v1
+contract: configs/finbench_agent_traversal_contract_v1.yaml
+cases:
+  - id: recent_counterparties
+    request: "계좌 108의 최근 거래 상대방 100명을 보여줘."
+    gold: {route: interactive_recent_counterparties, completeness: bounded_deterministic_sample, truncation_limit: 100, truncation_order: TIMESTAMP_DESCENDING, budget_action: return_partial}
+  - id: all_counterparties
+    request: "계좌 108의 모든 거래 상대방을 AML 조사 목적으로 확인해."
+    gold: {route: aml_complete_counterparty_investigation, completeness: complete_required, truncation_limit: null, truncation_order: null, budget_action: escalate_async}
+  - id: recent_layering
+    request: "계좌 108에서 최근 발생한 downstream layering을 세 hop까지 빠르게 triage해."
+    gold: {route: bounded_layering_triage, completeness: bounded_deterministic_sample, truncation_limit: 50, truncation_order: TIMESTAMP_DESCENDING, max_hops: 3, budget_action: refuse}
+  - id: payment_write
+    request: "승인된 결제를 기록해."
+    gold: {route: payment_insertion, completeness: not_applicable, max_hops: 0, budget_action: refuse, mutation_receipt: true}
+  - id: unsupported_owner_type
+    request: "계좌 108의 beneficial owner type을 알려줘."
+    gold: {route: semantic_refusal, refusal_code: UNSUPPORTED_SEMANTIC_FIELD, repair_allowed: false}
+  - id: bounded_vs_complete_counterfactual
+    request: "계좌 108의 거래 상대방을 모두 보여줘. 단, 화면에는 최신 100건만 표시해."
+    gold: {route: interactive_recent_counterparties, completeness: bounded_deterministic_sample, truncation_limit: 100, truncation_order: TIMESTAMP_DESCENDING, budget_action: return_partial, disclosure_required: true}

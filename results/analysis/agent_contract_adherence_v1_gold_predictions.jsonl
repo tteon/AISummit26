@@ -1,0 +1,6 @@
+{"id":"recent_counterparties","route":"interactive_recent_counterparties","completeness":"bounded_deterministic_sample","truncation_limit":100,"truncation_order":"TIMESTAMP_DESCENDING","budget_action":"return_partial"}
+{"id":"all_counterparties","route":"aml_complete_counterparty_investigation","completeness":"complete_required","truncation_limit":null,"truncation_order":null,"budget_action":"escalate_async"}
+{"id":"recent_layering","route":"bounded_layering_triage","completeness":"bounded_deterministic_sample","truncation_limit":50,"truncation_order":"TIMESTAMP_DESCENDING","max_hops":3,"budget_action":"refuse"}
+{"id":"payment_write","route":"payment_insertion","completeness":"not_applicable","max_hops":0,"budget_action":"refuse","mutation_receipt":true}
+{"id":"unsupported_owner_type","route":"semantic_refusal","refusal_code":"UNSUPPORTED_SEMANTIC_FIELD","repair_allowed":false}
+{"id":"bounded_vs_complete_counterfactual","route":"interactive_recent_counterparties","completeness":"bounded_deterministic_sample","truncation_limit":100,"truncation_order":"TIMESTAMP_DESCENDING","budget_action":"return_partial","disclosure_required":true}
