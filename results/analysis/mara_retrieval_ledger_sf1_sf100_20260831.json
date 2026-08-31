@@ -1,0 +1,2970 @@
+{
+  "schema_version": "seocho.retrieval-ledger-analysis.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T07:43:41+00:00",
+    "git_commit": "1064277047ea5b3298158be85070a167f12f647a",
+    "git_dirty": false,
+    "argv": [
+      "scripts/analysis/analyze_retrieval_ledger.py",
+      "--report",
+      "results/episodes/agent_topology/20260831T_mara_retrieval_sf1_sf100_paced_v1/report.json",
+      "--out",
+      "results/analysis/mara_retrieval_ledger_sf1_sf100_20260831.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": null,
+    "db_pagecache": null,
+    "db_heap_max": null,
+    "db_container_id": null,
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": false,
+      "reason": "nvidia-smi unavailable or no driver"
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "analysis": "MARA context + local graph retrieval ledger"
+  },
+  "source": "results/episodes/agent_topology/20260831T_mara_retrieval_sf1_sf100_paced_v1/report.json",
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "DeepSeek-V3.1",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 1000,
+    "request_timeout_s": 180.0,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "method": {
+    "access_class": "maximum actual rows among Seek/Scan access operators; estimated rows are used only when PROFILE reports zero actual rows",
+    "sweep_rows_threshold": 1000.0,
+    "operator_rows_total": "sum across pipeline operators; diagnostic, not unique rows",
+    "container_metrics": "secondary; analyzed separately by monitoring-window join"
+  },
+  "episodes": [
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:ext_med_2:r0:multi_typed",
+      "sf": 1,
+      "database": "finbenchl1",
+      "arm": "multi_typed",
+      "question_id": "ext_med_2",
+      "repeat": 0,
+      "correct": true,
+      "error": null,
+      "model_calls": 3,
+      "prompt_tokens": 1740,
+      "completion_tokens": 322,
+      "handoff_chars": 2194,
+      "wall_ms": 47298.7,
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 371,
+      "db_hits_per_graph_trip": 371.0,
+      "db_ms": 18.112,
+      "rows_into_context": 13,
+      "result_bytes": 291,
+      "access_classes": [
+        "point"
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "a856e531f2ac9fc5",
+          "cypher_template_fingerprint": "a0c05ed60a4ca640",
+          "cypher": "MATCH (sender:Account {acct_no: $acct_no, _workspace_id: $workspace_id})-[:TRANSFER]->(recipient:Account {_workspace_id: $workspace_id})<-[:OWN]-(owner:Person|Company {_workspace_id: $workspace_id}) RETURN DISTINCT owner.id AS owner_id ORDER BY owner_id ASC LIMIT $limit",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "returned_rows": 13,
+          "db_hits": 371,
+          "db_hits_per_returned_row": 28.5385,
+          "result_bytes": 291,
+          "client_total_ms": 18.112,
+          "client_submit_ms": 11.998,
+          "client_hydrate_ms": 4.422,
+          "server_available_ms": 11.0,
+          "server_consumed_ms": 0.0,
+          "plan": {
+            "available": true,
+            "runtime": "SLOTTED",
+            "planner": "COST",
+            "operator_count": 9,
+            "operators": [
+              {
+                "operator": "ProduceResults",
+                "id": 0,
+                "details": "owner_id",
+                "estimated_rows": 0.04533601388512679,
+                "rows": 13.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Top",
+                "id": 1,
+                "details": "owner_id ASC LIMIT $limit",
+                "estimated_rows": 0.04533601388512679,
+                "rows": 13.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 2352
+              },
+              {
+                "operator": "Distinct",
+                "id": 2,
+                "details": "owner.id AS owner_id",
+                "estimated_rows": 0.04533601388512679,
+                "rows": 13.0,
+                "db_hits": 13,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 1008
+              },
+              {
+                "operator": "Filter",
+                "id": 3,
+                "details": "owner:Person|Company AND owner._workspace_id = $workspace_id",
+                "estimated_rows": 0.047722119879080836,
+                "rows": 13.0,
+                "db_hits": 26,
+                "page_cache_hits": 26,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 4,
+                "details": "(recipient)<-[anon_1:OWN]-(owner)",
+                "estimated_rows": 3.6233924502942187,
+                "rows": 13.0,
+                "db_hits": 274,
+                "page_cache_hits": 187,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 5,
+                "details": "recipient._workspace_id = $workspace_id AND recipient:Account",
+                "estimated_rows": 4.410931174089068,
+                "rows": 13.0,
+                "db_hits": 26,
+                "page_cache_hits": 26,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 6,
+                "details": "(sender)-[anon_0:TRANSFER]->(recipient)",
+                "estimated_rows": 4.410931174089068,
+                "rows": 13.0,
+                "db_hits": 29,
+                "page_cache_hits": 23,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 7,
+                "details": "sender._workspace_id = $workspace_id",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 1,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "NodeIndexSeek",
+                "id": 8,
+                "details": "RANGE INDEX sender:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_operators": [
+              {
+                "operator": "NodeIndexSeek",
+                "id": 8,
+                "details": "RANGE INDEX sender:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_actual_rows_max": 1.0,
+            "access_estimated_rows_max": 1.0,
+            "sweep_rows_threshold": 1000.0,
+            "access_class": "point",
+            "scan_operator_name_present": false,
+            "seek_operator_name_present": true,
+            "name_cost_disagreement": false,
+            "operator_rows_total": 93,
+            "max_intermediate_rows": 13,
+            "db_hits_total": 371,
+            "page_cache_hits_total": 266,
+            "page_cache_misses_total": 0,
+            "max_expansion_ratio": 13.0,
+            "max_filter_discard_ratio": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:ext_med_2:r0:multi_full",
+      "sf": 1,
+      "database": "finbenchl1",
+      "arm": "multi_full",
+      "question_id": "ext_med_2",
+      "repeat": 0,
+      "correct": false,
+      "error": null,
+      "model_calls": 3,
+      "prompt_tokens": 1704,
+      "completion_tokens": 345,
+      "handoff_chars": 2029,
+      "wall_ms": 34183.9,
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 332,
+      "db_hits_per_graph_trip": 332.0,
+      "db_ms": 11.681,
+      "rows_into_context": 0,
+      "result_bytes": 43,
+      "access_classes": [
+        "point"
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "1e4fec61e09fcbbb",
+          "cypher_template_fingerprint": "f9850f35b0dd93ad",
+          "cypher": "MATCH (source:Account {_workspace_id: $workspace_id, acct_no: $acct_no})-[:TRANSFER]->(target:Account {_workspace_id: $workspace_id}) MATCH (target)-[:OWN]->(owner {_workspace_id: $workspace_id}) RETURN DISTINCT owner.id AS owner_id ORDER BY owner_id ASC LIMIT $limit",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "returned_rows": 0,
+          "db_hits": 332,
+          "db_hits_per_returned_row": null,
+          "result_bytes": 43,
+          "client_total_ms": 11.681,
+          "client_submit_ms": 2.961,
+          "client_hydrate_ms": 7.458,
+          "server_available_ms": 1.0,
+          "server_consumed_ms": 1.0,
+          "plan": {
+            "available": true,
+            "runtime": "SLOTTED",
+            "planner": "COST",
+            "operator_count": 9,
+            "operators": [
+              {
+                "operator": "ProduceResults",
+                "id": 0,
+                "details": "owner_id",
+                "estimated_rows": 0.0002544767985051386,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Top",
+                "id": 1,
+                "details": "owner_id ASC LIMIT $limit",
+                "estimated_rows": 0.0002544767985051386,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Distinct",
+                "id": 2,
+                "details": "owner.id AS owner_id",
+                "estimated_rows": 0.0002544767985051386,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 192
+              },
+              {
+                "operator": "Filter",
+                "id": 3,
+                "details": "owner._workspace_id = $workspace_id",
+                "estimated_rows": 0.00026787031421593536,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 4,
+                "details": "(target)-[anon_1:OWN]->(owner)",
+                "estimated_rows": 0.005357406284318707,
+                "rows": 0.0,
+                "db_hits": 274,
+                "page_cache_hits": 187,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 5,
+                "details": "target._workspace_id = $workspace_id AND target:Account",
+                "estimated_rows": 4.410931174089068,
+                "rows": 13.0,
+                "db_hits": 26,
+                "page_cache_hits": 25,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 6,
+                "details": "(source)-[anon_0:TRANSFER]->(target)",
+                "estimated_rows": 4.410931174089068,
+                "rows": 13.0,
+                "db_hits": 29,
+                "page_cache_hits": 23,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 7,
+                "details": "source._workspace_id = $workspace_id",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 1,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "NodeIndexSeek",
+                "id": 8,
+                "details": "RANGE INDEX source:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_operators": [
+              {
+                "operator": "NodeIndexSeek",
+                "id": 8,
+                "details": "RANGE INDEX source:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_actual_rows_max": 1.0,
+            "access_estimated_rows_max": 1.0,
+            "sweep_rows_threshold": 1000.0,
+            "access_class": "point",
+            "scan_operator_name_present": false,
+            "seek_operator_name_present": true,
+            "name_cost_disagreement": false,
+            "operator_rows_total": 28,
+            "max_intermediate_rows": 13,
+            "db_hits_total": 332,
+            "page_cache_hits_total": 239,
+            "page_cache_misses_total": 0,
+            "max_expansion_ratio": 13.0,
+            "max_filter_discard_ratio": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:ext_hard_2:r0:multi_full",
+      "sf": 1,
+      "database": "finbenchl1",
+      "arm": "multi_full",
+      "question_id": "ext_hard_2",
+      "repeat": 0,
+      "correct": true,
+      "error": null,
+      "model_calls": 3,
+      "prompt_tokens": 1691,
+      "completion_tokens": 252,
+      "handoff_chars": 1934,
+      "wall_ms": 4925.7,
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 257,
+      "db_hits_per_graph_trip": 257.0,
+      "db_ms": 13.854,
+      "rows_into_context": 1,
+      "result_bytes": 55,
+      "access_classes": [
+        "point"
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "b996590b9b8cd587",
+          "cypher_template_fingerprint": "632531d40c9c2b52",
+          "cypher": "MATCH (start:Account {acct_no: $acct_no, _workspace_id: $workspace_id})<-[:TRANSFER*1..2]-(upstream:Account {_workspace_id: $workspace_id}) RETURN COUNT(DISTINCT upstream.id) AS count LIMIT $limit",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "returned_rows": 1,
+          "db_hits": 257,
+          "db_hits_per_returned_row": 257.0,
+          "result_bytes": 55,
+          "client_total_ms": 13.854,
+          "client_submit_ms": 3.35,
+          "client_hydrate_ms": 8.849,
+          "server_available_ms": 2.0,
+          "server_consumed_ms": 2.0,
+          "plan": {
+            "available": true,
+            "runtime": "SLOTTED",
+            "planner": "COST",
+            "operator_count": 7,
+            "operators": [
+              {
+                "operator": "ProduceResults",
+                "id": 0,
+                "details": "count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Limit",
+                "id": 1,
+                "details": "$limit",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "EagerAggregation",
+                "id": 2,
+                "details": "COUNT(DISTINCT upstream.id) AS count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 56,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 2008
+              },
+              {
+                "operator": "Filter",
+                "id": 3,
+                "details": "upstream._workspace_id = $workspace_id AND upstream:Account",
+                "estimated_rows": 16.06327606516999,
+                "rows": 28.0,
+                "db_hits": 56,
+                "page_cache_hits": 46,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "VarLengthExpand(Pruning,BFS,All)",
+                "id": 4,
+                "details": "(start)<-[:TRANSFER*..2]-(upstream) ",
+                "estimated_rows": 16.06327606516999,
+                "rows": 28.0,
+                "db_hits": 142,
+                "page_cache_hits": 107,
+                "page_cache_misses": 0,
+                "memory_bytes": 976
+              },
+              {
+                "operator": "Filter",
+                "id": 5,
+                "details": "start._workspace_id = $workspace_id",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 1,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "NodeIndexSeek",
+                "id": 6,
+                "details": "RANGE INDEX start:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_operators": [
+              {
+                "operator": "NodeIndexSeek",
+                "id": 6,
+                "details": "RANGE INDEX start:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_actual_rows_max": 1.0,
+            "access_estimated_rows_max": 1.0,
+            "sweep_rows_threshold": 1000.0,
+            "access_class": "point",
+            "scan_operator_name_present": false,
+            "seek_operator_name_present": true,
+            "name_cost_disagreement": false,
+            "operator_rows_total": 61,
+            "max_intermediate_rows": 28,
+            "db_hits_total": 257,
+            "page_cache_hits_total": 157,
+            "page_cache_misses_total": 0,
+            "max_expansion_ratio": 28.0,
+            "max_filter_discard_ratio": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:ext_hard_2:r0:multi_typed",
+      "sf": 1,
+      "database": "finbenchl1",
+      "arm": "multi_typed",
+      "question_id": "ext_hard_2",
+      "repeat": 0,
+      "correct": true,
+      "error": null,
+      "model_calls": 3,
+      "prompt_tokens": 1643,
+      "completion_tokens": 251,
+      "handoff_chars": 1851,
+      "wall_ms": 19385.6,
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 201,
+      "db_hits_per_graph_trip": 201.0,
+      "db_ms": 16.928,
+      "rows_into_context": 1,
+      "result_bytes": 55,
+      "access_classes": [
+        "point"
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "12e7698da7985185",
+          "cypher_template_fingerprint": "fd270aeb027d9626",
+          "cypher": "MATCH (start:Account {acct_no: $acct_no, _workspace_id: $workspace_id})<-[:TRANSFER*1..2]-(upstream:Account {_workspace_id: $workspace_id}) RETURN COUNT(DISTINCT upstream) AS count LIMIT $limit",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "returned_rows": 1,
+          "db_hits": 201,
+          "db_hits_per_returned_row": 201.0,
+          "result_bytes": 55,
+          "client_total_ms": 16.928,
+          "client_submit_ms": 11.406,
+          "client_hydrate_ms": 4.102,
+          "server_available_ms": 10.0,
+          "server_consumed_ms": 0.0,
+          "plan": {
+            "available": true,
+            "runtime": "SLOTTED",
+            "planner": "COST",
+            "operator_count": 7,
+            "operators": [
+              {
+                "operator": "ProduceResults",
+                "id": 0,
+                "details": "count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Limit",
+                "id": 1,
+                "details": "$limit",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "EagerAggregation",
+                "id": 2,
+                "details": "COUNT(DISTINCT upstream) AS count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 1160
+              },
+              {
+                "operator": "Filter",
+                "id": 3,
+                "details": "upstream._workspace_id = $workspace_id AND upstream:Account",
+                "estimated_rows": 16.06327606516999,
+                "rows": 28.0,
+                "db_hits": 56,
+                "page_cache_hits": 46,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "VarLengthExpand(Pruning,BFS,All)",
+                "id": 4,
+                "details": "(start)<-[:TRANSFER*..2]-(upstream) ",
+                "estimated_rows": 16.06327606516999,
+                "rows": 28.0,
+                "db_hits": 142,
+                "page_cache_hits": 107,
+                "page_cache_misses": 0,
+                "memory_bytes": 976
+              },
+              {
+                "operator": "Filter",
+                "id": 5,
+                "details": "start._workspace_id = $workspace_id",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 1,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "NodeIndexSeek",
+                "id": 6,
+                "details": "RANGE INDEX start:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_operators": [
+              {
+                "operator": "NodeIndexSeek",
+                "id": 6,
+                "details": "RANGE INDEX start:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_actual_rows_max": 1.0,
+            "access_estimated_rows_max": 1.0,
+            "sweep_rows_threshold": 1000.0,
+            "access_class": "point",
+            "scan_operator_name_present": false,
+            "seek_operator_name_present": true,
+            "name_cost_disagreement": false,
+            "operator_rows_total": 61,
+            "max_intermediate_rows": 28,
+            "db_hits_total": 201,
+            "page_cache_hits_total": 157,
+            "page_cache_misses_total": 0,
+            "max_expansion_ratio": 28.0,
+            "max_filter_discard_ratio": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:int_med_1:r0:multi_typed",
+      "sf": 1,
+      "database": "finbenchl1",
+      "arm": "multi_typed",
+      "question_id": "int_med_1",
+      "repeat": 0,
+      "correct": false,
+      "error": null,
+      "model_calls": 4,
+      "prompt_tokens": 2955,
+      "completion_tokens": 570,
+      "handoff_chars": 2453,
+      "wall_ms": 26028.3,
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 6633,
+      "db_hits_per_graph_trip": 6633.0,
+      "db_ms": 10.195,
+      "rows_into_context": 1,
+      "result_bytes": 54,
+      "access_classes": [
+        "sweep"
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "02888770b96e1eeb",
+          "cypher_template_fingerprint": "4925207e3e3a6bc0",
+          "cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}), (a1)-[:TRANSFER]->(a2) WHERE a1.id <> a2.id RETURN COUNT(DISTINCT [a1.id, a2.id]) AS count LIMIT $limit",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "returned_rows": 1,
+          "db_hits": 6633,
+          "db_hits_per_returned_row": 6633.0,
+          "result_bytes": 54,
+          "client_total_ms": 10.195,
+          "client_submit_ms": 2.992,
+          "client_hydrate_ms": 5.829,
+          "server_available_ms": 2.0,
+          "server_consumed_ms": 2.0,
+          "plan": {
+            "available": true,
+            "runtime": "SLOTTED",
+            "planner": "COST",
+            "operator_count": 10,
+            "operators": [
+              {
+                "operator": "ProduceResults",
+                "id": 0,
+                "details": "count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Limit",
+                "id": 1,
+                "details": "$limit",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "EagerAggregation",
+                "id": 2,
+                "details": "COUNT(DISTINCT [cache[a1.id], cache[a2.id]]) AS count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 56
+              },
+              {
+                "operator": "Expand(Into)",
+                "id": 3,
+                "details": "(a1)-[anon_2:TRANSFER]->(a2)",
+                "estimated_rows": 5.130505306155433e-08,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 592
+              },
+              {
+                "operator": "Filter",
+                "id": 4,
+                "details": "NOT anon_1 = anon_0 AND a1:Account AND a1._workspace_id = $workspace_id AND NOT cache[a1.id] = cache[a2.id]",
+                "estimated_rows": 2.8729417000756014e-05,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 5,
+                "details": "(p)<-[anon_0:OWN]-(a1)",
+                "estimated_rows": 0.019634881026206287,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 6,
+                "details": "a2:Account AND a2._workspace_id = $workspace_id",
+                "estimated_rows": 0.039511690108427935,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 7,
+                "details": "(p)<-[anon_1:OWN]-(a2)",
+                "estimated_rows": 26.723073076666758,
+                "rows": 0.0,
+                "db_hits": 4431,
+                "page_cache_hits": 2800,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 8,
+                "details": "p._workspace_id = $workspace_id",
+                "estimated_rows": 53.77541023757041,
+                "rows": 1100.0,
+                "db_hits": 1100,
+                "page_cache_hits": 16,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "UnionNodeByLabelsScan",
+                "id": 9,
+                "details": "p:Person|Company",
+                "estimated_rows": 1075.5082047514084,
+                "rows": 1100.0,
+                "db_hits": 1102,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_operators": [
+              {
+                "operator": "UnionNodeByLabelsScan",
+                "id": 9,
+                "details": "p:Person|Company",
+                "estimated_rows": 1075.5082047514084,
+                "rows": 1100.0,
+                "db_hits": 1102,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_actual_rows_max": 1100.0,
+            "access_estimated_rows_max": 1075.5082047514084,
+            "sweep_rows_threshold": 1000.0,
+            "access_class": "sweep",
+            "scan_operator_name_present": true,
+            "seek_operator_name_present": false,
+            "name_cost_disagreement": false,
+            "operator_rows_total": 2203,
+            "max_intermediate_rows": 1100,
+            "db_hits_total": 6633,
+            "page_cache_hits_total": 2818,
+            "page_cache_misses_total": 0,
+            "max_expansion_ratio": 0.0,
+            "max_filter_discard_ratio": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:int_med_1:r0:multi_full",
+      "sf": 1,
+      "database": "finbenchl1",
+      "arm": "multi_full",
+      "question_id": "int_med_1",
+      "repeat": 0,
+      "correct": false,
+      "error": null,
+      "model_calls": 3,
+      "prompt_tokens": 1840,
+      "completion_tokens": 457,
+      "handoff_chars": 2551,
+      "wall_ms": 6623.0,
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 6633,
+      "db_hits_per_graph_trip": 6633.0,
+      "db_ms": 15.912,
+      "rows_into_context": 1,
+      "result_bytes": 54,
+      "access_classes": [
+        "sweep"
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "02888770b96e1eeb",
+          "cypher_template_fingerprint": "4925207e3e3a6bc0",
+          "cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}), (a1)-[:TRANSFER]->(a2) WHERE a1.id <> a2.id RETURN COUNT(DISTINCT [a1.id, a2.id]) AS count LIMIT $limit",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "returned_rows": 1,
+          "db_hits": 6633,
+          "db_hits_per_returned_row": 6633.0,
+          "result_bytes": 54,
+          "client_total_ms": 15.912,
+          "client_submit_ms": 5.591,
+          "client_hydrate_ms": 8.637,
+          "server_available_ms": 3.0,
+          "server_consumed_ms": 4.0,
+          "plan": {
+            "available": true,
+            "runtime": "SLOTTED",
+            "planner": "COST",
+            "operator_count": 10,
+            "operators": [
+              {
+                "operator": "ProduceResults",
+                "id": 0,
+                "details": "count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Limit",
+                "id": 1,
+                "details": "$limit",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "EagerAggregation",
+                "id": 2,
+                "details": "COUNT(DISTINCT [cache[a1.id], cache[a2.id]]) AS count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 56
+              },
+              {
+                "operator": "Expand(Into)",
+                "id": 3,
+                "details": "(a1)-[anon_2:TRANSFER]->(a2)",
+                "estimated_rows": 5.130505306155433e-08,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 592
+              },
+              {
+                "operator": "Filter",
+                "id": 4,
+                "details": "NOT anon_1 = anon_0 AND a1:Account AND a1._workspace_id = $workspace_id AND NOT cache[a1.id] = cache[a2.id]",
+                "estimated_rows": 2.8729417000756014e-05,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 5,
+                "details": "(p)<-[anon_0:OWN]-(a1)",
+                "estimated_rows": 0.019634881026206287,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 6,
+                "details": "a2:Account AND a2._workspace_id = $workspace_id",
+                "estimated_rows": 0.039511690108427935,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 7,
+                "details": "(p)<-[anon_1:OWN]-(a2)",
+                "estimated_rows": 26.723073076666758,
+                "rows": 0.0,
+                "db_hits": 4431,
+                "page_cache_hits": 2800,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 8,
+                "details": "p._workspace_id = $workspace_id",
+                "estimated_rows": 53.77541023757041,
+                "rows": 1100.0,
+                "db_hits": 1100,
+                "page_cache_hits": 16,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "UnionNodeByLabelsScan",
+                "id": 9,
+                "details": "p:Person|Company",
+                "estimated_rows": 1075.5082047514084,
+                "rows": 1100.0,
+                "db_hits": 1102,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_operators": [
+              {
+                "operator": "UnionNodeByLabelsScan",
+                "id": 9,
+                "details": "p:Person|Company",
+                "estimated_rows": 1075.5082047514084,
+                "rows": 1100.0,
+                "db_hits": 1102,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_actual_rows_max": 1100.0,
+            "access_estimated_rows_max": 1075.5082047514084,
+            "sweep_rows_threshold": 1000.0,
+            "access_class": "sweep",
+            "scan_operator_name_present": true,
+            "seek_operator_name_present": false,
+            "name_cost_disagreement": false,
+            "operator_rows_total": 2203,
+            "max_intermediate_rows": 1100,
+            "db_hits_total": 6633,
+            "page_cache_hits_total": 2818,
+            "page_cache_misses_total": 0,
+            "max_expansion_ratio": 0.0,
+            "max_filter_discard_ratio": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:int_hard_2:r0:multi_full",
+      "sf": 1,
+      "database": "finbenchl1",
+      "arm": "multi_full",
+      "question_id": "int_hard_2",
+      "repeat": 0,
+      "correct": false,
+      "error": null,
+      "model_calls": 3,
+      "prompt_tokens": 1949,
+      "completion_tokens": 471,
+      "handoff_chars": 2998,
+      "wall_ms": 6692.1,
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 57,
+      "db_hits_per_graph_trip": 57.0,
+      "db_ms": 21.235,
+      "rows_into_context": 5,
+      "result_bytes": 219,
+      "access_classes": [
+        "point"
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "71d5f865dc93efc2",
+          "cypher_template_fingerprint": "067bee510bdb0cf6",
+          "cypher": "MATCH (common:Account {_workspace_id: $workspace_id})<-[:TRANSFER {_workspace_id: $workspace_id}]-(sender:Account {_workspace_id: $workspace_id}) WHERE sender.owner_id IS NOT NULL AND common.acct_no = $acct_no AND sender.acct_no <> $acct_no WITH sender.owner_id AS party_id, COUNT(DISTINCT sender) AS account_count ORDER BY account_count DESC LIMIT $limit RETURN party_id, account_count",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "returned_rows": 5,
+          "db_hits": 57,
+          "db_hits_per_returned_row": 11.4,
+          "result_bytes": 219,
+          "client_total_ms": 21.235,
+          "client_submit_ms": 14.431,
+          "client_hydrate_ms": 5.429,
+          "server_available_ms": 13.0,
+          "server_consumed_ms": 2.0,
+          "plan": {
+            "available": true,
+            "runtime": "SLOTTED",
+            "planner": "COST",
+            "operator_count": 7,
+            "operators": [
+              {
+                "operator": "ProduceResults",
+                "id": 0,
+                "details": "party_id, account_count",
+                "estimated_rows": 0.1102286342998574,
+                "rows": 5.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Top",
+                "id": 1,
+                "details": "account_count DESC LIMIT $limit",
+                "estimated_rows": 0.1102286342998574,
+                "rows": 5.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 832
+              },
+              {
+                "operator": "EagerAggregation",
+                "id": 2,
+                "details": "cache[sender.owner_id] AS party_id, COUNT(DISTINCT sender) AS account_count",
+                "estimated_rows": 0.1102286342998574,
+                "rows": 5.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 2032
+              },
+              {
+                "operator": "Filter",
+                "id": 3,
+                "details": "(anon_0._workspace_id = $workspace_id AND sender._workspace_id = $workspace_id) AND NOT sender.acct_no = $acct_no AND cache[sender.owner_id] IS NOT NULL AND sender:Account",
+                "estimated_rows": 0.1102286342998574,
+                "rows": 5.0,
+                "db_hits": 25,
+                "page_cache_hits": 19,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 4,
+                "details": "(common)<-[anon_0:TRANSFER]-(sender)",
+                "estimated_rows": 4.410931174089068,
+                "rows": 5.0,
+                "db_hits": 29,
+                "page_cache_hits": 21,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 5,
+                "details": "common._workspace_id = $workspace_id",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 1,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "NodeIndexSeek",
+                "id": 6,
+                "details": "RANGE INDEX common:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_operators": [
+              {
+                "operator": "NodeIndexSeek",
+                "id": 6,
+                "details": "RANGE INDEX common:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_actual_rows_max": 1.0,
+            "access_estimated_rows_max": 1.0,
+            "sweep_rows_threshold": 1000.0,
+            "access_class": "point",
+            "scan_operator_name_present": false,
+            "seek_operator_name_present": true,
+            "name_cost_disagreement": false,
+            "operator_rows_total": 27,
+            "max_intermediate_rows": 5,
+            "db_hits_total": 57,
+            "page_cache_hits_total": 44,
+            "page_cache_misses_total": 0,
+            "max_expansion_ratio": 5.0,
+            "max_filter_discard_ratio": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:int_hard_2:r0:multi_typed",
+      "sf": 1,
+      "database": "finbenchl1",
+      "arm": "multi_typed",
+      "question_id": "int_hard_2",
+      "repeat": 0,
+      "correct": false,
+      "error": "ValueError: text2cypher rejected: inlined_literal:< 10000000",
+      "model_calls": 3,
+      "prompt_tokens": 2551,
+      "completion_tokens": 558,
+      "handoff_chars": 1143,
+      "wall_ms": null,
+      "graph_trips": 0,
+      "unique_graph_queries": 0,
+      "redundant_graph_queries": 0,
+      "db_hits": 0,
+      "db_hits_per_graph_trip": null,
+      "db_ms": 0.0,
+      "rows_into_context": 0,
+      "result_bytes": 0,
+      "access_classes": [],
+      "executions": []
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:ext_med_2:r0:multi_full",
+      "sf": 100,
+      "database": "finbenchl100",
+      "arm": "multi_full",
+      "question_id": "ext_med_2",
+      "repeat": 0,
+      "correct": false,
+      "error": null,
+      "model_calls": 3,
+      "prompt_tokens": 1712,
+      "completion_tokens": 454,
+      "handoff_chars": 2050,
+      "wall_ms": 7366.5,
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 287,
+      "db_hits_per_graph_trip": 287.0,
+      "db_ms": 9.847,
+      "rows_into_context": 0,
+      "result_bytes": 43,
+      "access_classes": [
+        "point"
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "17e1d8ab1f4ff686",
+          "cypher_template_fingerprint": "63fc5777b70606df",
+          "cypher": "MATCH (source:Account {acct_no: $acct_no, _workspace_id: $workspace_id})-[:TRANSFER]->(target:Account {_workspace_id: $workspace_id}) MATCH (target)-[:OWN]->(owner:Person|Company {_workspace_id: $workspace_id}) RETURN DISTINCT owner.id AS owner_id ORDER BY owner_id ASC LIMIT $limit",
+          "params": {
+            "a": 7,
+            "acct_no": 7,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "returned_rows": 0,
+          "db_hits": 287,
+          "db_hits_per_returned_row": null,
+          "result_bytes": 43,
+          "client_total_ms": 9.847,
+          "client_submit_ms": 3.092,
+          "client_hydrate_ms": 5.277,
+          "server_available_ms": 2.0,
+          "server_consumed_ms": 1.0,
+          "plan": {
+            "available": true,
+            "runtime": "SLOTTED",
+            "planner": "COST",
+            "operator_count": 9,
+            "operators": [
+              {
+                "operator": "ProduceResults",
+                "id": 0,
+                "details": "owner_id",
+                "estimated_rows": 1.0556493712326668e-06,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Top",
+                "id": 1,
+                "details": "owner_id ASC LIMIT $limit",
+                "estimated_rows": 1.0556493712326668e-06,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Distinct",
+                "id": 2,
+                "details": "owner.id AS owner_id",
+                "estimated_rows": 1.0556493712326668e-06,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 192
+              },
+              {
+                "operator": "Filter",
+                "id": 3,
+                "details": "owner:Person|Company AND owner._workspace_id = $workspace_id",
+                "estimated_rows": 1.1112098644554386e-06,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 4,
+                "details": "(target)-[anon_1:OWN]->(owner)",
+                "estimated_rows": 7.471554930166117e-05,
+                "rows": 0.0,
+                "db_hits": 235,
+                "page_cache_hits": 182,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 5,
+                "details": "target._workspace_id = $workspace_id AND target:Account",
+                "estimated_rows": 4.992742056168005,
+                "rows": 11.0,
+                "db_hits": 22,
+                "page_cache_hits": 22,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 6,
+                "details": "(source)-[anon_0:TRANSFER]->(target)",
+                "estimated_rows": 4.992742056168005,
+                "rows": 11.0,
+                "db_hits": 27,
+                "page_cache_hits": 22,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 7,
+                "details": "source._workspace_id = $workspace_id",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 1,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "NodeIndexSeek",
+                "id": 8,
+                "details": "RANGE INDEX source:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 3,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_operators": [
+              {
+                "operator": "NodeIndexSeek",
+                "id": 8,
+                "details": "RANGE INDEX source:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 3,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_actual_rows_max": 1.0,
+            "access_estimated_rows_max": 1.0,
+            "sweep_rows_threshold": 1000.0,
+            "access_class": "point",
+            "scan_operator_name_present": false,
+            "seek_operator_name_present": true,
+            "name_cost_disagreement": false,
+            "operator_rows_total": 24,
+            "max_intermediate_rows": 11,
+            "db_hits_total": 287,
+            "page_cache_hits_total": 231,
+            "page_cache_misses_total": 0,
+            "max_expansion_ratio": 11.0,
+            "max_filter_discard_ratio": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:ext_med_2:r0:multi_typed",
+      "sf": 100,
+      "database": "finbenchl100",
+      "arm": "multi_typed",
+      "question_id": "ext_med_2",
+      "repeat": 0,
+      "correct": true,
+      "error": null,
+      "model_calls": 3,
+      "prompt_tokens": 1739,
+      "completion_tokens": 354,
+      "handoff_chars": 2176,
+      "wall_ms": 7910.8,
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 320,
+      "db_hits_per_graph_trip": 320.0,
+      "db_ms": 10.631,
+      "rows_into_context": 11,
+      "result_bytes": 270,
+      "access_classes": [
+        "point"
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "e0dde8d3026644ba",
+          "cypher_template_fingerprint": "2ef33b6e2f4d18dd",
+          "cypher": "MATCH (source:Account {acct_no: $acct_no, _workspace_id: $workspace_id})-[:TRANSFER]->(target:Account {_workspace_id: $workspace_id})<-[:OWN]-(owner:Person|Company {_workspace_id: $workspace_id}) RETURN DISTINCT owner.id AS owner_id ORDER BY owner_id ASC LIMIT $limit",
+          "params": {
+            "a": 7,
+            "acct_no": 7,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "returned_rows": 11,
+          "db_hits": 320,
+          "db_hits_per_returned_row": 29.0909,
+          "result_bytes": 270,
+          "client_total_ms": 10.631,
+          "client_submit_ms": 2.725,
+          "client_hydrate_ms": 6.257,
+          "server_available_ms": 1.0,
+          "server_consumed_ms": 2.0,
+          "plan": {
+            "available": true,
+            "runtime": "SLOTTED",
+            "planner": "COST",
+            "operator_count": 9,
+            "operators": [
+              {
+                "operator": "ProduceResults",
+                "id": 0,
+                "details": "owner_id",
+                "estimated_rows": 0.07038682935943302,
+                "rows": 11.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Top",
+                "id": 1,
+                "details": "owner_id ASC LIMIT $limit",
+                "estimated_rows": 0.07038682935943302,
+                "rows": 11.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 2032
+              },
+              {
+                "operator": "Distinct",
+                "id": 2,
+                "details": "owner.id AS owner_id",
+                "estimated_rows": 0.07038682935943302,
+                "rows": 11.0,
+                "db_hits": 11,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 808
+              },
+              {
+                "operator": "Filter",
+                "id": 3,
+                "details": "owner:Person|Company AND owner._workspace_id = $workspace_id",
+                "estimated_rows": 0.07409139932571898,
+                "rows": 11.0,
+                "db_hits": 22,
+                "page_cache_hits": 22,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 4,
+                "details": "(target)<-[anon_1:OWN]-(owner)",
+                "estimated_rows": 4.981758870420661,
+                "rows": 11.0,
+                "db_hits": 235,
+                "page_cache_hits": 182,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 5,
+                "details": "target._workspace_id = $workspace_id AND target:Account",
+                "estimated_rows": 4.992742056168005,
+                "rows": 11.0,
+                "db_hits": 22,
+                "page_cache_hits": 22,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 6,
+                "details": "(source)-[anon_0:TRANSFER]->(target)",
+                "estimated_rows": 4.992742056168005,
+                "rows": 11.0,
+                "db_hits": 27,
+                "page_cache_hits": 22,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 7,
+                "details": "source._workspace_id = $workspace_id",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 1,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "NodeIndexSeek",
+                "id": 8,
+                "details": "RANGE INDEX source:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 3,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_operators": [
+              {
+                "operator": "NodeIndexSeek",
+                "id": 8,
+                "details": "RANGE INDEX source:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 3,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_actual_rows_max": 1.0,
+            "access_estimated_rows_max": 1.0,
+            "sweep_rows_threshold": 1000.0,
+            "access_class": "point",
+            "scan_operator_name_present": false,
+            "seek_operator_name_present": true,
+            "name_cost_disagreement": false,
+            "operator_rows_total": 79,
+            "max_intermediate_rows": 11,
+            "db_hits_total": 320,
+            "page_cache_hits_total": 253,
+            "page_cache_misses_total": 0,
+            "max_expansion_ratio": 11.0,
+            "max_filter_discard_ratio": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:ext_hard_2:r0:multi_typed",
+      "sf": 100,
+      "database": "finbenchl100",
+      "arm": "multi_typed",
+      "question_id": "ext_hard_2",
+      "repeat": 0,
+      "correct": true,
+      "error": null,
+      "model_calls": 3,
+      "prompt_tokens": 1647,
+      "completion_tokens": 258,
+      "handoff_chars": 1812,
+      "wall_ms": 5589.5,
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 282,
+      "db_hits_per_graph_trip": 282.0,
+      "db_ms": 12.132,
+      "rows_into_context": 1,
+      "result_bytes": 55,
+      "access_classes": [
+        "point"
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "ae4a569cc8516775",
+          "cypher_template_fingerprint": "a738a748c872caee",
+          "cypher": "MATCH (start:Account {acct_no: $acct_no, _workspace_id: $workspace_id})<-[:TRANSFER*1..2]-(upstream:Account {_workspace_id: $workspace_id}) WHERE upstream.acct_no <> $acct_no RETURN COUNT(DISTINCT upstream) AS count LIMIT $limit",
+          "params": {
+            "a": 7,
+            "acct_no": 7,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "returned_rows": 1,
+          "db_hits": 282,
+          "db_hits_per_returned_row": 282.0,
+          "result_bytes": 55,
+          "client_total_ms": 12.132,
+          "client_submit_ms": 4.565,
+          "client_hydrate_ms": 6.089,
+          "server_available_ms": 3.0,
+          "server_consumed_ms": 2.0,
+          "plan": {
+            "available": true,
+            "runtime": "SLOTTED",
+            "planner": "COST",
+            "operator_count": 7,
+            "operators": [
+              {
+                "operator": "ProduceResults",
+                "id": 0,
+                "details": "count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Limit",
+                "id": 1,
+                "details": "$limit",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "EagerAggregation",
+                "id": 2,
+                "details": "COUNT(DISTINCT upstream) AS count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 1448
+              },
+              {
+                "operator": "Filter",
+                "id": 3,
+                "details": "upstream._workspace_id = $workspace_id AND NOT upstream.acct_no = $acct_no AND upstream:Account",
+                "estimated_rows": 18.716564812335605,
+                "rows": 42.0,
+                "db_hits": 126,
+                "page_cache_hits": 84,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "VarLengthExpand(Pruning,BFS,All)",
+                "id": 4,
+                "details": "(start)<-[:TRANSFER*..2]-(upstream) ",
+                "estimated_rows": 18.716658176221355,
+                "rows": 42.0,
+                "db_hits": 153,
+                "page_cache_hits": 129,
+                "page_cache_misses": 0,
+                "memory_bytes": 1744
+              },
+              {
+                "operator": "Filter",
+                "id": 5,
+                "details": "start._workspace_id = $workspace_id",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 1,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "NodeIndexSeek",
+                "id": 6,
+                "details": "RANGE INDEX start:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 3,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_operators": [
+              {
+                "operator": "NodeIndexSeek",
+                "id": 6,
+                "details": "RANGE INDEX start:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 3,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_actual_rows_max": 1.0,
+            "access_estimated_rows_max": 1.0,
+            "sweep_rows_threshold": 1000.0,
+            "access_class": "point",
+            "scan_operator_name_present": false,
+            "seek_operator_name_present": true,
+            "name_cost_disagreement": false,
+            "operator_rows_total": 89,
+            "max_intermediate_rows": 42,
+            "db_hits_total": 282,
+            "page_cache_hits_total": 218,
+            "page_cache_misses_total": 0,
+            "max_expansion_ratio": 42.0,
+            "max_filter_discard_ratio": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:ext_hard_2:r0:multi_full",
+      "sf": 100,
+      "database": "finbenchl100",
+      "arm": "multi_full",
+      "question_id": "ext_hard_2",
+      "repeat": 0,
+      "correct": true,
+      "error": null,
+      "model_calls": 3,
+      "prompt_tokens": 1689,
+      "completion_tokens": 253,
+      "handoff_chars": 1884,
+      "wall_ms": 5836.5,
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 324,
+      "db_hits_per_graph_trip": 324.0,
+      "db_ms": 12.224,
+      "rows_into_context": 1,
+      "result_bytes": 55,
+      "access_classes": [
+        "point"
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "b990354c21fa9e2d",
+          "cypher_template_fingerprint": "3ce6f287c3d2459e",
+          "cypher": "MATCH (start:Account {acct_no: $acct_no, _workspace_id: $workspace_id})<-[:TRANSFER*1..2]-(upstream:Account {_workspace_id: $workspace_id}) WHERE start <> upstream RETURN COUNT(DISTINCT upstream.id) AS count LIMIT $limit",
+          "params": {
+            "a": 7,
+            "acct_no": 7,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "returned_rows": 1,
+          "db_hits": 324,
+          "db_hits_per_returned_row": 324.0,
+          "result_bytes": 55,
+          "client_total_ms": 12.224,
+          "client_submit_ms": 3.468,
+          "client_hydrate_ms": 7.227,
+          "server_available_ms": 2.0,
+          "server_consumed_ms": 2.0,
+          "plan": {
+            "available": true,
+            "runtime": "SLOTTED",
+            "planner": "COST",
+            "operator_count": 7,
+            "operators": [
+              {
+                "operator": "ProduceResults",
+                "id": 0,
+                "details": "count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Limit",
+                "id": 1,
+                "details": "$limit",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "EagerAggregation",
+                "id": 2,
+                "details": "COUNT(DISTINCT upstream.id) AS count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 84,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 2792
+              },
+              {
+                "operator": "Filter",
+                "id": 3,
+                "details": "NOT start = upstream AND upstream._workspace_id = $workspace_id AND upstream:Account",
+                "estimated_rows": 16.84499235859922,
+                "rows": 42.0,
+                "db_hits": 84,
+                "page_cache_hits": 84,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "VarLengthExpand(Pruning,BFS,All)",
+                "id": 4,
+                "details": "(start)<-[:TRANSFER*..2]-(upstream) ",
+                "estimated_rows": 18.716658176221355,
+                "rows": 42.0,
+                "db_hits": 153,
+                "page_cache_hits": 129,
+                "page_cache_misses": 0,
+                "memory_bytes": 1744
+              },
+              {
+                "operator": "Filter",
+                "id": 5,
+                "details": "start._workspace_id = $workspace_id",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 1,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "NodeIndexSeek",
+                "id": 6,
+                "details": "RANGE INDEX start:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 3,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_operators": [
+              {
+                "operator": "NodeIndexSeek",
+                "id": 6,
+                "details": "RANGE INDEX start:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 3,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_actual_rows_max": 1.0,
+            "access_estimated_rows_max": 1.0,
+            "sweep_rows_threshold": 1000.0,
+            "access_class": "point",
+            "scan_operator_name_present": false,
+            "seek_operator_name_present": true,
+            "name_cost_disagreement": false,
+            "operator_rows_total": 89,
+            "max_intermediate_rows": 42,
+            "db_hits_total": 324,
+            "page_cache_hits_total": 218,
+            "page_cache_misses_total": 0,
+            "max_expansion_ratio": 42.0,
+            "max_filter_discard_ratio": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:int_med_1:r0:multi_full",
+      "sf": 100,
+      "database": "finbenchl100",
+      "arm": "multi_full",
+      "question_id": "int_med_1",
+      "repeat": 0,
+      "correct": false,
+      "error": null,
+      "model_calls": 3,
+      "prompt_tokens": 1840,
+      "completion_tokens": 457,
+      "handoff_chars": 2551,
+      "wall_ms": 6836.6,
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 660035,
+      "db_hits_per_graph_trip": 660035.0,
+      "db_ms": 147.771,
+      "rows_into_context": 1,
+      "result_bytes": 54,
+      "access_classes": [
+        "sweep"
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "229eda11f08f7cae",
+          "cypher_template_fingerprint": "4925207e3e3a6bc0",
+          "cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}), (a1)-[:TRANSFER]->(a2) WHERE a1.id <> a2.id RETURN COUNT(DISTINCT [a1.id, a2.id]) AS count LIMIT $limit",
+          "params": {
+            "a": 7,
+            "acct_no": 7,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "returned_rows": 1,
+          "db_hits": 660035,
+          "db_hits_per_returned_row": 660035.0,
+          "result_bytes": 54,
+          "client_total_ms": 147.771,
+          "client_submit_ms": 3.63,
+          "client_hydrate_ms": 137.657,
+          "server_available_ms": 2.0,
+          "server_consumed_ms": 135.0,
+          "plan": {
+            "available": true,
+            "runtime": "SLOTTED",
+            "planner": "COST",
+            "operator_count": 10,
+            "operators": [
+              {
+                "operator": "ProduceResults",
+                "id": 0,
+                "details": "count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Limit",
+                "id": 1,
+                "details": "$limit",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "EagerAggregation",
+                "id": 2,
+                "details": "COUNT(DISTINCT [cache[a1.id], cache[a2.id]]) AS count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 56
+              },
+              {
+                "operator": "Expand(Into)",
+                "id": 3,
+                "details": "(a1)-[anon_2:TRANSFER]->(a2)",
+                "estimated_rows": 9.155152488893223e-12,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 592
+              },
+              {
+                "operator": "Filter",
+                "id": 4,
+                "details": "NOT anon_1 = anon_0 AND a1:Account AND a1._workspace_id = $workspace_id AND NOT cache[a1.id] = cache[a2.id]",
+                "estimated_rows": 3.6760028833876254e-07,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 5,
+                "details": "(p)<-[anon_0:OWN]-(a1)",
+                "estimated_rows": 0.024757941033526614,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 6,
+                "details": "a2:Account AND a2._workspace_id = $workspace_id",
+                "estimated_rows": 0.044617614733807466,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 7,
+                "details": "(p)<-[anon_1:OWN]-(a2)",
+                "estimated_rows": 2974.938952529591,
+                "rows": 0.0,
+                "db_hits": 440033,
+                "page_cache_hits": 329325,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 8,
+                "details": "p._workspace_id = $workspace_id",
+                "estimated_rows": 5361.297204029039,
+                "rows": 110000.0,
+                "db_hits": 110000,
+                "page_cache_hits": 1341,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "UnionNodeByLabelsScan",
+                "id": 9,
+                "details": "p:Person|Company",
+                "estimated_rows": 107225.94408058077,
+                "rows": 110000.0,
+                "db_hits": 110002,
+                "page_cache_hits": 12,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_operators": [
+              {
+                "operator": "UnionNodeByLabelsScan",
+                "id": 9,
+                "details": "p:Person|Company",
+                "estimated_rows": 107225.94408058077,
+                "rows": 110000.0,
+                "db_hits": 110002,
+                "page_cache_hits": 12,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_actual_rows_max": 110000.0,
+            "access_estimated_rows_max": 107225.94408058077,
+            "sweep_rows_threshold": 1000.0,
+            "access_class": "sweep",
+            "scan_operator_name_present": true,
+            "seek_operator_name_present": false,
+            "name_cost_disagreement": false,
+            "operator_rows_total": 220003,
+            "max_intermediate_rows": 110000,
+            "db_hits_total": 660035,
+            "page_cache_hits_total": 330678,
+            "page_cache_misses_total": 0,
+            "max_expansion_ratio": 0.0,
+            "max_filter_discard_ratio": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:int_med_1:r0:multi_typed",
+      "sf": 100,
+      "database": "finbenchl100",
+      "arm": "multi_typed",
+      "question_id": "int_med_1",
+      "repeat": 0,
+      "correct": false,
+      "error": null,
+      "model_calls": 4,
+      "prompt_tokens": 2955,
+      "completion_tokens": 570,
+      "handoff_chars": 2453,
+      "wall_ms": 7961.1,
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 660035,
+      "db_hits_per_graph_trip": 660035.0,
+      "db_ms": 167.533,
+      "rows_into_context": 1,
+      "result_bytes": 54,
+      "access_classes": [
+        "sweep"
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "229eda11f08f7cae",
+          "cypher_template_fingerprint": "4925207e3e3a6bc0",
+          "cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}), (a1)-[:TRANSFER]->(a2) WHERE a1.id <> a2.id RETURN COUNT(DISTINCT [a1.id, a2.id]) AS count LIMIT $limit",
+          "params": {
+            "a": 7,
+            "acct_no": 7,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "returned_rows": 1,
+          "db_hits": 660035,
+          "db_hits_per_returned_row": 660035.0,
+          "result_bytes": 54,
+          "client_total_ms": 167.533,
+          "client_submit_ms": 3.081,
+          "client_hydrate_ms": 157.98,
+          "server_available_ms": 2.0,
+          "server_consumed_ms": 155.0,
+          "plan": {
+            "available": true,
+            "runtime": "SLOTTED",
+            "planner": "COST",
+            "operator_count": 10,
+            "operators": [
+              {
+                "operator": "ProduceResults",
+                "id": 0,
+                "details": "count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Limit",
+                "id": 1,
+                "details": "$limit",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "EagerAggregation",
+                "id": 2,
+                "details": "COUNT(DISTINCT [cache[a1.id], cache[a2.id]]) AS count",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 56
+              },
+              {
+                "operator": "Expand(Into)",
+                "id": 3,
+                "details": "(a1)-[anon_2:TRANSFER]->(a2)",
+                "estimated_rows": 9.155152488893223e-12,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 592
+              },
+              {
+                "operator": "Filter",
+                "id": 4,
+                "details": "NOT anon_1 = anon_0 AND a1:Account AND a1._workspace_id = $workspace_id AND NOT cache[a1.id] = cache[a2.id]",
+                "estimated_rows": 3.6760028833876254e-07,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 5,
+                "details": "(p)<-[anon_0:OWN]-(a1)",
+                "estimated_rows": 0.024757941033526614,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 6,
+                "details": "a2:Account AND a2._workspace_id = $workspace_id",
+                "estimated_rows": 0.044617614733807466,
+                "rows": 0.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 7,
+                "details": "(p)<-[anon_1:OWN]-(a2)",
+                "estimated_rows": 2974.938952529591,
+                "rows": 0.0,
+                "db_hits": 440033,
+                "page_cache_hits": 329325,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 8,
+                "details": "p._workspace_id = $workspace_id",
+                "estimated_rows": 5361.297204029039,
+                "rows": 110000.0,
+                "db_hits": 110000,
+                "page_cache_hits": 1341,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "UnionNodeByLabelsScan",
+                "id": 9,
+                "details": "p:Person|Company",
+                "estimated_rows": 107225.94408058077,
+                "rows": 110000.0,
+                "db_hits": 110002,
+                "page_cache_hits": 12,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_operators": [
+              {
+                "operator": "UnionNodeByLabelsScan",
+                "id": 9,
+                "details": "p:Person|Company",
+                "estimated_rows": 107225.94408058077,
+                "rows": 110000.0,
+                "db_hits": 110002,
+                "page_cache_hits": 12,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_actual_rows_max": 110000.0,
+            "access_estimated_rows_max": 107225.94408058077,
+            "sweep_rows_threshold": 1000.0,
+            "access_class": "sweep",
+            "scan_operator_name_present": true,
+            "seek_operator_name_present": false,
+            "name_cost_disagreement": false,
+            "operator_rows_total": 220003,
+            "max_intermediate_rows": 110000,
+            "db_hits_total": 660035,
+            "page_cache_hits_total": 330678,
+            "page_cache_misses_total": 0,
+            "max_expansion_ratio": 0.0,
+            "max_filter_discard_ratio": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:int_hard_2:r0:multi_full",
+      "sf": 100,
+      "database": "finbenchl100",
+      "arm": "multi_full",
+      "question_id": "int_hard_2",
+      "repeat": 0,
+      "correct": false,
+      "error": null,
+      "model_calls": 3,
+      "prompt_tokens": 1963,
+      "completion_tokens": 492,
+      "handoff_chars": 3043,
+      "wall_ms": 6239.0,
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 60,
+      "db_hits_per_graph_trip": 60.0,
+      "db_ms": 10.687,
+      "rows_into_context": 6,
+      "result_bytes": 264,
+      "access_classes": [
+        "point"
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "cd21a153cc609c15",
+          "cypher_template_fingerprint": "067bee510bdb0cf6",
+          "cypher": "MATCH (common:Account {_workspace_id: $workspace_id})<-[:TRANSFER {_workspace_id: $workspace_id}]-(sender:Account {_workspace_id: $workspace_id}) WHERE sender.owner_id IS NOT NULL AND common.acct_no = $acct_no AND sender.acct_no <> $acct_no WITH sender.owner_id AS party_id, COUNT(DISTINCT sender) AS account_count ORDER BY account_count DESC LIMIT $limit RETURN party_id, account_count",
+          "params": {
+            "a": 7,
+            "acct_no": 7,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "returned_rows": 6,
+          "db_hits": 60,
+          "db_hits_per_returned_row": 10.0,
+          "result_bytes": 264,
+          "client_total_ms": 10.687,
+          "client_submit_ms": 5.327,
+          "client_hydrate_ms": 3.667,
+          "server_available_ms": 4.0,
+          "server_consumed_ms": 0.0,
+          "plan": {
+            "available": true,
+            "runtime": "SLOTTED",
+            "planner": "COST",
+            "operator_count": 7,
+            "operators": [
+              {
+                "operator": "ProduceResults",
+                "id": 0,
+                "details": "party_id, account_count",
+                "estimated_rows": 0.1248179287746226,
+                "rows": 6.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Top",
+                "id": 1,
+                "details": "account_count DESC LIMIT $limit",
+                "estimated_rows": 0.1248179287746226,
+                "rows": 6.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 944
+              },
+              {
+                "operator": "EagerAggregation",
+                "id": 2,
+                "details": "cache[sender.owner_id] AS party_id, COUNT(DISTINCT sender) AS account_count",
+                "estimated_rows": 0.1248179287746226,
+                "rows": 6.0,
+                "db_hits": 0,
+                "page_cache_hits": 0,
+                "page_cache_misses": 0,
+                "memory_bytes": 2352
+              },
+              {
+                "operator": "Filter",
+                "id": 3,
+                "details": "(anon_0._workspace_id = $workspace_id AND sender._workspace_id = $workspace_id) AND NOT sender.acct_no = $acct_no AND cache[sender.owner_id] IS NOT NULL AND sender:Account",
+                "estimated_rows": 0.1248179287746226,
+                "rows": 6.0,
+                "db_hits": 30,
+                "page_cache_hits": 24,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Expand(All)",
+                "id": 4,
+                "details": "(common)<-[anon_0:TRANSFER]-(sender)",
+                "estimated_rows": 4.992742056168005,
+                "rows": 6.0,
+                "db_hits": 27,
+                "page_cache_hits": 22,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "Filter",
+                "id": 5,
+                "details": "common._workspace_id = $workspace_id",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 1,
+                "page_cache_hits": 2,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              },
+              {
+                "operator": "NodeIndexSeek",
+                "id": 6,
+                "details": "RANGE INDEX common:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 3,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_operators": [
+              {
+                "operator": "NodeIndexSeek",
+                "id": 6,
+                "details": "RANGE INDEX common:Account(acct_no) WHERE acct_no = $acct_no",
+                "estimated_rows": 1.0,
+                "rows": 1.0,
+                "db_hits": 2,
+                "page_cache_hits": 3,
+                "page_cache_misses": 0,
+                "memory_bytes": 0
+              }
+            ],
+            "access_actual_rows_max": 1.0,
+            "access_estimated_rows_max": 1.0,
+            "sweep_rows_threshold": 1000.0,
+            "access_class": "point",
+            "scan_operator_name_present": false,
+            "seek_operator_name_present": true,
+            "name_cost_disagreement": false,
+            "operator_rows_total": 32,
+            "max_intermediate_rows": 6,
+            "db_hits_total": 60,
+            "page_cache_hits_total": 51,
+            "page_cache_misses_total": 0,
+            "max_expansion_ratio": 6.0,
+            "max_filter_discard_ratio": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:int_hard_2:r0:multi_typed",
+      "sf": 100,
+      "database": "finbenchl100",
+      "arm": "multi_typed",
+      "question_id": "int_hard_2",
+      "repeat": 0,
+      "correct": false,
+      "error": "ValueError: text2cypher rejected: inlined_literal:< 10000000",
+      "model_calls": 3,
+      "prompt_tokens": 2551,
+      "completion_tokens": 558,
+      "handoff_chars": 1143,
+      "wall_ms": null,
+      "graph_trips": 0,
+      "unique_graph_queries": 0,
+      "redundant_graph_queries": 0,
+      "db_hits": 0,
+      "db_hits_per_graph_trip": null,
+      "db_ms": 0.0,
+      "rows_into_context": 0,
+      "result_bytes": 0,
+      "access_classes": [],
+      "executions": []
+    }
+  ],
+  "aggregate": [
+    {
+      "sf": 1,
+      "arm": "multi_full",
+      "n": 4,
+      "errors": 0,
+      "correct": 1,
+      "executed": 4,
+      "prompt_tokens": 7184,
+      "graph_trips": 4,
+      "db_hits": 7279,
+      "db_hits_median": 294.5,
+      "db_ms_median": 14.883,
+      "sweep_plans": 1,
+      "point_plans": 3,
+      "range_plans": 0,
+      "name_cost_disagreements": 0
+    },
+    {
+      "sf": 1,
+      "arm": "multi_typed",
+      "n": 4,
+      "errors": 1,
+      "correct": 2,
+      "executed": 3,
+      "prompt_tokens": 8889,
+      "graph_trips": 3,
+      "db_hits": 7205,
+      "db_hits_median": 371,
+      "db_ms_median": 16.928,
+      "sweep_plans": 1,
+      "point_plans": 2,
+      "range_plans": 0,
+      "name_cost_disagreements": 0
+    },
+    {
+      "sf": 100,
+      "arm": "multi_full",
+      "n": 4,
+      "errors": 0,
+      "correct": 1,
+      "executed": 4,
+      "prompt_tokens": 7204,
+      "graph_trips": 4,
+      "db_hits": 660706,
+      "db_hits_median": 305.5,
+      "db_ms_median": 11.4555,
+      "sweep_plans": 1,
+      "point_plans": 3,
+      "range_plans": 0,
+      "name_cost_disagreements": 0
+    },
+    {
+      "sf": 100,
+      "arm": "multi_typed",
+      "n": 4,
+      "errors": 1,
+      "correct": 2,
+      "executed": 3,
+      "prompt_tokens": 8892,
+      "graph_trips": 3,
+      "db_hits": 660637,
+      "db_hits_median": 320,
+      "db_ms_median": 12.132,
+      "sweep_plans": 1,
+      "point_plans": 2,
+      "range_plans": 0,
+      "name_cost_disagreements": 0
+    }
+  ],
+  "context_pairs": [
+    {
+      "sf": 1,
+      "question_id": "ext_hard_2",
+      "repeat": 0,
+      "left_arm": "multi_full",
+      "right_arm": "multi_typed",
+      "correct_change": 0,
+      "prompt_token_ratio": 0.9716,
+      "both_executed": true,
+      "db_hits_ratio": 0.7821,
+      "db_ms_ratio": 1.2219,
+      "same_query_fingerprint": false,
+      "same_cypher_template": false,
+      "left_access_classes": [
+        "point"
+      ],
+      "right_access_classes": [
+        "point"
+      ]
+    },
+    {
+      "sf": 1,
+      "question_id": "ext_med_2",
+      "repeat": 0,
+      "left_arm": "multi_full",
+      "right_arm": "multi_typed",
+      "correct_change": 1,
+      "prompt_token_ratio": 1.0211,
+      "both_executed": true,
+      "db_hits_ratio": 1.1175,
+      "db_ms_ratio": 1.5506,
+      "same_query_fingerprint": false,
+      "same_cypher_template": false,
+      "left_access_classes": [
+        "point"
+      ],
+      "right_access_classes": [
+        "point"
+      ]
+    },
+    {
+      "sf": 1,
+      "question_id": "int_hard_2",
+      "repeat": 0,
+      "left_arm": "multi_full",
+      "right_arm": "multi_typed",
+      "correct_change": 0,
+      "prompt_token_ratio": 1.3089,
+      "both_executed": false,
+      "db_hits_ratio": null,
+      "db_ms_ratio": null,
+      "same_query_fingerprint": false,
+      "same_cypher_template": false,
+      "left_access_classes": [
+        "point"
+      ],
+      "right_access_classes": []
+    },
+    {
+      "sf": 1,
+      "question_id": "int_med_1",
+      "repeat": 0,
+      "left_arm": "multi_full",
+      "right_arm": "multi_typed",
+      "correct_change": 0,
+      "prompt_token_ratio": 1.606,
+      "both_executed": true,
+      "db_hits_ratio": 1.0,
+      "db_ms_ratio": 0.6407,
+      "same_query_fingerprint": true,
+      "same_cypher_template": true,
+      "left_access_classes": [
+        "sweep"
+      ],
+      "right_access_classes": [
+        "sweep"
+      ]
+    },
+    {
+      "sf": 100,
+      "question_id": "ext_hard_2",
+      "repeat": 0,
+      "left_arm": "multi_full",
+      "right_arm": "multi_typed",
+      "correct_change": 0,
+      "prompt_token_ratio": 0.9751,
+      "both_executed": true,
+      "db_hits_ratio": 0.8704,
+      "db_ms_ratio": 0.9925,
+      "same_query_fingerprint": false,
+      "same_cypher_template": false,
+      "left_access_classes": [
+        "point"
+      ],
+      "right_access_classes": [
+        "point"
+      ]
+    },
+    {
+      "sf": 100,
+      "question_id": "ext_med_2",
+      "repeat": 0,
+      "left_arm": "multi_full",
+      "right_arm": "multi_typed",
+      "correct_change": 1,
+      "prompt_token_ratio": 1.0158,
+      "both_executed": true,
+      "db_hits_ratio": 1.115,
+      "db_ms_ratio": 1.0796,
+      "same_query_fingerprint": false,
+      "same_cypher_template": false,
+      "left_access_classes": [
+        "point"
+      ],
+      "right_access_classes": [
+        "point"
+      ]
+    },
+    {
+      "sf": 100,
+      "question_id": "int_hard_2",
+      "repeat": 0,
+      "left_arm": "multi_full",
+      "right_arm": "multi_typed",
+      "correct_change": 0,
+      "prompt_token_ratio": 1.2995,
+      "both_executed": false,
+      "db_hits_ratio": null,
+      "db_ms_ratio": null,
+      "same_query_fingerprint": false,
+      "same_cypher_template": false,
+      "left_access_classes": [
+        "point"
+      ],
+      "right_access_classes": []
+    },
+    {
+      "sf": 100,
+      "question_id": "int_med_1",
+      "repeat": 0,
+      "left_arm": "multi_full",
+      "right_arm": "multi_typed",
+      "correct_change": 0,
+      "prompt_token_ratio": 1.606,
+      "both_executed": true,
+      "db_hits_ratio": 1.0,
+      "db_ms_ratio": 1.1337,
+      "same_query_fingerprint": true,
+      "same_cypher_template": true,
+      "left_access_classes": [
+        "sweep"
+      ],
+      "right_access_classes": [
+        "sweep"
+      ]
+    }
+  ],
+  "scale_pairs": [
+    {
+      "question_id": "ext_hard_2",
+      "repeat": 0,
+      "arm": "multi_full",
+      "low_sf": 1,
+      "high_sf": 100,
+      "both_executed": true,
+      "db_hits_ratio": 1.2607,
+      "db_ms_ratio": 0.8823,
+      "result_bytes_ratio": 1.0,
+      "low_access_classes": [
+        "point"
+      ],
+      "high_access_classes": [
+        "point"
+      ],
+      "same_cypher_template": false
+    },
+    {
+      "question_id": "ext_hard_2",
+      "repeat": 0,
+      "arm": "multi_typed",
+      "low_sf": 1,
+      "high_sf": 100,
+      "both_executed": true,
+      "db_hits_ratio": 1.403,
+      "db_ms_ratio": 0.7167,
+      "result_bytes_ratio": 1.0,
+      "low_access_classes": [
+        "point"
+      ],
+      "high_access_classes": [
+        "point"
+      ],
+      "same_cypher_template": false
+    },
+    {
+      "question_id": "ext_med_2",
+      "repeat": 0,
+      "arm": "multi_full",
+      "low_sf": 1,
+      "high_sf": 100,
+      "both_executed": true,
+      "db_hits_ratio": 0.8645,
+      "db_ms_ratio": 0.843,
+      "result_bytes_ratio": 1.0,
+      "low_access_classes": [
+        "point"
+      ],
+      "high_access_classes": [
+        "point"
+      ],
+      "same_cypher_template": false
+    },
+    {
+      "question_id": "ext_med_2",
+      "repeat": 0,
+      "arm": "multi_typed",
+      "low_sf": 1,
+      "high_sf": 100,
+      "both_executed": true,
+      "db_hits_ratio": 0.8625,
+      "db_ms_ratio": 0.587,
+      "result_bytes_ratio": 0.9278,
+      "low_access_classes": [
+        "point"
+      ],
+      "high_access_classes": [
+        "point"
+      ],
+      "same_cypher_template": false
+    },
+    {
+      "question_id": "int_hard_2",
+      "repeat": 0,
+      "arm": "multi_full",
+      "low_sf": 1,
+      "high_sf": 100,
+      "both_executed": true,
+      "db_hits_ratio": 1.0526,
+      "db_ms_ratio": 0.5033,
+      "result_bytes_ratio": 1.2055,
+      "low_access_classes": [
+        "point"
+      ],
+      "high_access_classes": [
+        "point"
+      ],
+      "same_cypher_template": true
+    },
+    {
+      "question_id": "int_hard_2",
+      "repeat": 0,
+      "arm": "multi_typed",
+      "low_sf": 1,
+      "high_sf": 100,
+      "both_executed": false,
+      "db_hits_ratio": null,
+      "db_ms_ratio": null,
+      "result_bytes_ratio": null,
+      "low_access_classes": [],
+      "high_access_classes": [],
+      "same_cypher_template": false
+    },
+    {
+      "question_id": "int_med_1",
+      "repeat": 0,
+      "arm": "multi_full",
+      "low_sf": 1,
+      "high_sf": 100,
+      "both_executed": true,
+      "db_hits_ratio": 99.5078,
+      "db_ms_ratio": 9.2868,
+      "result_bytes_ratio": 1.0,
+      "low_access_classes": [
+        "sweep"
+      ],
+      "high_access_classes": [
+        "sweep"
+      ],
+      "same_cypher_template": true
+    },
+    {
+      "question_id": "int_med_1",
+      "repeat": 0,
+      "arm": "multi_typed",
+      "low_sf": 1,
+      "high_sf": 100,
+      "both_executed": true,
+      "db_hits_ratio": 99.5078,
+      "db_ms_ratio": 16.4329,
+      "result_bytes_ratio": 1.0,
+      "low_access_classes": [
+        "sweep"
+      ],
+      "high_access_classes": [
+        "sweep"
+      ],
+      "same_cypher_template": true
+    }
+  ],
+  "summary": {
+    "episodes": 16,
+    "executed_episodes": 14,
+    "profiled_queries": 14,
+    "context_pairs": 8,
+    "scale_pairs": 8,
+    "context_pairs_both_executed": 6,
+    "context_pairs_same_template": 2,
+    "scale_pairs_both_executed": 7,
+    "scale_pairs_same_template": 3,
+    "name_cost_disagreements": 0
+  }
+}

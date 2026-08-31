@@ -1,0 +1,591 @@
+{
+  "schema_version": "seocho.local-db-monitor-analysis.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T07:44:32+00:00",
+    "git_commit": "1064277047ea5b3298158be85070a167f12f647a",
+    "git_dirty": false,
+    "argv": [
+      "scripts/analysis/analyze_local_db_monitor.py",
+      "--report",
+      "results/episodes/agent_topology/20260831T_mara_retrieval_sf1_sf100_paced_v1/report.json",
+      "--out",
+      "results/analysis/mara_retrieval_system_windows_sf1_sf100_20260831.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": null,
+    "db_pagecache": null,
+    "db_heap_max": null,
+    "db_container_id": null,
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": false,
+      "reason": "nvidia-smi unavailable or no driver"
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "analysis": "MARA + local DozerDB monitoring join"
+  },
+  "source": {
+    "report": "results/episodes/agent_topology/20260831T_mara_retrieval_sf1_sf100_paced_v1/report.json",
+    "metrics": "/tmp/aisummit26-retrieval-provenance.czsJHG/results/episodes/agent_topology/20260831T_mara_retrieval_sf1_sf100_paced_v1/system_metrics.jsonl"
+  },
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "DeepSeek-V3.1",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 1000,
+    "request_timeout_s": 180.0,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "system_monitor_receipt": {
+    "schema_version": "seocho.system-monitor-receipt.v2",
+    "path": "results/episodes/agent_topology/20260831T_mara_retrieval_sf1_sf100_paced_v1/system_metrics.jsonl",
+    "interval_s": 5.0,
+    "db_container": "aisummit-simtest",
+    "samples": 87,
+    "db_container_available_samples": 87,
+    "container_unavailable_samples": 0,
+    "coverage_rate": 1.0,
+    "complete": true,
+    "db_container_complete": true,
+    "valid": true
+  },
+  "episodes": [
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:ext_med_2:r0:multi_typed",
+      "arm": "multi_typed",
+      "question_id": "ext_med_2",
+      "correct": true,
+      "wall_ms": 47298.7,
+      "db_ms": 18.112,
+      "db_hits": 371,
+      "graph_trips": 1,
+      "monitor_window": {
+        "started_wall": 1788161223.5441873,
+        "ended_wall": 1788161270.844536,
+        "started_mono": 15268.026414198,
+        "ended_mono": 15315.326763124
+      },
+      "overlapping_samples": 10,
+      "available_samples": 10,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 0.665,
+        "cpu_percent_max": 0.72,
+        "memory_used_bytes_max": 9583145779,
+        "pids_max": 64
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": 300,
+        "network_tx_bytes": 0,
+        "block_read_bytes": 0,
+        "block_write_bytes": 20000
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:ext_med_2:r0:multi_full",
+      "arm": "multi_full",
+      "question_id": "ext_med_2",
+      "correct": false,
+      "wall_ms": 34183.9,
+      "db_ms": 11.681,
+      "db_hits": 332,
+      "graph_trips": 1,
+      "monitor_window": {
+        "started_wall": 1788161285.8619823,
+        "ended_wall": 1788161320.0482938,
+        "started_mono": 15330.344209159,
+        "ended_mono": 15364.530520859
+      },
+      "overlapping_samples": 7,
+      "available_samples": 7,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 0.63,
+        "cpu_percent_max": 0.74,
+        "memory_used_bytes_max": 9585293263,
+        "pids_max": 68
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": 1200,
+        "network_tx_bytes": 12000,
+        "block_read_bytes": 0,
+        "block_write_bytes": 20000
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:ext_hard_2:r0:multi_full",
+      "arm": "multi_full",
+      "question_id": "ext_hard_2",
+      "correct": true,
+      "wall_ms": 4925.7,
+      "db_ms": 13.854,
+      "db_hits": 257,
+      "graph_trips": 1,
+      "monitor_window": {
+        "started_wall": 1788161335.0660288,
+        "ended_wall": 1788161339.9938226,
+        "started_mono": 15379.548255635,
+        "ended_mono": 15384.476049404
+      },
+      "overlapping_samples": 1,
+      "available_samples": 1,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 6.78,
+        "cpu_percent_max": 6.78,
+        "memory_used_bytes_max": 9585293263,
+        "pids_max": 66
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": null,
+        "network_tx_bytes": null,
+        "block_read_bytes": null,
+        "block_write_bytes": null
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:ext_hard_2:r0:multi_typed",
+      "arm": "multi_typed",
+      "question_id": "ext_hard_2",
+      "correct": true,
+      "wall_ms": 19385.6,
+      "db_ms": 16.928,
+      "db_hits": 201,
+      "graph_trips": 1,
+      "monitor_window": {
+        "started_wall": 1788161354.9959402,
+        "ended_wall": 1788161374.3833559,
+        "started_mono": 15399.478166675,
+        "ended_mono": 15418.865582342
+      },
+      "overlapping_samples": 4,
+      "available_samples": 4,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 0.65,
+        "cpu_percent_max": 0.67,
+        "memory_used_bytes_max": 9591735714,
+        "pids_max": 69
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": 900,
+        "network_tx_bytes": 9000,
+        "block_read_bytes": 0,
+        "block_write_bytes": 0
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:int_med_1:r0:multi_typed",
+      "arm": "multi_typed",
+      "question_id": "int_med_1",
+      "correct": false,
+      "wall_ms": 26028.3,
+      "db_ms": 10.195,
+      "db_hits": 6633,
+      "graph_trips": 1,
+      "monitor_window": {
+        "started_wall": 1788161389.4009676,
+        "ended_wall": 1788161415.4312494,
+        "started_mono": 15433.883194564,
+        "ended_mono": 15459.913476572
+      },
+      "overlapping_samples": 5,
+      "available_samples": 5,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 0.68,
+        "cpu_percent_max": 0.71,
+        "memory_used_bytes_max": 9592809456,
+        "pids_max": 68
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": 2000,
+        "network_tx_bytes": 14000,
+        "block_read_bytes": 0,
+        "block_write_bytes": 30000
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:int_med_1:r0:multi_full",
+      "arm": "multi_full",
+      "question_id": "int_med_1",
+      "correct": false,
+      "wall_ms": 6623.0,
+      "db_ms": 15.912,
+      "db_hits": 6633,
+      "graph_trips": 1,
+      "monitor_window": {
+        "started_wall": 1788161430.4488592,
+        "ended_wall": 1788161437.072733,
+        "started_mono": 15474.931085538,
+        "ended_mono": 15481.554959393
+      },
+      "overlapping_samples": 1,
+      "available_samples": 1,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 0.62,
+        "cpu_percent_max": 0.62,
+        "memory_used_bytes_max": 9591735714,
+        "pids_max": 66
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": null,
+        "network_tx_bytes": null,
+        "block_read_bytes": null,
+        "block_write_bytes": null
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:int_hard_2:r0:multi_full",
+      "arm": "multi_full",
+      "question_id": "int_hard_2",
+      "correct": false,
+      "wall_ms": 6692.1,
+      "db_ms": 21.235,
+      "db_hits": 57,
+      "graph_trips": 1,
+      "monitor_window": {
+        "started_wall": 1788161452.088956,
+        "ended_wall": 1788161458.7824936,
+        "started_mono": 15496.571182881,
+        "ended_mono": 15503.264720488
+      },
+      "overlapping_samples": 2,
+      "available_samples": 2,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 0.695,
+        "cpu_percent_max": 0.73,
+        "memory_used_bytes_max": 9594956939,
+        "pids_max": 69
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": 1700,
+        "network_tx_bytes": 12000,
+        "block_read_bytes": 0,
+        "block_write_bytes": 0
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf1:finbenchl1:int_hard_2:r0:multi_typed",
+      "arm": "multi_typed",
+      "question_id": "int_hard_2",
+      "correct": false,
+      "wall_ms": null,
+      "db_ms": 0.0,
+      "db_hits": 0,
+      "graph_trips": 0,
+      "monitor_window": {
+        "started_wall": 1788161473.798962,
+        "ended_wall": 1788161480.4839625,
+        "started_mono": 15518.281189401,
+        "ended_mono": 15524.966190103
+      },
+      "overlapping_samples": 2,
+      "available_samples": 2,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 0.705,
+        "cpu_percent_max": 0.73,
+        "memory_used_bytes_max": 9594956939,
+        "pids_max": 68
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": 0,
+        "network_tx_bytes": 0,
+        "block_read_bytes": 0,
+        "block_write_bytes": 0
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:ext_med_2:r0:multi_full",
+      "arm": "multi_full",
+      "question_id": "ext_med_2",
+      "correct": false,
+      "wall_ms": 7366.5,
+      "db_ms": 9.847,
+      "db_hits": 287,
+      "graph_trips": 1,
+      "monitor_window": {
+        "started_wall": 1788161495.4970078,
+        "ended_wall": 1788161502.8654435,
+        "started_mono": 15539.979234379,
+        "ended_mono": 15547.347670816
+      },
+      "overlapping_samples": 1,
+      "available_samples": 1,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 0.69,
+        "cpu_percent_max": 0.69,
+        "memory_used_bytes_max": 9594956939,
+        "pids_max": 68
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": null,
+        "network_tx_bytes": null,
+        "block_read_bytes": null,
+        "block_write_bytes": null
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:ext_med_2:r0:multi_typed",
+      "arm": "multi_typed",
+      "question_id": "ext_med_2",
+      "correct": true,
+      "wall_ms": 7910.8,
+      "db_ms": 10.631,
+      "db_hits": 320,
+      "graph_trips": 1,
+      "monitor_window": {
+        "started_wall": 1788161517.8819394,
+        "ended_wall": 1788161525.7947457,
+        "started_mono": 15562.364166261,
+        "ended_mono": 15570.276972658
+      },
+      "overlapping_samples": 2,
+      "available_samples": 2,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 2.665,
+        "cpu_percent_max": 4.67,
+        "memory_used_bytes_max": 9594956939,
+        "pids_max": 67
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": 2000,
+        "network_tx_bytes": 12000,
+        "block_read_bytes": 0,
+        "block_write_bytes": 20000
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:ext_hard_2:r0:multi_typed",
+      "arm": "multi_typed",
+      "question_id": "ext_hard_2",
+      "correct": true,
+      "wall_ms": 5589.5,
+      "db_ms": 12.132,
+      "db_hits": 282,
+      "graph_trips": 1,
+      "monitor_window": {
+        "started_wall": 1788161540.8128474,
+        "ended_wall": 1788161546.4040985,
+        "started_mono": 15585.295073989,
+        "ended_mono": 15590.886325622
+      },
+      "overlapping_samples": 1,
+      "available_samples": 1,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 0.62,
+        "cpu_percent_max": 0.62,
+        "memory_used_bytes_max": 9594956939,
+        "pids_max": 67
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": null,
+        "network_tx_bytes": null,
+        "block_read_bytes": null,
+        "block_write_bytes": null
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:ext_hard_2:r0:multi_full",
+      "arm": "multi_full",
+      "question_id": "ext_hard_2",
+      "correct": true,
+      "wall_ms": 5836.5,
+      "db_ms": 12.224,
+      "db_hits": 324,
+      "graph_trips": 1,
+      "monitor_window": {
+        "started_wall": 1788161561.4209895,
+        "ended_wall": 1788161567.2590709,
+        "started_mono": 15605.903216136,
+        "ended_mono": 15611.741297894
+      },
+      "overlapping_samples": 1,
+      "available_samples": 1,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 0.58,
+        "cpu_percent_max": 0.58,
+        "memory_used_bytes_max": 9594956939,
+        "pids_max": 67
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": null,
+        "network_tx_bytes": null,
+        "block_read_bytes": null,
+        "block_write_bytes": null
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:int_med_1:r0:multi_full",
+      "arm": "multi_full",
+      "question_id": "int_med_1",
+      "correct": false,
+      "wall_ms": 6836.6,
+      "db_ms": 147.771,
+      "db_hits": 660035,
+      "graph_trips": 1,
+      "monitor_window": {
+        "started_wall": 1788161582.2620523,
+        "ended_wall": 1788161589.1004763,
+        "started_mono": 15626.744279024,
+        "ended_mono": 15633.582703191
+      },
+      "overlapping_samples": 2,
+      "available_samples": 2,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 0.64,
+        "cpu_percent_max": 0.66,
+        "memory_used_bytes_max": 9594956939,
+        "pids_max": 64
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": 1000,
+        "network_tx_bytes": 14000,
+        "block_read_bytes": 0,
+        "block_write_bytes": 0
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:int_med_1:r0:multi_typed",
+      "arm": "multi_typed",
+      "question_id": "int_med_1",
+      "correct": false,
+      "wall_ms": 7961.1,
+      "db_ms": 167.533,
+      "db_hits": 660035,
+      "graph_trips": 1,
+      "monitor_window": {
+        "started_wall": 1788161604.1179922,
+        "ended_wall": 1788161612.0808842,
+        "started_mono": 15648.600218928,
+        "ended_mono": 15656.563112007
+      },
+      "overlapping_samples": 2,
+      "available_samples": 2,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 0.63,
+        "cpu_percent_max": 0.7,
+        "memory_used_bytes_max": 9594956939,
+        "pids_max": 64
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": 0,
+        "network_tx_bytes": 0,
+        "block_read_bytes": 0,
+        "block_write_bytes": 0
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:int_hard_2:r0:multi_full",
+      "arm": "multi_full",
+      "question_id": "int_hard_2",
+      "correct": false,
+      "wall_ms": 6239.0,
+      "db_ms": 10.687,
+      "db_hits": 60,
+      "graph_trips": 1,
+      "monitor_window": {
+        "started_wall": 1788161627.0989473,
+        "ended_wall": 1788161633.3398445,
+        "started_mono": 15671.581173581,
+        "ended_mono": 15677.82207192
+      },
+      "overlapping_samples": 1,
+      "available_samples": 1,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 0.74,
+        "cpu_percent_max": 0.74,
+        "memory_used_bytes_max": 9596030681,
+        "pids_max": 64
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": null,
+        "network_tx_bytes": null,
+        "block_read_bytes": null,
+        "block_write_bytes": null
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    },
+    {
+      "episode_id": "20260831T_mara_retrieval_sf1_sf100_paced_v1:sf100:finbenchl100:int_hard_2:r0:multi_typed",
+      "arm": "multi_typed",
+      "question_id": "int_hard_2",
+      "correct": false,
+      "wall_ms": null,
+      "db_ms": 0.0,
+      "db_hits": 0,
+      "graph_trips": 0,
+      "monitor_window": {
+        "started_wall": 1788161648.3579493,
+        "ended_wall": 1788161655.642853,
+        "started_mono": 15692.840175743,
+        "ended_mono": 15700.125080544
+      },
+      "overlapping_samples": 2,
+      "available_samples": 2,
+      "window_bracketed": false,
+      "db_container_gauges": {
+        "cpu_percent_median": 0.655,
+        "cpu_percent_max": 0.69,
+        "memory_used_bytes_max": 9596030681,
+        "pids_max": 68
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": 0,
+        "network_tx_bytes": 0,
+        "block_read_bytes": 0,
+        "block_write_bytes": 0
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    }
+  ],
+  "summary": {
+    "episodes": 16,
+    "all_windows_bracketed": false,
+    "all_have_two_or_more_samples": false
+  }
+}
