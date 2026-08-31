@@ -67,6 +67,19 @@ class RepairLoopLedgerTest(unittest.TestCase):
         self.assertEqual(output["overall"]["repair_db_hits_total"], 4)
         self.assertEqual(output["method"]["gpu_cost"], "not observed or inferred for hosted MARA")
 
+    def test_analysis_backfills_legacy_error_request_metadata_and_wall_time(self):
+        output = ANALYSIS.analyze({
+            "samples": [{
+                "episode_id": "e", "question_id": "q", "repeat": 0, "sf": 1,
+                "arm": "multi_typed", "correct": False, "error": "validator",
+                "stages": [{"stage": "executor", "elapsed_ms": 4}],
+                "monitor_window": {"started_mono": 10.0, "ended_mono": 10.025},
+            }],
+        }, {"q": {"request_type": "aml_alert_triage", "schema_facets": ["TRANSFER"]}})
+        row = output["episodes"][0]
+        self.assertEqual(row["request_type"], "aml_alert_triage")
+        self.assertEqual(row["request_wall_ms"], 25.0)
+
 
 if __name__ == "__main__":
     unittest.main()

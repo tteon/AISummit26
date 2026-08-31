@@ -1,0 +1,121 @@
+{
+  "schema_version": "seocho.trace-receipt.v1",
+  "trace_ids": [
+    "06725bf1372b6c1d531a37dcc2621e60",
+    "0d079b9aeb9478d540e7e940f9bb0f99",
+    "1520704fc6998d78a9a454f47953b1f7",
+    "309921fa222dfd524a4f2a772e42a444",
+    "4ad469fcc5b030b0cc4e976a9da335b1",
+    "4c9398bf6b06bddd3e4f3b60c0c9a06a",
+    "4dcd26ce109ccf1c632cfc4501647d94",
+    "5c956ee808dc044a7e2a68b8d570816e",
+    "6c195cdd27e65833eaaa0d149884a44b",
+    "a23a7349406dd1f7154a9344380b5073",
+    "beb20b026d5e2caaa091d34c2a552146",
+    "c6649d1b5aff501e04b6b736d352bbd9",
+    "cfab1392ece18c01a1f7bbbfb57b226a",
+    "d178bfdbd5de98cb8e72ada7589c71bf",
+    "ecb16056af4c78a4d6202af70a3282bf",
+    "f801412c7a6fa9a0282ebf3d469a2946",
+    "faece186af013d79a2ee319a9befe660",
+    "fbee6c9b374bb98ae409ce4ee7d21be7"
+  ],
+  "local_jsonl": "results/episodes/agent_topology/20260831T_mara_repair_sweep_sf1_sf100_auto_v3/spans.jsonl",
+  "local_span_counts": {
+    "faece186af013d79a2ee319a9befe660": 4,
+    "beb20b026d5e2caaa091d34c2a552146": 8,
+    "1520704fc6998d78a9a454f47953b1f7": 4,
+    "f801412c7a6fa9a0282ebf3d469a2946": 5,
+    "0d079b9aeb9478d540e7e940f9bb0f99": 4,
+    "cfab1392ece18c01a1f7bbbfb57b226a": 5,
+    "5c956ee808dc044a7e2a68b8d570816e": 5,
+    "309921fa222dfd524a4f2a772e42a444": 8,
+    "ecb16056af4c78a4d6202af70a3282bf": 4,
+    "4dcd26ce109ccf1c632cfc4501647d94": 6,
+    "d178bfdbd5de98cb8e72ada7589c71bf": 8,
+    "a23a7349406dd1f7154a9344380b5073": 9,
+    "06725bf1372b6c1d531a37dcc2621e60": 5,
+    "c6649d1b5aff501e04b6b736d352bbd9": 4,
+    "4c9398bf6b06bddd3e4f3b60c0c9a06a": 5,
+    "fbee6c9b374bb98ae409ce4ee7d21be7": 6,
+    "6c195cdd27e65833eaaa0d149884a44b": 10,
+    "4ad469fcc5b030b0cc4e976a9da335b1": 4
+  },
+  "local_complete": true,
+  "tempo_url": "http://127.0.0.1:3200",
+  "tempo": {
+    "06725bf1372b6c1d531a37dcc2621e60": {
+      "found": true,
+      "detail": "batches=2"
+    },
+    "0d079b9aeb9478d540e7e940f9bb0f99": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "1520704fc6998d78a9a454f47953b1f7": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "309921fa222dfd524a4f2a772e42a444": {
+      "found": true,
+      "detail": "batches=6"
+    },
+    "4ad469fcc5b030b0cc4e976a9da335b1": {
+      "found": true,
+      "detail": "batches=2"
+    },
+    "4c9398bf6b06bddd3e4f3b60c0c9a06a": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "4dcd26ce109ccf1c632cfc4501647d94": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "5c956ee808dc044a7e2a68b8d570816e": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "6c195cdd27e65833eaaa0d149884a44b": {
+      "found": true,
+      "detail": "batches=6"
+    },
+    "a23a7349406dd1f7154a9344380b5073": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "beb20b026d5e2caaa091d34c2a552146": {
+      "found": true,
+      "detail": "batches=6"
+    },
+    "c6649d1b5aff501e04b6b736d352bbd9": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "cfab1392ece18c01a1f7bbbfb57b226a": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "d178bfdbd5de98cb8e72ada7589c71bf": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "ecb16056af4c78a4d6202af70a3282bf": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "f801412c7a6fa9a0282ebf3d469a2946": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "faece186af013d79a2ee319a9befe660": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "fbee6c9b374bb98ae409ce4ee7d21be7": {
+      "found": true,
+      "detail": "batches=4"
+    }
+  },
+  "tempo_complete": true
+}

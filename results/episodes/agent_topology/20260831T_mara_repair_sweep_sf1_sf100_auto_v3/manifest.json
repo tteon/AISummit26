@@ -1,0 +1,190 @@
+{
+  "schema_version": "seocho.finbench.agent-topology.v1",
+  "run_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T08:53:51+00:00",
+    "git_commit": "9d6111b2fb6f33f667bb43ef36ced728e38fb31f",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/bench_agent_topology.py",
+      "--provider",
+      "mara",
+      "--model",
+      "DeepSeek-V3.1",
+      "--question-suite",
+      "configs/agentic_request_repair_sweep.yaml",
+      "--arms",
+      "multi_typed",
+      "--verifier-mode",
+      "auto",
+      "--databases",
+      "finbenchl1:1",
+      "finbenchl100:100",
+      "--repeats",
+      "1",
+      "--episode-delay-s",
+      "15",
+      "--run-id",
+      "20260831T_mara_repair_sweep_sf1_sf100_auto_v3",
+      "--output-dir",
+      "results/episodes/agent_topology"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "1ac98b0dc1b2",
+    "db_container": "aisummit-simtest",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "416",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "experiment": "agent-context-topology",
+    "schema_version": "seocho.finbench.agent-topology.v1"
+  },
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "DeepSeek-V3.1",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 1000,
+    "request_timeout_s": 180.0,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "observability": {
+    "seocho_version": "0.6.0",
+    "seocho_path": "/home/hadry/lab/seocho-room/seocho/src/seocho/__init__.py",
+    "source_prepended": "/home/hadry/lab/seocho-room/seocho/src",
+    "backend": "otlp",
+    "endpoint": "http://127.0.0.1:4317",
+    "service_name": "seocho-agent-topology",
+    "metrics_enabled": false,
+    "tracing_enabled": true,
+    "tracing_backends": [
+      "otlp"
+    ],
+    "degraded_reasons": [],
+    "errors": null
+  },
+  "system_monitor": {
+    "enabled": true,
+    "required": true,
+    "path": "results/episodes/agent_topology/20260831T_mara_repair_sweep_sf1_sf100_auto_v3/system_metrics.jsonl",
+    "interval_s": 5.0,
+    "scope": "local client host and database container; hosted model server excluded",
+    "preflight": {
+      "available": true,
+      "name": "aisummit-simtest",
+      "identity": {
+        "Container": "aisummit-simtest",
+        "ID": "1ac98b0dc1b2",
+        "Name": "aisummit-simtest"
+      },
+      "counters": {
+        "cpu_percent": 0.46,
+        "memory_percent": 14.31,
+        "memory_used_bytes": 9609989325,
+        "memory_limit_bytes": 67162551091,
+        "network_rx_bytes": 210000,
+        "network_tx_bytes": 434000,
+        "block_read_bytes": 319000000,
+        "block_write_bytes": 6510000,
+        "pids": 71
+      },
+      "raw": {
+        "BlockIO": "319MB / 6.51MB",
+        "CPUPerc": "0.46%",
+        "Container": "aisummit-simtest",
+        "ID": "1ac98b0dc1b2",
+        "MemPerc": "14.31%",
+        "MemUsage": "8.95GiB / 62.55GiB",
+        "Name": "aisummit-simtest",
+        "NetIO": "210kB / 434kB",
+        "PIDs": "71"
+      }
+    }
+  },
+  "config": {
+    "provider": "mara",
+    "model": "DeepSeek-V3.1",
+    "base_url": null,
+    "request_timeout_s": 180.0,
+    "native_context": null,
+    "max_model_len": null,
+    "pi_factor": null,
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "databases": [
+      "finbenchl1:1",
+      "finbenchl100:100"
+    ],
+    "ontology": "ontology/finbench.ontology.yaml",
+    "seocho_src": null,
+    "db_container": "aisummit-simtest",
+    "arms": [
+      "multi_typed"
+    ],
+    "question_suite": "configs/agentic_request_repair_sweep.yaml",
+    "only": null,
+    "repeats": 1,
+    "row_cap": 50,
+    "decision_tokens": 500,
+    "executor_tokens": 1000,
+    "verifier_mode": "auto",
+    "seed": 29,
+    "run_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3",
+    "output_dir": "results/episodes/agent_topology",
+    "otlp_endpoint": "http://127.0.0.1:4317",
+    "tempo_url": "http://127.0.0.1:3200",
+    "system_metrics_interval_s": 5.0,
+    "no_system_metrics": false,
+    "episode_delay_s": 15.0,
+    "continue_after_rate_limit": false,
+    "validate_only": false,
+    "resume": false,
+    "samples": null,
+    "conversations": null,
+    "manifest_out": null,
+    "out": null
+  },
+  "graph": {
+    "finbenchl1:sf1": {
+      "anchor": 108
+    },
+    "finbenchl100:sf100": {
+      "anchor": 7
+    }
+  }
+}

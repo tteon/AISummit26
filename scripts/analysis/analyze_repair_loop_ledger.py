@@ -27,10 +27,15 @@ def _median(rows: Iterable[float]) -> float | None:
     return round(float(statistics.median(values)), 3) if values else None
 
 
-def _episode(row: Dict[str, Any]) -> Dict[str, Any]:
+def _episode(row: Dict[str, Any], request_catalog: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
     repair = dict(row.get("repair_loop") or {})
     stages = list(row.get("stages") or [])
-    request = dict(row.get("request") or {})
+    request = dict(request_catalog.get(str(row.get("question_id")), {}))
+    request.update(dict(row.get("request") or {}))
+    window = row.get("monitor_window") or {}
+    wall_ms = row.get("wall_ms")
+    if wall_ms is None and window.get("started_mono") is not None and window.get("ended_mono") is not None:
+        wall_ms = round((float(window["ended_mono"]) - float(window["started_mono"])) * 1000, 1)
     return {
         "episode_id": row.get("episode_id"), "question_id": row.get("question_id"),
         "repeat": row.get("repeat"), "sf": row.get("sf"), "arm": row.get("arm"),
@@ -40,7 +45,7 @@ def _episode(row: Dict[str, Any]) -> Dict[str, Any]:
         "schema_facets": request.get("schema_facets") or [],
         "repair_risks": request.get("repair_risks") or [],
         "parameter_contract": request.get("parameter_contract") or [],
-        "request_wall_ms": row.get("wall_ms"),
+        "request_wall_ms": wall_ms,
         "request_api_elapsed_ms": round(sum(float(s.get("elapsed_ms", 0) or 0)
                                             for s in stages), 1),
         "request_model_calls": len(stages),
@@ -89,8 +94,8 @@ def _aggregate(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
     }
 
 
-def analyze(report: Dict[str, Any]) -> Dict[str, Any]:
-    rows = [_episode(row) for row in report.get("samples") or []]
+def analyze(report: Dict[str, Any], request_catalog: Dict[str, Dict[str, Any]] | None = None) -> Dict[str, Any]:
+    rows = [_episode(row, request_catalog or {}) for row in report.get("samples") or []]
     groups: Dict[tuple[str, str], List[Dict[str, Any]]] = defaultdict(list)
     facets: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
     for row in rows:
@@ -122,10 +127,17 @@ def analyze(report: Dict[str, Any]) -> Dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--report", type=Path, required=True)
+    parser.add_argument("--question-suite", type=Path,
+                        help="optional workload YAML, used to annotate legacy error samples")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     report = json.loads(args.report.read_text())
-    output = analyze(report)
+    suite = json.loads("{}")
+    if args.question_suite:
+        import yaml
+        suite = yaml.safe_load(args.question_suite.read_text()) or {}
+    catalog = {str(row["id"]): dict(row) for row in suite.get("questions") or []}
+    output = analyze(report, catalog)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(output, indent=2, default=str) + "\n")
     print(f"wrote {args.out}")

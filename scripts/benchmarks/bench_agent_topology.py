@@ -951,7 +951,9 @@ async def main_async(args: Any) -> None:
                                 "database": database, "question_id": question["id"],
                                 "audience": question["audience"],
                                 "difficulty": question["difficulty"], "repeat": repeat,
+                                "request": _request_metadata(question),
                                 "anchor": prep["anchor"], "correct": False,
+                                "wall_ms": round((time.monotonic() - episode_started_mono) * 1000, 1),
                                 "model_calls": len(partial_stages),
                                 "model_calls_completed": sum(
                                     bool(s.get("completed", True)) for s in partial_stages),
@@ -970,6 +972,11 @@ async def main_async(args: Any) -> None:
                                 "decisions": (exc.decisions
                                               if isinstance(exc, CaseRunError) else {}),
                                 "stages": partial_stages, "executions": [],
+                                "repair_loop": _repair_ledger(
+                                    stages=partial_stages, executions=[], initial_correct=False,
+                                    final_correct=False, verifier_requested=False,
+                                    verifier_mode=args.verifier_mode, repair_applied=False,
+                                    repair_elapsed_ms=0.0),
                                 "error": (f"{type(original_exc).__name__}: "
                                           f"{str(original_exc)[:500]}"),
                             }
