@@ -147,6 +147,14 @@ named container before the first paid MARA call. A completed monitored run requi
 one durable sample, zero unavailable container samples and a clean sampler shutdown. The
 explicit `--no-system-metrics` flag remains available only for a separately named control.
 
+The one-episode end-to-end monitoring gate at source commit `3048533` proves the complete
+path without being used as a performance comparison: MARA DeepSeek-V3.1 produced one correct
+answer, the query retained its full PROFILE tree and 257 DB hits, four local database samples
+covered and bracketed the episode, and both `system_monitor_receipt.valid` and the local/Tempo
+trace receipts were true. The derived join reports DB-container CPU median/peak, memory peak
+and cumulative block/network deltas. Those deltas are labeled as bracketing-window changes,
+not exact per-query attribution, because concurrent background DB activity is included.
+
 The model-matrix runner now labels telemetry scope as hosted MARA + local database, records
 local client host + database container measurements, and explicitly marks hosted model-server
 telemetry unavailable. A self-hosted vLLM run is
@@ -256,6 +264,9 @@ Primary artifacts:
 - pinned projection validation: `results/analysis/fibo_projection_validation_20260829.json`
 - MARA model matrix: `results/episodes/agent_model_matrix/20260831T_mara_model_matrix_v1/`
 - cross-model paired analysis: `results/analysis/agent_model_matrix_20260831.json`
+- MARA + local DB monitoring gate:
+  `results/episodes/agent_topology/20260831T_mara_local_db_monitor_gate_v1/`
+- monitoring-window analysis: `results/analysis/mara_local_db_monitor_gate_20260831.json`
 
 Invalid and interrupted gates are retained under `results/episodes/invalid_*` with an
 `INVALID_REASON.md`; they are not included in any aggregate.

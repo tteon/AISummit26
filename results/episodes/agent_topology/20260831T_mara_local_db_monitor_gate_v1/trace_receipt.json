@@ -1,0 +1,19 @@
+{
+  "schema_version": "seocho.trace-receipt.v1",
+  "trace_ids": [
+    "ebe24032657d5d27441c81e51e2bc5c0"
+  ],
+  "local_jsonl": "results/episodes/agent_topology/20260831T_mara_local_db_monitor_gate_v1/spans.jsonl",
+  "local_span_counts": {
+    "ebe24032657d5d27441c81e51e2bc5c0": 5
+  },
+  "local_complete": true,
+  "tempo_url": "http://127.0.0.1:3200",
+  "tempo": {
+    "ebe24032657d5d27441c81e51e2bc5c0": {
+      "found": true,
+      "detail": "batches=2"
+    }
+  },
+  "tempo_complete": true
+}

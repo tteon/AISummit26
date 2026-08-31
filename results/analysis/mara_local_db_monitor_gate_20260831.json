@@ -1,0 +1,111 @@
+{
+  "schema_version": "seocho.local-db-monitor-analysis.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T05:58:28+00:00",
+    "git_commit": "30485337e84055c6f3e8ee242089046f66d8a66b",
+    "git_dirty": true,
+    "argv": [
+      "scripts/analysis/analyze_local_db_monitor.py",
+      "--report",
+      "results/episodes/agent_topology/20260831T_mara_local_db_monitor_gate_v1/report.json",
+      "--out",
+      "results/analysis/mara_local_db_monitor_gate_20260831.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": null,
+    "db_pagecache": null,
+    "db_heap_max": null,
+    "db_container_id": null,
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": false,
+      "reason": "nvidia-smi unavailable or no driver"
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "analysis": "MARA + local DozerDB monitoring join"
+  },
+  "source": {
+    "report": "results/episodes/agent_topology/20260831T_mara_local_db_monitor_gate_v1/report.json",
+    "metrics": "/home/hadry/lab/AIsummit26/results/episodes/agent_topology/20260831T_mara_local_db_monitor_gate_v1/system_metrics.jsonl"
+  },
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "DeepSeek-V3.1",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 1000,
+    "request_timeout_s": 180.0,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "system_monitor_receipt": {
+    "schema_version": "seocho.system-monitor-receipt.v2",
+    "path": "results/episodes/agent_topology/20260831T_mara_local_db_monitor_gate_v1/system_metrics.jsonl",
+    "interval_s": 2.0,
+    "db_container": "aisummit-simtest",
+    "samples": 4,
+    "db_container_available_samples": 4,
+    "container_unavailable_samples": 0,
+    "coverage_rate": 1.0,
+    "complete": true,
+    "db_container_complete": true,
+    "valid": true
+  },
+  "episodes": [
+    {
+      "episode_id": "20260831T_mara_local_db_monitor_gate_v1:sf1:finbenchl1:ext_hard_2:r0:staged_single",
+      "arm": "staged_single",
+      "question_id": "ext_hard_2",
+      "correct": true,
+      "wall_ms": 5897.8,
+      "db_ms": 44.223,
+      "db_hits": 257,
+      "graph_trips": 1,
+      "monitor_window": {
+        "started_wall": 1788155802.9675229,
+        "ended_wall": 1788155808.8663466,
+        "started_mono": 9847.449749385,
+        "ended_mono": 9853.3485732
+      },
+      "overlapping_samples": 4,
+      "available_samples": 4,
+      "window_bracketed": true,
+      "db_container_gauges": {
+        "cpu_percent_median": 0.77,
+        "cpu_percent_max": 5.04,
+        "memory_used_bytes_max": 9299677938,
+        "pids_max": 63
+      },
+      "db_container_cumulative_counter_delta": {
+        "network_rx_bytes": 800,
+        "network_tx_bytes": 9460,
+        "block_read_bytes": 0,
+        "block_write_bytes": 0
+      },
+      "attribution": "bracketing sample-window change; includes concurrent/background DB activity and is not an exact per-query counter"
+    }
+  ],
+  "summary": {
+    "episodes": 1,
+    "all_windows_bracketed": true,
+    "all_have_two_or_more_samples": true
+  }
+}

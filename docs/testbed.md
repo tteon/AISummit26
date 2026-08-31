@@ -462,6 +462,15 @@ monotonic boundaries for joining the surrounding samples. Use
 KV-cache and scheduler state remains unavailable and must be measured in a separate
 self-hosted vLLM arm.
 
+After a monitored run, join each episode to its bracketing database samples without mixing
+clocks or treating container-wide deltas as exact query counters:
+
+```bash
+python3 scripts/analysis/analyze_local_db_monitor.py \
+  --report results/episodes/agent_topology/<run-id>/report.json \
+  --out results/analysis/<run-id>-local-db.json
+```
+
 **Stage 2 is not a measurement.** Its own documentation is blunt about this: with the default
 `mem_util: 0.9` its TTFT was off by −20.7%, and it landed at +0.6% only after `mem_util` was
 matched to the real run's resolved block count. And it warns that KV capacity is invisible
