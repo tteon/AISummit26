@@ -781,19 +781,37 @@ async def main_async(args: Any) -> None:
     executor_backend = make_llm_backend(cfg)
     verifier_backend = make_llm_backend(cfg)
     rng = random.Random(args.seed)
+    abort_requested = False
+    abort_reason = None
+    last_episode_ended_mono = None
 
     with sample_path.open("a") as samples, conversation_path.open("a") as conversations:
         for database, sf in targets:
+            if abort_requested:
+                break
             for question in questions:
+                if abort_requested:
+                    break
                 prep = prepared[(database, question["id"])]
                 for repeat in range(args.repeats):
+                    if abort_requested:
+                        break
                     block_arms = list(arms)
                     rng.shuffle(block_arms)
                     for arm in block_arms:
+                        if abort_requested:
+                            break
                         episode_id = (f"{args.run_id}:sf{sf}:{database}:"
                                       f"{question['id']}:r{repeat}:{arm}")
                         if episode_id in completed:
                             continue
+                        if last_episode_ended_mono is not None and args.episode_delay_s > 0:
+                            remaining = (args.episode_delay_s -
+                                         (time.monotonic() - last_episode_ended_mono))
+                            if remaining > 0:
+                                print(f"  [pace] waiting {remaining:.1f}s before {episode_id}",
+                                      flush=True)
+                                await asyncio.sleep(remaining)
                         episode_started_wall = time.time()
                         episode_started_mono = time.monotonic()
                         episode_span = None
@@ -873,11 +891,16 @@ async def main_async(args: Any) -> None:
                         conversations.flush()
                         os.fsync(conversations.fileno())
                         rows_out.append(rec)
+                        last_episode_ended_mono = time.monotonic()
                         print(f"  {episode_id:48s} correct={rec.get('correct')} "
                               f"calls={rec.get('model_calls', 0)} "
                               f"prompt={rec.get('prompt_tokens', 0)} "
                               f"trips={rec.get('graph_trips', 0)} "
                               f"{rec.get('error', '')[:80]}", flush=True)
+                        if (not args.continue_after_rate_limit and
+                                str(rec.get("error") or "").startswith("RateLimitError")):
+                            abort_requested = True
+                            abort_reason = "MARA rate limit; stopped after durable sample"
 
     system_monitor_receipt = (system_sampler.stop() if system_sampler is not None else {
         "schema_version": "seocho.system-monitor-receipt.v2", "complete": False,
@@ -895,6 +918,8 @@ async def main_async(args: Any) -> None:
     usable = [r for r in rows_out if "model_calls" in r]
     report = {
         **run_header,
+        "run_status": "aborted_rate_limit" if abort_requested else "completed",
+        "abort_reason": abort_reason,
         "trace_receipt": trace_receipt,
         "system_monitor_receipt": system_monitor_receipt,
         "summary": {arm: _aggregate(usable, arm) for arm in arms},
@@ -909,6 +934,8 @@ async def main_async(args: Any) -> None:
         raise SystemExit(
             "database monitoring gate failed after preserving the report: "
             + json.dumps(system_monitor_receipt, default=str))
+    if abort_requested:
+        raise SystemExit(abort_reason)
 
 
 def main() -> None:
@@ -939,6 +966,12 @@ def main() -> None:
     parser.add_argument("--tempo-url", default="http://127.0.0.1:3200")
     parser.add_argument("--system-metrics-interval-s", type=float, default=5.0)
     parser.add_argument("--no-system-metrics", action="store_true")
+    parser.add_argument(
+        "--episode-delay-s", type=float, default=0.0,
+        help="minimum idle time between paid episodes; outside the measured episode window")
+    parser.add_argument(
+        "--continue-after-rate-limit", action="store_true",
+        help="keep attempting later cells after a 429 (default aborts after durable receipt)")
     parser.add_argument("--validate-only", action="store_true")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--samples", default=None)

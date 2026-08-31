@@ -93,6 +93,7 @@ def main() -> None:
     parser.add_argument("--otlp-endpoint", default="http://127.0.0.1:4317")
     parser.add_argument("--tempo-url", default="http://127.0.0.1:3200")
     parser.add_argument("--system-metrics-interval-s", type=float, default=5.0)
+    parser.add_argument("--episode-delay-s", type=float, default=5.0)
     parser.add_argument("--no-system-metrics", action="store_true")
     parser.add_argument("--run-id", default=None)
     parser.add_argument("--output-dir", default="results/episodes/agent_model_matrix")
@@ -137,6 +138,7 @@ def main() -> None:
             "local_system_metrics": not args.no_system_metrics,
             "local_database_monitoring_required": not args.no_system_metrics,
             "system_metrics_interval_s": args.system_metrics_interval_s,
+            "episode_delay_s": args.episode_delay_s,
             "hosted_model_server": "unavailable_by_endpoint",
         },
     }
@@ -172,6 +174,7 @@ def main() -> None:
             "--tempo-url", args.tempo_url, "--run-id", child_id,
             "--output-dir", str(models_root),
             "--system-metrics-interval-s", str(args.system_metrics_interval_s),
+            "--episode-delay-s", str(args.episode_delay_s),
         ]
         if args.no_system_metrics:
             command.append("--no-system-metrics")
