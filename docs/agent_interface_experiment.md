@@ -2,16 +2,17 @@
 
 ## Outcome
 
-The SF1/MARA pilot does **not** support “more agents” or “more ontology” as general
-improvements. It supports a narrower engineering claim:
+The SF1/MARA pilot and two-repeat confirmation do **not** support “more agents” or “more
+ontology” as general improvements. They support a narrower engineering claim:
 
 > FinBench is a useful agentic workload, but Bolt rows and exceptions are not by themselves
 > an agent coordination contract. Correctness and cost depend on the context and result
 > envelopes placed around Bolt.
 
-This is an exploratory pilot (one repeat, SF1), not a confidence-interval claim. Every number
-below is derived from raw samples in this repository; all 78 main episodes have both a local
-JSONL trace and a Tempo-resolvable trace ID.
+The first run is an exploratory pilot (one repeat, SF1); the second preserves two paired
+repeats but is still too small for a confidence-interval claim. Every number below is derived
+from raw samples in this repository. All 212 main episodes across the pilot, confirmation and
+framework manipulation check have both a local JSONL trace and a Tempo-resolvable trace ID.
 
 ## Treatments
 
@@ -44,7 +45,47 @@ FIBO is pinned to EDM Council `master_2026Q2`, commit
 informative-only, local extension or unsupported. It never silently turns semantic
 similarity into a physical edge.
 
-## Results
+## Confirmatory repeats
+
+The confirmation fixed source commit `f26e85d`, endpoint, decoder settings, SF1 anchor 108,
+workspace, row cap and physical graph. Arm order was randomized within paired blocks. The
+topology manifest has `git_dirty=false`; its 56 raw samples and 56 conversations are present.
+
+| Topology arm | Correct | Errors | Prompt tokens | Handoff chars | Graph trips | DB hits |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| direct single | 8/14 | 0 | 16,234 | 0 | 14 | 1,014,062 |
+| multi full | 10/14 | 0 | 56,992 | 112,622 | 14 | 8,449,486 |
+| multi typed | 8/14 | 2 | 45,004 | 78,030 | 12 | 3,237,206 |
+| multi envelope | 8/14 | 2 | 45,842 | 80,752 | 12 | 3,237,206 |
+
+Typed isolation reduced prompt tokens 21.03% and handoff characters 30.72% against full
+context, but lost two correct paired episodes. Both errors preserved three attempted calls
+and their token/trace accounting; both were deterministic guardrail refusals of the invented
+physical property `Account.account_id`. Among the 12 pairs executed in both arms, median
+paired DB-hit change was -2.11%. The advisory verifier falsely rejected 18 correct results
+among 38 completed evaluations and falsely accepted none, reinforcing that it is a critic,
+not an authority.
+
+| FIBO context arm | Correct | Errors | Prompt tokens | Semantic chars | DB hits |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| physical only | 12/26 | 4 | 15,584 | 0 | 122,058 |
+| compiled FIBO | 12/26 | 0 | 38,548 | 99,450 | 1,387,624 |
+| retrieved FIBO | 10/26 | 5 | 26,198 | 34,500 | 1,375,228 |
+
+Compiled FIBO gained two paired episodes and lost two; retrieved FIBO gained two and lost
+four. Retrieval again cut semantic context 65.31% versus the full projection and reduced its
+prompt tokens 32.04%, but did not retain its aggregate correctness. `structuring_fanin` was a
+repeatable gain (physical 0/2, both semantic arms 2/2), while the erroneous `ubo_chain`
+mapping again cost 668,225 DB hits per semantic episode. The physical arm itself changed on
+`ubo_chain` relative to the pilot, a concrete reminder that temperature zero on a hosted
+endpoint does not make episodes deterministic.
+
+The FIBO manifest's `git_dirty=true` is scoped by
+`PREEXISTING_DIRTY_SCOPE.json`: the only pre-existing path was the completed topology result
+directory in the same detached worktree; source/config/prompt files matched `f26e85d`.
+Re-running 78 paid episodes solely to toggle that metadata bit would add no causal evidence.
+
+## Exploratory pilot results
 
 ### Single agent, role agents and context isolation
 
@@ -137,6 +178,9 @@ The results motivate a versioned contract between an Agent API and Bolt/GDBMS:
 
 Primary artifacts:
 
+- confirmatory topology: `results/episodes/agent_topology/20260831T_agent_topology_confirmatory_v1/`
+- confirmatory FIBO: `results/episodes/fibo_schema_context/20260831T_fibo_schema_confirmatory_v1/`
+- confirmatory paired analysis: `results/analysis/agent_interface_readiness_20260831_confirmatory.json`
 - topology raw/report: `results/episodes/agent_topology/20260829T_agent_topology_pilot_v2/`
 - Agents SDK/LangGraph parity: `results/episodes/framework_context/20260829T_framework_parity_pilot_v1/`
 - FIBO raw/report: `results/episodes/fibo_schema_context/20260829T_fibo_schema_pilot_v1/`

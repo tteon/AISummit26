@@ -1,0 +1,902 @@
+{
+  "schema_version": "seocho.agent-interface-readiness-analysis.v2",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T00:39:12+00:00",
+    "git_commit": "f26e85d221c2cabf33181cbd2de62e3d4c79d220",
+    "git_dirty": true,
+    "argv": [
+      "scripts/analysis/analyze_agent_interface_readiness.py",
+      "--topology",
+      "results/episodes/agent_topology/20260831T_agent_topology_confirmatory_v1/report.json",
+      "--framework",
+      "results/episodes/framework_context/20260829T_framework_parity_pilot_v1/report.json",
+      "--fibo",
+      "results/episodes/fibo_schema_context/20260831T_fibo_schema_confirmatory_v1/report.json",
+      "--out",
+      "results/analysis/agent_interface_readiness_20260831_confirmatory.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": null,
+    "db_pagecache": null,
+    "db_heap_max": null,
+    "db_container_id": null,
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": false,
+      "reason": "nvidia-smi unavailable or no driver"
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "analysis": "paired agent-interface pilots"
+  },
+  "sources": {
+    "topology": "results/episodes/agent_topology/20260831T_agent_topology_confirmatory_v1/report.json",
+    "framework": "results/episodes/framework_context/20260829T_framework_parity_pilot_v1/report.json",
+    "fibo": "results/episodes/fibo_schema_context/20260831T_fibo_schema_confirmatory_v1/report.json"
+  },
+  "trace_receipts": {
+    "topology": {
+      "trace_ids": 56,
+      "local_complete": true,
+      "tempo_complete": true
+    },
+    "framework": {
+      "trace_ids": 4,
+      "local_complete": true,
+      "tempo_complete": true
+    },
+    "fibo": {
+      "trace_ids": 78,
+      "local_complete": true,
+      "tempo_complete": true
+    }
+  },
+  "topology": {
+    "arms": {
+      "direct_single": {
+        "n": 14,
+        "errors": 0,
+        "correct": 8,
+        "correct_rate": 0.5714,
+        "model_calls": 18,
+        "prompt_tokens": 16234,
+        "completion_tokens": 16968,
+        "handoff_chars": 0,
+        "graph_trips": 14,
+        "db_hits": 1014062,
+        "wall_ms_median": 4886.9,
+        "db_ms_median": 17.99
+      },
+      "multi_full": {
+        "n": 14,
+        "errors": 0,
+        "correct": 10,
+        "correct_rate": 0.7143,
+        "model_calls": 44,
+        "prompt_tokens": 56992,
+        "completion_tokens": 47348,
+        "handoff_chars": 112622,
+        "graph_trips": 14,
+        "db_hits": 8449486,
+        "wall_ms_median": 18192.95,
+        "db_ms_median": 18.98
+      },
+      "multi_typed": {
+        "n": 14,
+        "errors": 2,
+        "correct": 8,
+        "correct_rate": 0.5714,
+        "model_calls": 44,
+        "prompt_tokens": 45004,
+        "completion_tokens": 47378,
+        "handoff_chars": 78030,
+        "graph_trips": 12,
+        "db_hits": 3237206,
+        "wall_ms_median": 16643.2,
+        "db_ms_median": 8.48
+      },
+      "multi_envelope": {
+        "n": 14,
+        "errors": 2,
+        "correct": 8,
+        "correct_rate": 0.5714,
+        "model_calls": 44,
+        "prompt_tokens": 45842,
+        "completion_tokens": 47130,
+        "handoff_chars": 80752,
+        "graph_trips": 12,
+        "db_hits": 3237206,
+        "wall_ms_median": 15404.4,
+        "db_ms_median": 7.76
+      }
+    },
+    "full_to_typed": {
+      "paired": [
+        {
+          "question_id": "ext_hard_1",
+          "repeat": 0,
+          "full_correct": true,
+          "typed_correct": true,
+          "full_prompt_tokens": 3092,
+          "typed_prompt_tokens": 2457,
+          "full_handoff_chars": 6227,
+          "typed_handoff_chars": 4730,
+          "both_executed": true,
+          "full_db_hits": 333,
+          "typed_db_hits": 333
+        },
+        {
+          "question_id": "ext_hard_1",
+          "repeat": 1,
+          "full_correct": true,
+          "typed_correct": true,
+          "full_prompt_tokens": 3092,
+          "typed_prompt_tokens": 2457,
+          "full_handoff_chars": 6227,
+          "typed_handoff_chars": 4730,
+          "both_executed": true,
+          "full_db_hits": 333,
+          "typed_db_hits": 333
+        },
+        {
+          "question_id": "ext_hard_2",
+          "repeat": 0,
+          "full_correct": true,
+          "typed_correct": true,
+          "full_prompt_tokens": 2892,
+          "typed_prompt_tokens": 2447,
+          "full_handoff_chars": 5562,
+          "typed_handoff_chars": 4608,
+          "both_executed": true,
+          "full_db_hits": 201,
+          "typed_db_hits": 201
+        },
+        {
+          "question_id": "ext_hard_2",
+          "repeat": 1,
+          "full_correct": true,
+          "typed_correct": true,
+          "full_prompt_tokens": 2892,
+          "typed_prompt_tokens": 2447,
+          "full_handoff_chars": 5562,
+          "typed_handoff_chars": 4608,
+          "both_executed": true,
+          "full_db_hits": 201,
+          "typed_db_hits": 201
+        },
+        {
+          "question_id": "ext_med_2",
+          "repeat": 0,
+          "full_correct": true,
+          "typed_correct": false,
+          "full_prompt_tokens": 3928,
+          "typed_prompt_tokens": 3018,
+          "full_handoff_chars": 8210,
+          "typed_handoff_chars": 5973,
+          "both_executed": true,
+          "full_db_hits": 371,
+          "typed_db_hits": 71
+        },
+        {
+          "question_id": "ext_med_2",
+          "repeat": 1,
+          "full_correct": true,
+          "typed_correct": false,
+          "full_prompt_tokens": 3928,
+          "typed_prompt_tokens": 3018,
+          "full_handoff_chars": 8210,
+          "typed_handoff_chars": 5973,
+          "both_executed": true,
+          "full_db_hits": 371,
+          "typed_db_hits": 71
+        },
+        {
+          "question_id": "int_hard_1",
+          "repeat": 0,
+          "full_correct": false,
+          "typed_correct": false,
+          "full_prompt_tokens": 4298,
+          "typed_prompt_tokens": 3440,
+          "full_handoff_chars": 9325,
+          "typed_handoff_chars": 7349,
+          "both_executed": true,
+          "full_db_hits": 2566679,
+          "typed_db_hits": 95019
+        },
+        {
+          "question_id": "int_hard_1",
+          "repeat": 1,
+          "full_correct": false,
+          "typed_correct": false,
+          "full_prompt_tokens": 4298,
+          "typed_prompt_tokens": 3440,
+          "full_handoff_chars": 9325,
+          "typed_handoff_chars": 7349,
+          "both_executed": true,
+          "full_db_hits": 2566679,
+          "typed_db_hits": 95019
+        },
+        {
+          "question_id": "int_hard_1b",
+          "repeat": 0,
+          "full_correct": true,
+          "typed_correct": true,
+          "full_prompt_tokens": 4900,
+          "typed_prompt_tokens": 3825,
+          "full_handoff_chars": 11966,
+          "typed_handoff_chars": 9290,
+          "both_executed": true,
+          "full_db_hits": 1453306,
+          "typed_db_hits": 1391989
+        },
+        {
+          "question_id": "int_hard_1b",
+          "repeat": 1,
+          "full_correct": true,
+          "typed_correct": true,
+          "full_prompt_tokens": 4900,
+          "typed_prompt_tokens": 3825,
+          "full_handoff_chars": 11966,
+          "typed_handoff_chars": 9290,
+          "both_executed": true,
+          "full_db_hits": 1453306,
+          "typed_db_hits": 1391989
+        },
+        {
+          "question_id": "int_hard_2",
+          "repeat": 0,
+          "full_correct": false,
+          "typed_correct": false,
+          "full_prompt_tokens": 6380,
+          "typed_prompt_tokens": 3338,
+          "full_handoff_chars": 9407,
+          "typed_handoff_chars": 2502,
+          "both_executed": false,
+          "full_db_hits": 81926,
+          "typed_db_hits": 0
+        },
+        {
+          "question_id": "int_hard_2",
+          "repeat": 1,
+          "full_correct": false,
+          "typed_correct": false,
+          "full_prompt_tokens": 6380,
+          "typed_prompt_tokens": 3338,
+          "full_handoff_chars": 9407,
+          "typed_handoff_chars": 2502,
+          "both_executed": false,
+          "full_db_hits": 81926,
+          "typed_db_hits": 0
+        },
+        {
+          "question_id": "int_med_1",
+          "repeat": 0,
+          "full_correct": true,
+          "typed_correct": true,
+          "full_prompt_tokens": 3006,
+          "typed_prompt_tokens": 3977,
+          "full_handoff_chars": 5614,
+          "typed_handoff_chars": 4563,
+          "both_executed": true,
+          "full_db_hits": 121927,
+          "typed_db_hits": 130990
+        },
+        {
+          "question_id": "int_med_1",
+          "repeat": 1,
+          "full_correct": true,
+          "typed_correct": true,
+          "full_prompt_tokens": 3006,
+          "typed_prompt_tokens": 3977,
+          "full_handoff_chars": 5614,
+          "typed_handoff_chars": 4563,
+          "both_executed": true,
+          "full_db_hits": 121927,
+          "typed_db_hits": 130990
+        }
+      ],
+      "prompt_token_change_pct": -21.03,
+      "handoff_char_change_pct": -30.72,
+      "correct_change": -2,
+      "db_hits_both_executed_n": 12,
+      "db_hits_paired_median_change_pct": -2.10956949190329
+    },
+    "staged_single_vs_multi_full_manipulation_check": {
+      "paired": [],
+      "available": false,
+      "all_visible_outputs_equal": false
+    },
+    "typed_vs_result_envelope": {
+      "paired": [
+        {
+          "question_id": "ext_hard_1",
+          "repeat": 0,
+          "same_correct": true,
+          "same_initial_cypher": true,
+          "typed_prompt_tokens": 2457,
+          "envelope_prompt_tokens": 2530
+        },
+        {
+          "question_id": "ext_hard_1",
+          "repeat": 1,
+          "same_correct": true,
+          "same_initial_cypher": true,
+          "typed_prompt_tokens": 2457,
+          "envelope_prompt_tokens": 2530
+        },
+        {
+          "question_id": "ext_hard_2",
+          "repeat": 0,
+          "same_correct": true,
+          "same_initial_cypher": true,
+          "typed_prompt_tokens": 2447,
+          "envelope_prompt_tokens": 2516
+        },
+        {
+          "question_id": "ext_hard_2",
+          "repeat": 1,
+          "same_correct": true,
+          "same_initial_cypher": true,
+          "typed_prompt_tokens": 2447,
+          "envelope_prompt_tokens": 2516
+        },
+        {
+          "question_id": "ext_med_2",
+          "repeat": 0,
+          "same_correct": true,
+          "same_initial_cypher": true,
+          "typed_prompt_tokens": 3018,
+          "envelope_prompt_tokens": 3089
+        },
+        {
+          "question_id": "ext_med_2",
+          "repeat": 1,
+          "same_correct": true,
+          "same_initial_cypher": true,
+          "typed_prompt_tokens": 3018,
+          "envelope_prompt_tokens": 3089
+        },
+        {
+          "question_id": "int_hard_1",
+          "repeat": 0,
+          "same_correct": true,
+          "same_initial_cypher": true,
+          "typed_prompt_tokens": 3440,
+          "envelope_prompt_tokens": 3505
+        },
+        {
+          "question_id": "int_hard_1",
+          "repeat": 1,
+          "same_correct": true,
+          "same_initial_cypher": true,
+          "typed_prompt_tokens": 3440,
+          "envelope_prompt_tokens": 3505
+        },
+        {
+          "question_id": "int_hard_1b",
+          "repeat": 0,
+          "same_correct": true,
+          "same_initial_cypher": true,
+          "typed_prompt_tokens": 3825,
+          "envelope_prompt_tokens": 3899
+        },
+        {
+          "question_id": "int_hard_1b",
+          "repeat": 1,
+          "same_correct": true,
+          "same_initial_cypher": true,
+          "typed_prompt_tokens": 3825,
+          "envelope_prompt_tokens": 3899
+        },
+        {
+          "question_id": "int_hard_2",
+          "repeat": 0,
+          "same_correct": true,
+          "same_initial_cypher": true,
+          "typed_prompt_tokens": 3338,
+          "envelope_prompt_tokens": 3338
+        },
+        {
+          "question_id": "int_hard_2",
+          "repeat": 1,
+          "same_correct": true,
+          "same_initial_cypher": true,
+          "typed_prompt_tokens": 3338,
+          "envelope_prompt_tokens": 3338
+        },
+        {
+          "question_id": "int_med_1",
+          "repeat": 0,
+          "same_correct": true,
+          "same_initial_cypher": true,
+          "typed_prompt_tokens": 3977,
+          "envelope_prompt_tokens": 4044
+        },
+        {
+          "question_id": "int_med_1",
+          "repeat": 1,
+          "same_correct": true,
+          "same_initial_cypher": true,
+          "typed_prompt_tokens": 3977,
+          "envelope_prompt_tokens": 4044
+        }
+      ],
+      "same_correct_all": true,
+      "same_initial_cypher_all": true
+    },
+    "verifier": {
+      "evaluated": 38,
+      "false_rejects_of_correct_results": 18,
+      "false_accepts_of_incorrect_results": 0,
+      "authority": "advisory"
+    }
+  },
+  "framework": {
+    "scheduler_manipulation_check": [
+      {
+        "context_policy": "full_transcript",
+        "same_correct": true,
+        "same_cypher": true,
+        "same_prompt_tokens": true,
+        "same_completion_tokens": true
+      },
+      {
+        "context_policy": "typed_isolated",
+        "same_correct": true,
+        "same_cypher": true,
+        "same_prompt_tokens": true,
+        "same_completion_tokens": true
+      }
+    ],
+    "scheduler_outputs_equal": true,
+    "typed_vs_full_single_question": {
+      "full_correct": false,
+      "typed_correct": true,
+      "prompt_token_change_pct": -23.26,
+      "handoff_char_change_pct": -24.4
+    }
+  },
+  "fibo": {
+    "arms": {
+      "physical_only": {
+        "n": 26,
+        "errors": 4,
+        "correct": 12,
+        "correct_rate": 0.4615,
+        "model_calls": 34,
+        "model_calls_completed": 34,
+        "prompt_tokens": 15584,
+        "completion_tokens": 20628,
+        "semantic_context_chars": 0,
+        "attempts": 34,
+        "db_hits": 122058,
+        "generate_ms_median": 2697.65,
+        "db_ms_median": 7.72
+      },
+      "compiled_fibo": {
+        "n": 26,
+        "errors": 0,
+        "correct": 12,
+        "correct_rate": 0.4615,
+        "model_calls": 28,
+        "model_calls_completed": 28,
+        "prompt_tokens": 38548,
+        "completion_tokens": 18022,
+        "semantic_context_chars": 99450,
+        "attempts": 28,
+        "db_hits": 1387624,
+        "generate_ms_median": 2984.0,
+        "db_ms_median": 8.51
+      },
+      "retrieved_fibo": {
+        "n": 26,
+        "errors": 5,
+        "correct": 10,
+        "correct_rate": 0.3846,
+        "model_calls": 33,
+        "model_calls_completed": 33,
+        "prompt_tokens": 26198,
+        "completion_tokens": 19063,
+        "semantic_context_chars": 34500,
+        "attempts": 33,
+        "db_hits": 1375228,
+        "generate_ms_median": 2744.6,
+        "db_ms_median": 8.06
+      }
+    },
+    "paired": [
+      {
+        "question_id": "guarantee_chain",
+        "repeat": 0,
+        "physical_correct": true,
+        "compiled_correct": false,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": true,
+        "retrieved_gain": false,
+        "retrieved_loss": true,
+        "physical_db_hits": 9720,
+        "compiled_db_hits": 8489,
+        "retrieved_db_hits": 8489
+      },
+      {
+        "question_id": "guarantee_chain",
+        "repeat": 1,
+        "physical_correct": true,
+        "compiled_correct": false,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": true,
+        "retrieved_gain": false,
+        "retrieved_loss": true,
+        "physical_db_hits": 9720,
+        "compiled_db_hits": 8489,
+        "retrieved_db_hits": 8489
+      },
+      {
+        "question_id": "in_transfer_total",
+        "repeat": 0,
+        "physical_correct": true,
+        "compiled_correct": true,
+        "retrieved_correct": true,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 47,
+        "compiled_db_hits": 37,
+        "retrieved_db_hits": 47
+      },
+      {
+        "question_id": "in_transfer_total",
+        "repeat": 1,
+        "physical_correct": true,
+        "compiled_correct": true,
+        "retrieved_correct": true,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 47,
+        "compiled_db_hits": 37,
+        "retrieved_db_hits": 47
+      },
+      {
+        "question_id": "loan_disbursement_path",
+        "repeat": 0,
+        "physical_correct": true,
+        "compiled_correct": true,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": true,
+        "physical_db_hits": 3774,
+        "compiled_db_hits": 3774,
+        "retrieved_db_hits": 0
+      },
+      {
+        "question_id": "loan_disbursement_path",
+        "repeat": 1,
+        "physical_correct": true,
+        "compiled_correct": true,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": true,
+        "physical_db_hits": 3774,
+        "compiled_db_hits": 3774,
+        "retrieved_db_hits": 0
+      },
+      {
+        "question_id": "loan_repay_imbalance",
+        "repeat": 0,
+        "physical_correct": false,
+        "compiled_correct": false,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 0,
+        "compiled_db_hits": 650,
+        "retrieved_db_hits": 0
+      },
+      {
+        "question_id": "loan_repay_imbalance",
+        "repeat": 1,
+        "physical_correct": false,
+        "compiled_correct": false,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 0,
+        "compiled_db_hits": 650,
+        "retrieved_db_hits": 650
+      },
+      {
+        "question_id": "owner_portfolio",
+        "repeat": 0,
+        "physical_correct": true,
+        "compiled_correct": true,
+        "retrieved_correct": true,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 39,
+        "compiled_db_hits": 40,
+        "retrieved_db_hits": 40
+      },
+      {
+        "question_id": "owner_portfolio",
+        "repeat": 1,
+        "physical_correct": true,
+        "compiled_correct": true,
+        "retrieved_correct": true,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 39,
+        "compiled_db_hits": 40,
+        "retrieved_db_hits": 40
+      },
+      {
+        "question_id": "rail_mix",
+        "repeat": 0,
+        "physical_correct": false,
+        "compiled_correct": false,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 50,
+        "compiled_db_hits": 380,
+        "retrieved_db_hits": 50
+      },
+      {
+        "question_id": "rail_mix",
+        "repeat": 1,
+        "physical_correct": false,
+        "compiled_correct": false,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 50,
+        "compiled_db_hits": 380,
+        "retrieved_db_hits": 50
+      },
+      {
+        "question_id": "recent_page",
+        "repeat": 0,
+        "physical_correct": false,
+        "compiled_correct": false,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 0,
+        "compiled_db_hits": 71,
+        "retrieved_db_hits": 0
+      },
+      {
+        "question_id": "recent_page",
+        "repeat": 1,
+        "physical_correct": false,
+        "compiled_correct": false,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 0,
+        "compiled_db_hits": 71,
+        "retrieved_db_hits": 0
+      },
+      {
+        "question_id": "risky_rail_senders",
+        "repeat": 0,
+        "physical_correct": false,
+        "compiled_correct": false,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 269,
+        "compiled_db_hits": 245,
+        "retrieved_db_hits": 245
+      },
+      {
+        "question_id": "risky_rail_senders",
+        "repeat": 1,
+        "physical_correct": false,
+        "compiled_correct": false,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 269,
+        "compiled_db_hits": 245,
+        "retrieved_db_hits": 245
+      },
+      {
+        "question_id": "structuring_fanin",
+        "repeat": 0,
+        "physical_correct": false,
+        "compiled_correct": true,
+        "retrieved_correct": true,
+        "compiled_gain": true,
+        "compiled_loss": false,
+        "retrieved_gain": true,
+        "retrieved_loss": false,
+        "physical_db_hits": 52,
+        "compiled_db_hits": 47,
+        "retrieved_db_hits": 47
+      },
+      {
+        "question_id": "structuring_fanin",
+        "repeat": 1,
+        "physical_correct": false,
+        "compiled_correct": true,
+        "retrieved_correct": true,
+        "compiled_gain": true,
+        "compiled_loss": false,
+        "retrieved_gain": true,
+        "retrieved_loss": false,
+        "physical_db_hits": 52,
+        "compiled_db_hits": 47,
+        "retrieved_db_hits": 47
+      },
+      {
+        "question_id": "sub_threshold_inflow",
+        "repeat": 0,
+        "physical_correct": true,
+        "compiled_correct": true,
+        "retrieved_correct": true,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 44,
+        "compiled_db_hits": 44,
+        "retrieved_db_hits": 44
+      },
+      {
+        "question_id": "sub_threshold_inflow",
+        "repeat": 1,
+        "physical_correct": true,
+        "compiled_correct": true,
+        "retrieved_correct": true,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 44,
+        "compiled_db_hits": 44,
+        "retrieved_db_hits": 44
+      },
+      {
+        "question_id": "two_hop_reach",
+        "repeat": 0,
+        "physical_correct": true,
+        "compiled_correct": true,
+        "retrieved_correct": true,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 537,
+        "compiled_db_hits": 537,
+        "retrieved_db_hits": 460
+      },
+      {
+        "question_id": "two_hop_reach",
+        "repeat": 1,
+        "physical_correct": true,
+        "compiled_correct": true,
+        "retrieved_correct": true,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 537,
+        "compiled_db_hits": 537,
+        "retrieved_db_hits": 460
+      },
+      {
+        "question_id": "ubo_chain",
+        "repeat": 0,
+        "physical_correct": false,
+        "compiled_correct": false,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 753,
+        "compiled_db_hits": 668225,
+        "retrieved_db_hits": 668225
+      },
+      {
+        "question_id": "ubo_chain",
+        "repeat": 1,
+        "physical_correct": false,
+        "compiled_correct": false,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 753,
+        "compiled_db_hits": 668225,
+        "retrieved_db_hits": 668225
+      },
+      {
+        "question_id": "ubo_depth",
+        "repeat": 0,
+        "physical_correct": false,
+        "compiled_correct": false,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 45744,
+        "compiled_db_hits": 11273,
+        "retrieved_db_hits": 9642
+      },
+      {
+        "question_id": "ubo_depth",
+        "repeat": 1,
+        "physical_correct": false,
+        "compiled_correct": false,
+        "retrieved_correct": false,
+        "compiled_gain": false,
+        "compiled_loss": false,
+        "retrieved_gain": false,
+        "retrieved_loss": false,
+        "physical_db_hits": 45744,
+        "compiled_db_hits": 11273,
+        "retrieved_db_hits": 9642
+      }
+    ],
+    "compiled_gains": 2,
+    "compiled_losses": 2,
+    "retrieved_gains": 2,
+    "retrieved_losses": 4,
+    "compiled_prompt_change_vs_physical_pct": 147.36,
+    "retrieved_prompt_change_vs_compiled_pct": -32.04,
+    "retrieved_context_change_vs_compiled_pct": -65.31
+  },
+  "validity": {
+    "status": "confirmatory_repeat",
+    "topology_repeats": 2,
+    "fibo_repeats": 2,
+    "notes": [
+      "SF1 paired repeats are retained individually; accuracy intervals are not claimed.",
+      "Hosted MARA is a distinct arm from self-hosted vLLM and is not merged with it.",
+      "DB-hit paired comparisons include only questions executed in both arms.",
+      "No private chain-of-thought was requested or retained."
+    ]
+  }
+}

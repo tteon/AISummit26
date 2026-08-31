@@ -25,25 +25,26 @@ def _pct(candidate: float, baseline: float) -> float | None:
     return round((candidate / baseline - 1) * 100, 2) if baseline else None
 
 
-def _index(rows: Iterable[Dict[str, Any]], arm_key: str = "arm") -> Dict[tuple[str, str], Dict[str, Any]]:
-    return {(str(r["question_id"]), str(r[arm_key])): r for r in rows}
+def _index(rows: Iterable[Dict[str, Any]], arm_key: str = "arm") -> Dict[tuple[str, int, str], Dict[str, Any]]:
+    """Index paired cells without collapsing repeated, non-deterministic episodes."""
+    return {(str(r["question_id"]), int(r.get("repeat", 0)), str(r[arm_key])): r
+            for r in rows}
 
 
 def analyze(topology: Dict[str, Any], framework: Dict[str, Any],
             fibo: Dict[str, Any], sources: Dict[str, str]) -> Dict[str, Any]:
     trows = topology["samples"]
     tidx = _index(trows)
-    qids = sorted({r["question_id"] for r in trows})
+    cells = sorted({(str(r["question_id"]), int(r.get("repeat", 0))) for r in trows})
     full_typed = []
     staged_multi = []
     typed_envelope = []
-    for qid in qids:
-        full = tidx[(qid, "multi_full")]
-        typed = tidx[(qid, "multi_typed")]
-        staged = tidx[(qid, "staged_single")]
-        envelope = tidx[(qid, "multi_envelope")]
+    for qid, repeat in cells:
+        full = tidx[(qid, repeat, "multi_full")]
+        typed = tidx[(qid, repeat, "multi_typed")]
+        envelope = tidx[(qid, repeat, "multi_envelope")]
         full_typed.append({
-            "question_id": qid, "full_correct": full["correct"],
+            "question_id": qid, "repeat": repeat, "full_correct": full["correct"],
             "typed_correct": typed["correct"],
             "full_prompt_tokens": full["prompt_tokens"],
             "typed_prompt_tokens": typed["prompt_tokens"],
@@ -52,16 +53,18 @@ def analyze(topology: Dict[str, Any], framework: Dict[str, Any],
             "both_executed": bool(full.get("graph_trips") and typed.get("graph_trips")),
             "full_db_hits": full.get("db_hits"), "typed_db_hits": typed.get("db_hits"),
         })
-        staged_multi.append({
-            "question_id": qid,
-            "same_correct": staged["correct"] == full["correct"],
-            "same_prompt_tokens": staged["prompt_tokens"] == full["prompt_tokens"],
-            "same_handoff_chars": staged["handoff_chars"] == full["handoff_chars"],
-            "same_cypher": (staged.get("decisions", {}).get("initial_cypher") ==
-                            full.get("decisions", {}).get("initial_cypher")),
-        })
+        staged = tidx.get((qid, repeat, "staged_single"))
+        if staged is not None:
+            staged_multi.append({
+                "question_id": qid, "repeat": repeat,
+                "same_correct": staged["correct"] == full["correct"],
+                "same_prompt_tokens": staged["prompt_tokens"] == full["prompt_tokens"],
+                "same_handoff_chars": staged["handoff_chars"] == full["handoff_chars"],
+                "same_cypher": (staged.get("decisions", {}).get("initial_cypher") ==
+                                full.get("decisions", {}).get("initial_cypher")),
+            })
         typed_envelope.append({
-            "question_id": qid,
+            "question_id": qid, "repeat": repeat,
             "same_correct": typed["correct"] == envelope["correct"],
             "same_initial_cypher": (typed.get("decisions", {}).get("initial_cypher") ==
                                     envelope.get("decisions", {}).get("initial_cypher")),
@@ -91,7 +94,8 @@ def analyze(topology: Dict[str, Any], framework: Dict[str, Any],
         },
         "staged_single_vs_multi_full_manipulation_check": {
             "paired": staged_multi,
-            "all_visible_outputs_equal": all(
+            "available": bool(staged_multi),
+            "all_visible_outputs_equal": bool(staged_multi) and all(
                 all(p[k] for k in ("same_correct", "same_prompt_tokens",
                                     "same_handoff_chars", "same_cypher"))
                 for p in staged_multi),
@@ -140,14 +144,15 @@ def analyze(topology: Dict[str, Any], framework: Dict[str, Any],
 
     brows = fibo["samples"]
     bidx = _index(brows)
-    bqids = sorted({r["question_id"] for r in brows})
+    bcells = sorted({(str(r["question_id"]), int(r.get("repeat", 0))) for r in brows})
     paired_fibo = []
-    for qid in bqids:
-        physical = bidx[(qid, "physical_only")]
-        compiled = bidx[(qid, "compiled_fibo")]
-        retrieved = bidx[(qid, "retrieved_fibo")]
+    for qid, repeat in bcells:
+        physical = bidx[(qid, repeat, "physical_only")]
+        compiled = bidx[(qid, repeat, "compiled_fibo")]
+        retrieved = bidx[(qid, repeat, "retrieved_fibo")]
         paired_fibo.append({
-            "question_id": qid, "physical_correct": physical["correct"],
+            "question_id": qid, "repeat": repeat,
+            "physical_correct": physical["correct"],
             "compiled_correct": compiled["correct"],
             "retrieved_correct": retrieved["correct"],
             "compiled_gain": bool(compiled["correct"] and not physical["correct"]),
@@ -180,16 +185,21 @@ def analyze(topology: Dict[str, Any], framework: Dict[str, Any],
                "tempo_complete": report["trace_receipt"]["tempo_complete"]}
         for name, report in (("topology", topology), ("framework", framework), ("fibo", fibo))
     }
+    topology_repeats = len({int(r.get("repeat", 0)) for r in trows})
+    fibo_repeats = len({int(r.get("repeat", 0)) for r in brows})
     return {
-        "schema_version": "seocho.agent-interface-readiness-analysis.v1",
+        "schema_version": "seocho.agent-interface-readiness-analysis.v2",
         "manifest": runmeta.manifest(analysis="paired agent-interface pilots"),
         "sources": sources, "trace_receipts": trace_receipts,
         "topology": topology_analysis, "framework": framework_analysis,
         "fibo": fibo_analysis,
         "validity": {
-            "status": "exploratory_pilot",
+            "status": ("confirmatory_repeat" if topology_repeats >= 2 and fibo_repeats >= 2
+                       else "exploratory_pilot"),
+            "topology_repeats": topology_repeats,
+            "fibo_repeats": fibo_repeats,
             "notes": [
-                "One repeat at SF1; accuracy intervals are intentionally not claimed.",
+                "SF1 paired repeats are retained individually; accuracy intervals are not claimed.",
                 "Hosted MARA is a distinct arm from self-hosted vLLM and is not merged with it.",
                 "DB-hit paired comparisons include only questions executed in both arms.",
                 "No private chain-of-thought was requested or retained.",

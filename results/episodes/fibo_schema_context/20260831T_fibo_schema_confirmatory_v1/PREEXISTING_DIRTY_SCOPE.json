@@ -1,0 +1,10 @@
+{
+  "schema_version": "seocho.preexisting-dirty-scope.v1",
+  "manifest_git_dirty": true,
+  "source_commit": "f26e85d221c2cabf33181cbd2de62e3d4c79d220",
+  "source_files_modified_before_run": [],
+  "preexisting_untracked_paths": [
+    "results/episodes/agent_topology/20260831T_agent_topology_confirmatory_v1/"
+  ],
+  "explanation": "The FIBO run followed the topology run in the same detached clean worktree. The only pre-existing dirty path when manifest() ran was the completed topology output directory; no source, prompt, ontology, configuration, or dependency file differed from source_commit. The FIBO output directory was created only after manifest capture. Re-running 78 paid episodes solely to toggle this metadata bit was not warranted."
+}
