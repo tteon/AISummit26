@@ -119,6 +119,11 @@ paired reports have complete local JSONL and Tempo receipts.
 
 ### Telemetry boundary and next-run contract
 
+The current experimental boundary is deliberately **hosted MARA + local DozerDB**. Model
+choice and context engineering are evaluated through MARA; database execution and resource
+cost are measured locally. Self-hosted model serving is deferred and must not be introduced
+into these MARA comparisons.
+
 The completed matrix records per episode: endpoint descriptor, model-stage timings and token
 usage, context/handoff sizes, generated Cypher and typed parameters, query fingerprint,
 graph trips, aggregate PROFILE DB hits, Bolt availability/hydration/total timings, result
@@ -132,11 +137,19 @@ Future topology and model-matrix runs enable two additional durable artifacts by
 - every executed query stores the full nested PROFILE tree (operator, identifiers,
   arguments and children) beside the existing DB-hit total;
 - `system_metrics.jsonl` samples client-host CPU ticks, load, memory and process RSS plus
-  `docker stats` for the named database container, with wall and process-local monotonic
-  clocks and an fsync-backed completion receipt.
+  normalized database-container CPU, memory, PID, cumulative block-I/O and network counters
+  from `docker stats`, while retaining the raw values and denominators; wall and
+  process-local monotonic clocks plus an fsync-backed completion receipt make the samples
+  joinable to each episode's monitoring window.
 
-The model-matrix runner now labels telemetry scope as local client host + database container
-and explicitly marks hosted model-server telemetry unavailable. A self-hosted vLLM run is
+The local database monitor is an acceptance gate, not optional decoration. It probes the
+named container before the first paid MARA call. A completed monitored run requires at least
+one durable sample, zero unavailable container samples and a clean sampler shutdown. The
+explicit `--no-system-metrics` flag remains available only for a separately named control.
+
+The model-matrix runner now labels telemetry scope as hosted MARA + local database, records
+local client host + database container measurements, and explicitly marks hosted model-server
+telemetry unavailable. A self-hosted vLLM run is
 the separate arm needed for GPU, KV residency, cache and scheduler counters. These counters
 must stay in their native denominators and must not be merged with MARA observations.
 

@@ -67,8 +67,9 @@ Score four durable objects: `QueryIntent`, harness-owned `ExecutionRequest`, typ
 `ResultEnvelope`, and policy-owned `VerificationDecision`; propagate `TraceContext` through
 model and Bolt calls. For every query retain raw full PROFILE tree, DB hits, Bolt phase
 timings and result bytes. For every run retain endpoint/model descriptor and host + database
-container samples. Add self-hosted vLLM only as a separate arm when GPU, KV-cache and
-scheduler telemetry is required.
+container samples. The current evidence boundary is hosted MARA + local DozerDB; add
+self-hosted vLLM later, only as a separate arm when GPU, KV-cache and scheduler telemetry is
+required.
 
 **Closing sentence:** “FinBench gives us the graph; Agentic FinBench must benchmark the
 contract that decides what the model sees, what the database is allowed to execute, and how

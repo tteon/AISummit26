@@ -454,7 +454,10 @@ For Agent API ↔ Bolt experiments, `bench_agent_topology.py` also writes the co
 operator tree for every executed query and starts a durable `system_metrics.jsonl` sampler by
 default. The sampler covers the client host and the explicitly named database container; pass
 the actual container with `--db-container`, then require a non-empty metrics file and a
-`system_monitor_receipt.complete=true` before accepting the run. Use
+`system_monitor_receipt.valid=true` before accepting the run. The harness performs this
+container preflight before the first paid MARA call and fails the run if any interval lacks
+database-container telemetry. Each episode's `monitor_window` carries both wall and
+monotonic boundaries for joining the surrounding samples. Use
 `--no-system-metrics` only for a deliberately named no-monitor control. Hosted endpoint GPU,
 KV-cache and scheduler state remains unavailable and must be measured in a separate
 self-hosted vLLM arm.

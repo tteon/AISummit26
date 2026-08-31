@@ -10,11 +10,69 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import threading
 import time
 from pathlib import Path
 from typing import Any, Dict, Optional
+
+
+_SIZE_MULTIPLIERS = {
+    "b": 1,
+    "kb": 1000,
+    "mb": 1000 ** 2,
+    "gb": 1000 ** 3,
+    "tb": 1000 ** 4,
+    "kib": 1024,
+    "mib": 1024 ** 2,
+    "gib": 1024 ** 3,
+    "tib": 1024 ** 4,
+}
+
+
+def _size_bytes(value: str) -> Optional[int]:
+    match = re.fullmatch(r"\s*([0-9]+(?:\.[0-9]+)?)\s*([KMGT]?i?B)\s*", value,
+                         flags=re.IGNORECASE)
+    if not match:
+        return None
+    return round(float(match.group(1)) * _SIZE_MULTIPLIERS[match.group(2).lower()])
+
+
+def _io_pair(value: str) -> tuple[Optional[int], Optional[int]]:
+    left, separator, right = value.partition("/")
+    if not separator:
+        return None, None
+    return _size_bytes(left), _size_bytes(right)
+
+
+def _normalized_container_stats(payload: Dict[str, Any]) -> Dict[str, Any]:
+    memory_used, memory_limit = _io_pair(str(payload.get("MemUsage", "")))
+    network_rx, network_tx = _io_pair(str(payload.get("NetIO", "")))
+    block_read, block_write = _io_pair(str(payload.get("BlockIO", "")))
+
+    def percent(key: str) -> Optional[float]:
+        raw = str(payload.get(key, "")).strip().removesuffix("%")
+        try:
+            return float(raw)
+        except ValueError:
+            return None
+
+    try:
+        pids = int(payload.get("PIDs"))
+    except (TypeError, ValueError):
+        pids = None
+    return {
+        "cpu_percent": percent("CPUPerc"),
+        "memory_percent": percent("MemPerc"),
+        "memory_used_bytes": memory_used,
+        "memory_limit_bytes": memory_limit,
+        "network_rx_bytes": network_rx,
+        "network_tx_bytes": network_tx,
+        "block_read_bytes": block_read,
+        "block_write_bytes": block_write,
+        "pids": pids,
+    }
 
 
 def _read_key_values(path: str) -> Dict[str, int]:
@@ -65,7 +123,10 @@ def _container_sample(container: Optional[str]) -> Dict[str, Any]:
             return {"available": False,
                     "reason": (result.stderr.strip() or f"exit {result.returncode}")[:300]}
         payload = json.loads(result.stdout.splitlines()[0])
-        return {"available": True, "name": container, "stats": payload}
+        return {"available": True, "name": container,
+                "identity": {key: payload.get(key) for key in ("Container", "ID", "Name")},
+                "counters": _normalized_container_stats(payload),
+                "raw": payload}
     except Exception as exc:
         return {"available": False, "reason": f"{type(exc).__name__}: {str(exc)[:250]}"}
 
@@ -83,6 +144,10 @@ class SystemMetricsSampler:
         self.samples = 0
         self.container_unavailable = 0
 
+    def probe(self) -> Dict[str, Any]:
+        """Check the database container before any paid model request is sent."""
+        return _container_sample(self.db_container)
+
     def start(self) -> None:
         if self._thread is not None:
             return
@@ -93,10 +158,16 @@ class SystemMetricsSampler:
     def _run(self) -> None:
         with self.path.open("a", encoding="utf-8") as out:
             while not self._stop.is_set():
+                sample_started_wall = time.time()
+                sample_started_mono = time.monotonic()
                 container = _container_sample(self.db_container)
                 record = {
-                    "schema_version": "seocho.system-metrics.v1",
+                    "schema_version": "seocho.system-metrics.v2",
                     "t_wall": time.time(), "t_mono": time.monotonic(),
+                    "sample_started_wall": sample_started_wall,
+                    "sample_started_mono": sample_started_mono,
+                    "sample_duration_ms": round(
+                        (time.monotonic() - sample_started_mono) * 1000, 3),
                     "host": _host_sample(), "db_container": container,
                 }
                 out.write(json.dumps(record, default=str) + "\n")
@@ -104,17 +175,26 @@ class SystemMetricsSampler:
                 os.fsync(out.fileno())
                 self.samples += 1
                 self.container_unavailable += int(not container.get("available", False))
-                self._stop.wait(self.interval_s)
+                elapsed = time.monotonic() - sample_started_mono
+                self._stop.wait(max(0.0, self.interval_s - elapsed))
 
     def stop(self) -> Dict[str, Any]:
         self._stop.set()
         if self._thread is not None:
             self._thread.join(timeout=self.interval_s + 6)
+        thread_complete = (self._thread is not None and not self._thread.is_alive())
+        durable_complete = bool(self.samples) and thread_complete
+        db_container_complete = durable_complete and self.container_unavailable == 0
         return {
-            "schema_version": "seocho.system-monitor-receipt.v1",
+            "schema_version": "seocho.system-monitor-receipt.v2",
             "path": str(self.path), "interval_s": self.interval_s,
             "db_container": self.db_container, "samples": self.samples,
+            "db_container_available_samples": self.samples - self.container_unavailable,
             "container_unavailable_samples": self.container_unavailable,
-            "complete": bool(self.samples) and self._thread is not None and
-                        not self._thread.is_alive(),
+            "coverage_rate": round(
+                (self.samples - self.container_unavailable) / self.samples, 6)
+                if self.samples else 0.0,
+            "complete": durable_complete,
+            "db_container_complete": db_container_complete,
+            "valid": db_container_complete,
         }

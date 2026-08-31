@@ -132,8 +132,10 @@ def main() -> None:
         "executor_tokens": args.executor_tokens, "request_timeout_s": args.request_timeout_s,
         "temperature": 0.0, "seed": args.seed, "verifier_mode": "advisory",
         "telemetry": {
+            "experiment_boundary": "hosted_mara_model_plus_local_graph_database",
             "profile_operator_tree": True,
             "local_system_metrics": not args.no_system_metrics,
+            "local_database_monitoring_required": not args.no_system_metrics,
             "system_metrics_interval_s": args.system_metrics_interval_s,
             "hosted_model_server": "unavailable_by_endpoint",
         },

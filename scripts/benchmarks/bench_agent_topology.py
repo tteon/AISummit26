@@ -728,11 +728,12 @@ async def main_async(args: Any) -> None:
         enable_metrics=False)
     system_metrics_path = output_dir / "system_metrics.jsonl"
     system_sampler = None
+    system_monitor_preflight = None
     if not args.no_system_metrics:
         system_sampler = SystemMetricsSampler(
             system_metrics_path, interval_s=args.system_metrics_interval_s,
             db_container=args.db_container)
-        system_sampler.start()
+        system_monitor_preflight = system_sampler.probe()
 
     run_header = {
         "schema_version": "seocho.finbench.agent-topology.v1",
@@ -742,9 +743,11 @@ async def main_async(args: Any) -> None:
         "observability": observability,
         "system_monitor": {
             "enabled": system_sampler is not None,
+            "required": system_sampler is not None,
             "path": str(system_metrics_path) if system_sampler is not None else None,
             "interval_s": args.system_metrics_interval_s,
             "scope": "local client host and database container; hosted model server excluded",
+            "preflight": system_monitor_preflight,
         },
         "config": {k: v for k, v in vars(args).items() if k != "password"},
         "graph": {f"{db}:sf{sf}": {"anchor": prepared[(db, questions[0]['id'])]["anchor"]}
@@ -754,6 +757,14 @@ async def main_async(args: Any) -> None:
         manifest_path.write_text(json.dumps(run_header, indent=2, default=str) + "\n")
     print(f"[endpoint] {cfg.provider} {cfg.model_name} @ {cfg.base_url}", flush=True)
     print(f"[manifest] {manifest_path}", flush=True)
+    if system_sampler is not None and not system_monitor_preflight.get("available", False):
+        driver.close()
+        shutdown_tracing()
+        raise SystemExit(
+            "database monitoring preflight failed before model calls: "
+            + str(system_monitor_preflight.get("reason", "container unavailable")))
+    if system_sampler is not None:
+        system_sampler.start()
 
     completed: set[str] = set()
     rows_out: List[Dict[str, Any]] = []
@@ -783,6 +794,8 @@ async def main_async(args: Any) -> None:
                                       f"{question['id']}:r{repeat}:{arm}")
                         if episode_id in completed:
                             continue
+                        episode_started_wall = time.time()
+                        episode_started_mono = time.monotonic()
                         episode_span = None
                         try:
                             with span("agent.topology.episode", run_id=args.run_id,
@@ -847,6 +860,12 @@ async def main_async(args: Any) -> None:
                             rec["trace_id"] = trace_id
                             rec["root_span_id"] = span_id
                             conversation["trace_id"] = trace_id
+                        rec["monitor_window"] = {
+                            "started_wall": episode_started_wall,
+                            "ended_wall": time.time(),
+                            "started_mono": episode_started_mono,
+                            "ended_mono": time.monotonic(),
+                        }
                         samples.write(json.dumps(rec, default=str) + "\n")
                         samples.flush()
                         os.fsync(samples.fileno())
@@ -861,8 +880,8 @@ async def main_async(args: Any) -> None:
                               f"{rec.get('error', '')[:80]}", flush=True)
 
     system_monitor_receipt = (system_sampler.stop() if system_sampler is not None else {
-        "schema_version": "seocho.system-monitor-receipt.v1", "complete": False,
-        "reason": "disabled"})
+        "schema_version": "seocho.system-monitor-receipt.v2", "complete": False,
+        "db_container_complete": False, "valid": False, "reason": "disabled"})
     driver.close()
     try:
         from seocho.tracing import flush_tracing
@@ -886,6 +905,10 @@ async def main_async(args: Any) -> None:
     for arm, summary in report["summary"].items():
         print(f"  {arm:16s} {summary}")
     print(f"wrote {out_path}")
+    if system_sampler is not None and not system_monitor_receipt["valid"]:
+        raise SystemExit(
+            "database monitoring gate failed after preserving the report: "
+            + json.dumps(system_monitor_receipt, default=str))
 
 
 def main() -> None:
