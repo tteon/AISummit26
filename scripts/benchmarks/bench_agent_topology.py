@@ -944,7 +944,7 @@ def main() -> None:
     add_provider_args(parser)
     parser.add_argument("--uri", default="bolt://localhost:7688")
     parser.add_argument("--user", default="neo4j")
-    parser.add_argument("--password", required=True)
+    parser.add_argument("--password", default=os.getenv("NEO4J_PASSWORD"))
     parser.add_argument("--databases", nargs="+", default=["finbenchl1:1"])
     parser.add_argument("--ontology", default="ontology/finbench.ontology.yaml")
     parser.add_argument("--seocho-src", default=None)
@@ -979,6 +979,8 @@ def main() -> None:
     parser.add_argument("--manifest-out", default=None)
     parser.add_argument("--out", default=None)
     args = parser.parse_args()
+    if not args.password:
+        parser.error("--password or NEO4J_PASSWORD is required")
     if args.run_id is None:
         args.run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     asyncio.run(main_async(args))

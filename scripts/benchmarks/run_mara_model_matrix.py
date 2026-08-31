@@ -53,11 +53,11 @@ def _slug(model: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", model.lower()).strip("-")
 
 
-def _run_child(command: List[str], log_path: Path) -> int:
+def _run_child(command: List[str], log_path: Path, *, env: Dict[str, str]) -> int:
     with log_path.open("w", encoding="utf-8") as log:
         process = subprocess.Popen(
             command, cwd=REPO_ROOT, stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT, text=True, bufsize=1,
+            stderr=subprocess.STDOUT, text=True, bufsize=1, env=env,
         )
         assert process.stdout is not None
         for line in process.stdout:
@@ -76,7 +76,7 @@ def main() -> None:
                         help="explicit model IDs; default discovers every ID from /v1/models")
     parser.add_argument("--uri", default="bolt://localhost:7688")
     parser.add_argument("--user", default="neo4j")
-    parser.add_argument("--password", required=True)
+    parser.add_argument("--password", default=os.getenv("NEO4J_PASSWORD"))
     parser.add_argument("--database", default="finbenchl1:1")
     parser.add_argument("--ontology", default="ontology/finbench.ontology.yaml")
     parser.add_argument("--questions", nargs="+", default=[
@@ -100,6 +100,8 @@ def main() -> None:
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
+    if not args.password:
+        parser.error("--password or NEO4J_PASSWORD is required")
 
     if args.run_id is None:
         args.run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
@@ -163,7 +165,7 @@ def main() -> None:
             sys.executable, str(TOPOLOGY_RUNNER), "--provider", "mara",
             "--model", model_id, "--base-url", args.base_url,
             "--request-timeout-s", str(args.request_timeout_s),
-            "--uri", args.uri, "--user", args.user, "--password", args.password,
+            "--uri", args.uri, "--user", args.user,
             "--databases", args.database, "--ontology", args.ontology,
             "--arms", *args.arms, "--only", *args.questions,
             "--repeats", str(args.repeats), "--row-cap", str(args.row_cap),
@@ -185,7 +187,9 @@ def main() -> None:
             statuses.append({"model": model_id, "child_run_id": child_id,
                              "status": "dry_run", "report": str(report_path)})
             continue
-        returncode = _run_child(command, out_dir / f"{child_id}.log")
+        child_env = os.environ.copy()
+        child_env["NEO4J_PASSWORD"] = args.password
+        returncode = _run_child(command, out_dir / f"{child_id}.log", env=child_env)
         status: Dict[str, Any] = {
             "model": model_id, "owned_by": model.get("owned_by"),
             "child_run_id": child_id, "returncode": returncode,
