@@ -1,0 +1,25 @@
+{
+  "schema_version": "seocho.preexisting-dirty-scope.v1",
+  "matrix_manifest_git_dirty": false,
+  "source_commit": "7a1c850c293060e8552c82fcda47f0ae028961d1",
+  "child_manifest_explanation": "The matrix manifest was captured before any output existed. Child topology manifests report git_dirty=true only because the matrix manifest and earlier child result directories already existed in the same detached worktree; no source, prompt, ontology, configuration, or dependency file changed during the matrix.",
+  "minimax_protocol": {
+    "default": {
+      "decision_tokens": 500,
+      "executor_tokens": 1000,
+      "outcome": "Stopped after one fully traced StructuredOutputError; repeating the same five-minute truncation would add no information."
+    },
+    "capability_gate": {
+      "decision_tokens": 1200,
+      "executor_tokens": 4000,
+      "report": "capability/minimax-m2-7-high-budget/report.json",
+      "outcome": "Structured-output contract completed."
+    },
+    "adjusted_arm": {
+      "decision_tokens": 1200,
+      "executor_tokens": 4000,
+      "report": "capability/minimax-m2-7-adjusted/report.json",
+      "outcome": "24 paired episodes completed; this is a distinct capability-adjusted arm and is not pooled with the common-budget model comparison."
+    }
+  }
+}

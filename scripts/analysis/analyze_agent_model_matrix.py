@@ -50,17 +50,28 @@ def _paired(rows: List[Dict[str, Any]], left: str, right: str) -> List[Dict[str,
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--matrix", type=Path, required=True)
+    parser.add_argument(
+        "--model-report", action="append", default=[], metavar="MODEL=PATH",
+        help="capability-adjusted report replacing a failed default-protocol model",
+    )
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     matrix = json.loads(args.matrix.read_text())
+    overrides: Dict[str, Path] = {}
+    for value in args.model_report:
+        model, separator, path = value.partition("=")
+        if not separator or not model or not path:
+            raise SystemExit(f"invalid --model-report {value!r}; expected MODEL=PATH")
+        overrides[model] = Path(path)
     per_model: Dict[str, Any] = {}
     for status in matrix["models"]:
         model = status["model"]
-        if status["status"] != "completed":
+        adjusted = model in overrides
+        if status["status"] != "completed" and not adjusted:
             per_model[model] = {"status": status["status"],
                                 "returncode": status.get("returncode")}
             continue
-        report_path = Path(status["report"])
+        report_path = overrides[model] if adjusted else Path(status["report"])
         if not report_path.is_absolute():
             report_path = REPO_ROOT / report_path
         report = json.loads(report_path.read_text())
@@ -69,7 +80,15 @@ def main() -> None:
         context = _paired(rows, "multi_full", "multi_typed")
         executed = [p for p in context if p["both_executed"] and p["left_db_hits"]]
         per_model[model] = {
-            "status": "completed", "endpoint": report["endpoint"],
+            "status": "completed_adjusted" if adjusted else "completed",
+            "comparable_to_matrix_protocol": not adjusted,
+            "protocol": {
+                "decision_tokens": report["config"].get("decision_tokens"),
+                "executor_tokens": report["config"].get("executor_tokens"),
+                "request_timeout_s": report["endpoint"].get("request_timeout_s"),
+            },
+            "default_protocol_status": status["status"],
+            "endpoint": report["endpoint"],
             "trace_receipt": {k: report["trace_receipt"][k]
                               for k in ("local_complete", "tempo_complete")},
             "arms": report["summary"],
@@ -102,7 +121,25 @@ def main() -> None:
             },
         }
 
-    completed = [value for value in per_model.values() if value["status"] == "completed"]
+    completed = [value for value in per_model.values()
+                 if value["status"] in ("completed", "completed_adjusted")]
+    same_protocol = [value for value in completed if value["comparable_to_matrix_protocol"]]
+    adjusted_models = [model for model, value in per_model.items()
+                       if value["status"] == "completed_adjusted"]
+    topology_pairs = [pair for value in completed
+                      for pair in value["staged_single_vs_multi_full"]["paired"]]
+    typed_effects = {
+        model: {
+            "prompt_token_change_pct": value["multi_full_vs_typed"][
+                "prompt_token_change_pct"],
+            "handoff_char_change_pct": value["multi_full_vs_typed"][
+                "handoff_char_change_pct"],
+            "correct_change": value["multi_full_vs_typed"]["correct_change"],
+            "comparable_to_matrix_protocol": value["comparable_to_matrix_protocol"],
+        }
+        for model, value in per_model.items()
+        if value["status"] in ("completed", "completed_adjusted")
+    }
     output = {
         "schema_version": "seocho.agent-model-matrix-analysis.v1",
         "manifest": runmeta.manifest(analysis="MARA cross-model agent-interface reproducibility"),
@@ -110,7 +147,9 @@ def main() -> None:
         "per_model": per_model,
         "cross_model": {
             "accessible_models": len(matrix["discovery"]["models"]),
-            "completed_models": len(completed),
+            "matrix_protocol_completed_models": len(same_protocol),
+            "internally_paired_models": len(completed),
+            "capability_adjusted_models": adjusted_models,
             "all_trace_complete": all(
                 value["trace_receipt"]["local_complete"] and
                 value["trace_receipt"]["tempo_complete"] for value in completed),
@@ -120,6 +159,14 @@ def main() -> None:
             "models_with_no_typed_correctness_loss": sum(
                 value["multi_full_vs_typed"]["correct_change"] >= 0
                 for value in completed),
+            "staged_full_pairs": len(topology_pairs),
+            "staged_full_correctness_agreement_rate": round(
+                sum(pair["same_correct"] for pair in topology_pairs) /
+                len(topology_pairs), 4),
+            "staged_full_initial_cypher_agreement_rate": round(
+                sum(pair["same_initial_cypher"] for pair in topology_pairs) /
+                len(topology_pairs), 4),
+            "typed_effects_by_model": typed_effects,
         },
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,180 @@
+{
+  "schema_version": "seocho.finbench.agent-model-matrix.v1",
+  "run_id": "20260831T_mara_model_matrix_v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T01:10:57+00:00",
+    "git_commit": "7a1c850c293060e8552c82fcda47f0ae028961d1",
+    "git_dirty": false,
+    "argv": [
+      "scripts/benchmarks/run_mara_model_matrix.py",
+      "--password",
+      "<redacted>",
+      "--database",
+      "finbenchl1:1",
+      "--questions",
+      "ext_med_2",
+      "ext_hard_2",
+      "int_med_1",
+      "int_hard_2",
+      "--arms",
+      "staged_single",
+      "multi_full",
+      "multi_typed",
+      "--repeats",
+      "2",
+      "--row-cap",
+      "50",
+      "--decision-tokens",
+      "500",
+      "--executor-tokens",
+      "1000",
+      "--request-timeout-s",
+      "180",
+      "--seed",
+      "31",
+      "--run-id",
+      "20260831T_mara_model_matrix_v1"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "512M",
+    "db_heap_max": "",
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6594",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "experiment": "mara-agent-model-matrix"
+  },
+  "discovery": {
+    "endpoint": "https://api.cloud.mara.com/v1/models",
+    "accessible_count": 5,
+    "models": [
+      {
+        "id": "DeepSeek-V3.1",
+        "owned_by": "no-reply@sambanova.ai"
+      },
+      {
+        "id": "DeepSeek-V3.2",
+        "owned_by": "no-reply@sambanova.ai"
+      },
+      {
+        "id": "gemma-4-31B-it",
+        "owned_by": "no-reply@sambanova.ai"
+      },
+      {
+        "id": "gpt-oss-120b",
+        "owned_by": "no-reply@sambanova.ai"
+      },
+      {
+        "id": "MiniMax-M2.7",
+        "owned_by": "no-reply@sambanova.ai"
+      }
+    ]
+  },
+  "protocol": {
+    "provider": "mara",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "models": [
+      {
+        "id": "DeepSeek-V3.1",
+        "owned_by": "no-reply@sambanova.ai"
+      },
+      {
+        "id": "DeepSeek-V3.2",
+        "owned_by": "no-reply@sambanova.ai"
+      },
+      {
+        "id": "gemma-4-31B-it",
+        "owned_by": "no-reply@sambanova.ai"
+      },
+      {
+        "id": "gpt-oss-120b",
+        "owned_by": "no-reply@sambanova.ai"
+      },
+      {
+        "id": "MiniMax-M2.7",
+        "owned_by": "no-reply@sambanova.ai"
+      }
+    ],
+    "questions": [
+      "ext_med_2",
+      "ext_hard_2",
+      "int_med_1",
+      "int_hard_2"
+    ],
+    "arms": [
+      "staged_single",
+      "multi_full",
+      "multi_typed"
+    ],
+    "repeats": 2,
+    "database": "finbenchl1:1",
+    "row_cap": 50,
+    "decision_tokens": 500,
+    "executor_tokens": 1000,
+    "request_timeout_s": 180.0,
+    "temperature": 0.0,
+    "seed": 31,
+    "verifier_mode": "advisory"
+  },
+  "config": {
+    "base_url": "https://api.cloud.mara.com/v1",
+    "models": null,
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "database": "finbenchl1:1",
+    "ontology": "ontology/finbench.ontology.yaml",
+    "questions": [
+      "ext_med_2",
+      "ext_hard_2",
+      "int_med_1",
+      "int_hard_2"
+    ],
+    "arms": [
+      "staged_single",
+      "multi_full",
+      "multi_typed"
+    ],
+    "repeats": 2,
+    "row_cap": 50,
+    "decision_tokens": 500,
+    "executor_tokens": 1000,
+    "request_timeout_s": 180.0,
+    "seed": 31,
+    "db_container": "aisummit-simtest",
+    "otlp_endpoint": "http://127.0.0.1:4317",
+    "tempo_url": "http://127.0.0.1:3200",
+    "run_id": "20260831T_mara_model_matrix_v1",
+    "output_dir": "results/episodes/agent_model_matrix",
+    "resume": false,
+    "dry_run": false,
+    "password": "<redacted>",
+    "api_key_present": true
+  }
+}

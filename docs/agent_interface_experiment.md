@@ -85,6 +85,61 @@ The FIBO manifest's `git_dirty=true` is scoped by
 directory in the same detached worktree; source/config/prompt files matched `f26e85d`.
 Re-running 78 paid episodes solely to toggle that metadata bit would add no causal evidence.
 
+## Cross-model reproduction
+
+On 2026-08-31 the MARA discovery endpoint exposed five models. Four completed the identical
+protocol (four questions × three arms × two repeats = 24 episodes per model). MiniMax-M2.7
+exhausted the common 500/1,000-token decision/executor limits while reasoning and did not
+return the required JSON, so its default sample is retained as a capability-boundary result,
+not discarded. It then completed the same paired design as an explicitly separate
+capability-adjusted arm at 1,200/4,000 tokens. Its absolute token and latency values must not
+be pooled with the common protocol.
+
+| Model | Protocol | Typed prompt change vs full | Typed handoff change | Correct-count change |
+| --- | --- | ---: | ---: | ---: |
+| DeepSeek-V3.1 | common | +23.73% | -19.67% | +2 |
+| DeepSeek-V3.2 | common | -2.75% | -5.26% | 0 |
+| gemma-4-31B-it | common | -11.86% | -14.75% | 0 |
+| gpt-oss-120b | common | -21.14% | -38.71% | -2 |
+| MiniMax-M2.7 | capability-adjusted | -1.95% | +9.27% | 0 |
+
+The manipulation check is the stable result: across all 40 within-model staged-single vs
+multi-full pairs, correctness agreed 100%. Initial Cypher agreed in 36/40 pairs (90%); the
+four differences show that a hosted temperature-zero endpoint is still not perfectly
+deterministic. Typed context reduced prompt tokens in four of five internally paired models
+and avoided a correctness loss in four of five, but the model that saved the most prompt
+tokens (`gpt-oss-120b`) lost two correct episodes, while DeepSeek-V3.1 gained two correct
+episodes despite spending 23.73% more prompt tokens. Therefore context isolation is an
+interface treatment whose effect must be measured per model, not a universal optimization.
+
+There are 120 fully receipted comparative episodes across the five models, plus one
+fully-receipted MiniMax capability gate. The interrupted default-budget MiniMax sample is
+also preserved with its local trace but has no completed run receipt. All five completed
+paired reports have complete local JSONL and Tempo receipts.
+
+### Telemetry boundary and next-run contract
+
+The completed matrix records per episode: endpoint descriptor, model-stage timings and token
+usage, context/handoff sizes, generated Cypher and typed parameters, query fingerprint,
+graph trips, aggregate PROFILE DB hits, Bolt availability/hydration/total timings, result
+bytes, errors, and Agent→model/Agent→Bolt trace IDs. It does **not** contain the subsequently
+added full PROFILE operator tree or periodic host/container samples, so those fields must not
+be backfilled or inferred for this run. Hosted MARA GPU, KV-cache and scheduler telemetry is
+not exposed by the API and is outside the measurable boundary.
+
+Future topology and model-matrix runs enable two additional durable artifacts by default:
+
+- every executed query stores the full nested PROFILE tree (operator, identifiers,
+  arguments and children) beside the existing DB-hit total;
+- `system_metrics.jsonl` samples client-host CPU ticks, load, memory and process RSS plus
+  `docker stats` for the named database container, with wall and process-local monotonic
+  clocks and an fsync-backed completion receipt.
+
+The model-matrix runner now labels telemetry scope as local client host + database container
+and explicitly marks hosted model-server telemetry unavailable. A self-hosted vLLM run is
+the separate arm needed for GPU, KV residency, cache and scheduler counters. These counters
+must stay in their native denominators and must not be merged with MARA observations.
+
 ## Exploratory pilot results
 
 ### Single agent, role agents and context isolation
@@ -186,6 +241,8 @@ Primary artifacts:
 - FIBO raw/report: `results/episodes/fibo_schema_context/20260829T_fibo_schema_pilot_v1/`
 - paired derived analysis: `results/analysis/agent_interface_readiness_20260829.json`
 - pinned projection validation: `results/analysis/fibo_projection_validation_20260829.json`
+- MARA model matrix: `results/episodes/agent_model_matrix/20260831T_mara_model_matrix_v1/`
+- cross-model paired analysis: `results/analysis/agent_model_matrix_20260831.json`
 
 Invalid and interrupted gates are retained under `results/episodes/invalid_*` with an
 `INVALID_REASON.md`; they are not included in any aggregate.

@@ -1,0 +1,3903 @@
+{
+  "schema_version": "seocho.finbench.agent-topology.v1",
+  "run_id": "deepseek-v3-2",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T01:13:46+00:00",
+    "git_commit": "7a1c850c293060e8552c82fcda47f0ae028961d1",
+    "git_dirty": true,
+    "argv": [
+      "/tmp/aisummit26-model-matrix.VKpu0l/scripts/benchmarks/bench_agent_topology.py",
+      "--provider",
+      "mara",
+      "--model",
+      "DeepSeek-V3.2",
+      "--base-url",
+      "https://api.cloud.mara.com/v1",
+      "--request-timeout-s",
+      "180.0",
+      "--uri",
+      "bolt://localhost:7688",
+      "--user",
+      "neo4j",
+      "--password",
+      "<redacted>",
+      "--databases",
+      "finbenchl1:1",
+      "--ontology",
+      "ontology/finbench.ontology.yaml",
+      "--arms",
+      "staged_single",
+      "multi_full",
+      "multi_typed",
+      "--only",
+      "ext_med_2",
+      "ext_hard_2",
+      "int_med_1",
+      "int_hard_2",
+      "--repeats",
+      "2",
+      "--row-cap",
+      "50",
+      "--decision-tokens",
+      "500",
+      "--executor-tokens",
+      "1000",
+      "--verifier-mode",
+      "advisory",
+      "--seed",
+      "31",
+      "--db-container",
+      "aisummit-simtest",
+      "--otlp-endpoint",
+      "http://127.0.0.1:4317",
+      "--tempo-url",
+      "http://127.0.0.1:3200",
+      "--run-id",
+      "deepseek-v3-2",
+      "--output-dir",
+      "results/episodes/agent_model_matrix/20260831T_mara_model_matrix_v1/models"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "1ac98b0dc1b2",
+    "db_container": "aisummit-simtest",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6594",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "experiment": "agent-context-topology",
+    "schema_version": "seocho.finbench.agent-topology.v1"
+  },
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "DeepSeek-V3.2",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 1000,
+    "request_timeout_s": 180.0,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "observability": {
+    "seocho_version": "0.6.0",
+    "seocho_path": "/home/hadry/lab/seocho-room/seocho/src/seocho/__init__.py",
+    "source_prepended": "/home/hadry/lab/seocho-room/seocho/src",
+    "backend": "otlp",
+    "endpoint": "http://127.0.0.1:4317",
+    "service_name": "seocho-agent-topology",
+    "metrics_enabled": false,
+    "tracing_enabled": true,
+    "tracing_backends": [
+      "otlp"
+    ],
+    "degraded_reasons": [],
+    "errors": null
+  },
+  "config": {
+    "provider": "mara",
+    "model": "DeepSeek-V3.2",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "request_timeout_s": 180.0,
+    "native_context": null,
+    "max_model_len": null,
+    "pi_factor": null,
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "databases": [
+      "finbenchl1:1"
+    ],
+    "ontology": "ontology/finbench.ontology.yaml",
+    "seocho_src": null,
+    "db_container": "aisummit-simtest",
+    "arms": [
+      "staged_single",
+      "multi_full",
+      "multi_typed"
+    ],
+    "only": [
+      "ext_med_2",
+      "ext_hard_2",
+      "int_med_1",
+      "int_hard_2"
+    ],
+    "repeats": 2,
+    "row_cap": 50,
+    "decision_tokens": 500,
+    "executor_tokens": 1000,
+    "verifier_mode": "advisory",
+    "seed": 31,
+    "run_id": "deepseek-v3-2",
+    "output_dir": "results/episodes/agent_model_matrix/20260831T_mara_model_matrix_v1/models",
+    "otlp_endpoint": "http://127.0.0.1:4317",
+    "tempo_url": "http://127.0.0.1:3200",
+    "validate_only": false,
+    "resume": false,
+    "samples": null,
+    "conversations": null,
+    "manifest_out": null,
+    "out": null
+  },
+  "graph": {
+    "finbenchl1:sf1": {
+      "anchor": 108
+    }
+  },
+  "trace_receipt": {
+    "schema_version": "seocho.trace-receipt.v1",
+    "trace_ids": [
+      "0d560a6be0c6a4d854b95c67942c0281",
+      "126136ab7e10e46504c20b18fd944359",
+      "15cb2ae8e5f8f13ca9b191ed5816a8fb",
+      "21cc4ff520bdc3202a903f9929d748fd",
+      "2768eda6d5b111e0064fdd5d6a76d47a",
+      "2db285269e6b985312bc265243ee6072",
+      "3133bbc5a337d9d1286f4e821265e223",
+      "3b4223bd6e086c1b5d5741eeec5140a5",
+      "4d9d2f2c4b9e8384b1f50aa496e62dcb",
+      "4dff8ec7ea43863d43f576a23654c8e4",
+      "52adb25af5318cd76354926c8c5d0ae0",
+      "6aaee302681dbf761543ff3750ad84d8",
+      "82c44c70ea6cf2ef85e4f5381e046c8d",
+      "8b97dcbd7ca08277bf34271eb6b1a231",
+      "9cd083bf9657e1c35b8c0b12d87b7e8f",
+      "c3e2ad595d999a3b05a163ed8aea0f22",
+      "d2842f76f196a7ab554df133d4e9236e",
+      "dae18cb530db175537e2e540531afdb2",
+      "ea24142168b8760ee3dfa0fb324e4fd1",
+      "eb8d269cebbf3ddbb10684a69c20851c",
+      "f5c1695241cef2000b0b53c568fff181",
+      "fbf02dfe414ce0efaed38ae095cb2509",
+      "fddeb2f847c95f008194baac2ba9295a",
+      "fec9834bf05bfba4f8da8f4bddc49640"
+    ],
+    "local_jsonl": "results/episodes/agent_model_matrix/20260831T_mara_model_matrix_v1/models/deepseek-v3-2/spans.jsonl",
+    "local_span_counts": {
+      "dae18cb530db175537e2e540531afdb2": 5,
+      "0d560a6be0c6a4d854b95c67942c0281": 5,
+      "52adb25af5318cd76354926c8c5d0ae0": 5,
+      "6aaee302681dbf761543ff3750ad84d8": 5,
+      "c3e2ad595d999a3b05a163ed8aea0f22": 5,
+      "82c44c70ea6cf2ef85e4f5381e046c8d": 5,
+      "fddeb2f847c95f008194baac2ba9295a": 5,
+      "4d9d2f2c4b9e8384b1f50aa496e62dcb": 5,
+      "fbf02dfe414ce0efaed38ae095cb2509": 5,
+      "fec9834bf05bfba4f8da8f4bddc49640": 5,
+      "f5c1695241cef2000b0b53c568fff181": 5,
+      "3133bbc5a337d9d1286f4e821265e223": 5,
+      "d2842f76f196a7ab554df133d4e9236e": 5,
+      "15cb2ae8e5f8f13ca9b191ed5816a8fb": 5,
+      "ea24142168b8760ee3dfa0fb324e4fd1": 5,
+      "2db285269e6b985312bc265243ee6072": 5,
+      "21cc4ff520bdc3202a903f9929d748fd": 5,
+      "2768eda6d5b111e0064fdd5d6a76d47a": 5,
+      "9cd083bf9657e1c35b8c0b12d87b7e8f": 4,
+      "8b97dcbd7ca08277bf34271eb6b1a231": 4,
+      "eb8d269cebbf3ddbb10684a69c20851c": 4,
+      "4dff8ec7ea43863d43f576a23654c8e4": 4,
+      "3b4223bd6e086c1b5d5741eeec5140a5": 4,
+      "126136ab7e10e46504c20b18fd944359": 4
+    },
+    "local_complete": true,
+    "tempo_url": "http://127.0.0.1:3200",
+    "tempo": {
+      "0d560a6be0c6a4d854b95c67942c0281": {
+        "found": true,
+        "detail": "batches=4"
+      },
+      "126136ab7e10e46504c20b18fd944359": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "15cb2ae8e5f8f13ca9b191ed5816a8fb": {
+        "found": true,
+        "detail": "batches=4"
+      },
+      "21cc4ff520bdc3202a903f9929d748fd": {
+        "found": true,
+        "detail": "batches=4"
+      },
+      "2768eda6d5b111e0064fdd5d6a76d47a": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "2db285269e6b985312bc265243ee6072": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "3133bbc5a337d9d1286f4e821265e223": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "3b4223bd6e086c1b5d5741eeec5140a5": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "4d9d2f2c4b9e8384b1f50aa496e62dcb": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "4dff8ec7ea43863d43f576a23654c8e4": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "52adb25af5318cd76354926c8c5d0ae0": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "6aaee302681dbf761543ff3750ad84d8": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "82c44c70ea6cf2ef85e4f5381e046c8d": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "8b97dcbd7ca08277bf34271eb6b1a231": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "9cd083bf9657e1c35b8c0b12d87b7e8f": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "c3e2ad595d999a3b05a163ed8aea0f22": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "d2842f76f196a7ab554df133d4e9236e": {
+        "found": true,
+        "detail": "batches=4"
+      },
+      "dae18cb530db175537e2e540531afdb2": {
+        "found": true,
+        "detail": "batches=4"
+      },
+      "ea24142168b8760ee3dfa0fb324e4fd1": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "eb8d269cebbf3ddbb10684a69c20851c": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "f5c1695241cef2000b0b53c568fff181": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "fbf02dfe414ce0efaed38ae095cb2509": {
+        "found": true,
+        "detail": "batches=2"
+      },
+      "fddeb2f847c95f008194baac2ba9295a": {
+        "found": true,
+        "detail": "batches=4"
+      },
+      "fec9834bf05bfba4f8da8f4bddc49640": {
+        "found": true,
+        "detail": "batches=4"
+      }
+    },
+    "tempo_complete": true
+  },
+  "summary": {
+    "staged_single": {
+      "n": 8,
+      "errors": 2,
+      "correct": 2,
+      "correct_rate": 0.25,
+      "model_calls": 24,
+      "prompt_tokens": 16886,
+      "completion_tokens": 4192,
+      "handoff_chars": 20856,
+      "graph_trips": 6,
+      "db_hits": 14444,
+      "wall_ms_median": 3635.6,
+      "db_ms_median": 2.5
+    },
+    "multi_full": {
+      "n": 8,
+      "errors": 2,
+      "correct": 2,
+      "correct_rate": 0.25,
+      "model_calls": 24,
+      "prompt_tokens": 16886,
+      "completion_tokens": 4192,
+      "handoff_chars": 20856,
+      "graph_trips": 6,
+      "db_hits": 14444,
+      "wall_ms_median": 3695.15,
+      "db_ms_median": 3.53
+    },
+    "multi_typed": {
+      "n": 8,
+      "errors": 2,
+      "correct": 2,
+      "correct_rate": 0.25,
+      "model_calls": 24,
+      "prompt_tokens": 16422,
+      "completion_tokens": 4646,
+      "handoff_chars": 19760,
+      "graph_trips": 6,
+      "db_hits": 14500,
+      "wall_ms_median": 3740.8,
+      "db_ms_median": 3.51
+    }
+  },
+  "samples": [
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:ext_med_2:r0:multi_typed",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_typed",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "typed_isolated",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_med_2",
+      "audience": "external",
+      "difficulty": "medium",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.0,
+        "recall": 0.0,
+        "precision": 0.0,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 6065.9,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1867,
+      "completion_tokens": 637,
+      "cached_tokens": 0,
+      "handoff_chars": 2940,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1294,
+        "executor_to_verifier": 1646
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 332,
+      "db_ms": 9.312,
+      "rows_into_context": 0,
+      "result_bytes": 43,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "NO_EVIDENCE_RETURNED",
+        "CYPHER_MISMATCH_QUERY_INTENT"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "AccountOwner"
+          ],
+          "relationships": [
+            "Account-[SENT_TO]->Account",
+            "Account-[OWNED_BY]->AccountOwner"
+          ],
+          "predicates": [
+            "Account.account_number = '108'",
+            "AccountOwner.owner_id IS NOT NULL"
+          ],
+          "aggregation": [
+            "MIN(AccountOwner.owner_id) as min_owner_id"
+          ],
+          "ordering": [
+            "AccountOwner.owner_id ASC"
+          ],
+          "expected_shape": "List of 5 rows with columns: owner_id (or similar identifier)",
+          "assumptions": [
+            "Account 108 exists and has sent money to other accounts",
+            "Each account has at least one owner",
+            "Owner IDs are numeric and sortable",
+            "The 'SENT_TO' relationship represents money transfers"
+          ],
+          "uncertainties": [
+            "Whether multiple owners per account exist (if so, which owner to select?)",
+            "Whether 'lowest' refers to numeric value or some other ordering",
+            "Whether the five lowest should be distinct owner IDs or could include duplicates if same owner owns multiple destination accounts"
+          ],
+          "acceptance_tests": [
+            "Query returns exactly 5 rows",
+            "Owner IDs are in ascending numeric order",
+            "All returned owner IDs are associated with accounts that received money from account 108",
+            "No owner ID is repeated if distinctness is required"
+          ]
+        },
+        "initial_cypher": "MATCH (src:Account {acct_no: $acct_no, _workspace_id: $workspace_id})-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWN]->(owner:Person|Company {_workspace_id: $workspace_id}) WHERE owner.id IS NOT NULL RETURN DISTINCT owner.id AS owner_id ORDER BY owner.id ASC LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "NO_EVIDENCE_RETURNED",
+            "CYPHER_MISMATCH_QUERY_INTENT"
+          ],
+          "revision": "Revise the Cypher query to match the query intent's relationships and predicates. The query should: 1) Match an Account with account_number '108' (not acct_no). 2) Use a relationship like [:SENT_TO] or [:TRANSFER] to find destination accounts. 3) Ensure each destination account is related to an owner (Person or Company) via a relationship like [:OWNED_BY] or [:OWN]. 4) Return DISTINCT owner.id, ordered ascending, with a LIMIT of 5. Example corrected Cypher: MATCH (src:Account {account_number: '108', _workspace_id: $workspace_id})-[:SENT_TO]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWNED_BY]->(owner:Person|Company {_workspace_id: $workspace_id}) WHERE owner.id IS NOT NULL RETURN DISTINCT owner.id AS owner_id ORDER BY owner.id ASC LIMIT 5"
+        },
+        "repair_authority": "advisory",
+        "repair_requested": true,
+        "repair_applied": false,
+        "repair_blocked_reason": "verifier_advisory_only"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 139,
+          "completion_tokens": 279,
+          "cached_tokens": 0,
+          "elapsed_ms": 2752.3
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1209,
+          "completion_tokens": 107,
+          "cached_tokens": 0,
+          "elapsed_ms": 1266.2
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 519,
+          "completion_tokens": 251,
+          "cached_tokens": 0,
+          "elapsed_ms": 2008.3
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "b49c5a7208a089b5",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 0,
+          "db_hits": 332,
+          "elapsed_ms": 9.312,
+          "submit_ms": 7.462,
+          "hydrate_ms": 0.845,
+          "server_available_ms": 7.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 43,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {acct_no: $acct_no, _workspace_id: $workspace_id})-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWN]->(owner:Person|Company {_workspace_id: $workspace_id}) WHERE owner.id IS NOT NULL RETURN DISTINCT owner.id AS owner_id ORDER BY owner.id ASC LIMIT $limit"
+        }
+      ],
+      "trace_id": "dae18cb530db175537e2e540531afdb2",
+      "root_span_id": "60d3b52b61edad3b"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:ext_med_2:r0:multi_full",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_full",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_med_2",
+      "audience": "external",
+      "difficulty": "medium",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.0,
+        "recall": 0.0,
+        "precision": 0.0,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 4323.6,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1921,
+      "completion_tokens": 617,
+      "cached_tokens": 0,
+      "handoff_chars": 3080,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1370,
+        "executor_to_verifier": 1710
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 332,
+      "db_ms": 5.695,
+      "rows_into_context": 0,
+      "result_bytes": 43,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "NO_RESULTS_RETURNED",
+        "CYPHER_PATTERN_MISMATCH"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "AccountOwner"
+          ],
+          "relationships": [
+            "Account-[SENT_TO]->Account",
+            "Account-[OWNED_BY]->AccountOwner"
+          ],
+          "predicates": [
+            "Account.account_number = '108'",
+            "AccountOwner.owner_id IS NOT NULL"
+          ],
+          "aggregation": [
+            "MIN(AccountOwner.owner_id) as min_owner_id"
+          ],
+          "ordering": [
+            "AccountOwner.owner_id ASC"
+          ],
+          "expected_shape": "List of 5 rows with columns: owner_id (or similar identifier)",
+          "assumptions": [
+            "Account 108 exists and has sent money to other accounts",
+            "Each account has at least one owner",
+            "Owner IDs are numeric and sortable",
+            "The 'SENT_TO' relationship represents money transfers"
+          ],
+          "uncertainties": [
+            "Whether multiple owners per account exist (if so, which owner to select?)",
+            "Whether 'lowest' refers to numeric value or some other ordering",
+            "Whether the five lowest should be distinct owner IDs or could include duplicates if same owner owns multiple destination accounts"
+          ],
+          "acceptance_tests": [
+            "Query returns exactly 5 rows",
+            "Owner IDs are in ascending numeric order",
+            "All returned owner IDs are associated with accounts that received money from account 108",
+            "No owner ID is repeated if distinctness is required"
+          ]
+        },
+        "initial_cypher": "MATCH (src:Account {acct_no: $acct_no, _workspace_id: $workspace_id})-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWN]->(owner:Person|Company {_workspace_id: $workspace_id}) WHERE owner.id IS NOT NULL RETURN DISTINCT owner.id AS owner_id ORDER BY owner.id ASC LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "NO_RESULTS_RETURNED",
+            "CYPHER_PATTERN_MISMATCH"
+          ],
+          "revision": "The Cypher query returned zero results. The query pattern may not match the data. Revise the Cypher to align with the Planner's specified relationships: use `-[:SENT_TO]->` for transfers and `-[:OWNED_BY]->` for ownership, and ensure node labels match (e.g., `:AccountOwner`). Also, verify the account number property name matches the data (e.g., `account_number`). Example revision: MATCH (src:Account {account_number: $acct_no, _workspace_id: $workspace_id})-[:SENT_TO]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWNED_BY]->(owner:AccountOwner {_workspace_id: $workspace_id}) WHERE owner.owner_id IS NOT NULL RETURN DISTINCT owner.owner_id AS owner_id ORDER BY owner.owner_id ASC LIMIT $limit"
+        },
+        "repair_authority": "advisory",
+        "repair_requested": true,
+        "repair_applied": false,
+        "repair_blocked_reason": "verifier_advisory_only"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 139,
+          "completion_tokens": 279,
+          "cached_tokens": 0,
+          "elapsed_ms": 1778.3
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1238,
+          "completion_tokens": 107,
+          "cached_tokens": 0,
+          "elapsed_ms": 953.3
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 544,
+          "completion_tokens": 231,
+          "cached_tokens": 0,
+          "elapsed_ms": 1581.4
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "b49c5a7208a089b5",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 0,
+          "db_hits": 332,
+          "elapsed_ms": 5.695,
+          "submit_ms": 1.546,
+          "hydrate_ms": 2.451,
+          "server_available_ms": 1.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 43,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {acct_no: $acct_no, _workspace_id: $workspace_id})-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWN]->(owner:Person|Company {_workspace_id: $workspace_id}) WHERE owner.id IS NOT NULL RETURN DISTINCT owner.id AS owner_id ORDER BY owner.id ASC LIMIT $limit"
+        }
+      ],
+      "trace_id": "0d560a6be0c6a4d854b95c67942c0281",
+      "root_span_id": "8fea2797ce927e59"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:ext_med_2:r0:staged_single",
+      "run_id": "deepseek-v3-2",
+      "arm": "staged_single",
+      "factors": {
+        "topology": "single_logical_agent",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_med_2",
+      "audience": "external",
+      "difficulty": "medium",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.0,
+        "recall": 0.0,
+        "precision": 0.0,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 4286.5,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1921,
+      "completion_tokens": 617,
+      "cached_tokens": 0,
+      "handoff_chars": 3080,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1370,
+        "executor_to_verifier": 1710
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 332,
+      "db_ms": 2.376,
+      "rows_into_context": 0,
+      "result_bytes": 43,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "NO_RESULTS_RETURNED",
+        "CYPHER_PATTERN_MISMATCH"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "AccountOwner"
+          ],
+          "relationships": [
+            "Account-[SENT_TO]->Account",
+            "Account-[OWNED_BY]->AccountOwner"
+          ],
+          "predicates": [
+            "Account.account_number = '108'",
+            "AccountOwner.owner_id IS NOT NULL"
+          ],
+          "aggregation": [
+            "MIN(AccountOwner.owner_id) as min_owner_id"
+          ],
+          "ordering": [
+            "AccountOwner.owner_id ASC"
+          ],
+          "expected_shape": "List of 5 rows with columns: owner_id (or similar identifier)",
+          "assumptions": [
+            "Account 108 exists and has sent money to other accounts",
+            "Each account has at least one owner",
+            "Owner IDs are numeric and sortable",
+            "The 'SENT_TO' relationship represents money transfers"
+          ],
+          "uncertainties": [
+            "Whether multiple owners per account exist (if so, which owner to select?)",
+            "Whether 'lowest' refers to numeric value or some other ordering",
+            "Whether the five lowest should be distinct owner IDs or could include duplicates if same owner owns multiple destination accounts"
+          ],
+          "acceptance_tests": [
+            "Query returns exactly 5 rows",
+            "Owner IDs are in ascending numeric order",
+            "All returned owner IDs are associated with accounts that received money from account 108",
+            "No owner ID is repeated if distinctness is required"
+          ]
+        },
+        "initial_cypher": "MATCH (src:Account {acct_no: $acct_no, _workspace_id: $workspace_id})-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWN]->(owner:Person|Company {_workspace_id: $workspace_id}) WHERE owner.id IS NOT NULL RETURN DISTINCT owner.id AS owner_id ORDER BY owner.id ASC LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "NO_RESULTS_RETURNED",
+            "CYPHER_PATTERN_MISMATCH"
+          ],
+          "revision": "The Cypher query returned zero results. The query pattern may not match the data. Revise the Cypher to align with the Planner's specified relationships: use `-[:SENT_TO]->` for transfers and `-[:OWNED_BY]->` for ownership, and ensure node labels match (e.g., `:AccountOwner`). Also, verify the account number property name matches the data (e.g., `account_number`). Example revision: MATCH (src:Account {account_number: $acct_no, _workspace_id: $workspace_id})-[:SENT_TO]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWNED_BY]->(owner:AccountOwner {_workspace_id: $workspace_id}) WHERE owner.owner_id IS NOT NULL RETURN DISTINCT owner.owner_id AS owner_id ORDER BY owner.owner_id ASC LIMIT $limit"
+        },
+        "repair_authority": "advisory",
+        "repair_requested": true,
+        "repair_applied": false,
+        "repair_blocked_reason": "verifier_advisory_only"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 139,
+          "completion_tokens": 279,
+          "cached_tokens": 0,
+          "elapsed_ms": 1816.4
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1238,
+          "completion_tokens": 107,
+          "cached_tokens": 0,
+          "elapsed_ms": 889.8
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 544,
+          "completion_tokens": 231,
+          "cached_tokens": 0,
+          "elapsed_ms": 1575.4
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "b49c5a7208a089b5",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 0,
+          "db_hits": 332,
+          "elapsed_ms": 2.376,
+          "submit_ms": 0.578,
+          "hydrate_ms": 0.86,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 43,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {acct_no: $acct_no, _workspace_id: $workspace_id})-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWN]->(owner:Person|Company {_workspace_id: $workspace_id}) WHERE owner.id IS NOT NULL RETURN DISTINCT owner.id AS owner_id ORDER BY owner.id ASC LIMIT $limit"
+        }
+      ],
+      "trace_id": "52adb25af5318cd76354926c8c5d0ae0",
+      "root_span_id": "06a4f07a0b60acfe"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:ext_med_2:r1:multi_typed",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_typed",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "typed_isolated",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_med_2",
+      "audience": "external",
+      "difficulty": "medium",
+      "repeat": 1,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.0,
+        "recall": 0.0,
+        "precision": 0.0,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 4501.4,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1867,
+      "completion_tokens": 637,
+      "cached_tokens": 0,
+      "handoff_chars": 2940,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1294,
+        "executor_to_verifier": 1646
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 332,
+      "db_ms": 2.19,
+      "rows_into_context": 0,
+      "result_bytes": 43,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "NO_EVIDENCE_RETURNED",
+        "CYPHER_MISMATCH_QUERY_INTENT"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "AccountOwner"
+          ],
+          "relationships": [
+            "Account-[SENT_TO]->Account",
+            "Account-[OWNED_BY]->AccountOwner"
+          ],
+          "predicates": [
+            "Account.account_number = '108'",
+            "AccountOwner.owner_id IS NOT NULL"
+          ],
+          "aggregation": [
+            "MIN(AccountOwner.owner_id) as min_owner_id"
+          ],
+          "ordering": [
+            "AccountOwner.owner_id ASC"
+          ],
+          "expected_shape": "List of 5 rows with columns: owner_id (or similar identifier)",
+          "assumptions": [
+            "Account 108 exists and has sent money to other accounts",
+            "Each account has at least one owner",
+            "Owner IDs are numeric and sortable",
+            "The 'SENT_TO' relationship represents money transfers"
+          ],
+          "uncertainties": [
+            "Whether multiple owners per account exist (if so, which owner to select?)",
+            "Whether 'lowest' refers to numeric value or some other ordering",
+            "Whether the five lowest should be distinct owner IDs or could include duplicates if same owner owns multiple destination accounts"
+          ],
+          "acceptance_tests": [
+            "Query returns exactly 5 rows",
+            "Owner IDs are in ascending numeric order",
+            "All returned owner IDs are associated with accounts that received money from account 108",
+            "No owner ID is repeated if distinctness is required"
+          ]
+        },
+        "initial_cypher": "MATCH (src:Account {acct_no: $acct_no, _workspace_id: $workspace_id})-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWN]->(owner:Person|Company {_workspace_id: $workspace_id}) WHERE owner.id IS NOT NULL RETURN DISTINCT owner.id AS owner_id ORDER BY owner.id ASC LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "NO_EVIDENCE_RETURNED",
+            "CYPHER_MISMATCH_QUERY_INTENT"
+          ],
+          "revision": "Revise the Cypher query to match the query intent's relationships and predicates. The query should: 1) Match an Account with account_number '108' (not acct_no). 2) Use a relationship like [:SENT_TO] or [:TRANSFER] to find destination accounts. 3) Ensure each destination account is related to an owner (Person or Company) via a relationship like [:OWNED_BY] or [:OWN]. 4) Return DISTINCT owner.id, ordered ascending, with a LIMIT of 5. Example corrected Cypher: MATCH (src:Account {account_number: '108', _workspace_id: $workspace_id})-[:SENT_TO]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWNED_BY]->(owner:Person|Company {_workspace_id: $workspace_id}) WHERE owner.id IS NOT NULL RETURN DISTINCT owner.id AS owner_id ORDER BY owner.id ASC LIMIT 5"
+        },
+        "repair_authority": "advisory",
+        "repair_requested": true,
+        "repair_applied": false,
+        "repair_blocked_reason": "verifier_advisory_only"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 139,
+          "completion_tokens": 279,
+          "cached_tokens": 0,
+          "elapsed_ms": 1785.0
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1209,
+          "completion_tokens": 107,
+          "cached_tokens": 0,
+          "elapsed_ms": 1015.9
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 519,
+          "completion_tokens": 251,
+          "cached_tokens": 0,
+          "elapsed_ms": 1696.2
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "b49c5a7208a089b5",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 0,
+          "db_hits": 332,
+          "elapsed_ms": 2.19,
+          "submit_ms": 0.458,
+          "hydrate_ms": 0.79,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 43,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {acct_no: $acct_no, _workspace_id: $workspace_id})-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWN]->(owner:Person|Company {_workspace_id: $workspace_id}) WHERE owner.id IS NOT NULL RETURN DISTINCT owner.id AS owner_id ORDER BY owner.id ASC LIMIT $limit"
+        }
+      ],
+      "trace_id": "6aaee302681dbf761543ff3750ad84d8",
+      "root_span_id": "86f1908be248946a"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:ext_med_2:r1:multi_full",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_full",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_med_2",
+      "audience": "external",
+      "difficulty": "medium",
+      "repeat": 1,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.0,
+        "recall": 0.0,
+        "precision": 0.0,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 4321.7,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1921,
+      "completion_tokens": 617,
+      "cached_tokens": 0,
+      "handoff_chars": 3080,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1370,
+        "executor_to_verifier": 1710
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 332,
+      "db_ms": 3.055,
+      "rows_into_context": 0,
+      "result_bytes": 43,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "NO_RESULTS_RETURNED",
+        "CYPHER_PATTERN_MISMATCH"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "AccountOwner"
+          ],
+          "relationships": [
+            "Account-[SENT_TO]->Account",
+            "Account-[OWNED_BY]->AccountOwner"
+          ],
+          "predicates": [
+            "Account.account_number = '108'",
+            "AccountOwner.owner_id IS NOT NULL"
+          ],
+          "aggregation": [
+            "MIN(AccountOwner.owner_id) as min_owner_id"
+          ],
+          "ordering": [
+            "AccountOwner.owner_id ASC"
+          ],
+          "expected_shape": "List of 5 rows with columns: owner_id (or similar identifier)",
+          "assumptions": [
+            "Account 108 exists and has sent money to other accounts",
+            "Each account has at least one owner",
+            "Owner IDs are numeric and sortable",
+            "The 'SENT_TO' relationship represents money transfers"
+          ],
+          "uncertainties": [
+            "Whether multiple owners per account exist (if so, which owner to select?)",
+            "Whether 'lowest' refers to numeric value or some other ordering",
+            "Whether the five lowest should be distinct owner IDs or could include duplicates if same owner owns multiple destination accounts"
+          ],
+          "acceptance_tests": [
+            "Query returns exactly 5 rows",
+            "Owner IDs are in ascending numeric order",
+            "All returned owner IDs are associated with accounts that received money from account 108",
+            "No owner ID is repeated if distinctness is required"
+          ]
+        },
+        "initial_cypher": "MATCH (src:Account {acct_no: $acct_no, _workspace_id: $workspace_id})-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWN]->(owner:Person|Company {_workspace_id: $workspace_id}) WHERE owner.id IS NOT NULL RETURN DISTINCT owner.id AS owner_id ORDER BY owner.id ASC LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "NO_RESULTS_RETURNED",
+            "CYPHER_PATTERN_MISMATCH"
+          ],
+          "revision": "The Cypher query returned zero results. The query pattern may not match the data. Revise the Cypher to align with the Planner's specified relationships: use `-[:SENT_TO]->` for transfers and `-[:OWNED_BY]->` for ownership, and ensure node labels match (e.g., `:AccountOwner`). Also, verify the account number property name matches the data (e.g., `account_number`). Example revision: MATCH (src:Account {account_number: $acct_no, _workspace_id: $workspace_id})-[:SENT_TO]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWNED_BY]->(owner:AccountOwner {_workspace_id: $workspace_id}) WHERE owner.owner_id IS NOT NULL RETURN DISTINCT owner.owner_id AS owner_id ORDER BY owner.owner_id ASC LIMIT $limit"
+        },
+        "repair_authority": "advisory",
+        "repair_requested": true,
+        "repair_applied": false,
+        "repair_blocked_reason": "verifier_advisory_only"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 139,
+          "completion_tokens": 279,
+          "cached_tokens": 0,
+          "elapsed_ms": 1849.8
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1238,
+          "completion_tokens": 107,
+          "cached_tokens": 0,
+          "elapsed_ms": 879.3
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 544,
+          "completion_tokens": 231,
+          "cached_tokens": 0,
+          "elapsed_ms": 1587.4
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "b49c5a7208a089b5",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 0,
+          "db_hits": 332,
+          "elapsed_ms": 3.055,
+          "submit_ms": 0.637,
+          "hydrate_ms": 0.755,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 43,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {acct_no: $acct_no, _workspace_id: $workspace_id})-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWN]->(owner:Person|Company {_workspace_id: $workspace_id}) WHERE owner.id IS NOT NULL RETURN DISTINCT owner.id AS owner_id ORDER BY owner.id ASC LIMIT $limit"
+        }
+      ],
+      "trace_id": "c3e2ad595d999a3b05a163ed8aea0f22",
+      "root_span_id": "1f9c88f95e3eca05"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:ext_med_2:r1:staged_single",
+      "run_id": "deepseek-v3-2",
+      "arm": "staged_single",
+      "factors": {
+        "topology": "single_logical_agent",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_med_2",
+      "audience": "external",
+      "difficulty": "medium",
+      "repeat": 1,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.0,
+        "recall": 0.0,
+        "precision": 0.0,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 4367.5,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1921,
+      "completion_tokens": 617,
+      "cached_tokens": 0,
+      "handoff_chars": 3080,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1370,
+        "executor_to_verifier": 1710
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 332,
+      "db_ms": 2.227,
+      "rows_into_context": 0,
+      "result_bytes": 43,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "NO_RESULTS_RETURNED",
+        "CYPHER_PATTERN_MISMATCH"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "AccountOwner"
+          ],
+          "relationships": [
+            "Account-[SENT_TO]->Account",
+            "Account-[OWNED_BY]->AccountOwner"
+          ],
+          "predicates": [
+            "Account.account_number = '108'",
+            "AccountOwner.owner_id IS NOT NULL"
+          ],
+          "aggregation": [
+            "MIN(AccountOwner.owner_id) as min_owner_id"
+          ],
+          "ordering": [
+            "AccountOwner.owner_id ASC"
+          ],
+          "expected_shape": "List of 5 rows with columns: owner_id (or similar identifier)",
+          "assumptions": [
+            "Account 108 exists and has sent money to other accounts",
+            "Each account has at least one owner",
+            "Owner IDs are numeric and sortable",
+            "The 'SENT_TO' relationship represents money transfers"
+          ],
+          "uncertainties": [
+            "Whether multiple owners per account exist (if so, which owner to select?)",
+            "Whether 'lowest' refers to numeric value or some other ordering",
+            "Whether the five lowest should be distinct owner IDs or could include duplicates if same owner owns multiple destination accounts"
+          ],
+          "acceptance_tests": [
+            "Query returns exactly 5 rows",
+            "Owner IDs are in ascending numeric order",
+            "All returned owner IDs are associated with accounts that received money from account 108",
+            "No owner ID is repeated if distinctness is required"
+          ]
+        },
+        "initial_cypher": "MATCH (src:Account {acct_no: $acct_no, _workspace_id: $workspace_id})-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWN]->(owner:Person|Company {_workspace_id: $workspace_id}) WHERE owner.id IS NOT NULL RETURN DISTINCT owner.id AS owner_id ORDER BY owner.id ASC LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "NO_RESULTS_RETURNED",
+            "CYPHER_PATTERN_MISMATCH"
+          ],
+          "revision": "The Cypher query returned zero results. The query pattern may not match the data. Revise the Cypher to align with the Planner's specified relationships: use `-[:SENT_TO]->` for transfers and `-[:OWNED_BY]->` for ownership, and ensure node labels match (e.g., `:AccountOwner`). Also, verify the account number property name matches the data (e.g., `account_number`). Example revision: MATCH (src:Account {account_number: $acct_no, _workspace_id: $workspace_id})-[:SENT_TO]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWNED_BY]->(owner:AccountOwner {_workspace_id: $workspace_id}) WHERE owner.owner_id IS NOT NULL RETURN DISTINCT owner.owner_id AS owner_id ORDER BY owner.owner_id ASC LIMIT $limit"
+        },
+        "repair_authority": "advisory",
+        "repair_requested": true,
+        "repair_applied": false,
+        "repair_blocked_reason": "verifier_advisory_only"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 139,
+          "completion_tokens": 279,
+          "cached_tokens": 0,
+          "elapsed_ms": 1802.0
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1238,
+          "completion_tokens": 107,
+          "cached_tokens": 0,
+          "elapsed_ms": 885.4
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 544,
+          "completion_tokens": 231,
+          "cached_tokens": 0,
+          "elapsed_ms": 1674.9
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "b49c5a7208a089b5",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 0,
+          "db_hits": 332,
+          "elapsed_ms": 2.227,
+          "submit_ms": 0.472,
+          "hydrate_ms": 0.768,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 43,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {acct_no: $acct_no, _workspace_id: $workspace_id})-[:TRANSFER]->(dest:Account {_workspace_id: $workspace_id}) MATCH (dest)-[:OWN]->(owner:Person|Company {_workspace_id: $workspace_id}) WHERE owner.id IS NOT NULL RETURN DISTINCT owner.id AS owner_id ORDER BY owner.id ASC LIMIT $limit"
+        }
+      ],
+      "trace_id": "82c44c70ea6cf2ef85e4f5381e046c8d",
+      "root_span_id": "8dd8444145b9d3c0"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:ext_hard_2:r0:multi_full",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_full",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_hard_2",
+      "audience": "external",
+      "difficulty": "hard",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": true,
+      "score": {
+        "correct": true,
+        "f1": 1.0,
+        "gold": {
+          "n": 28
+        },
+        "matched_keys": 1
+      },
+      "wall_ms": 3274.1,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1881,
+      "completion_tokens": 368,
+      "cached_tokens": 0,
+      "handoff_chars": 2808,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1197,
+        "executor_to_verifier": 1611
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 257,
+      "db_ms": 13.525,
+      "rows_into_context": 1,
+      "result_bytes": 76,
+      "verifier_pass": true,
+      "verifier_reason_codes": [],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account"
+          ],
+          "relationships": [
+            "Account-[TRANSFERS_TO]->Account"
+          ],
+          "predicates": [
+            "target_account.account_number = '108'",
+            "hop_count <= 2"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT source_account.id)"
+          ],
+          "ordering": [],
+          "expected_shape": "single scalar count value",
+          "assumptions": [
+            "Transfers are directed edges from source to destination",
+            "Account numbers are unique identifiers",
+            "Self-transfers are excluded or irrelevant",
+            "Graph contains TRANSFERS_TO relationships with source and destination account nodes"
+          ],
+          "uncertainties": [
+            "Whether transfers within the 2-hop path must be distinct accounts (no cycles)",
+            "Whether to count account '108' itself if it appears in a 2-hop path (should not count target)"
+          ],
+          "acceptance_tests": [
+            "Returns integer >= 0",
+            "If no accounts transfer to 108 within 2 hops, returns 0",
+            "Counts each upstream account only once even if multiple paths exist",
+            "Excludes account '108' from the count"
+          ]
+        },
+        "initial_cypher": "MATCH (target:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) WITH target MATCH path = (source:Account {_workspace_id: $workspace_id})-[r:TRANSFER*1..2]->(target) WHERE ALL(rel IN r WHERE rel._workspace_id = $workspace_id) AND source.acct_no <> target.acct_no RETURN COUNT(DISTINCT source) AS distinct_upstream_accounts LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": true,
+          "reason_codes": [],
+          "revision": ""
+        },
+        "repair_authority": "advisory",
+        "repair_requested": false
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 147,
+          "completion_tokens": 232,
+          "cached_tokens": 0,
+          "elapsed_ms": 1641.5
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1208,
+          "completion_tokens": 119,
+          "cached_tokens": 0,
+          "elapsed_ms": 1008.2
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 526,
+          "completion_tokens": 17,
+          "cached_tokens": 0,
+          "elapsed_ms": 561.0
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "50df5496cb22c2b9",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 1,
+          "db_hits": 257,
+          "elapsed_ms": 13.525,
+          "submit_ms": 8.319,
+          "hydrate_ms": 4.163,
+          "server_available_ms": 7.0,
+          "server_consumed_ms": 3.0,
+          "result_bytes": 76,
+          "completeness": "complete",
+          "cypher": "MATCH (target:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) WITH target MATCH path = (source:Account {_workspace_id: $workspace_id})-[r:TRANSFER*1..2]->(target) WHERE ALL(rel IN r WHERE rel._workspace_id = $workspace_id) AND source.acct_no <> target.acct_no RETURN COUNT(DISTINCT source) AS distinct_upstream_accounts LIMIT $limit"
+        }
+      ],
+      "trace_id": "fddeb2f847c95f008194baac2ba9295a",
+      "root_span_id": "ca0a8b8136f4a021"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:ext_hard_2:r0:multi_typed",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_typed",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "typed_isolated",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_hard_2",
+      "audience": "external",
+      "difficulty": "hard",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": true,
+      "score": {
+        "correct": true,
+        "f1": 1.0,
+        "gold": {
+          "n": 28
+        },
+        "matched_keys": 1
+      },
+      "wall_ms": 3510.6,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1818,
+      "completion_tokens": 455,
+      "cached_tokens": 0,
+      "handoff_chars": 2627,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1129,
+        "executor_to_verifier": 1498
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 285,
+      "db_ms": 10.525,
+      "rows_into_context": 1,
+      "result_bytes": 55,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "cypher_parameter_mismatch",
+        "relationship_name_mismatch"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account"
+          ],
+          "relationships": [
+            "Account-[TRANSFERS_TO]->Account"
+          ],
+          "predicates": [
+            "target_account.account_number = '108'",
+            "hop_count <= 2"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT source_account.id)"
+          ],
+          "ordering": [],
+          "expected_shape": "single scalar count value",
+          "assumptions": [
+            "Transfers are directed edges from source to destination",
+            "Account numbers are unique identifiers",
+            "Self-transfers are excluded or irrelevant",
+            "Graph contains TRANSFERS_TO relationships with source and destination account nodes"
+          ],
+          "uncertainties": [
+            "Whether transfers within the 2-hop path must be distinct accounts (no cycles)",
+            "Whether to count account '108' itself if it appears in a 2-hop path (should not count target)"
+          ],
+          "acceptance_tests": [
+            "Returns integer >= 0",
+            "If no accounts transfer to 108 within 2 hops, returns 0",
+            "Counts each upstream account only once even if multiple paths exist",
+            "Excludes account '108' from the count"
+          ]
+        },
+        "initial_cypher": "MATCH (target:Account {acct_no: $acct_no, _workspace_id: $workspace_id}) WITH target MATCH path = (source:Account {_workspace_id: $workspace_id})-[r:TRANSFER*1..2]->(target) WHERE ALL(rel IN r WHERE rel IS NOT NULL) AND source.acct_no <> target.acct_no RETURN COUNT(DISTINCT source.id) AS count LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "cypher_parameter_mismatch",
+            "relationship_name_mismatch"
+          ],
+          "revision": "MATCH (target:Account {acct_no: '108', _workspace_id: $workspace_id}) WITH target MATCH path = (source:Account {_workspace_id: $workspace_id})-[r:TRANSFERS_TO*1..2]->(target) WHERE source.acct_no <> target.acct_no RETURN COUNT(DISTINCT source.id) AS count"
+        },
+        "repair_authority": "advisory",
+        "repair_requested": true,
+        "repair_applied": false,
+        "repair_blocked_reason": "verifier_advisory_only"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 147,
+          "completion_tokens": 232,
+          "cached_tokens": 0,
+          "elapsed_ms": 1651.4
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1179,
+          "completion_tokens": 110,
+          "cached_tokens": 0,
+          "elapsed_ms": 929.9
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 492,
+          "completion_tokens": 113,
+          "cached_tokens": 0,
+          "elapsed_ms": 893.4
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "0be35c49383d9aad",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 1,
+          "db_hits": 285,
+          "elapsed_ms": 10.525,
+          "submit_ms": 8.489,
+          "hydrate_ms": 1.044,
+          "server_available_ms": 8.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 55,
+          "completeness": "complete",
+          "cypher": "MATCH (target:Account {acct_no: $acct_no, _workspace_id: $workspace_id}) WITH target MATCH path = (source:Account {_workspace_id: $workspace_id})-[r:TRANSFER*1..2]->(target) WHERE ALL(rel IN r WHERE rel IS NOT NULL) AND source.acct_no <> target.acct_no RETURN COUNT(DISTINCT source.id) AS count LIMIT $limit"
+        }
+      ],
+      "trace_id": "4d9d2f2c4b9e8384b1f50aa496e62dcb",
+      "root_span_id": "bde893e752d6e8f6"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:ext_hard_2:r0:staged_single",
+      "run_id": "deepseek-v3-2",
+      "arm": "staged_single",
+      "factors": {
+        "topology": "single_logical_agent",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_hard_2",
+      "audience": "external",
+      "difficulty": "hard",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": true,
+      "score": {
+        "correct": true,
+        "f1": 1.0,
+        "gold": {
+          "n": 28
+        },
+        "matched_keys": 1
+      },
+      "wall_ms": 3097.1,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1881,
+      "completion_tokens": 368,
+      "cached_tokens": 0,
+      "handoff_chars": 2808,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1197,
+        "executor_to_verifier": 1611
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 257,
+      "db_ms": 2.62,
+      "rows_into_context": 1,
+      "result_bytes": 76,
+      "verifier_pass": true,
+      "verifier_reason_codes": [],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account"
+          ],
+          "relationships": [
+            "Account-[TRANSFERS_TO]->Account"
+          ],
+          "predicates": [
+            "target_account.account_number = '108'",
+            "hop_count <= 2"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT source_account.id)"
+          ],
+          "ordering": [],
+          "expected_shape": "single scalar count value",
+          "assumptions": [
+            "Transfers are directed edges from source to destination",
+            "Account numbers are unique identifiers",
+            "Self-transfers are excluded or irrelevant",
+            "Graph contains TRANSFERS_TO relationships with source and destination account nodes"
+          ],
+          "uncertainties": [
+            "Whether transfers within the 2-hop path must be distinct accounts (no cycles)",
+            "Whether to count account '108' itself if it appears in a 2-hop path (should not count target)"
+          ],
+          "acceptance_tests": [
+            "Returns integer >= 0",
+            "If no accounts transfer to 108 within 2 hops, returns 0",
+            "Counts each upstream account only once even if multiple paths exist",
+            "Excludes account '108' from the count"
+          ]
+        },
+        "initial_cypher": "MATCH (target:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) WITH target MATCH path = (source:Account {_workspace_id: $workspace_id})-[r:TRANSFER*1..2]->(target) WHERE ALL(rel IN r WHERE rel._workspace_id = $workspace_id) AND source.acct_no <> target.acct_no RETURN COUNT(DISTINCT source) AS distinct_upstream_accounts LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": true,
+          "reason_codes": [],
+          "revision": ""
+        },
+        "repair_authority": "advisory",
+        "repair_requested": false
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 147,
+          "completion_tokens": 232,
+          "cached_tokens": 0,
+          "elapsed_ms": 1652.2
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1208,
+          "completion_tokens": 119,
+          "cached_tokens": 0,
+          "elapsed_ms": 932.8
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 526,
+          "completion_tokens": 17,
+          "cached_tokens": 0,
+          "elapsed_ms": 507.4
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "50df5496cb22c2b9",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 1,
+          "db_hits": 257,
+          "elapsed_ms": 2.62,
+          "submit_ms": 0.468,
+          "hydrate_ms": 1.2,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 76,
+          "completeness": "complete",
+          "cypher": "MATCH (target:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) WITH target MATCH path = (source:Account {_workspace_id: $workspace_id})-[r:TRANSFER*1..2]->(target) WHERE ALL(rel IN r WHERE rel._workspace_id = $workspace_id) AND source.acct_no <> target.acct_no RETURN COUNT(DISTINCT source) AS distinct_upstream_accounts LIMIT $limit"
+        }
+      ],
+      "trace_id": "fbf02dfe414ce0efaed38ae095cb2509",
+      "root_span_id": "3ef5776d1b5a2dea"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:ext_hard_2:r1:multi_full",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_full",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_hard_2",
+      "audience": "external",
+      "difficulty": "hard",
+      "repeat": 1,
+      "anchor": 108,
+      "correct": true,
+      "score": {
+        "correct": true,
+        "f1": 1.0,
+        "gold": {
+          "n": 28
+        },
+        "matched_keys": 1
+      },
+      "wall_ms": 3151.1,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1881,
+      "completion_tokens": 368,
+      "cached_tokens": 0,
+      "handoff_chars": 2808,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1197,
+        "executor_to_verifier": 1611
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 257,
+      "db_ms": 2.599,
+      "rows_into_context": 1,
+      "result_bytes": 76,
+      "verifier_pass": true,
+      "verifier_reason_codes": [],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account"
+          ],
+          "relationships": [
+            "Account-[TRANSFERS_TO]->Account"
+          ],
+          "predicates": [
+            "target_account.account_number = '108'",
+            "hop_count <= 2"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT source_account.id)"
+          ],
+          "ordering": [],
+          "expected_shape": "single scalar count value",
+          "assumptions": [
+            "Transfers are directed edges from source to destination",
+            "Account numbers are unique identifiers",
+            "Self-transfers are excluded or irrelevant",
+            "Graph contains TRANSFERS_TO relationships with source and destination account nodes"
+          ],
+          "uncertainties": [
+            "Whether transfers within the 2-hop path must be distinct accounts (no cycles)",
+            "Whether to count account '108' itself if it appears in a 2-hop path (should not count target)"
+          ],
+          "acceptance_tests": [
+            "Returns integer >= 0",
+            "If no accounts transfer to 108 within 2 hops, returns 0",
+            "Counts each upstream account only once even if multiple paths exist",
+            "Excludes account '108' from the count"
+          ]
+        },
+        "initial_cypher": "MATCH (target:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) WITH target MATCH path = (source:Account {_workspace_id: $workspace_id})-[r:TRANSFER*1..2]->(target) WHERE ALL(rel IN r WHERE rel._workspace_id = $workspace_id) AND source.acct_no <> target.acct_no RETURN COUNT(DISTINCT source) AS distinct_upstream_accounts LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": true,
+          "reason_codes": [],
+          "revision": ""
+        },
+        "repair_authority": "advisory",
+        "repair_requested": false
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 147,
+          "completion_tokens": 232,
+          "cached_tokens": 0,
+          "elapsed_ms": 1652.9
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1208,
+          "completion_tokens": 119,
+          "cached_tokens": 0,
+          "elapsed_ms": 962.9
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 526,
+          "completion_tokens": 17,
+          "cached_tokens": 0,
+          "elapsed_ms": 530.5
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "50df5496cb22c2b9",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 1,
+          "db_hits": 257,
+          "elapsed_ms": 2.599,
+          "submit_ms": 0.456,
+          "hydrate_ms": 1.22,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 1.0,
+          "result_bytes": 76,
+          "completeness": "complete",
+          "cypher": "MATCH (target:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) WITH target MATCH path = (source:Account {_workspace_id: $workspace_id})-[r:TRANSFER*1..2]->(target) WHERE ALL(rel IN r WHERE rel._workspace_id = $workspace_id) AND source.acct_no <> target.acct_no RETURN COUNT(DISTINCT source) AS distinct_upstream_accounts LIMIT $limit"
+        }
+      ],
+      "trace_id": "fec9834bf05bfba4f8da8f4bddc49640",
+      "root_span_id": "8e74630f54e63ee6"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:ext_hard_2:r1:multi_typed",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_typed",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "typed_isolated",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_hard_2",
+      "audience": "external",
+      "difficulty": "hard",
+      "repeat": 1,
+      "anchor": 108,
+      "correct": true,
+      "score": {
+        "correct": true,
+        "f1": 1.0,
+        "gold": {
+          "n": 28
+        },
+        "matched_keys": 1
+      },
+      "wall_ms": 3519.8,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1818,
+      "completion_tokens": 455,
+      "cached_tokens": 0,
+      "handoff_chars": 2627,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1129,
+        "executor_to_verifier": 1498
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 285,
+      "db_ms": 3.213,
+      "rows_into_context": 1,
+      "result_bytes": 55,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "cypher_parameter_mismatch",
+        "relationship_name_mismatch"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account"
+          ],
+          "relationships": [
+            "Account-[TRANSFERS_TO]->Account"
+          ],
+          "predicates": [
+            "target_account.account_number = '108'",
+            "hop_count <= 2"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT source_account.id)"
+          ],
+          "ordering": [],
+          "expected_shape": "single scalar count value",
+          "assumptions": [
+            "Transfers are directed edges from source to destination",
+            "Account numbers are unique identifiers",
+            "Self-transfers are excluded or irrelevant",
+            "Graph contains TRANSFERS_TO relationships with source and destination account nodes"
+          ],
+          "uncertainties": [
+            "Whether transfers within the 2-hop path must be distinct accounts (no cycles)",
+            "Whether to count account '108' itself if it appears in a 2-hop path (should not count target)"
+          ],
+          "acceptance_tests": [
+            "Returns integer >= 0",
+            "If no accounts transfer to 108 within 2 hops, returns 0",
+            "Counts each upstream account only once even if multiple paths exist",
+            "Excludes account '108' from the count"
+          ]
+        },
+        "initial_cypher": "MATCH (target:Account {acct_no: $acct_no, _workspace_id: $workspace_id}) WITH target MATCH path = (source:Account {_workspace_id: $workspace_id})-[r:TRANSFER*1..2]->(target) WHERE ALL(rel IN r WHERE rel IS NOT NULL) AND source.acct_no <> target.acct_no RETURN COUNT(DISTINCT source.id) AS count LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "cypher_parameter_mismatch",
+            "relationship_name_mismatch"
+          ],
+          "revision": "MATCH (target:Account {acct_no: '108', _workspace_id: $workspace_id}) WITH target MATCH path = (source:Account {_workspace_id: $workspace_id})-[r:TRANSFERS_TO*1..2]->(target) WHERE source.acct_no <> target.acct_no RETURN COUNT(DISTINCT source.id) AS count"
+        },
+        "repair_authority": "advisory",
+        "repair_requested": true,
+        "repair_applied": false,
+        "repair_blocked_reason": "verifier_advisory_only"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 147,
+          "completion_tokens": 232,
+          "cached_tokens": 0,
+          "elapsed_ms": 1677.2
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1179,
+          "completion_tokens": 110,
+          "cached_tokens": 0,
+          "elapsed_ms": 969.6
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 492,
+          "completion_tokens": 113,
+          "cached_tokens": 0,
+          "elapsed_ms": 867.5
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "0be35c49383d9aad",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 1,
+          "db_hits": 285,
+          "elapsed_ms": 3.213,
+          "submit_ms": 0.739,
+          "hydrate_ms": 0.951,
+          "server_available_ms": 1.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 55,
+          "completeness": "complete",
+          "cypher": "MATCH (target:Account {acct_no: $acct_no, _workspace_id: $workspace_id}) WITH target MATCH path = (source:Account {_workspace_id: $workspace_id})-[r:TRANSFER*1..2]->(target) WHERE ALL(rel IN r WHERE rel IS NOT NULL) AND source.acct_no <> target.acct_no RETURN COUNT(DISTINCT source.id) AS count LIMIT $limit"
+        }
+      ],
+      "trace_id": "f5c1695241cef2000b0b53c568fff181",
+      "root_span_id": "263c5089485e9d48"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:ext_hard_2:r1:staged_single",
+      "run_id": "deepseek-v3-2",
+      "arm": "staged_single",
+      "factors": {
+        "topology": "single_logical_agent",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_hard_2",
+      "audience": "external",
+      "difficulty": "hard",
+      "repeat": 1,
+      "anchor": 108,
+      "correct": true,
+      "score": {
+        "correct": true,
+        "f1": 1.0,
+        "gold": {
+          "n": 28
+        },
+        "matched_keys": 1
+      },
+      "wall_ms": 3123.4,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1881,
+      "completion_tokens": 368,
+      "cached_tokens": 0,
+      "handoff_chars": 2808,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1197,
+        "executor_to_verifier": 1611
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 257,
+      "db_ms": 2.789,
+      "rows_into_context": 1,
+      "result_bytes": 76,
+      "verifier_pass": true,
+      "verifier_reason_codes": [],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account"
+          ],
+          "relationships": [
+            "Account-[TRANSFERS_TO]->Account"
+          ],
+          "predicates": [
+            "target_account.account_number = '108'",
+            "hop_count <= 2"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT source_account.id)"
+          ],
+          "ordering": [],
+          "expected_shape": "single scalar count value",
+          "assumptions": [
+            "Transfers are directed edges from source to destination",
+            "Account numbers are unique identifiers",
+            "Self-transfers are excluded or irrelevant",
+            "Graph contains TRANSFERS_TO relationships with source and destination account nodes"
+          ],
+          "uncertainties": [
+            "Whether transfers within the 2-hop path must be distinct accounts (no cycles)",
+            "Whether to count account '108' itself if it appears in a 2-hop path (should not count target)"
+          ],
+          "acceptance_tests": [
+            "Returns integer >= 0",
+            "If no accounts transfer to 108 within 2 hops, returns 0",
+            "Counts each upstream account only once even if multiple paths exist",
+            "Excludes account '108' from the count"
+          ]
+        },
+        "initial_cypher": "MATCH (target:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) WITH target MATCH path = (source:Account {_workspace_id: $workspace_id})-[r:TRANSFER*1..2]->(target) WHERE ALL(rel IN r WHERE rel._workspace_id = $workspace_id) AND source.acct_no <> target.acct_no RETURN COUNT(DISTINCT source) AS distinct_upstream_accounts LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": true,
+          "reason_codes": [],
+          "revision": ""
+        },
+        "repair_authority": "advisory",
+        "repair_requested": false
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 147,
+          "completion_tokens": 232,
+          "cached_tokens": 0,
+          "elapsed_ms": 1636.6
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1208,
+          "completion_tokens": 119,
+          "cached_tokens": 0,
+          "elapsed_ms": 956.7
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 526,
+          "completion_tokens": 17,
+          "cached_tokens": 0,
+          "elapsed_ms": 525.2
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "50df5496cb22c2b9",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 1,
+          "db_hits": 257,
+          "elapsed_ms": 2.789,
+          "submit_ms": 0.601,
+          "hydrate_ms": 1.146,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 76,
+          "completeness": "complete",
+          "cypher": "MATCH (target:Account {_workspace_id: $workspace_id, acct_no: $acct_no}) WITH target MATCH path = (source:Account {_workspace_id: $workspace_id})-[r:TRANSFER*1..2]->(target) WHERE ALL(rel IN r WHERE rel._workspace_id = $workspace_id) AND source.acct_no <> target.acct_no RETURN COUNT(DISTINCT source) AS distinct_upstream_accounts LIMIT $limit"
+        }
+      ],
+      "trace_id": "3133bbc5a337d9d1286f4e821265e223",
+      "root_span_id": "436d014439061896"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:int_med_1:r0:multi_full",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_full",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "int_med_1",
+      "audience": "internal",
+      "difficulty": "medium",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.0,
+        "gold": {
+          "n": 29
+        },
+        "matched_keys": 0
+      },
+      "wall_ms": 3693.9,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1912,
+      "completion_tokens": 504,
+      "cached_tokens": 0,
+      "handoff_chars": 3026,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1340,
+        "executor_to_verifier": 1686
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 6633,
+      "db_ms": 12.601,
+      "rows_into_context": 1,
+      "result_bytes": 68,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "relationship_mismatch",
+        "label_mismatch"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "Party",
+            "Transfer"
+          ],
+          "relationships": [
+            "Account-OWNED_BY->Party",
+            "Account-SOURCE_OF->Transfer",
+            "Account-DESTINATION_OF<-Transfer"
+          ],
+          "predicates": [
+            "Account.id != Account.id (different accounts)",
+            "Party.id = Party.id (same party)",
+            "Transfer is direct"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT (Account.id, Account.id)) as ordered_pairs_count"
+          ],
+          "ordering": [],
+          "expected_shape": "Single scalar count value",
+          "assumptions": [
+            "Direct transfer means no intermediate accounts",
+            "Ownership is defined and consistent",
+            "Transfers have clear source and destination accounts",
+            "Accounts have unique identifiers"
+          ],
+          "uncertainties": [
+            "Whether ownership is direct or indirect",
+            "Whether transfers include failed/cancelled transactions",
+            "Time period constraints not specified"
+          ],
+          "acceptance_tests": [
+            "Count should be non-negative integer",
+            "If no same-party transfers exist, count should be 0",
+            "Each ordered pair counted once regardless of transfer frequency",
+            "Self-transfers excluded by different accounts condition"
+          ]
+        },
+        "initial_cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:TRANSFER]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "relationship_mismatch",
+            "label_mismatch"
+          ],
+          "revision": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWNED_BY]->(p:Party {_workspace_id: $workspace_id})<-[:OWNED_BY]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:SOURCE_OF]->(:Transfer {_workspace_id: $workspace_id})-[:DESTINATION_OF]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count"
+        },
+        "repair_authority": "advisory",
+        "repair_requested": true,
+        "repair_applied": false,
+        "repair_blocked_reason": "verifier_advisory_only"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 154,
+          "completion_tokens": 237,
+          "cached_tokens": 0,
+          "elapsed_ms": 1716.2
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1224,
+          "completion_tokens": 117,
+          "cached_tokens": 0,
+          "elapsed_ms": 938.4
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 534,
+          "completion_tokens": 150,
+          "cached_tokens": 0,
+          "elapsed_ms": 992.9
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "8fe837b3ee8eaa07",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 1,
+          "db_hits": 6633,
+          "elapsed_ms": 12.601,
+          "submit_ms": 9.403,
+          "hydrate_ms": 2.267,
+          "server_available_ms": 9.0,
+          "server_consumed_ms": 1.0,
+          "result_bytes": 68,
+          "completeness": "complete",
+          "cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:TRANSFER]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count LIMIT $limit"
+        }
+      ],
+      "trace_id": "d2842f76f196a7ab554df133d4e9236e",
+      "root_span_id": "51c7ab7e37c7d6b6"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:int_med_1:r0:staged_single",
+      "run_id": "deepseek-v3-2",
+      "arm": "staged_single",
+      "factors": {
+        "topology": "single_logical_agent",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "int_med_1",
+      "audience": "internal",
+      "difficulty": "medium",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.0,
+        "gold": {
+          "n": 29
+        },
+        "matched_keys": 0
+      },
+      "wall_ms": 3665.8,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1912,
+      "completion_tokens": 504,
+      "cached_tokens": 0,
+      "handoff_chars": 3026,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1340,
+        "executor_to_verifier": 1686
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 6633,
+      "db_ms": 3.56,
+      "rows_into_context": 1,
+      "result_bytes": 68,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "relationship_mismatch",
+        "label_mismatch"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "Party",
+            "Transfer"
+          ],
+          "relationships": [
+            "Account-OWNED_BY->Party",
+            "Account-SOURCE_OF->Transfer",
+            "Account-DESTINATION_OF<-Transfer"
+          ],
+          "predicates": [
+            "Account.id != Account.id (different accounts)",
+            "Party.id = Party.id (same party)",
+            "Transfer is direct"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT (Account.id, Account.id)) as ordered_pairs_count"
+          ],
+          "ordering": [],
+          "expected_shape": "Single scalar count value",
+          "assumptions": [
+            "Direct transfer means no intermediate accounts",
+            "Ownership is defined and consistent",
+            "Transfers have clear source and destination accounts",
+            "Accounts have unique identifiers"
+          ],
+          "uncertainties": [
+            "Whether ownership is direct or indirect",
+            "Whether transfers include failed/cancelled transactions",
+            "Time period constraints not specified"
+          ],
+          "acceptance_tests": [
+            "Count should be non-negative integer",
+            "If no same-party transfers exist, count should be 0",
+            "Each ordered pair counted once regardless of transfer frequency",
+            "Self-transfers excluded by different accounts condition"
+          ]
+        },
+        "initial_cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:TRANSFER]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "relationship_mismatch",
+            "label_mismatch"
+          ],
+          "revision": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWNED_BY]->(p:Party {_workspace_id: $workspace_id})<-[:OWNED_BY]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:SOURCE_OF]->(:Transfer {_workspace_id: $workspace_id})-[:DESTINATION_OF]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count"
+        },
+        "repair_authority": "advisory",
+        "repair_requested": true,
+        "repair_applied": false,
+        "repair_blocked_reason": "verifier_advisory_only"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 154,
+          "completion_tokens": 237,
+          "cached_tokens": 0,
+          "elapsed_ms": 1696.8
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1224,
+          "completion_tokens": 117,
+          "cached_tokens": 0,
+          "elapsed_ms": 978.9
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 534,
+          "completion_tokens": 150,
+          "cached_tokens": 0,
+          "elapsed_ms": 984.4
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "8fe837b3ee8eaa07",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 1,
+          "db_hits": 6633,
+          "elapsed_ms": 3.56,
+          "submit_ms": 0.606,
+          "hydrate_ms": 2.054,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 1.0,
+          "result_bytes": 68,
+          "completeness": "complete",
+          "cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:TRANSFER]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count LIMIT $limit"
+        }
+      ],
+      "trace_id": "15cb2ae8e5f8f13ca9b191ed5816a8fb",
+      "root_span_id": "25d25a2a625d20d6"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:int_med_1:r0:multi_typed",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_typed",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "typed_isolated",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "int_med_1",
+      "audience": "internal",
+      "difficulty": "medium",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.0,
+        "gold": {
+          "n": 29
+        },
+        "matched_keys": 0
+      },
+      "wall_ms": 3837.5,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1856,
+      "completion_tokens": 499,
+      "cached_tokens": 0,
+      "handoff_chars": 2880,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1261,
+        "executor_to_verifier": 1619
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 6633,
+      "db_ms": 4.088,
+      "rows_into_context": 1,
+      "result_bytes": 68,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "cypher_incorrect_relationship"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "Party",
+            "Transfer"
+          ],
+          "relationships": [
+            "Account-OWNED_BY->Party",
+            "Account-SOURCE_OF->Transfer",
+            "Account-DESTINATION_OF<-Transfer"
+          ],
+          "predicates": [
+            "Account.id != Account.id (different accounts)",
+            "Party.id = Party.id (same party)",
+            "Transfer is direct"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT (Account.id, Account.id)) as ordered_pairs_count"
+          ],
+          "ordering": [],
+          "expected_shape": "Single scalar count value",
+          "assumptions": [
+            "Direct transfer means no intermediate accounts",
+            "Ownership is defined and consistent",
+            "Transfers have clear source and destination accounts",
+            "Accounts have unique identifiers"
+          ],
+          "uncertainties": [
+            "Whether ownership is direct or indirect",
+            "Whether transfers include failed/cancelled transactions",
+            "Time period constraints not specified"
+          ],
+          "acceptance_tests": [
+            "Count should be non-negative integer",
+            "If no same-party transfers exist, count should be 0",
+            "Each ordered pair counted once regardless of transfer frequency",
+            "Self-transfers excluded by different accounts condition"
+          ]
+        },
+        "initial_cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:TRANSFER]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "cypher_incorrect_relationship"
+          ],
+          "revision": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Party {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:TRANSFER]->(t:Transfer {_workspace_id: $workspace_id})-[:TO]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count LIMIT $limit"
+        },
+        "repair_authority": "advisory",
+        "repair_requested": true,
+        "repair_applied": false,
+        "repair_blocked_reason": "verifier_advisory_only"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 154,
+          "completion_tokens": 237,
+          "cached_tokens": 0,
+          "elapsed_ms": 1809.9
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1195,
+          "completion_tokens": 117,
+          "cached_tokens": 0,
+          "elapsed_ms": 1041.6
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 507,
+          "completion_tokens": 145,
+          "cached_tokens": 0,
+          "elapsed_ms": 979.6
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "8fe837b3ee8eaa07",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 1,
+          "db_hits": 6633,
+          "elapsed_ms": 4.088,
+          "submit_ms": 0.551,
+          "hydrate_ms": 2.013,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 1.0,
+          "result_bytes": 68,
+          "completeness": "complete",
+          "cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:TRANSFER]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count LIMIT $limit"
+        }
+      ],
+      "trace_id": "ea24142168b8760ee3dfa0fb324e4fd1",
+      "root_span_id": "bc9f6c4a6b11973d"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:int_med_1:r1:multi_full",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_full",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "int_med_1",
+      "audience": "internal",
+      "difficulty": "medium",
+      "repeat": 1,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.0,
+        "gold": {
+          "n": 29
+        },
+        "matched_keys": 0
+      },
+      "wall_ms": 3696.4,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1912,
+      "completion_tokens": 504,
+      "cached_tokens": 0,
+      "handoff_chars": 3026,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1340,
+        "executor_to_verifier": 1686
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 6633,
+      "db_ms": 4.006,
+      "rows_into_context": 1,
+      "result_bytes": 68,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "relationship_mismatch",
+        "label_mismatch"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "Party",
+            "Transfer"
+          ],
+          "relationships": [
+            "Account-OWNED_BY->Party",
+            "Account-SOURCE_OF->Transfer",
+            "Account-DESTINATION_OF<-Transfer"
+          ],
+          "predicates": [
+            "Account.id != Account.id (different accounts)",
+            "Party.id = Party.id (same party)",
+            "Transfer is direct"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT (Account.id, Account.id)) as ordered_pairs_count"
+          ],
+          "ordering": [],
+          "expected_shape": "Single scalar count value",
+          "assumptions": [
+            "Direct transfer means no intermediate accounts",
+            "Ownership is defined and consistent",
+            "Transfers have clear source and destination accounts",
+            "Accounts have unique identifiers"
+          ],
+          "uncertainties": [
+            "Whether ownership is direct or indirect",
+            "Whether transfers include failed/cancelled transactions",
+            "Time period constraints not specified"
+          ],
+          "acceptance_tests": [
+            "Count should be non-negative integer",
+            "If no same-party transfers exist, count should be 0",
+            "Each ordered pair counted once regardless of transfer frequency",
+            "Self-transfers excluded by different accounts condition"
+          ]
+        },
+        "initial_cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:TRANSFER]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "relationship_mismatch",
+            "label_mismatch"
+          ],
+          "revision": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWNED_BY]->(p:Party {_workspace_id: $workspace_id})<-[:OWNED_BY]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:SOURCE_OF]->(:Transfer {_workspace_id: $workspace_id})-[:DESTINATION_OF]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count"
+        },
+        "repair_authority": "advisory",
+        "repair_requested": true,
+        "repair_applied": false,
+        "repair_blocked_reason": "verifier_advisory_only"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 154,
+          "completion_tokens": 237,
+          "cached_tokens": 0,
+          "elapsed_ms": 1766.0
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1224,
+          "completion_tokens": 117,
+          "cached_tokens": 0,
+          "elapsed_ms": 943.5
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 534,
+          "completion_tokens": 150,
+          "cached_tokens": 0,
+          "elapsed_ms": 977.3
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "8fe837b3ee8eaa07",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 1,
+          "db_hits": 6633,
+          "elapsed_ms": 4.006,
+          "submit_ms": 0.465,
+          "hydrate_ms": 2.264,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 1.0,
+          "result_bytes": 68,
+          "completeness": "complete",
+          "cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:TRANSFER]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count LIMIT $limit"
+        }
+      ],
+      "trace_id": "2db285269e6b985312bc265243ee6072",
+      "root_span_id": "c0fd6fc08903c8f5"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:int_med_1:r1:staged_single",
+      "run_id": "deepseek-v3-2",
+      "arm": "staged_single",
+      "factors": {
+        "topology": "single_logical_agent",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "int_med_1",
+      "audience": "internal",
+      "difficulty": "medium",
+      "repeat": 1,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.0,
+        "gold": {
+          "n": 29
+        },
+        "matched_keys": 0
+      },
+      "wall_ms": 3605.4,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1912,
+      "completion_tokens": 504,
+      "cached_tokens": 0,
+      "handoff_chars": 3026,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1340,
+        "executor_to_verifier": 1686
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 6633,
+      "db_ms": 4.009,
+      "rows_into_context": 1,
+      "result_bytes": 68,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "relationship_mismatch",
+        "label_mismatch"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "Party",
+            "Transfer"
+          ],
+          "relationships": [
+            "Account-OWNED_BY->Party",
+            "Account-SOURCE_OF->Transfer",
+            "Account-DESTINATION_OF<-Transfer"
+          ],
+          "predicates": [
+            "Account.id != Account.id (different accounts)",
+            "Party.id = Party.id (same party)",
+            "Transfer is direct"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT (Account.id, Account.id)) as ordered_pairs_count"
+          ],
+          "ordering": [],
+          "expected_shape": "Single scalar count value",
+          "assumptions": [
+            "Direct transfer means no intermediate accounts",
+            "Ownership is defined and consistent",
+            "Transfers have clear source and destination accounts",
+            "Accounts have unique identifiers"
+          ],
+          "uncertainties": [
+            "Whether ownership is direct or indirect",
+            "Whether transfers include failed/cancelled transactions",
+            "Time period constraints not specified"
+          ],
+          "acceptance_tests": [
+            "Count should be non-negative integer",
+            "If no same-party transfers exist, count should be 0",
+            "Each ordered pair counted once regardless of transfer frequency",
+            "Self-transfers excluded by different accounts condition"
+          ]
+        },
+        "initial_cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:TRANSFER]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "relationship_mismatch",
+            "label_mismatch"
+          ],
+          "revision": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWNED_BY]->(p:Party {_workspace_id: $workspace_id})<-[:OWNED_BY]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:SOURCE_OF]->(:Transfer {_workspace_id: $workspace_id})-[:DESTINATION_OF]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count"
+        },
+        "repair_authority": "advisory",
+        "repair_requested": true,
+        "repair_applied": false,
+        "repair_blocked_reason": "verifier_advisory_only"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 154,
+          "completion_tokens": 237,
+          "cached_tokens": 0,
+          "elapsed_ms": 1682.0
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1224,
+          "completion_tokens": 117,
+          "cached_tokens": 0,
+          "elapsed_ms": 929.0
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 534,
+          "completion_tokens": 150,
+          "cached_tokens": 0,
+          "elapsed_ms": 988.0
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "8fe837b3ee8eaa07",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 1,
+          "db_hits": 6633,
+          "elapsed_ms": 4.009,
+          "submit_ms": 0.428,
+          "hydrate_ms": 2.36,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 1.0,
+          "result_bytes": 68,
+          "completeness": "complete",
+          "cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:TRANSFER]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count LIMIT $limit"
+        }
+      ],
+      "trace_id": "21cc4ff520bdc3202a903f9929d748fd",
+      "root_span_id": "301a78e77ea54158"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:int_med_1:r1:multi_typed",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_typed",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "typed_isolated",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "int_med_1",
+      "audience": "internal",
+      "difficulty": "medium",
+      "repeat": 1,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.0,
+        "gold": {
+          "n": 29
+        },
+        "matched_keys": 0
+      },
+      "wall_ms": 3644.1,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1856,
+      "completion_tokens": 499,
+      "cached_tokens": 0,
+      "handoff_chars": 2880,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1261,
+        "executor_to_verifier": 1619
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 6633,
+      "db_ms": 3.808,
+      "rows_into_context": 1,
+      "result_bytes": 68,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "cypher_incorrect_relationship"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "Party",
+            "Transfer"
+          ],
+          "relationships": [
+            "Account-OWNED_BY->Party",
+            "Account-SOURCE_OF->Transfer",
+            "Account-DESTINATION_OF<-Transfer"
+          ],
+          "predicates": [
+            "Account.id != Account.id (different accounts)",
+            "Party.id = Party.id (same party)",
+            "Transfer is direct"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT (Account.id, Account.id)) as ordered_pairs_count"
+          ],
+          "ordering": [],
+          "expected_shape": "Single scalar count value",
+          "assumptions": [
+            "Direct transfer means no intermediate accounts",
+            "Ownership is defined and consistent",
+            "Transfers have clear source and destination accounts",
+            "Accounts have unique identifiers"
+          ],
+          "uncertainties": [
+            "Whether ownership is direct or indirect",
+            "Whether transfers include failed/cancelled transactions",
+            "Time period constraints not specified"
+          ],
+          "acceptance_tests": [
+            "Count should be non-negative integer",
+            "If no same-party transfers exist, count should be 0",
+            "Each ordered pair counted once regardless of transfer frequency",
+            "Self-transfers excluded by different accounts condition"
+          ]
+        },
+        "initial_cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:TRANSFER]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "cypher_incorrect_relationship"
+          ],
+          "revision": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Party {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:TRANSFER]->(t:Transfer {_workspace_id: $workspace_id})-[:TO]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count LIMIT $limit"
+        },
+        "repair_authority": "advisory",
+        "repair_requested": true,
+        "repair_applied": false,
+        "repair_blocked_reason": "verifier_advisory_only"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 154,
+          "completion_tokens": 237,
+          "cached_tokens": 0,
+          "elapsed_ms": 1716.3
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1195,
+          "completion_tokens": 117,
+          "cached_tokens": 0,
+          "elapsed_ms": 946.9
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 507,
+          "completion_tokens": 145,
+          "cached_tokens": 0,
+          "elapsed_ms": 974.7
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "8fe837b3ee8eaa07",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 1,
+          "db_hits": 6633,
+          "elapsed_ms": 3.808,
+          "submit_ms": 0.685,
+          "hydrate_ms": 2.183,
+          "server_available_ms": 0.0,
+          "server_consumed_ms": 1.0,
+          "result_bytes": 68,
+          "completeness": "complete",
+          "cypher": "MATCH (a1:Account {_workspace_id: $workspace_id})-[:OWN]->(p:Person|Company {_workspace_id: $workspace_id})<-[:OWN]-(a2:Account {_workspace_id: $workspace_id}) WHERE a1.id <> a2.id MATCH (a1)-[:TRANSFER]->(a2) RETURN COUNT(DISTINCT [a1.id, a2.id]) AS ordered_pairs_count LIMIT $limit"
+        }
+      ],
+      "trace_id": "2768eda6d5b111e0064fdd5d6a76d47a",
+      "root_span_id": "107c2c4733856a5b"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:int_hard_2:r0:multi_full",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_full",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "int_hard_2",
+      "audience": "internal",
+      "difficulty": "hard",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": false,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 2729,
+      "completion_tokens": 607,
+      "cached_tokens": 0,
+      "handoff_chars": 1514,
+      "graph_trips": 0,
+      "unique_graph_queries": 0,
+      "redundant_graph_queries": 0,
+      "db_hits": 0,
+      "db_ms": 0.0,
+      "rows_into_context": 0,
+      "result_bytes": 0,
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "Party",
+            "Transaction"
+          ],
+          "relationships": [
+            "Account->Party (owned_by)",
+            "Account->Transaction (outgoing)",
+            "Transaction->Account (incoming)"
+          ],
+          "predicates": [
+            "Transaction.amount < 10000000",
+            "Transaction.destination_account_id = ?common_account_id"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT Account.id) AS account_count",
+            "GROUP BY Party.id"
+          ],
+          "ordering": [
+            "account_count DESC"
+          ],
+          "expected_shape": [
+            "Party.id",
+            "account_count"
+          ],
+          "assumptions": [
+            "Each account has exactly one owner party",
+            "Transactions have unique source and destination accounts",
+            "The common account is known or will be identified separately",
+            "Amounts are stored in a consistent currency/unit"
+          ],
+          "uncertainties": [
+            "Whether multiple transactions from same source account to common account should count once",
+            "How to handle accounts with multiple owners",
+            "Whether to include only active/valid accounts",
+            "Time period constraints for transactions"
+          ],
+          "acceptance_tests": [
+            "Returns exactly one party with highest count",
+            "All source accounts have transfers < 10,000,000 to common account",
+            "Count reflects distinct accounts per party",
+            "No party has zero qualifying accounts"
+          ]
+        },
+        "executor_failed": true
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 165,
+          "completion_tokens": 263,
+          "cached_tokens": 0,
+          "elapsed_ms": 1809.2
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1275,
+          "completion_tokens": 191,
+          "cached_tokens": 0,
+          "elapsed_ms": 1522.5
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1289,
+          "completion_tokens": 153,
+          "cached_tokens": 0,
+          "elapsed_ms": 1377.8
+        }
+      ],
+      "executions": [],
+      "error": "ValueError: text2cypher rejected: inlined_literal:< 10000000",
+      "trace_id": "9cd083bf9657e1c35b8c0b12d87b7e8f",
+      "root_span_id": "84382b449cc5ab7c"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:int_hard_2:r0:multi_typed",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_typed",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "typed_isolated",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "int_hard_2",
+      "audience": "internal",
+      "difficulty": "hard",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": false,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 2670,
+      "completion_tokens": 732,
+      "cached_tokens": 0,
+      "handoff_chars": 1433,
+      "graph_trips": 0,
+      "unique_graph_queries": 0,
+      "redundant_graph_queries": 0,
+      "db_hits": 0,
+      "db_ms": 0.0,
+      "rows_into_context": 0,
+      "result_bytes": 0,
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "Party",
+            "Transaction"
+          ],
+          "relationships": [
+            "Account->Party (owned_by)",
+            "Account->Transaction (outgoing)",
+            "Transaction->Account (incoming)"
+          ],
+          "predicates": [
+            "Transaction.amount < 10000000",
+            "Transaction.destination_account_id = ?common_account_id"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT Account.id) AS account_count",
+            "GROUP BY Party.id"
+          ],
+          "ordering": [
+            "account_count DESC"
+          ],
+          "expected_shape": [
+            "Party.id",
+            "account_count"
+          ],
+          "assumptions": [
+            "Each account has exactly one owner party",
+            "Transactions have unique source and destination accounts",
+            "The common account is known or will be identified separately",
+            "Amounts are stored in a consistent currency/unit"
+          ],
+          "uncertainties": [
+            "Whether multiple transactions from same source account to common account should count once",
+            "How to handle accounts with multiple owners",
+            "Whether to include only active/valid accounts",
+            "Time period constraints for transactions"
+          ],
+          "acceptance_tests": [
+            "Returns exactly one party with highest count",
+            "All source accounts have transfers < 10,000,000 to common account",
+            "Count reflects distinct accounts per party",
+            "No party has zero qualifying accounts"
+          ]
+        },
+        "executor_failed": true
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 165,
+          "completion_tokens": 263,
+          "cached_tokens": 0,
+          "elapsed_ms": 1808.6
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1246,
+          "completion_tokens": 222,
+          "cached_tokens": 0,
+          "elapsed_ms": 1685.4
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1259,
+          "completion_tokens": 247,
+          "cached_tokens": 0,
+          "elapsed_ms": 1705.0
+        }
+      ],
+      "executions": [],
+      "error": "ValueError: text2cypher rejected: unknown_relationships:a,a2,inlined_literal:< 10000000,>= 10000000",
+      "trace_id": "8b97dcbd7ca08277bf34271eb6b1a231",
+      "root_span_id": "be4efd6d3ab41eb2"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:int_hard_2:r0:staged_single",
+      "run_id": "deepseek-v3-2",
+      "arm": "staged_single",
+      "factors": {
+        "topology": "single_logical_agent",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "int_hard_2",
+      "audience": "internal",
+      "difficulty": "hard",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": false,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 2729,
+      "completion_tokens": 607,
+      "cached_tokens": 0,
+      "handoff_chars": 1514,
+      "graph_trips": 0,
+      "unique_graph_queries": 0,
+      "redundant_graph_queries": 0,
+      "db_hits": 0,
+      "db_ms": 0.0,
+      "rows_into_context": 0,
+      "result_bytes": 0,
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "Party",
+            "Transaction"
+          ],
+          "relationships": [
+            "Account->Party (owned_by)",
+            "Account->Transaction (outgoing)",
+            "Transaction->Account (incoming)"
+          ],
+          "predicates": [
+            "Transaction.amount < 10000000",
+            "Transaction.destination_account_id = ?common_account_id"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT Account.id) AS account_count",
+            "GROUP BY Party.id"
+          ],
+          "ordering": [
+            "account_count DESC"
+          ],
+          "expected_shape": [
+            "Party.id",
+            "account_count"
+          ],
+          "assumptions": [
+            "Each account has exactly one owner party",
+            "Transactions have unique source and destination accounts",
+            "The common account is known or will be identified separately",
+            "Amounts are stored in a consistent currency/unit"
+          ],
+          "uncertainties": [
+            "Whether multiple transactions from same source account to common account should count once",
+            "How to handle accounts with multiple owners",
+            "Whether to include only active/valid accounts",
+            "Time period constraints for transactions"
+          ],
+          "acceptance_tests": [
+            "Returns exactly one party with highest count",
+            "All source accounts have transfers < 10,000,000 to common account",
+            "Count reflects distinct accounts per party",
+            "No party has zero qualifying accounts"
+          ]
+        },
+        "executor_failed": true
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 165,
+          "completion_tokens": 263,
+          "cached_tokens": 0,
+          "elapsed_ms": 1801.4
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1275,
+          "completion_tokens": 191,
+          "cached_tokens": 0,
+          "elapsed_ms": 1557.6
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1289,
+          "completion_tokens": 153,
+          "cached_tokens": 0,
+          "elapsed_ms": 1456.0
+        }
+      ],
+      "executions": [],
+      "error": "ValueError: text2cypher rejected: inlined_literal:< 10000000",
+      "trace_id": "eb8d269cebbf3ddbb10684a69c20851c",
+      "root_span_id": "c1341ce9b97d941c"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:int_hard_2:r1:multi_full",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_full",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "int_hard_2",
+      "audience": "internal",
+      "difficulty": "hard",
+      "repeat": 1,
+      "anchor": 108,
+      "correct": false,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 2729,
+      "completion_tokens": 607,
+      "cached_tokens": 0,
+      "handoff_chars": 1514,
+      "graph_trips": 0,
+      "unique_graph_queries": 0,
+      "redundant_graph_queries": 0,
+      "db_hits": 0,
+      "db_ms": 0.0,
+      "rows_into_context": 0,
+      "result_bytes": 0,
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "Party",
+            "Transaction"
+          ],
+          "relationships": [
+            "Account->Party (owned_by)",
+            "Account->Transaction (outgoing)",
+            "Transaction->Account (incoming)"
+          ],
+          "predicates": [
+            "Transaction.amount < 10000000",
+            "Transaction.destination_account_id = ?common_account_id"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT Account.id) AS account_count",
+            "GROUP BY Party.id"
+          ],
+          "ordering": [
+            "account_count DESC"
+          ],
+          "expected_shape": [
+            "Party.id",
+            "account_count"
+          ],
+          "assumptions": [
+            "Each account has exactly one owner party",
+            "Transactions have unique source and destination accounts",
+            "The common account is known or will be identified separately",
+            "Amounts are stored in a consistent currency/unit"
+          ],
+          "uncertainties": [
+            "Whether multiple transactions from same source account to common account should count once",
+            "How to handle accounts with multiple owners",
+            "Whether to include only active/valid accounts",
+            "Time period constraints for transactions"
+          ],
+          "acceptance_tests": [
+            "Returns exactly one party with highest count",
+            "All source accounts have transfers < 10,000,000 to common account",
+            "Count reflects distinct accounts per party",
+            "No party has zero qualifying accounts"
+          ]
+        },
+        "executor_failed": true
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 165,
+          "completion_tokens": 263,
+          "cached_tokens": 0,
+          "elapsed_ms": 1879.2
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1275,
+          "completion_tokens": 191,
+          "cached_tokens": 0,
+          "elapsed_ms": 1545.2
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1289,
+          "completion_tokens": 153,
+          "cached_tokens": 0,
+          "elapsed_ms": 1390.4
+        }
+      ],
+      "executions": [],
+      "error": "ValueError: text2cypher rejected: inlined_literal:< 10000000",
+      "trace_id": "4dff8ec7ea43863d43f576a23654c8e4",
+      "root_span_id": "33c52de6cc24ab2c"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:int_hard_2:r1:staged_single",
+      "run_id": "deepseek-v3-2",
+      "arm": "staged_single",
+      "factors": {
+        "topology": "single_logical_agent",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "int_hard_2",
+      "audience": "internal",
+      "difficulty": "hard",
+      "repeat": 1,
+      "anchor": 108,
+      "correct": false,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 2729,
+      "completion_tokens": 607,
+      "cached_tokens": 0,
+      "handoff_chars": 1514,
+      "graph_trips": 0,
+      "unique_graph_queries": 0,
+      "redundant_graph_queries": 0,
+      "db_hits": 0,
+      "db_ms": 0.0,
+      "rows_into_context": 0,
+      "result_bytes": 0,
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "Party",
+            "Transaction"
+          ],
+          "relationships": [
+            "Account->Party (owned_by)",
+            "Account->Transaction (outgoing)",
+            "Transaction->Account (incoming)"
+          ],
+          "predicates": [
+            "Transaction.amount < 10000000",
+            "Transaction.destination_account_id = ?common_account_id"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT Account.id) AS account_count",
+            "GROUP BY Party.id"
+          ],
+          "ordering": [
+            "account_count DESC"
+          ],
+          "expected_shape": [
+            "Party.id",
+            "account_count"
+          ],
+          "assumptions": [
+            "Each account has exactly one owner party",
+            "Transactions have unique source and destination accounts",
+            "The common account is known or will be identified separately",
+            "Amounts are stored in a consistent currency/unit"
+          ],
+          "uncertainties": [
+            "Whether multiple transactions from same source account to common account should count once",
+            "How to handle accounts with multiple owners",
+            "Whether to include only active/valid accounts",
+            "Time period constraints for transactions"
+          ],
+          "acceptance_tests": [
+            "Returns exactly one party with highest count",
+            "All source accounts have transfers < 10,000,000 to common account",
+            "Count reflects distinct accounts per party",
+            "No party has zero qualifying accounts"
+          ]
+        },
+        "executor_failed": true
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 165,
+          "completion_tokens": 263,
+          "cached_tokens": 0,
+          "elapsed_ms": 1826.6
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1275,
+          "completion_tokens": 191,
+          "cached_tokens": 0,
+          "elapsed_ms": 1542.8
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1289,
+          "completion_tokens": 153,
+          "cached_tokens": 0,
+          "elapsed_ms": 1410.9
+        }
+      ],
+      "executions": [],
+      "error": "ValueError: text2cypher rejected: inlined_literal:< 10000000",
+      "trace_id": "3b4223bd6e086c1b5d5741eeec5140a5",
+      "root_span_id": "aec6705e373c9ab3"
+    },
+    {
+      "episode_id": "deepseek-v3-2:sf1:finbenchl1:int_hard_2:r1:multi_typed",
+      "run_id": "deepseek-v3-2",
+      "arm": "multi_typed",
+      "factors": {
+        "topology": "role_agents",
+        "context_policy": "typed_isolated",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "int_hard_2",
+      "audience": "internal",
+      "difficulty": "hard",
+      "repeat": 1,
+      "anchor": 108,
+      "correct": false,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 2670,
+      "completion_tokens": 732,
+      "cached_tokens": 0,
+      "handoff_chars": 1433,
+      "graph_trips": 0,
+      "unique_graph_queries": 0,
+      "redundant_graph_queries": 0,
+      "db_hits": 0,
+      "db_ms": 0.0,
+      "rows_into_context": 0,
+      "result_bytes": 0,
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "Party",
+            "Transaction"
+          ],
+          "relationships": [
+            "Account->Party (owned_by)",
+            "Account->Transaction (outgoing)",
+            "Transaction->Account (incoming)"
+          ],
+          "predicates": [
+            "Transaction.amount < 10000000",
+            "Transaction.destination_account_id = ?common_account_id"
+          ],
+          "aggregation": [
+            "COUNT(DISTINCT Account.id) AS account_count",
+            "GROUP BY Party.id"
+          ],
+          "ordering": [
+            "account_count DESC"
+          ],
+          "expected_shape": [
+            "Party.id",
+            "account_count"
+          ],
+          "assumptions": [
+            "Each account has exactly one owner party",
+            "Transactions have unique source and destination accounts",
+            "The common account is known or will be identified separately",
+            "Amounts are stored in a consistent currency/unit"
+          ],
+          "uncertainties": [
+            "Whether multiple transactions from same source account to common account should count once",
+            "How to handle accounts with multiple owners",
+            "Whether to include only active/valid accounts",
+            "Time period constraints for transactions"
+          ],
+          "acceptance_tests": [
+            "Returns exactly one party with highest count",
+            "All source accounts have transfers < 10,000,000 to common account",
+            "Count reflects distinct accounts per party",
+            "No party has zero qualifying accounts"
+          ]
+        },
+        "executor_failed": true
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 165,
+          "completion_tokens": 263,
+          "cached_tokens": 0,
+          "elapsed_ms": 1807.0
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1246,
+          "completion_tokens": 222,
+          "cached_tokens": 0,
+          "elapsed_ms": 1696.8
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1259,
+          "completion_tokens": 247,
+          "cached_tokens": 0,
+          "elapsed_ms": 1704.3
+        }
+      ],
+      "executions": [],
+      "error": "ValueError: text2cypher rejected: unknown_relationships:a,a2,inlined_literal:< 10000000,>= 10000000",
+      "trace_id": "126136ab7e10e46504c20b18fd944359",
+      "root_span_id": "550e00e19c7ee40a"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+[gold] finbenchl1 SF1 anchor=108 questions=4
+[endpoint] mara DeepSeek-V3.2 @ https://api.cloud.mara.com/v1
+[manifest] results/episodes/agent_model_matrix/20260831T_mara_model_matrix_v1/models/deepseek-v3-2/manifest.json
+  deepseek-v3-2:sf1:finbenchl1:ext_med_2:r0:multi_typed correct=False calls=3 prompt=1867 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:ext_med_2:r0:multi_full correct=False calls=3 prompt=1921 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:ext_med_2:r0:staged_single correct=False calls=3 prompt=1921 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:ext_med_2:r1:multi_typed correct=False calls=3 prompt=1867 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:ext_med_2:r1:multi_full correct=False calls=3 prompt=1921 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:ext_med_2:r1:staged_single correct=False calls=3 prompt=1921 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:ext_hard_2:r0:multi_full correct=True calls=3 prompt=1881 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:ext_hard_2:r0:multi_typed correct=True calls=3 prompt=1818 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:ext_hard_2:r0:staged_single correct=True calls=3 prompt=1881 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:ext_hard_2:r1:multi_full correct=True calls=3 prompt=1881 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:ext_hard_2:r1:multi_typed correct=True calls=3 prompt=1818 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:ext_hard_2:r1:staged_single correct=True calls=3 prompt=1881 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:int_med_1:r0:multi_full correct=False calls=3 prompt=1912 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:int_med_1:r0:staged_single correct=False calls=3 prompt=1912 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:int_med_1:r0:multi_typed correct=False calls=3 prompt=1856 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:int_med_1:r1:multi_full correct=False calls=3 prompt=1912 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:int_med_1:r1:staged_single correct=False calls=3 prompt=1912 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:int_med_1:r1:multi_typed correct=False calls=3 prompt=1856 trips=1 
+  deepseek-v3-2:sf1:finbenchl1:int_hard_2:r0:multi_full correct=False calls=3 prompt=2729 trips=0 ValueError: text2cypher rejected: inlined_literal:< 10000000
+  deepseek-v3-2:sf1:finbenchl1:int_hard_2:r0:multi_typed correct=False calls=3 prompt=2670 trips=0 ValueError: text2cypher rejected: unknown_relationships:a,a2,inlined_literal:< 1
+  deepseek-v3-2:sf1:finbenchl1:int_hard_2:r0:staged_single correct=False calls=3 prompt=2729 trips=0 ValueError: text2cypher rejected: inlined_literal:< 10000000
+  deepseek-v3-2:sf1:finbenchl1:int_hard_2:r1:multi_full correct=False calls=3 prompt=2729 trips=0 ValueError: text2cypher rejected: inlined_literal:< 10000000
+  deepseek-v3-2:sf1:finbenchl1:int_hard_2:r1:staged_single correct=False calls=3 prompt=2729 trips=0 ValueError: text2cypher rejected: inlined_literal:< 10000000
+  deepseek-v3-2:sf1:finbenchl1:int_hard_2:r1:multi_typed correct=False calls=3 prompt=2670 trips=0 ValueError: text2cypher rejected: unknown_relationships:a,a2,inlined_literal:< 1
+
+=== summary ===
+  staged_single    {'n': 8, 'errors': 2, 'correct': 2, 'correct_rate': 0.25, 'model_calls': 24, 'prompt_tokens': 16886, 'completion_tokens': 4192, 'handoff_chars': 20856, 'graph_trips': 6, 'db_hits': 14444, 'wall_ms_median': 3635.6, 'db_ms_median': 2.5}
+  multi_full       {'n': 8, 'errors': 2, 'correct': 2, 'correct_rate': 0.25, 'model_calls': 24, 'prompt_tokens': 16886, 'completion_tokens': 4192, 'handoff_chars': 20856, 'graph_trips': 6, 'db_hits': 14444, 'wall_ms_median': 3695.15, 'db_ms_median': 3.53}
+  multi_typed      {'n': 8, 'errors': 2, 'correct': 2, 'correct_rate': 0.25, 'model_calls': 24, 'prompt_tokens': 16422, 'completion_tokens': 4646, 'handoff_chars': 19760, 'graph_trips': 6, 'db_hits': 14500, 'wall_ms_median': 3740.8, 'db_ms_median': 3.51}
+wrote results/episodes/agent_model_matrix/20260831T_mara_model_matrix_v1/models/deepseek-v3-2/report.json

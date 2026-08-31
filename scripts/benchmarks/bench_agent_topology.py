@@ -179,7 +179,7 @@ def _query_fingerprint(cypher: str, params: Dict[str, Any]) -> str:
 def _profile_db_hits(plan: Any) -> int:
     if plan is None:
         return 0
-    args = (plan.get("args", {}) if isinstance(plan, dict)
+    args = ((plan.get("args") or plan.get("arguments") or {}) if isinstance(plan, dict)
             else getattr(plan, "arguments", None) or {})
     hits = int(args.get("DbHits", 0) or 0)
     children = (plan.get("children", []) if isinstance(plan, dict)

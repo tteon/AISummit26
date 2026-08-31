@@ -450,6 +450,15 @@ behaviour — verified, `cached_tokens` is absent and TTFT is flat across identi
 so every turn it records shows `cached_tokens: 0`. A self-hosted vLLM gives the same shape
 *plus* real cache behaviour, at GPU prices. Use MARA to build workloads, vLLM to check them.
 
+For Agent API ↔ Bolt experiments, `bench_agent_topology.py` also writes the complete PROFILE
+operator tree for every executed query and starts a durable `system_metrics.jsonl` sampler by
+default. The sampler covers the client host and the explicitly named database container; pass
+the actual container with `--db-container`, then require a non-empty metrics file and a
+`system_monitor_receipt.complete=true` before accepting the run. Use
+`--no-system-metrics` only for a deliberately named no-monitor control. Hosted endpoint GPU,
+KV-cache and scheduler state remains unavailable and must be measured in a separate
+self-hosted vLLM arm.
+
 **Stage 2 is not a measurement.** Its own documentation is blunt about this: with the default
 `mem_util: 0.9` its TTFT was off by −20.7%, and it landed at +0.6% only after `mem_util` was
 matched to the real run's resolved block count. And it warns that KV capacity is invisible

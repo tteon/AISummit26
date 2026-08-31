@@ -1,0 +1,4 @@
+[gold] finbenchl1 SF1 anchor=108 questions=4
+[endpoint] mara MiniMax-M2.7 @ https://api.cloud.mara.com/v1
+[manifest] results/episodes/agent_model_matrix/20260831T_mara_model_matrix_v1/models/minimax-m2-7/manifest.json
+  minimax-m2-7:sf1:finbenchl1:ext_med_2:r0:multi_typed correct=False calls=2 prompt=1258 trips=0 StructuredOutputError: no JSON object found in response (head: 'We need to parse

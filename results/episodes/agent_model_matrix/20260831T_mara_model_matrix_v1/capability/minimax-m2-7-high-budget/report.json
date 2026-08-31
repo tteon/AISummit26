@@ -1,0 +1,378 @@
+{
+  "schema_version": "seocho.finbench.agent-topology.v1",
+  "run_id": "minimax-m2-7-high-budget",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T02:05:14+00:00",
+    "git_commit": "7a1c850c293060e8552c82fcda47f0ae028961d1",
+    "git_dirty": true,
+    "argv": [
+      "scripts/benchmarks/bench_agent_topology.py",
+      "--provider",
+      "mara",
+      "--model",
+      "MiniMax-M2.7",
+      "--password",
+      "<redacted>",
+      "--databases",
+      "finbenchl1:1",
+      "--arms",
+      "staged_single",
+      "--only",
+      "ext_med_2",
+      "--repeats",
+      "1",
+      "--row-cap",
+      "50",
+      "--decision-tokens",
+      "1200",
+      "--executor-tokens",
+      "4000",
+      "--request-timeout-s",
+      "300",
+      "--verifier-mode",
+      "advisory",
+      "--seed",
+      "31",
+      "--run-id",
+      "minimax-m2-7-high-budget",
+      "--output-dir",
+      "results/episodes/agent_model_matrix/20260831T_mara_model_matrix_v1/capability"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "4G",
+    "db_heap_max": "8G",
+    "db_container_id": "1ac98b0dc1b2",
+    "db_container": "aisummit-simtest",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "6594",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "experiment": "agent-context-topology",
+    "schema_version": "seocho.finbench.agent-topology.v1"
+  },
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "MiniMax-M2.7",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 4000,
+    "request_timeout_s": 300.0,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    }
+  },
+  "observability": {
+    "seocho_version": "0.6.0",
+    "seocho_path": "/home/hadry/lab/seocho-room/seocho/src/seocho/__init__.py",
+    "source_prepended": "/home/hadry/lab/seocho-room/seocho/src",
+    "backend": "otlp",
+    "endpoint": "http://127.0.0.1:4317",
+    "service_name": "seocho-agent-topology",
+    "metrics_enabled": false,
+    "tracing_enabled": true,
+    "tracing_backends": [
+      "otlp"
+    ],
+    "degraded_reasons": [],
+    "errors": null
+  },
+  "config": {
+    "provider": "mara",
+    "model": "MiniMax-M2.7",
+    "base_url": null,
+    "request_timeout_s": 300.0,
+    "native_context": null,
+    "max_model_len": null,
+    "pi_factor": null,
+    "uri": "bolt://localhost:7688",
+    "user": "neo4j",
+    "databases": [
+      "finbenchl1:1"
+    ],
+    "ontology": "ontology/finbench.ontology.yaml",
+    "seocho_src": null,
+    "db_container": "aisummit-simtest",
+    "arms": [
+      "staged_single"
+    ],
+    "only": [
+      "ext_med_2"
+    ],
+    "repeats": 1,
+    "row_cap": 50,
+    "decision_tokens": 1200,
+    "executor_tokens": 4000,
+    "verifier_mode": "advisory",
+    "seed": 31,
+    "run_id": "minimax-m2-7-high-budget",
+    "output_dir": "results/episodes/agent_model_matrix/20260831T_mara_model_matrix_v1/capability",
+    "otlp_endpoint": "http://127.0.0.1:4317",
+    "tempo_url": "http://127.0.0.1:3200",
+    "validate_only": false,
+    "resume": false,
+    "samples": null,
+    "conversations": null,
+    "manifest_out": null,
+    "out": null
+  },
+  "graph": {
+    "finbenchl1:sf1": {
+      "anchor": 108
+    }
+  },
+  "trace_receipt": {
+    "schema_version": "seocho.trace-receipt.v1",
+    "trace_ids": [
+      "69a8a4832e6f42c129c2734b4aff803c"
+    ],
+    "local_jsonl": "results/episodes/agent_model_matrix/20260831T_mara_model_matrix_v1/capability/minimax-m2-7-high-budget/spans.jsonl",
+    "local_span_counts": {
+      "69a8a4832e6f42c129c2734b4aff803c": 5
+    },
+    "local_complete": true,
+    "tempo_url": "http://127.0.0.1:3200",
+    "tempo": {
+      "69a8a4832e6f42c129c2734b4aff803c": {
+        "found": true,
+        "detail": "batches=2"
+      }
+    },
+    "tempo_complete": true
+  },
+  "summary": {
+    "staged_single": {
+      "n": 1,
+      "errors": 0,
+      "correct": 0,
+      "correct_rate": 0.0,
+      "model_calls": 3,
+      "prompt_tokens": 1999,
+      "completion_tokens": 4473,
+      "handoff_chars": 3126,
+      "graph_trips": 1,
+      "db_hits": 71,
+      "wall_ms_median": 36511.8,
+      "db_ms_median": 7.5
+    }
+  },
+  "samples": [
+    {
+      "episode_id": "minimax-m2-7-high-budget:sf1:finbenchl1:ext_med_2:r0:staged_single",
+      "run_id": "minimax-m2-7-high-budget",
+      "arm": "staged_single",
+      "factors": {
+        "topology": "single_logical_agent",
+        "context_policy": "full_transcript",
+        "result_contract": "legacy_rows",
+        "orchestrator": "procedural",
+        "verifier_authority": "advisory",
+        "llm_runtime": "seocho_backend"
+      },
+      "sf": 1,
+      "database": "finbenchl1",
+      "question_id": "ext_med_2",
+      "audience": "external",
+      "difficulty": "medium",
+      "repeat": 0,
+      "anchor": 108,
+      "correct": false,
+      "score": {
+        "correct": false,
+        "f1": 0.4444,
+        "recall": 0.8,
+        "precision": 0.3077,
+        "gold": [
+          "107",
+          "1096",
+          "1098",
+          "21",
+          "384"
+        ]
+      },
+      "wall_ms": 36511.8,
+      "model_calls": 3,
+      "model_calls_completed": 3,
+      "prompt_tokens": 1999,
+      "completion_tokens": 4473,
+      "cached_tokens": 0,
+      "handoff_chars": 3126,
+      "handoff_chars_by_edge": {
+        "planner_to_executor": 1329,
+        "executor_to_verifier": 1797
+      },
+      "graph_trips": 1,
+      "unique_graph_queries": 1,
+      "redundant_graph_queries": 0,
+      "db_hits": 71,
+      "db_ms": 7.505,
+      "rows_into_context": 13,
+      "result_bytes": 264,
+      "verifier_pass": false,
+      "verifier_reason_codes": [
+        "INCORRECT_RELATIONSHIP_TRAVERSAL",
+        "SCHEMA_VIOLATION",
+        "MISSING_OWNS_RELATIONSHIP"
+      ],
+      "decisions": {
+        "query_intent": {
+          "entities": [
+            "Account",
+            "Owner"
+          ],
+          "relationships": [
+            {
+              "type": "SENT_MONEY",
+              "from": "Account",
+              "to": "Account",
+              "description": "Money transfer from one account to another"
+            },
+            {
+              "type": "OWNS",
+              "from": "Owner",
+              "to": "Account",
+              "description": "Ownership relation"
+            }
+          ],
+          "predicates": [
+            {
+              "entity": "Account",
+              "attribute": "account_number",
+              "operator": "=",
+              "value": "108"
+            },
+            {
+              "relationship": "SENT_MONEY",
+              "direction": "outgoing"
+            }
+          ],
+          "aggregation": [
+            "DISTINCT",
+            "LIMIT 5"
+          ],
+          "ordering": [
+            {
+              "attribute": "owner_id",
+              "direction": "ASC"
+            }
+          ],
+          "expected_shape": [
+            "list of owner IDs sorted ascending"
+          ],
+          "assumptions": [
+            "Account numbers are stored as string or integer attribute",
+            "Owner IDs are numeric and comparable",
+            "Each account has exactly one owner"
+          ],
+          "uncertainties": [
+            "Direction of SENT_MONEY may be reversed in data",
+            "Multiple owners per account may exist"
+          ],
+          "acceptance_tests": [
+            "Query returns owners of accounts that account 108 has sent money to",
+            "Result contains exactly five lowest owner IDs in ascending order",
+            "Result is empty if no transfers from account 108"
+          ]
+        },
+        "initial_cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})-[:TRANSFER]->(target:Account {_workspace_id: $workspace_id}) RETURN DISTINCT target.owner_id AS owner_id ORDER BY owner_id ASC LIMIT $limit",
+        "executor_attempts": 1,
+        "verify_decision": {
+          "pass": false,
+          "reason_codes": [
+            "INCORRECT_RELATIONSHIP_TRAVERSAL",
+            "SCHEMA_VIOLATION",
+            "MISSING_OWNS_RELATIONSHIP"
+          ],
+          "revision": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})-[:TRANSFER]->(target:Account {_workspace_id: $workspace_id})<-[:OWNS]-(owner:Owner {_workspace_id: $workspace_id}) RETURN DISTINCT owner.owner_id AS owner_id ORDER BY owner_id ASC LIMIT 5"
+        },
+        "repair_authority": "advisory",
+        "repair_requested": true,
+        "repair_applied": false,
+        "repair_blocked_reason": "verifier_advisory_only"
+      },
+      "stages": [
+        {
+          "stage": "planner",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 148,
+          "completion_tokens": 1200,
+          "cached_tokens": 0,
+          "elapsed_ms": 8340.7
+        },
+        {
+          "stage": "executor",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 1245,
+          "completion_tokens": 2573,
+          "cached_tokens": 0,
+          "elapsed_ms": 22444.3
+        },
+        {
+          "stage": "verifier",
+          "attempted": true,
+          "completed": true,
+          "prompt_tokens": 606,
+          "completion_tokens": 700,
+          "cached_tokens": 0,
+          "elapsed_ms": 5698.4
+        }
+      ],
+      "executions": [
+        {
+          "query_fingerprint": "db9addd2bbd7d2b5",
+          "params": {
+            "a": 108,
+            "acct_no": 108,
+            "ws": "default",
+            "workspace_id": "default",
+            "limit": 50
+          },
+          "rows": 13,
+          "db_hits": 71,
+          "elapsed_ms": 7.505,
+          "submit_ms": 5.27,
+          "hydrate_ms": 1.277,
+          "server_available_ms": 5.0,
+          "server_consumed_ms": 0.0,
+          "result_bytes": 264,
+          "completeness": "complete",
+          "cypher": "MATCH (src:Account {_workspace_id: $workspace_id, acct_no: $acct_no})-[:TRANSFER]->(target:Account {_workspace_id: $workspace_id}) RETURN DISTINCT target.owner_id AS owner_id ORDER BY owner_id ASC LIMIT $limit"
+        }
+      ],
+      "trace_id": "69a8a4832e6f42c129c2734b4aff803c",
+      "root_span_id": "589b759e70dc059b"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+[gold] finbenchl1 SF1 anchor=108 questions=4
+[endpoint] mara gemma-4-31B-it @ https://api.cloud.mara.com/v1
+[manifest] results/episodes/agent_model_matrix/20260831T_mara_model_matrix_v1/models/gemma-4-31b-it/manifest.json
+  gemma-4-31b-it:sf1:finbenchl1:ext_med_2:r0:multi_typed correct=False calls=3 prompt=1843 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:ext_med_2:r0:multi_full correct=False calls=3 prompt=2171 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:ext_med_2:r0:staged_single correct=False calls=3 prompt=2171 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:ext_med_2:r1:multi_typed correct=False calls=3 prompt=1843 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:ext_med_2:r1:multi_full correct=False calls=3 prompt=2171 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:ext_med_2:r1:staged_single correct=False calls=3 prompt=2171 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:ext_hard_2:r0:multi_full correct=True calls=3 prompt=1944 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:ext_hard_2:r0:multi_typed correct=True calls=3 prompt=1767 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:ext_hard_2:r0:staged_single correct=True calls=3 prompt=1944 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:ext_hard_2:r1:multi_full correct=True calls=3 prompt=1944 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:ext_hard_2:r1:multi_typed correct=True calls=3 prompt=1767 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:ext_hard_2:r1:staged_single correct=True calls=3 prompt=1944 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:int_med_1:r0:multi_full correct=False calls=3 prompt=2734 trips=0 ValueError: text2cypher rejected: explain_failed:CypherSyntaxError
+  gemma-4-31b-it:sf1:finbenchl1:int_med_1:r0:staged_single correct=False calls=3 prompt=2734 trips=0 ValueError: text2cypher rejected: explain_failed:CypherSyntaxError
+  gemma-4-31b-it:sf1:finbenchl1:int_med_1:r0:multi_typed correct=False calls=3 prompt=2502 trips=0 ValueError: text2cypher rejected: explain_failed:CypherSyntaxError
+  gemma-4-31b-it:sf1:finbenchl1:int_med_1:r1:multi_full correct=False calls=3 prompt=2734 trips=0 ValueError: text2cypher rejected: explain_failed:CypherSyntaxError
+  gemma-4-31b-it:sf1:finbenchl1:int_med_1:r1:staged_single correct=False calls=3 prompt=2734 trips=0 ValueError: text2cypher rejected: explain_failed:CypherSyntaxError
+  gemma-4-31b-it:sf1:finbenchl1:int_med_1:r1:multi_typed correct=False calls=3 prompt=2502 trips=0 ValueError: text2cypher rejected: explain_failed:CypherSyntaxError
+  gemma-4-31b-it:sf1:finbenchl1:int_hard_2:r0:multi_full correct=False calls=4 prompt=3805 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:int_hard_2:r0:multi_typed correct=False calls=4 prompt=3278 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:int_hard_2:r0:staged_single correct=False calls=4 prompt=3805 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:int_hard_2:r1:multi_full correct=False calls=4 prompt=3805 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:int_hard_2:r1:staged_single correct=False calls=4 prompt=3805 trips=1 
+  gemma-4-31b-it:sf1:finbenchl1:int_hard_2:r1:multi_typed correct=False calls=4 prompt=3278 trips=1 
+
+=== summary ===
+  staged_single    {'n': 8, 'errors': 2, 'correct': 2, 'correct_rate': 0.25, 'model_calls': 26, 'prompt_tokens': 21308, 'completion_tokens': 4292, 'handoff_chars': 21934, 'graph_trips': 6, 'db_hits': 11022, 'wall_ms_median': 7617.75, 'db_ms_median': 2.59}
+  multi_full       {'n': 8, 'errors': 2, 'correct': 2, 'correct_rate': 0.25, 'model_calls': 26, 'prompt_tokens': 21308, 'completion_tokens': 4292, 'handoff_chars': 21934, 'graph_trips': 6, 'db_hits': 11022, 'wall_ms_median': 7708.6, 'db_ms_median': 3.25}
+  multi_typed      {'n': 8, 'errors': 2, 'correct': 2, 'correct_rate': 0.25, 'model_calls': 26, 'prompt_tokens': 18780, 'completion_tokens': 4298, 'handoff_chars': 18698, 'graph_trips': 6, 'db_hits': 11022, 'wall_ms_median': 7907.25, 'db_ms_median': 3.71}
+wrote results/episodes/agent_model_matrix/20260831T_mara_model_matrix_v1/models/gemma-4-31b-it/report.json

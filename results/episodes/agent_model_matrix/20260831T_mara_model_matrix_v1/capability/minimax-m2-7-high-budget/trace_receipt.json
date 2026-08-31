@@ -1,0 +1,19 @@
+{
+  "schema_version": "seocho.trace-receipt.v1",
+  "trace_ids": [
+    "69a8a4832e6f42c129c2734b4aff803c"
+  ],
+  "local_jsonl": "results/episodes/agent_model_matrix/20260831T_mara_model_matrix_v1/capability/minimax-m2-7-high-budget/spans.jsonl",
+  "local_span_counts": {
+    "69a8a4832e6f42c129c2734b4aff803c": 5
+  },
+  "local_complete": true,
+  "tempo_url": "http://127.0.0.1:3200",
+  "tempo": {
+    "69a8a4832e6f42c129c2734b4aff803c": {
+      "found": true,
+      "detail": "batches=2"
+    }
+  },
+  "tempo_complete": true
+}
