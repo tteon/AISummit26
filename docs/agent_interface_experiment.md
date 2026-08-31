@@ -386,6 +386,13 @@ Primary artifacts:
   `results/analysis/mara_retrieval_system_windows_sf1_sf100_20260831.json`
 - invalid MARA repair-loop rate-limit receipt:
   `results/episodes/invalid_mara_repair_loop/20260831T_mara_repair_sweep_sf1_sf100_auto_v1/`
+- repair authority raw runs:
+  `results/episodes/agent_topology/20260831T_mara_repair_sweep_sf1_sf100_auto_v3/` and
+  `results/episodes/agent_topology/20260831T_mara_repair_sweep_sf1_sf100_advisory_v1/`
+- repair-loop ledgers and paired authority analysis:
+  `results/analysis/mara_repair_sweep_sf1_sf100_auto_v3.json`,
+  `results/analysis/mara_repair_sweep_sf1_sf100_advisory_v1.json`, and
+  `results/analysis/mara_repair_authority_sf1_sf100_v1.json`
 
 Invalid and interrupted gates are retained under `results/episodes/invalid_*` with an
 `INVALID_REASON.md`; they are not included in any aggregate.
