@@ -277,6 +277,10 @@ The expanded, versioned business-vocabulary → semantic term → physical FinBe
 documented in [request_schema_contract.md](request_schema_contract.md). It is a new workload
 arm and does not alter the denominator of this paired result.
 
+Scale is also not a network-complexity proxy: [topology_conditioned_agent_benchmark.md](topology_conditioned_agent_benchmark.md)
+records bounded SF1/SF100 topology receipts and joins each raw episode to its actual anchor
+descriptor. Future claims about topology effects require a matched anchor-band sweep.
+
 ## Exploratory pilot results
 
 ### Single agent, role agents and context isolation

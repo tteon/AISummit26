@@ -1,0 +1,84 @@
+{
+  "source": "outputs/finbench/sf100",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T10:58:46+00:00",
+    "git_commit": "cf8c89467083ade6f79467c443a5d0605788bb22",
+    "git_dirty": true,
+    "argv": [
+      "scripts/data/graph_properties.py",
+      "--src",
+      "outputs/finbench/sf100",
+      "--out",
+      "results/analysis/topology_sf100.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "512M",
+    "db_heap_max": "",
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "386",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "validation": "bounded FinBench topology profile"
+  },
+  "nodes_with_edges": 200463,
+  "multiplicity": {
+    "edges": 1000895,
+    "distinct_pairs": 1000890,
+    "redundancy": 1.0,
+    "max_multiplicity": 2,
+    "duplicate_pairs": 5,
+    "pct_edges_in_duplicate_pairs": 0.001,
+    "distinct_vs_total_distinguishable": false
+  },
+  "clustering": {
+    "simple_undirected_edges": 1000864,
+    "sampled_nodes": 3000,
+    "degree_range_sampled": [
+      2,
+      200
+    ],
+    "avg_local_clustering": 9.9825516e-05,
+    "triangles_touched": 10,
+    "nodes_in_any_triangle": 10,
+    "pct_sampled_in_any_triangle": 0.33,
+    "real_world_reference": [
+      0.1,
+      0.5
+    ],
+    "shortfall_vs_real_world_low_end": 1001.7
+  },
+  "motifs": {
+    "directed_3_cycles": 45,
+    "outdegree_cap": 40,
+    "edges_covered": 994066,
+    "pct_edges_covered": 99.32,
+    "bound": "lower bound \u2014 nodes above the out-degree cap are excluded because the unbounded 2-path join exhausts 10GB on a power-law graph"
+  }
+}

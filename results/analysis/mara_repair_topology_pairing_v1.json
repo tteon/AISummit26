@@ -1,0 +1,644 @@
+{
+  "schema_version": "finbench.request-topology-pairing.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T10:59:36+00:00",
+    "git_commit": "cf8c89467083ade6f79467c443a5d0605788bb22",
+    "git_dirty": true,
+    "argv": [
+      "scripts/analysis/pair_request_topology.py",
+      "--report",
+      "results/episodes/agent_topology/20260831T_mara_repair_sweep_sf1_sf100_auto_v3/report.json",
+      "--profile",
+      "1:results/analysis/topology_sf1.json",
+      "--profile",
+      "100:results/analysis/topology_sf100.json",
+      "--database",
+      "1:finbenchl1",
+      "--database",
+      "100:finbenchl100",
+      "--password",
+      "<redacted>",
+      "--out",
+      "results/analysis/mara_repair_topology_pairing_v1.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "512M",
+    "db_heap_max": "",
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "386",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "validation": "episode topology pairing"
+  },
+  "inputs": {
+    "report": "results/episodes/agent_topology/20260831T_mara_repair_sweep_sf1_sf100_auto_v3/report.json",
+    "profiles": {
+      "1": "results/analysis/topology_sf1.json",
+      "100": "results/analysis/topology_sf100.json"
+    }
+  },
+  "method": {
+    "unit": "raw agent episode",
+    "join_key": [
+      "sf",
+      "anchor"
+    ],
+    "warning": "Two scales and one selected anchor per scale do not identify a causal topology effect; sweep curated anchor bands before fitting an effect."
+  },
+  "anchor_descriptors": [
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor": 108,
+      "recorded_out_degree": 13,
+      "transfer_in": 5,
+      "transfer_out": 13,
+      "direct_peers": 18,
+      "bounded_out_2hop_reach": 64,
+      "twohop_first_frontier_cap": 200,
+      "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor": 7,
+      "recorded_out_degree": 11,
+      "transfer_in": 6,
+      "transfer_out": 11,
+      "direct_peers": 17,
+      "bounded_out_2hop_reach": 49,
+      "twohop_first_frontier_cap": 200,
+      "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+    }
+  ],
+  "episodes": [
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf1:finbenchl1:customer_inflow_summary:r0:multi_typed",
+      "sf": 1,
+      "question_id": "customer_inflow_summary",
+      "repeat": 0,
+      "correct": false,
+      "error": "ValueError: text2cypher rejected: unknown_labels:Transaction",
+      "graph_trips": 0,
+      "db_hits": 0,
+      "db_ms": 0.0,
+      "anchor_topology": {
+        "sf": 1,
+        "database": "finbenchl1",
+        "anchor": 108,
+        "recorded_out_degree": 13,
+        "transfer_in": 5,
+        "transfer_out": 13,
+        "direct_peers": 18,
+        "bounded_out_2hop_reach": 64,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 2470,
+        "transfer_edges": 10895,
+        "avg_local_clustering": 0.007677304069,
+        "pct_sampled_in_any_triangle": 26.62,
+        "directed_3_cycles_lower_bound": 57
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf1:finbenchl1:customer_counterparty_owner:r0:multi_typed",
+      "sf": 1,
+      "question_id": "customer_counterparty_owner",
+      "repeat": 0,
+      "correct": true,
+      "error": null,
+      "graph_trips": 1,
+      "db_hits": 371,
+      "db_ms": 11.062,
+      "anchor_topology": {
+        "sf": 1,
+        "database": "finbenchl1",
+        "anchor": 108,
+        "recorded_out_degree": 13,
+        "transfer_in": 5,
+        "transfer_out": 13,
+        "direct_peers": 18,
+        "bounded_out_2hop_reach": 64,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 2470,
+        "transfer_edges": 10895,
+        "avg_local_clustering": 0.007677304069,
+        "pct_sampled_in_any_triangle": 26.62,
+        "directed_3_cycles_lower_bound": 57
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf1:finbenchl1:aml_high_risk_rail_inflow:r0:multi_typed",
+      "sf": 1,
+      "question_id": "aml_high_risk_rail_inflow",
+      "repeat": 0,
+      "correct": false,
+      "error": "ValueError: text2cypher rejected: unknown_labels:Transfer",
+      "graph_trips": 0,
+      "db_hits": 0,
+      "db_ms": 0.0,
+      "anchor_topology": {
+        "sf": 1,
+        "database": "finbenchl1",
+        "anchor": 108,
+        "recorded_out_degree": 13,
+        "transfer_in": 5,
+        "transfer_out": 13,
+        "direct_peers": 18,
+        "bounded_out_2hop_reach": 64,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 2470,
+        "transfer_edges": 10895,
+        "avg_local_clustering": 0.007677304069,
+        "pct_sampled_in_any_triangle": 26.62,
+        "directed_3_cycles_lower_bound": 57
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf1:finbenchl1:aml_structuring_fanin:r0:multi_typed",
+      "sf": 1,
+      "question_id": "aml_structuring_fanin",
+      "repeat": 0,
+      "correct": true,
+      "error": null,
+      "graph_trips": 1,
+      "db_hits": 47,
+      "db_ms": 8.316,
+      "anchor_topology": {
+        "sf": 1,
+        "database": "finbenchl1",
+        "anchor": 108,
+        "recorded_out_degree": 13,
+        "transfer_in": 5,
+        "transfer_out": 13,
+        "direct_peers": 18,
+        "bounded_out_2hop_reach": 64,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 2470,
+        "transfer_edges": 10895,
+        "avg_local_clustering": 0.007677304069,
+        "pct_sampled_in_any_triangle": 26.62,
+        "directed_3_cycles_lower_bound": 57
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf1:finbenchl1:ubo_candidate_exposure:r0:multi_typed",
+      "sf": 1,
+      "question_id": "ubo_candidate_exposure",
+      "repeat": 0,
+      "correct": false,
+      "error": "ValueError: text2cypher rejected: unknown_properties:owner_type",
+      "graph_trips": 0,
+      "db_hits": 0,
+      "db_ms": 0.0,
+      "anchor_topology": {
+        "sf": 1,
+        "database": "finbenchl1",
+        "anchor": 108,
+        "recorded_out_degree": 13,
+        "transfer_in": 5,
+        "transfer_out": 13,
+        "direct_peers": 18,
+        "bounded_out_2hop_reach": 64,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 2470,
+        "transfer_edges": 10895,
+        "avg_local_clustering": 0.007677304069,
+        "pct_sampled_in_any_triangle": 26.62,
+        "directed_3_cycles_lower_bound": 57
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf1:finbenchl1:guarantee_chain_exposure:r0:multi_typed",
+      "sf": 1,
+      "question_id": "guarantee_chain_exposure",
+      "repeat": 0,
+      "correct": true,
+      "error": null,
+      "graph_trips": 1,
+      "db_hits": 9720,
+      "db_ms": 9.899,
+      "anchor_topology": {
+        "sf": 1,
+        "database": "finbenchl1",
+        "anchor": 108,
+        "recorded_out_degree": 13,
+        "transfer_in": 5,
+        "transfer_out": 13,
+        "direct_peers": 18,
+        "bounded_out_2hop_reach": 64,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 2470,
+        "transfer_edges": 10895,
+        "avg_local_clustering": 0.007677304069,
+        "pct_sampled_in_any_triangle": 26.62,
+        "directed_3_cycles_lower_bound": 57
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf1:finbenchl1:payment_rail_mix:r0:multi_typed",
+      "sf": 1,
+      "question_id": "payment_rail_mix",
+      "repeat": 0,
+      "correct": false,
+      "error": null,
+      "graph_trips": 1,
+      "db_hits": 123,
+      "db_ms": 15.833,
+      "anchor_topology": {
+        "sf": 1,
+        "database": "finbenchl1",
+        "anchor": 108,
+        "recorded_out_degree": 13,
+        "transfer_in": 5,
+        "transfer_out": 13,
+        "direct_peers": 18,
+        "bounded_out_2hop_reach": 64,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 2470,
+        "transfer_edges": 10895,
+        "avg_local_clustering": 0.007677304069,
+        "pct_sampled_in_any_triangle": 26.62,
+        "directed_3_cycles_lower_bound": 57
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf1:finbenchl1:loan_proceeds_path:r0:multi_typed",
+      "sf": 1,
+      "question_id": "loan_proceeds_path",
+      "repeat": 0,
+      "correct": true,
+      "error": null,
+      "graph_trips": 1,
+      "db_hits": 3784,
+      "db_ms": 5.61,
+      "anchor_topology": {
+        "sf": 1,
+        "database": "finbenchl1",
+        "anchor": 108,
+        "recorded_out_degree": 13,
+        "transfer_in": 5,
+        "transfer_out": 13,
+        "direct_peers": 18,
+        "bounded_out_2hop_reach": 64,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 2470,
+        "transfer_edges": 10895,
+        "avg_local_clustering": 0.007677304069,
+        "pct_sampled_in_any_triangle": 26.62,
+        "directed_3_cycles_lower_bound": 57
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf1:finbenchl1:loan_repayment_gap:r0:multi_typed",
+      "sf": 1,
+      "question_id": "loan_repayment_gap",
+      "repeat": 0,
+      "correct": false,
+      "error": "ValueError: text2cypher rejected: unknown_properties:total_repaid,inlined_literal:> 0,< 0.5",
+      "graph_trips": 0,
+      "db_hits": 0,
+      "db_ms": 0.0,
+      "anchor_topology": {
+        "sf": 1,
+        "database": "finbenchl1",
+        "anchor": 108,
+        "recorded_out_degree": 13,
+        "transfer_in": 5,
+        "transfer_out": 13,
+        "direct_peers": 18,
+        "bounded_out_2hop_reach": 64,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 2470,
+        "transfer_edges": 10895,
+        "avg_local_clustering": 0.007677304069,
+        "pct_sampled_in_any_triangle": 26.62,
+        "directed_3_cycles_lower_bound": 57
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf100:finbenchl100:customer_inflow_summary:r0:multi_typed",
+      "sf": 100,
+      "question_id": "customer_inflow_summary",
+      "repeat": 0,
+      "correct": false,
+      "error": null,
+      "graph_trips": 1,
+      "db_hits": 48,
+      "db_ms": 11.279,
+      "anchor_topology": {
+        "sf": 100,
+        "database": "finbenchl100",
+        "anchor": 7,
+        "recorded_out_degree": 11,
+        "transfer_in": 6,
+        "transfer_out": 11,
+        "direct_peers": 17,
+        "bounded_out_2hop_reach": 49,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 200463,
+        "transfer_edges": 1000895,
+        "avg_local_clustering": 9.9825516e-05,
+        "pct_sampled_in_any_triangle": 0.33,
+        "directed_3_cycles_lower_bound": 45
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf100:finbenchl100:customer_counterparty_owner:r0:multi_typed",
+      "sf": 100,
+      "question_id": "customer_counterparty_owner",
+      "repeat": 0,
+      "correct": false,
+      "error": null,
+      "graph_trips": 2,
+      "db_hits": 607,
+      "db_ms": 26.084,
+      "anchor_topology": {
+        "sf": 100,
+        "database": "finbenchl100",
+        "anchor": 7,
+        "recorded_out_degree": 11,
+        "transfer_in": 6,
+        "transfer_out": 11,
+        "direct_peers": 17,
+        "bounded_out_2hop_reach": 49,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 200463,
+        "transfer_edges": 1000895,
+        "avg_local_clustering": 9.9825516e-05,
+        "pct_sampled_in_any_triangle": 0.33,
+        "directed_3_cycles_lower_bound": 45
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf100:finbenchl100:aml_high_risk_rail_inflow:r0:multi_typed",
+      "sf": 100,
+      "question_id": "aml_high_risk_rail_inflow",
+      "repeat": 0,
+      "correct": false,
+      "error": null,
+      "graph_trips": 2,
+      "db_hits": 2,
+      "db_ms": 24.265,
+      "anchor_topology": {
+        "sf": 100,
+        "database": "finbenchl100",
+        "anchor": 7,
+        "recorded_out_degree": 11,
+        "transfer_in": 6,
+        "transfer_out": 11,
+        "direct_peers": 17,
+        "bounded_out_2hop_reach": 49,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 200463,
+        "transfer_edges": 1000895,
+        "avg_local_clustering": 9.9825516e-05,
+        "pct_sampled_in_any_triangle": 0.33,
+        "directed_3_cycles_lower_bound": 45
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf100:finbenchl100:aml_structuring_fanin:r0:multi_typed",
+      "sf": 100,
+      "question_id": "aml_structuring_fanin",
+      "repeat": 0,
+      "correct": true,
+      "error": null,
+      "graph_trips": 1,
+      "db_hits": 48,
+      "db_ms": 11.433,
+      "anchor_topology": {
+        "sf": 100,
+        "database": "finbenchl100",
+        "anchor": 7,
+        "recorded_out_degree": 11,
+        "transfer_in": 6,
+        "transfer_out": 11,
+        "direct_peers": 17,
+        "bounded_out_2hop_reach": 49,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 200463,
+        "transfer_edges": 1000895,
+        "avg_local_clustering": 9.9825516e-05,
+        "pct_sampled_in_any_triangle": 0.33,
+        "directed_3_cycles_lower_bound": 45
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf100:finbenchl100:ubo_candidate_exposure:r0:multi_typed",
+      "sf": 100,
+      "question_id": "ubo_candidate_exposure",
+      "repeat": 0,
+      "correct": false,
+      "error": "ValueError: text2cypher rejected: unknown_properties:owner_type",
+      "graph_trips": 0,
+      "db_hits": 0,
+      "db_ms": 0.0,
+      "anchor_topology": {
+        "sf": 100,
+        "database": "finbenchl100",
+        "anchor": 7,
+        "recorded_out_degree": 11,
+        "transfer_in": 6,
+        "transfer_out": 11,
+        "direct_peers": 17,
+        "bounded_out_2hop_reach": 49,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 200463,
+        "transfer_edges": 1000895,
+        "avg_local_clustering": 9.9825516e-05,
+        "pct_sampled_in_any_triangle": 0.33,
+        "directed_3_cycles_lower_bound": 45
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf100:finbenchl100:guarantee_chain_exposure:r0:multi_typed",
+      "sf": 100,
+      "question_id": "guarantee_chain_exposure",
+      "repeat": 0,
+      "correct": true,
+      "error": null,
+      "graph_trips": 1,
+      "db_hits": 969065,
+      "db_ms": 222.254,
+      "anchor_topology": {
+        "sf": 100,
+        "database": "finbenchl100",
+        "anchor": 7,
+        "recorded_out_degree": 11,
+        "transfer_in": 6,
+        "transfer_out": 11,
+        "direct_peers": 17,
+        "bounded_out_2hop_reach": 49,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 200463,
+        "transfer_edges": 1000895,
+        "avg_local_clustering": 9.9825516e-05,
+        "pct_sampled_in_any_triangle": 0.33,
+        "directed_3_cycles_lower_bound": 45
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf100:finbenchl100:payment_rail_mix:r0:multi_typed",
+      "sf": 100,
+      "question_id": "payment_rail_mix",
+      "repeat": 0,
+      "correct": true,
+      "error": null,
+      "graph_trips": 1,
+      "db_hits": 74,
+      "db_ms": 11.319,
+      "anchor_topology": {
+        "sf": 100,
+        "database": "finbenchl100",
+        "anchor": 7,
+        "recorded_out_degree": 11,
+        "transfer_in": 6,
+        "transfer_out": 11,
+        "direct_peers": 17,
+        "bounded_out_2hop_reach": 49,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 200463,
+        "transfer_edges": 1000895,
+        "avg_local_clustering": 9.9825516e-05,
+        "pct_sampled_in_any_triangle": 0.33,
+        "directed_3_cycles_lower_bound": 45
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf100:finbenchl100:loan_proceeds_path:r0:multi_typed",
+      "sf": 100,
+      "question_id": "loan_proceeds_path",
+      "repeat": 0,
+      "correct": false,
+      "error": null,
+      "graph_trips": 2,
+      "db_hits": 2,
+      "db_ms": 17.05,
+      "anchor_topology": {
+        "sf": 100,
+        "database": "finbenchl100",
+        "anchor": 7,
+        "recorded_out_degree": 11,
+        "transfer_in": 6,
+        "transfer_out": 11,
+        "direct_peers": 17,
+        "bounded_out_2hop_reach": 49,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 200463,
+        "transfer_edges": 1000895,
+        "avg_local_clustering": 9.9825516e-05,
+        "pct_sampled_in_any_triangle": 0.33,
+        "directed_3_cycles_lower_bound": 45
+      }
+    },
+    {
+      "episode_id": "20260831T_mara_repair_sweep_sf1_sf100_auto_v3:sf100:finbenchl100:loan_repayment_gap:r0:multi_typed",
+      "sf": 100,
+      "question_id": "loan_repayment_gap",
+      "repeat": 0,
+      "correct": false,
+      "error": "ValueError: text2cypher rejected: unknown_properties:total_repaid,inlined_literal:> 0,< 0.5",
+      "graph_trips": 0,
+      "db_hits": 0,
+      "db_ms": 0.0,
+      "anchor_topology": {
+        "sf": 100,
+        "database": "finbenchl100",
+        "anchor": 7,
+        "recorded_out_degree": 11,
+        "transfer_in": 6,
+        "transfer_out": 11,
+        "direct_peers": 17,
+        "bounded_out_2hop_reach": 49,
+        "twohop_first_frontier_cap": 200,
+        "local_measurement_note": "two-hop reach is bounded at first frontier; clustering is supplied by global sampled profile"
+      },
+      "global_topology": {
+        "nodes_with_edges": 200463,
+        "transfer_edges": 1000895,
+        "avg_local_clustering": 9.9825516e-05,
+        "pct_sampled_in_any_triangle": 0.33,
+        "directed_3_cycles_lower_bound": 45
+      }
+    }
+  ],
+  "valid": true
+}

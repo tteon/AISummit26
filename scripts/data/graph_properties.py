@@ -40,9 +40,16 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 from pathlib import Path
 from typing import Any, Dict
+
+ROOT = Path(__file__).resolve().parents[2]
+_spec = importlib.util.spec_from_file_location("runmeta", ROOT / "scripts" / "analysis" / "runmeta.py")
+runmeta = importlib.util.module_from_spec(_spec)
+assert _spec.loader
+_spec.loader.exec_module(runmeta)
 
 SAMPLE_NODES = 3000
 DEGREE_CAP = 200
@@ -80,8 +87,12 @@ def measure(src: Path, *, sample_nodes: int, degree_cap: int,
         "SELECT (SELECT count(*) FROM deg), (SELECT count(*) FROM u)").fetchone()
 
     # ---- sampled local clustering ----
+    # Random sampling makes a cross-scale clustering comparison irreproducible.  A stable hash
+    # of the node id gives one deterministic ordinary-node sample per snapshot while retaining
+    # the stated degree exclusion for hub-safe measurement.
     con.execute(f"""CREATE TABLE samp AS SELECT v, d FROM deg
-                    WHERE d BETWEEN 2 AND {degree_cap} USING SAMPLE {sample_nodes} ROWS""")
+                    WHERE d BETWEEN 2 AND {degree_cap}
+                    ORDER BY hash(v) LIMIT {sample_nodes}""")
     con.execute("""CREATE TABLE nb AS SELECT s.v AS v, sym.w AS w, s.d AS d
                    FROM samp s JOIN sym ON sym.v = s.v""")
     sampled, avg_cc, tri_total, nodes_with_tri = con.execute(
@@ -115,7 +126,9 @@ def measure(src: Path, *, sample_nodes: int, degree_cap: int,
            JOIN e2 c ON c.src=b.dst AND c.dst=a.src"""
     ).fetchone()[0]
 
-    avg_cc = float(avg_cc or 0.0)
+    # DuckDB's parallel floating aggregation can differ in the last binary digits.  Round the
+    # reported metric so the deterministic node sample also produces byte-stable values.
+    avg_cc = round(float(avg_cc or 0.0), 12)
     return {
         "nodes_with_edges": int(n_nodes),
         "multiplicity": {
@@ -192,7 +205,8 @@ def main() -> None:
         print(f"  -> merged into {path} under structural_profile")
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(json.dumps({"source": str(args.src), **profile}, indent=2) + "\n")
+        args.out.write_text(json.dumps({"source": str(args.src), "manifest": runmeta.manifest(
+            validation="bounded FinBench topology profile"), **profile}, indent=2) + "\n")
 
 
 if __name__ == "__main__":
