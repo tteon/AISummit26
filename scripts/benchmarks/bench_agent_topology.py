@@ -176,6 +176,64 @@ def _query_fingerprint(cypher: str, params: Dict[str, Any]) -> str:
     return _hash(normalized + "\n" + _stable_json(params))
 
 
+def _request_params(question: Dict[str, Any], *, anchor: int, row_cap: int) -> Dict[str, Any]:
+    """Bind a declarative request's user inputs while keeping scope/cap harness-owned."""
+    supplied = dict(question.get("params") or {})
+    bound = {key: (anchor if value == "anchor" else value)
+             for key, value in supplied.items()}
+    # These names are service policy, never model-selected request fields.
+    bound.update({"a": anchor, "acct_no": anchor, "ws": WS,
+                  "workspace_id": WS, "limit": row_cap})
+    return bound
+
+
+def _request_metadata(question: Dict[str, Any]) -> Dict[str, Any]:
+    """Stable workload labels for grouping user-visible request cost after a sweep."""
+    return {
+        "request_type": question.get("request_type", question.get("audience", "unspecified")),
+        "real_world_case": question.get("real_world_case"),
+        "schema_facets": list(question.get("schema_facets") or []),
+        "repair_risks": list(question.get("repair_risks") or []),
+        "parameter_contract": sorted((question.get("params") or {}).keys()),
+    }
+
+
+def _repair_ledger(*, stages: List[Dict[str, Any]], executions: List[Dict[str, Any]],
+                   initial_correct: bool, final_correct: bool,
+                   verifier_requested: bool, verifier_mode: str,
+                   repair_applied: bool, repair_elapsed_ms: float) -> Dict[str, Any]:
+    """Charge the incremental repair path without treating hosted API time as GPU cost."""
+    initial_executor = [s for s in stages if s.get("stage") == "executor"]
+    repair_executor = [s for s in stages if s.get("stage") == "repair_executor"]
+    validator_retry = initial_executor[1:]
+    repair_model_events = validator_retry + repair_executor
+    repair_executions = executions[1:]
+    return {
+        "schema_version": "seocho.repair-loop-ledger.v1",
+        "verifier_requested": verifier_requested,
+        "verifier_mode": verifier_mode,
+        "repair_applied": repair_applied,
+        "validator_retry_generations": len(validator_retry),
+        "verifier_repair_generations": len(repair_executor),
+        "repair_model_calls": len(repair_model_events),
+        "repair_api_elapsed_ms": round(sum(float(s.get("elapsed_ms", 0) or 0)
+                                           for s in repair_model_events), 1),
+        "repair_prompt_tokens": sum(int(s.get("prompt_tokens", 0) or 0)
+                                    for s in repair_model_events),
+        "repair_completion_tokens": sum(int(s.get("completion_tokens", 0) or 0)
+                                        for s in repair_model_events),
+        "repair_graph_trips": len(repair_executions),
+        "repair_db_hits": sum(int(e.get("db_hits", 0) or 0) for e in repair_executions),
+        "repair_db_ms": round(sum(float(e.get("elapsed_ms", 0) or 0)
+                                  for e in repair_executions), 3),
+        "repair_loop_wall_ms": round(repair_elapsed_ms, 1),
+        "initial_correct": bool(initial_correct),
+        "final_correct": bool(final_correct),
+        "converged_to_correct": bool(not initial_correct and final_correct),
+        "regressed_from_correct": bool(initial_correct and not final_correct),
+    }
+
+
 def _profile_db_hits(plan: Any) -> int:
     if plan is None:
         return 0
@@ -309,10 +367,9 @@ def _execute_profile(driver: Any, *, database: str, cypher: str,
 
 
 def _gold(driver: Any, *, database: str, question: Dict[str, Any],
-          anchor: int) -> List[Dict[str, Any]]:
+          params: Dict[str, Any]) -> List[Dict[str, Any]]:
     with driver.session(database=database) as session:
-        result = session.run(question["ref"], a=anchor, ws=WS,
-                             workspace_id=WS, limit=50, acct_no=anchor)
+        result = session.run(question["ref"], **params)
         rows = [dict(row) for row in result]
         result.consume()
     return rows
@@ -364,9 +421,8 @@ async def _run_case(*, arm: str, question: Dict[str, Any], database: str, sf: in
                     model_name: str, row_cap: int, decision_tokens: int,
                     executor_tokens: int,
                     verifier_mode: str) -> tuple[Dict[str, Any], Dict[str, Any]]:
-    question_text = question["question"].format(a=anchor)
-    params = {"a": anchor, "acct_no": anchor, "ws": WS, "workspace_id": WS,
-              "limit": row_cap}
+    params = _request_params(question, anchor=anchor, row_cap=row_cap)
+    question_text = question["question"].format(**params)
     episode_id = f"{run_id}:sf{sf}:{database}:{question['id']}:r{repeat}:{arm}"
     t_episode = time.perf_counter()
     stages: List[Dict[str, Any]] = []
@@ -452,11 +508,13 @@ async def _run_case(*, arm: str, question: Dict[str, Any], database: str, sf: in
     execution = await asyncio.to_thread(
         _execute_profile, driver, database=database, cypher=cypher,
         params=dict(generated.params), row_cap=row_cap, exact_completeness=exact)
-    executions.append({**execution["metrics"], "cypher": cypher})
+    executions.append({**execution["metrics"], "cypher": cypher, "phase": "initial"})
     final_execution = execution
+    initial_scored = interaction.score(question, gold_rows, execution["rows"])
 
     verifier_raw = ""
     verifier: Dict[str, Any] = {"pass": True, "reason_codes": [], "revision": ""}
+    repair_elapsed_ms = 0.0
     if arm != "direct_single":
         verifier_user = _verifier_payload(
             arm, question_text=question_text, planner_raw=planner_raw, intent=intent,
@@ -481,6 +539,7 @@ async def _run_case(*, arm: str, question: Dict[str, Any], database: str, sf: in
         decisions["repair_authority"] = verifier_mode
         decisions["repair_requested"] = bool(verifier.get("pass") is False and revision)
         if verifier.get("pass") is False and revision and verifier_mode == "auto":
+            repair_started = time.perf_counter()
             repair_question = (executor_question + "\n\nVerifier correction (apply it exactly):\n"
                                + revision)
             repair_usage: List[Dict[str, Any]] = []
@@ -506,19 +565,21 @@ async def _run_case(*, arm: str, question: Dict[str, Any], database: str, sf: in
 
             executor_backend.acomplete = tracked_repair  # type: ignore[method-assign]
             try:
-                try:
-                    repaired = await generate_validated_cypher(
-                        question=repair_question, schema=schema, params=params, policy=policy,
-                        backend=executor_backend, model=model_name, explain=explain,
-                    )
-                except Exception as exc:
-                    decisions["repair_applied"] = False
-                    decisions["repair_error"] = f"{type(exc).__name__}: {str(exc)[:300]}"
-                    conversation["stages"].append({
-                        "role": "repair_executor", "user": repair_question,
-                        "response": "", "error": decisions["repair_error"],
-                    })
-                    repaired = None
+                with span("agent.repair_loop", question_id=question["id"], arm=arm,
+                          verifier_mode=verifier_mode):
+                    try:
+                        repaired = await generate_validated_cypher(
+                            question=repair_question, schema=schema, params=params, policy=policy,
+                            backend=executor_backend, model=model_name, explain=explain,
+                        )
+                    except Exception as exc:
+                        decisions["repair_applied"] = False
+                        decisions["repair_error"] = f"{type(exc).__name__}: {str(exc)[:300]}"
+                        conversation["stages"].append({
+                            "role": "repair_executor", "user": repair_question,
+                            "response": "", "error": decisions["repair_error"],
+                        })
+                        repaired = None
             finally:
                 executor_backend.acomplete = original_acomplete  # type: ignore[method-assign]
             stages.extend(repair_usage)
@@ -527,7 +588,8 @@ async def _run_case(*, arm: str, question: Dict[str, Any], database: str, sf: in
                     _execute_profile, driver, database=database, cypher=repaired.cypher,
                     params=dict(repaired.params), row_cap=row_cap,
                     exact_completeness=exact)
-                executions.append({**repaired_execution["metrics"], "cypher": repaired.cypher})
+                executions.append({**repaired_execution["metrics"], "cypher": repaired.cypher,
+                                   "phase": "verifier_repair"})
                 final_execution = repaired_execution
                 decisions["repaired_cypher"] = repaired.cypher
                 decisions["repair_attempts"] = repaired.attempts
@@ -536,6 +598,7 @@ async def _run_case(*, arm: str, question: Dict[str, Any], database: str, sf: in
                                                 "response": repaired.cypher,
                                                 "attempts": repaired.attempts})
                 decisions["repair_applied"] = True
+            repair_elapsed_ms = (time.perf_counter() - repair_started) * 1000
         elif verifier.get("pass") is False and revision:
             # An LLM critique is evidence, not authority. The paid gate found a correct query
             # that the verifier tried to replace with an invalid literal-bound variant.
@@ -558,6 +621,7 @@ async def _run_case(*, arm: str, question: Dict[str, Any], database: str, sf: in
         "question_id": question["id"],
         "audience": question["audience"],
         "difficulty": question["difficulty"],
+        "request": _request_metadata(question),
         "repeat": repeat,
         "anchor": anchor,
         "correct": bool(scored["correct"]),
@@ -580,6 +644,14 @@ async def _run_case(*, arm: str, question: Dict[str, Any], database: str, sf: in
         "result_bytes": sum(e["result_bytes"] for e in executions),
         "verifier_pass": verifier.get("pass") if arm != "direct_single" else None,
         "verifier_reason_codes": verifier.get("reason_codes", []),
+        "repair_loop": _repair_ledger(
+            stages=stages, executions=executions,
+            initial_correct=bool(initial_scored["correct"]),
+            final_correct=bool(scored["correct"]),
+            verifier_requested=bool(decisions.get("repair_requested")),
+            verifier_mode=verifier_mode,
+            repair_applied=bool(decisions.get("repair_applied")),
+            repair_elapsed_ms=repair_elapsed_ms),
         "decisions": decisions,
         "stages": stages,
         "executions": executions,
@@ -653,6 +725,32 @@ def _trace_receipt(rows: List[Dict[str, Any]], spans_path: Path,
     }
 
 
+def _load_questions(question_suite: Optional[str], selected_ids: set[str]) -> List[Dict[str, Any]]:
+    """Load either the legacy diagnostic set or declarative user-request workload."""
+    if question_suite is None:
+        available = interaction.QUESTIONS
+    else:
+        payload = yaml.safe_load(Path(question_suite).read_text()) or {}
+        available = payload.get("questions") or []
+        if not isinstance(available, list):
+            raise SystemExit("question suite must contain a questions list")
+    questions = [dict(q) for q in available if q.get("id") in selected_ids]
+    ids = {str(q.get("id")) for q in questions}
+    missing = selected_ids - ids
+    if missing:
+        raise SystemExit(f"unknown question ids: {sorted(missing)}")
+    for question in questions:
+        required = ("id", "audience", "difficulty", "question", "shape", "ref")
+        absent = [key for key in required if key not in question]
+        if absent:
+            raise SystemExit(f"question {question.get('id')} missing {absent}")
+        if question["shape"] == "scalar" and not question.get("keys"):
+            raise SystemExit(f"scalar question {question['id']} needs keys")
+        if question["shape"] == "list" and not question.get("column"):
+            raise SystemExit(f"list question {question['id']} needs column")
+    return questions
+
+
 async def main_async(args: Any) -> None:
     _ensure_seocho_on_path(args.seocho_src)
     from seocho.ontology import Ontology
@@ -664,11 +762,12 @@ async def main_async(args: Any) -> None:
     cfg = model_config(args, max_tokens=args.executor_tokens)
     driver = GraphDatabase.driver(args.uri, auth=(args.user, args.password))
 
-    selected_ids = set(args.only or DEFAULT_DIAGNOSTIC)
-    questions = [q for q in interaction.QUESTIONS if q["id"] in selected_ids]
-    missing = selected_ids - {q["id"] for q in questions}
-    if missing:
-        raise SystemExit(f"unknown question ids: {sorted(missing)}")
+    if args.question_suite and not args.only:
+        suite_payload = yaml.safe_load(Path(args.question_suite).read_text()) or {}
+        selected_ids = {str(q.get("id")) for q in suite_payload.get("questions") or []}
+    else:
+        selected_ids = set(args.only or DEFAULT_DIAGNOSTIC)
+    questions = _load_questions(args.question_suite, selected_ids)
     targets = []
     for value in args.databases:
         database, _, sf = value.partition(":")
@@ -678,7 +777,9 @@ async def main_async(args: Any) -> None:
     for database, sf in targets:
         anchor = _anchor(driver, database)
         for question in questions:
-            gold_rows = _gold(driver, database=database, question=question, anchor=anchor)
+            gold_rows = _gold(driver, database=database, question=question,
+                              params=_request_params(question, anchor=anchor,
+                                                     row_cap=args.row_cap))
             if not gold_rows:
                 raise SystemExit(f"blind gold: {database}/{question['id']} returned no rows")
             prepared[(database, question["id"])] = {
@@ -691,6 +792,10 @@ async def main_async(args: Any) -> None:
         driver.close()
         print(f"validation OK: {len(prepared)} cells")
         return
+
+    # Credential resolution is a pre-paid gate.  Do it before any run artifact or monitor is
+    # opened so a missing hosted key cannot leave a manifest that resembles an interrupted run.
+    cfg.client_kwargs()
 
     arms = list(args.arms)
     unknown = set(arms) - set(ARMS)
@@ -950,6 +1055,8 @@ def main() -> None:
     parser.add_argument("--seocho-src", default=None)
     parser.add_argument("--db-container", default="aisummit-simtest")
     parser.add_argument("--arms", nargs="+", default=list(ARMS), choices=ARMS)
+    parser.add_argument("--question-suite", default=None,
+                        help="declarative user-request YAML; defaults to the diagnostic set")
     parser.add_argument("--only", nargs="+", default=None)
     parser.add_argument("--repeats", type=int, default=1)
     parser.add_argument("--row-cap", type=int, default=50)
