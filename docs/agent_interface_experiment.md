@@ -161,6 +161,49 @@ telemetry unavailable. A self-hosted vLLM run is
 the separate arm needed for GPU, KV residency, cache and scheduler counters. These counters
 must stay in their native denominators and must not be merged with MARA observations.
 
+## Retrieval ledger: SF1 → SF100
+
+The retrieval pilot fixes MARA DeepSeek-V3.1 and compares `multi_full` with `multi_typed` on
+four questions at SF1 and SF100, one repeat: 16 episodes, 14 executed PROFILE queries and two
+typed guardrail refusals. A 15-second inter-episode delay eliminated the MARA rate-limit
+failure seen in the retained invalid attempt. The clean source manifest is commit `77f9d2e`;
+all 16 local and Tempo traces completed, and all 87 database-container samples were present.
+This is an exploratory paired pilot, not a confidence-interval result.
+
+The scale result is valid only where the Cypher template is identical at both scales:
+
+| Search shape | SF1 | SF100 | SF100 / SF1 |
+| --- | ---: | ---: | ---: |
+| point access rows (`int_hard_2`, full) | 1 | 1 | 1.00× |
+| point DB hits (`int_hard_2`, full) | 57 | 60 | 1.05× |
+| sweep access rows (`int_med_1`) | 1,100 | 110,000 | 100.00× |
+| sweep DB hits (`int_med_1`) | 6,633 | 660,035 | 99.51× |
+
+The global sweep's measured DB time grew 9.29× in full context and 16.43× in typed context,
+but those are single warm-cache observations: all 14 profiles reported zero page-cache
+misses. The defensible finding is the near-100× search work, not a general latency multiplier.
+Point-shaped retrieval stayed effectively flat in search work.
+
+Context engineering changed retrieval cost in different directions:
+
+- `ext_med_2`: typed context gained one correct answer at each scale and spent 11.75% more
+  DB hits at SF1 and 11.50% more at SF100;
+- `ext_hard_2`: both arms were correct, while typed context used 21.79% fewer DB hits at SF1
+  and 12.96% fewer at SF100;
+- `int_med_1`: both arms emitted the same sweep template and the same DB hits, while typed
+  context used 60.60% more prompt tokens;
+- `int_hard_2`: typed context spent more prompt tokens but the guardrail prevented both graph
+  trips; full context executed 57/60-hit point queries. Both answers were wrong, so this is a
+  safety/cost saving, not a quality gain.
+
+This is why Agentic FinBench needs a three-part score rather than “ontology good” or “typed
+context cheaper”: correctness, model/context cost and retrieval cost can move independently.
+The retrieval ledger classifies access by actual rows at Seek/Scan operators, not by operator
+name. In this pilot the point plans used `NodeIndexSeek` and the sweep plans used
+`UnionNodeByLabelsScan`, so there were zero name/cost disagreements. The row-based rule is
+still required because the separate grammar-plan experiment shows that an indexed tenant
+scope can produce a seek-named operator with sweep-scale estimated rows.
+
 ## Exploratory pilot results
 
 ### Single agent, role agents and context isolation
@@ -267,6 +310,11 @@ Primary artifacts:
 - MARA + local DB monitoring gate:
   `results/episodes/agent_topology/20260831T_mara_local_db_monitor_gate_v1/`
 - monitoring-window analysis: `results/analysis/mara_local_db_monitor_gate_20260831.json`
+- SF1/SF100 retrieval raw run:
+  `results/episodes/agent_topology/20260831T_mara_retrieval_sf1_sf100_paced_v1/`
+- retrieval ledger: `results/analysis/mara_retrieval_ledger_sf1_sf100_20260831.json`
+- periodic DB-window analysis:
+  `results/analysis/mara_retrieval_system_windows_sf1_sf100_20260831.json`
 
 Invalid and interrupted gates are retained under `results/episodes/invalid_*` with an
 `INVALID_REASON.md`; they are not included in any aggregate.

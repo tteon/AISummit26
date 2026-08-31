@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
+import re
 import statistics
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
@@ -112,6 +114,13 @@ def _ratio(value: float, baseline: float) -> Optional[float]:
     return round(value / baseline, 4) if baseline else None
 
 
+def _cypher_template_fingerprint(cypher: Any) -> Optional[str]:
+    if not cypher:
+        return None
+    normalized = re.sub(r"\s+", " ", str(cypher)).strip().lower()
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()[:16]
+
+
 def _episode(row: Dict[str, Any], sweep_rows: float) -> Dict[str, Any]:
     executions = []
     for execution in row.get("executions") or []:
@@ -119,6 +128,8 @@ def _episode(row: Dict[str, Any], sweep_rows: float) -> Dict[str, Any]:
         returned = int(execution.get("rows", 0) or 0)
         executions.append({
             "query_fingerprint": execution.get("query_fingerprint"),
+            "cypher_template_fingerprint": _cypher_template_fingerprint(
+                execution.get("cypher")),
             "cypher": execution.get("cypher"),
             "params": execution.get("params"),
             "returned_rows": returned,
@@ -204,10 +215,14 @@ def _paired(rows: List[Dict[str, Any]], left_arm: str, right_arm: str) -> List[D
             "both_executed": both,
             "db_hits_ratio": _ratio(right["db_hits"], left["db_hits"]) if both else None,
             "db_ms_ratio": _ratio(float(right["db_ms"]), float(left["db_ms"])) if both else None,
-            "same_initial_fingerprint": (
+            "same_query_fingerprint": (
                 bool(left["executions"] and right["executions"]) and
                 left["executions"][0]["query_fingerprint"] ==
                 right["executions"][0]["query_fingerprint"]),
+            "same_cypher_template": (
+                bool(left["executions"] and right["executions"]) and
+                left["executions"][0]["cypher_template_fingerprint"] ==
+                right["executions"][0]["cypher_template_fingerprint"]),
             "left_access_classes": left["access_classes"],
             "right_access_classes": right["access_classes"],
         })
@@ -233,10 +248,10 @@ def _scale_pairs(rows: List[Dict[str, Any]], low_sf: int, high_sf: int) -> List[
                 if both else None,
             "low_access_classes": low["access_classes"],
             "high_access_classes": high["access_classes"],
-            "same_initial_fingerprint": (
+            "same_cypher_template": (
                 bool(low["executions"] and high["executions"]) and
-                low["executions"][0]["query_fingerprint"] ==
-                high["executions"][0]["query_fingerprint"]),
+                low["executions"][0]["cypher_template_fingerprint"] ==
+                high["executions"][0]["cypher_template_fingerprint"]),
         })
     return output
 
@@ -280,6 +295,16 @@ def main() -> None:
             "executed_episodes": sum(bool(row["graph_trips"]) for row in rows),
             "profiled_queries": sum(len(row["executions"]) for row in rows),
             "context_pairs": len(context_pairs), "scale_pairs": len(scale_pairs),
+            "context_pairs_both_executed": sum(
+                pair["both_executed"] for pair in context_pairs),
+            "context_pairs_same_template": sum(
+                pair["both_executed"] and pair["same_cypher_template"]
+                for pair in context_pairs),
+            "scale_pairs_both_executed": sum(
+                pair["both_executed"] for pair in scale_pairs),
+            "scale_pairs_same_template": sum(
+                pair["both_executed"] and pair["same_cypher_template"]
+                for pair in scale_pairs),
             "name_cost_disagreements": sum(
                 execution["plan"].get("name_cost_disagreement", False)
                 for row in rows for execution in row["executions"]),

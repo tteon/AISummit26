@@ -75,6 +75,13 @@ required.
 contract that decides what the model sees, what the database is allowed to execute, and how
 the evidence comes back.”
 
+The retrieval pilot supplies the concrete scale contrast for this slide: with the same query
+template, a point search moved from 57 to 60 DB hits at SF1→SF100 (1.05×), while a global
+sweep moved from 6,633 to 660,035 hits (99.51×). This pilot planned the point as a seek and
+the sweep as a scan; the benchmark nevertheless classifies search shape from access rows,
+because the separate grammar-plan experiment demonstrates that operator names alone can be
+misleading when tenant scope is indexed.
+
 ## Sources in this repository
 
 - cross-model raw data: `results/episodes/agent_model_matrix/20260831T_mara_model_matrix_v1/`

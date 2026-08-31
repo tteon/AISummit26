@@ -22,6 +22,13 @@ def node(name, rows, estimated, hits=0, children=None):
 
 
 class RetrievalLedgerTest(unittest.TestCase):
+    def test_template_fingerprint_ignores_whitespace_but_not_query_shape(self) -> None:
+        first = MODULE._cypher_template_fingerprint("MATCH (a)  RETURN a")
+        second = MODULE._cypher_template_fingerprint(" MATCH (a)\nRETURN a ")
+        third = MODULE._cypher_template_fingerprint("MATCH (a) RETURN count(a)")
+        self.assertEqual(first, second)
+        self.assertNotEqual(first, third)
+
     def test_seek_name_with_many_rows_is_a_sweep_by_cost(self) -> None:
         tree = node("ProduceResults@db", 1, 1, children=[
             node("NodeIndexSeek@db", 200_470, 200_470, hits=6_400_000)

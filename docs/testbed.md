@@ -471,6 +471,18 @@ python3 scripts/analysis/analyze_local_db_monitor.py \
   --out results/analysis/<run-id>-local-db.json
 ```
 
+The analyzer reports `window_bracketed` per episode. Periodic coverage of the whole run does
+not imply that every short episode has samples on both boundaries; when it is false, retain
+CPU/memory/I/O as run-level telemetry and do not quote it as query-attributed usage. Search
+work remains query-exact because it comes from that query's PROFILE tree. Build the retrieval
+ledger with:
+
+```bash
+python3 scripts/analysis/analyze_retrieval_ledger.py \
+  --report results/episodes/agent_topology/<run-id>/report.json \
+  --out results/analysis/<run-id>-retrieval.json
+```
+
 **Stage 2 is not a measurement.** Its own documentation is blunt about this: with the default
 `mem_util: 0.9` its TTFT was off by −20.7%, and it landed at +0.6% only after `mem_util` was
 matched to the real run's resolved block count. And it warns that KV capacity is invisible

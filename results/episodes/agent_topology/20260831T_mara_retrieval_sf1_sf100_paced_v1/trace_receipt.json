@@ -1,0 +1,109 @@
+{
+  "schema_version": "seocho.trace-receipt.v1",
+  "trace_ids": [
+    "1fa94b7638a63a61c3cf9e5e8f12a49f",
+    "3097c1449313a57fd226e655740e7cc5",
+    "479ac29cdac48a1ab248782e6d3130df",
+    "4951bfdec71133583caa3a822d4c9dd9",
+    "524e2f346c42c7fd7e7fba4d4bc2ac6e",
+    "54c0bf96562bf4a6521987b69752e061",
+    "54fa98ce655413633df466250da9eaa6",
+    "71461d722c8f2246a6307124da910971",
+    "7ddc30d3fe07a9ba24802c28905a0b97",
+    "7ebec14fa35cea39f63b25961158fa65",
+    "8b3419790444d2048888ac471d8d8e7d",
+    "8e0e8fa4ef5dd05e3bc821a6c683e9a6",
+    "919c4def8099393da1a2c95d0fe0d3c4",
+    "a72e17441515aabe5aeb1c911ce89bb6",
+    "b5e62e553f15e50e4adbfa6879ee1b9d",
+    "d73906a9a12d78106830747d06fc6b95"
+  ],
+  "local_jsonl": "results/episodes/agent_topology/20260831T_mara_retrieval_sf1_sf100_paced_v1/spans.jsonl",
+  "local_span_counts": {
+    "a72e17441515aabe5aeb1c911ce89bb6": 5,
+    "71461d722c8f2246a6307124da910971": 5,
+    "d73906a9a12d78106830747d06fc6b95": 5,
+    "479ac29cdac48a1ab248782e6d3130df": 5,
+    "7ddc30d3fe07a9ba24802c28905a0b97": 6,
+    "8e0e8fa4ef5dd05e3bc821a6c683e9a6": 5,
+    "7ebec14fa35cea39f63b25961158fa65": 5,
+    "524e2f346c42c7fd7e7fba4d4bc2ac6e": 4,
+    "b5e62e553f15e50e4adbfa6879ee1b9d": 5,
+    "4951bfdec71133583caa3a822d4c9dd9": 5,
+    "3097c1449313a57fd226e655740e7cc5": 5,
+    "54fa98ce655413633df466250da9eaa6": 5,
+    "8b3419790444d2048888ac471d8d8e7d": 5,
+    "919c4def8099393da1a2c95d0fe0d3c4": 6,
+    "54c0bf96562bf4a6521987b69752e061": 5,
+    "1fa94b7638a63a61c3cf9e5e8f12a49f": 4
+  },
+  "local_complete": true,
+  "tempo_url": "http://127.0.0.1:3200",
+  "tempo": {
+    "1fa94b7638a63a61c3cf9e5e8f12a49f": {
+      "found": true,
+      "detail": "batches=2"
+    },
+    "3097c1449313a57fd226e655740e7cc5": {
+      "found": true,
+      "detail": "batches=2"
+    },
+    "479ac29cdac48a1ab248782e6d3130df": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "4951bfdec71133583caa3a822d4c9dd9": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "524e2f346c42c7fd7e7fba4d4bc2ac6e": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "54c0bf96562bf4a6521987b69752e061": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "54fa98ce655413633df466250da9eaa6": {
+      "found": true,
+      "detail": "batches=2"
+    },
+    "71461d722c8f2246a6307124da910971": {
+      "found": true,
+      "detail": "batches=6"
+    },
+    "7ddc30d3fe07a9ba24802c28905a0b97": {
+      "found": true,
+      "detail": "batches=6"
+    },
+    "7ebec14fa35cea39f63b25961158fa65": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "8b3419790444d2048888ac471d8d8e7d": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "8e0e8fa4ef5dd05e3bc821a6c683e9a6": {
+      "found": true,
+      "detail": "batches=2"
+    },
+    "919c4def8099393da1a2c95d0fe0d3c4": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "a72e17441515aabe5aeb1c911ce89bb6": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "b5e62e553f15e50e4adbfa6879ee1b9d": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "d73906a9a12d78106830747d06fc6b95": {
+      "found": true,
+      "detail": "batches=4"
+    }
+  },
+  "tempo_complete": true
+}
