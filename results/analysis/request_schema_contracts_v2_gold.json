@@ -1,0 +1,470 @@
+{
+  "schema_version": "finbench.request-contract-gold-validation.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T10:38:55+00:00",
+    "git_commit": "f5a6ef3802dcda842cb4eaa693d5af6664bf1f00",
+    "git_dirty": true,
+    "argv": [
+      "scripts/analysis/validate_request_contract_gold.py",
+      "--password",
+      "<redacted>",
+      "--databases",
+      "finbenchl1:1",
+      "finbenchl100:100",
+      "--out",
+      "results/analysis/request_schema_contracts_v2_gold.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "512M",
+    "db_heap_max": "",
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "418",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "validation": "database-only request contract gold"
+  },
+  "catalog": "configs/agentic_request_schema_contracts_v2.yaml",
+  "uri": "bolt://localhost:7688",
+  "anchor": 108,
+  "row_cap": 50,
+  "samples": [
+    {
+      "database": "finbenchl1",
+      "sf": 1,
+      "request_id": "inbound_amount_band",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50,
+        "min_amount": 0
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "elapsed_ms": 5.721
+    },
+    {
+      "database": "finbenchl1",
+      "sf": 1,
+      "request_id": "outgoing_cross_border_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "elapsed_ms": 1.851
+    },
+    {
+      "database": "finbenchl1",
+      "sf": 1,
+      "request_id": "shared_medium_access",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50,
+        "result_limit": 1
+      },
+      "ok": true,
+      "row_count": 31,
+      "columns": [
+        "shared_account"
+      ],
+      "elapsed_ms": 3.035
+    },
+    {
+      "database": "finbenchl1",
+      "sf": 1,
+      "request_id": "blocked_medium_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "blocked_media"
+      ],
+      "elapsed_ms": 1.664
+    },
+    {
+      "database": "finbenchl1",
+      "sf": 1,
+      "request_id": "high_risk_rail_and_medium",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50,
+        "risk_weight": 1
+      },
+      "ok": true,
+      "row_count": 6,
+      "columns": [
+        "rail",
+        "transactions"
+      ],
+      "elapsed_ms": 1.666
+    },
+    {
+      "database": "finbenchl1",
+      "sf": 1,
+      "request_id": "common_owner_device_link",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 326,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "linked_account"
+      ],
+      "elapsed_ms": 4.971
+    },
+    {
+      "database": "finbenchl1",
+      "sf": 1,
+      "request_id": "loan_applicant_facilities",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 1133,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 2,
+      "columns": [
+        "loan",
+        "principal_krw"
+      ],
+      "elapsed_ms": 76.503
+    },
+    {
+      "database": "finbenchl1",
+      "sf": 1,
+      "request_id": "repayment_ratio_policy",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 826,
+        "limit": 50,
+        "repaid_ratio": 1
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "loan",
+        "principal_krw",
+        "repaid_krw"
+      ],
+      "elapsed_ms": 4.07
+    },
+    {
+      "database": "finbenchl1",
+      "sf": 1,
+      "request_id": "guarantor_of_applicant",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "guarantees",
+        "guaranteed_parties"
+      ],
+      "elapsed_ms": 2.7
+    },
+    {
+      "database": "finbenchl1",
+      "sf": 1,
+      "request_id": "cash_exit_after_inflow",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "counterparties"
+      ],
+      "elapsed_ms": 2.191
+    },
+    {
+      "database": "finbenchl1",
+      "sf": 1,
+      "request_id": "layered_inflow_from_flagged",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "flagged_sources"
+      ],
+      "elapsed_ms": 2.672
+    },
+    {
+      "database": "finbenchl1",
+      "sf": 1,
+      "request_id": "corporate_investor_account_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50,
+        "company_id": "1000"
+      },
+      "ok": true,
+      "row_count": 2,
+      "columns": [
+        "investor",
+        "company_accounts"
+      ],
+      "elapsed_ms": 3.15
+    },
+    {
+      "database": "finbenchl100",
+      "sf": 100,
+      "request_id": "inbound_amount_band",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50,
+        "min_amount": 0
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "elapsed_ms": 1.5
+    },
+    {
+      "database": "finbenchl100",
+      "sf": 100,
+      "request_id": "outgoing_cross_border_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "elapsed_ms": 2.007
+    },
+    {
+      "database": "finbenchl100",
+      "sf": 100,
+      "request_id": "shared_medium_access",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50,
+        "result_limit": 1
+      },
+      "ok": true,
+      "row_count": 28,
+      "columns": [
+        "shared_account"
+      ],
+      "elapsed_ms": 2.284
+    },
+    {
+      "database": "finbenchl100",
+      "sf": 100,
+      "request_id": "blocked_medium_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "blocked_media"
+      ],
+      "elapsed_ms": 2.002
+    },
+    {
+      "database": "finbenchl100",
+      "sf": 100,
+      "request_id": "high_risk_rail_and_medium",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50,
+        "risk_weight": 1
+      },
+      "ok": true,
+      "row_count": 4,
+      "columns": [
+        "rail",
+        "transactions"
+      ],
+      "elapsed_ms": 1.93
+    },
+    {
+      "database": "finbenchl100",
+      "sf": 100,
+      "request_id": "common_owner_device_link",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 184908,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "linked_account"
+      ],
+      "elapsed_ms": 497.212
+    },
+    {
+      "database": "finbenchl100",
+      "sf": 100,
+      "request_id": "loan_applicant_facilities",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 66203,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 2,
+      "columns": [
+        "loan",
+        "principal_krw"
+      ],
+      "elapsed_ms": 61.303
+    },
+    {
+      "database": "finbenchl100",
+      "sf": 100,
+      "request_id": "repayment_ratio_policy",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 82699,
+        "limit": 50,
+        "repaid_ratio": 1
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "loan",
+        "principal_krw",
+        "repaid_krw"
+      ],
+      "elapsed_ms": 5.36
+    },
+    {
+      "database": "finbenchl100",
+      "sf": 100,
+      "request_id": "guarantor_of_applicant",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "guarantees",
+        "guaranteed_parties"
+      ],
+      "elapsed_ms": 2.568
+    },
+    {
+      "database": "finbenchl100",
+      "sf": 100,
+      "request_id": "cash_exit_after_inflow",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "counterparties"
+      ],
+      "elapsed_ms": 1.741
+    },
+    {
+      "database": "finbenchl100",
+      "sf": 100,
+      "request_id": "layered_inflow_from_flagged",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "flagged_sources"
+      ],
+      "elapsed_ms": 2.566
+    },
+    {
+      "database": "finbenchl100",
+      "sf": 100,
+      "request_id": "corporate_investor_account_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 108,
+        "limit": 50,
+        "company_id": "100000"
+      },
+      "ok": true,
+      "row_count": 3,
+      "columns": [
+        "investor",
+        "company_accounts"
+      ],
+      "elapsed_ms": 3.262
+    }
+  ],
+  "valid": true
+}

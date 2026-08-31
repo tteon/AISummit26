@@ -1,0 +1,83 @@
+# Executable semantic boundary for an Agent API serving FinBench.
+# A term may be recognised without being executable.  The executor may compile only entries
+# with status `mapped` or `derived`; `unsupported` must produce a typed refusal, never Cypher.
+name: business_request_finbench_mapping
+version: 1.0.0
+logical_projection: ontology/fibo_finbench.projection.yaml
+physical_ontology: ontology/finbench.ontology.yaml
+terms:
+  account:
+    aliases: [account, customer account, deposit account, bank account]
+    semantic: {fibo_term: demand_deposit_account, status: proxy}
+    status: mapped
+    physical: {node: Account, identity: acct_no}
+  incoming_transfer:
+    aliases: [incoming transfer, inbound payment, incoming payment, credit]
+    semantic: {fibo_term: individual_transaction, status: informative_only}
+    status: mapped
+    physical: {relationship: TRANSFER, direction: "(:Account)-[:TRANSFER]->(:Account {acct_no:$acct_no})"}
+  outgoing_transfer:
+    aliases: [outgoing transfer, outbound payment, sent money, transfer out]
+    semantic: {fibo_term: individual_transaction, status: informative_only}
+    status: mapped
+    physical: {relationship: TRANSFER, direction: "(:Account {acct_no:$acct_no})-[:TRANSFER]->(:Account)"}
+  transaction:
+    aliases: [transaction, transfer]
+    semantic: {fibo_term: individual_transaction, status: informative_only}
+    status: mapped
+    physical: {relationship: TRANSFER}
+    compiler_note: "This is a business alias, never a :Transaction label or :Transfer relationship."
+  beneficial_owner:
+    aliases: [beneficial owner, account owner, owner]
+    semantic: {relationship: BENEFICIAL_OWNER_OF, status: proxy}
+    status: mapped
+    physical: {relationship: OWN, direction: "(:Person|Company)-[:OWN]->(:Account)"}
+    limitation: "OWN proves graph ownership; Person is the natural-person subset of the FIBO proxy."
+  owner_type:
+    aliases: [owner type, beneficial owner type, legal form]
+    semantic: {status: unavailable}
+    status: unsupported
+    refusal_code: UNSUPPORTED_SEMANTIC_FIELD
+    reason: "FinBench has no owner_type property; only Person/Company labels are available."
+  repayment_to_date:
+    aliases: [total repaid, repaid so far, repayment to date, outstanding repayment]
+    semantic: {fibo_term: committed_credit_facility, status: proxy}
+    status: derived
+    physical:
+      relationship: REPAY
+      expression: "sum(r.amount)"
+      binding: "MATCH (:Account)-[r:REPAY]->(l:Loan)"
+      unit: KRW
+    compiler_note: "Never compile as l.total_repaid; the property does not exist."
+  repayment_ratio:
+    aliases: [repaid ratio, repayment ratio, paid percentage]
+    semantic: {fibo_term: committed_credit_facility, status: proxy}
+    status: derived
+    physical: {expression: "sum(r.amount) / l.principal", dependencies: [REPAY.amount, Loan.principal]}
+  payment_rail:
+    aliases: [payment rail, channel, payment channel]
+    semantic: {fibo_term: electronic_funds_transfer_service, status: informative_only}
+    status: mapped
+    physical: {node: Channel, relationship: USES_CHANNEL, properties: [Channel.code, Channel.risk_weight, USES_CHANNEL.tx_count]}
+  login_medium:
+    aliases: [device, login device, access medium, terminal]
+    semantic: {status: local_extension}
+    status: mapped
+    physical: {node: Medium, relationship: SIGN_IN, direction: "(:Medium)-[:SIGN_IN]->(:Account)"}
+  loan_proceeds:
+    aliases: [loan proceeds, loan disbursement, funded loan]
+    semantic: {fibo_term: committed_credit_facility, status: proxy}
+    status: mapped
+    physical: {relationship: DEPOSIT, direction: "(:Loan)-[:DEPOSIT]->(:Account)", properties: [DEPOSIT.amount]}
+  corporate_control:
+    aliases: [corporate control, controlling investor, parent company]
+    semantic: {relationship: CONTROLS_ENTITY, status: proxy}
+    status: mapped_with_limitation
+    physical: {relationship: INVEST, direction: "(:Person|Company)-[:INVEST]->(:Company)"}
+    limitation: "INVEST is holding evidence only; it does not establish legal control or a subsidiary relation."
+  subsidiary:
+    aliases: [subsidiary, parent company, controlled subsidiary]
+    semantic: {relationship: SUBSIDIARY_OF, status: unsupported}
+    status: unsupported
+    refusal_code: UNSUPPORTED_RELATIONSHIP
+    reason: "FinBench has no relation that proves subsidiary-to-parent semantics."

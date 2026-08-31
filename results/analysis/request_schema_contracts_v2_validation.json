@@ -1,0 +1,121 @@
+{
+  "schema_version": "finbench.request-schema-contract-validation.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T10:39:37+00:00",
+    "git_commit": "f5a6ef3802dcda842cb4eaa693d5af6664bf1f00",
+    "git_dirty": true,
+    "argv": [
+      "scripts/analysis/validate_request_schema_contracts.py",
+      "--out",
+      "results/analysis/request_schema_contracts_v2_validation.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "512M",
+    "db_heap_max": "",
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "408",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "validation": "request-to-FinBench contract"
+  },
+  "inputs": {
+    "catalog": "configs/agentic_request_schema_contracts_v2.yaml",
+    "physical": "ontology/finbench.ontology.yaml",
+    "projection": "ontology/fibo_finbench.projection.yaml"
+  },
+  "counts": {
+    "requests": 12,
+    "domains": 6
+  },
+  "requests": [
+    {
+      "id": "inbound_amount_band",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "id": "outgoing_cross_border_exposure",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "id": "shared_medium_access",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "id": "blocked_medium_exposure",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "id": "high_risk_rail_and_medium",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "id": "common_owner_device_link",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "id": "loan_applicant_facilities",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "id": "repayment_ratio_policy",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "id": "guarantor_of_applicant",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "id": "cash_exit_after_inflow",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "id": "layered_inflow_from_flagged",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "id": "corporate_investor_account_exposure",
+      "valid": true,
+      "errors": []
+    }
+  ],
+  "errors": [],
+  "valid": true
+}

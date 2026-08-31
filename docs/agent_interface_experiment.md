@@ -273,6 +273,10 @@ They are not a reason to tune this model; they identify a schema-contract requir
 Agentic FinBench: semantic aliases, physical names, parameter names, unsupported terms and
 repair authority must be explicit at the Agent API ↔ graph boundary.
 
+The expanded, versioned business-vocabulary → semantic term → physical FinBench contract is
+documented in [request_schema_contract.md](request_schema_contract.md). It is a new workload
+arm and does not alter the denominator of this paired result.
+
 ## Exploratory pilot results
 
 ### Single agent, role agents and context isolation

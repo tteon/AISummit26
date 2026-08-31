@@ -1,0 +1,125 @@
+{
+  "schema_version": "finbench.business-vocabulary-mapping-validation.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T10:39:36+00:00",
+    "git_commit": "f5a6ef3802dcda842cb4eaa693d5af6664bf1f00",
+    "git_dirty": true,
+    "argv": [
+      "scripts/analysis/validate_business_request_mapping.py",
+      "--out",
+      "results/analysis/business_request_finbench_mapping_validation.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "512M",
+    "db_heap_max": "",
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "408",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "validation": "business vocabulary to FinBench mapping"
+  },
+  "inputs": {
+    "mapping": "ontology/business_request_finbench.mapping.yaml",
+    "physical": "ontology/finbench.ontology.yaml",
+    "projection": "ontology/fibo_finbench.projection.yaml"
+  },
+  "counts": {
+    "terms": 13
+  },
+  "terms": [
+    {
+      "term": "account",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "term": "incoming_transfer",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "term": "outgoing_transfer",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "term": "transaction",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "term": "beneficial_owner",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "term": "owner_type",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "term": "repayment_to_date",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "term": "repayment_ratio",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "term": "payment_rail",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "term": "login_medium",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "term": "loan_proceeds",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "term": "corporate_control",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "term": "subsidiary",
+      "valid": true,
+      "errors": []
+    }
+  ],
+  "errors": [],
+  "valid": true
+}

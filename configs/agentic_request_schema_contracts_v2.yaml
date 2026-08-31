@@ -1,0 +1,215 @@
+# Versioned contract catalog for future Agent API <-> Bolt experiments.
+# This is deliberately separate from the paid v1 workload: adding request types is a new arm,
+# never a retroactive edit to its denominator.
+suite: agentic_request_schema_contracts_v2
+extends: configs/agentic_request_repair_sweep.yaml
+contract_version: 1
+workspace_id: default
+contract_rules:
+  harness_owned_parameters: [workspace_id, acct_no, limit]
+  physical_execution_language: Cypher
+  semantic_terms_are_not_executable: true
+
+requests:
+  - id: inbound_amount_band
+    domain: customer_service
+    difficulty: medium
+    real_world_case: "A customer disputes whether an inbound payment threshold was exceeded."
+    user_request: "For account {acct_no}, count incoming transfers of at least {min_amount} and total them."
+    parameters: {min_amount: {type: integer, source: user, minimum: 0}}
+    physical: {nodes: [Account], relationships: [TRANSFER], properties: [TRANSFER.amount], directions: ["Account<-TRANSFER-Account"]}
+    semantic_terms: [demand_deposit_account, individual_transaction]
+    result: {shape: scalar, columns: {count: integer, total_amount_krw: integer}, unit: KRW, aggregation: "count + sum"}
+    verification: ["all TRANSFER edges terminate at the bound account", "amount is compared as $min_amount", "null sum is represented explicitly"]
+    plan_risk: {class: anchored_aggregate, scope: indexed_account_anchor, expansion_bound: 1}
+    gold: >-
+      MATCH (:Account {_workspace_id:$workspace_id})-[t:TRANSFER]->(:Account {_workspace_id:$workspace_id,acct_no:$acct_no})
+      WHERE t.amount >= $min_amount RETURN count(t) AS count, sum(t.amount) AS total_amount_krw LIMIT $limit
+
+  - id: outgoing_cross_border_exposure
+    domain: aml_alert_triage
+    difficulty: medium
+    real_world_case: "An AML analyst reviews cross-border outflows from an alerted customer."
+    user_request: "For account {acct_no}, count outgoing cross-border transfers and total their value."
+    parameters: {}
+    physical: {nodes: [Account], relationships: [TRANSFER], properties: [TRANSFER.amount, TRANSFER.cross_border], directions: ["Account-TRANSFER->Account"]}
+    semantic_terms: [demand_deposit_account, electronic_funds_transfer_service]
+    result: {shape: scalar, columns: {count: integer, total_amount_krw: integer}, unit: KRW, aggregation: "count + sum"}
+    verification: ["bound account is TRANSFER sender", "cross_border is boolean true"]
+    plan_risk: {class: anchored_aggregate, scope: indexed_account_anchor, expansion_bound: 1}
+    gold: >-
+      MATCH (:Account {_workspace_id:$workspace_id,acct_no:$acct_no})-[t:TRANSFER]->(:Account {_workspace_id:$workspace_id})
+      WHERE t.cross_border = true RETURN count(t) AS count, sum(t.amount) AS total_amount_krw LIMIT $limit
+
+  - id: shared_medium_access
+    domain: fraud_investigation
+    difficulty: hard
+    real_world_case: "Fraud operations identify accounts sharing a login device with a customer account."
+    user_request: "Which other accounts share a login medium with account {acct_no}? Return up to {result_limit} account numbers."
+    parameters: {result_limit: {type: integer, source: user, minimum: 1, maximum: 50}}
+    physical: {nodes: [Account, Medium], relationships: [SIGN_IN], properties: [Account.acct_no], directions: ["Medium-SIGN_IN->Account"]}
+    semantic_terms: [demand_deposit_account]
+    result: {shape: list, columns: {shared_account: integer}, ordering: "ascending account number", uniqueness: distinct}
+    verification: ["candidate account differs from anchor", "the same Medium reaches both accounts", "result is DISTINCT and capped by harness limit"]
+    plan_risk: {class: two_hop_fanout, scope: indexed_account_anchor, expansion_bound: 2}
+    gold: >-
+      MATCH (m:Medium {_workspace_id:$workspace_id})-[:SIGN_IN]->(:Account {_workspace_id:$workspace_id,acct_no:$acct_no})
+      MATCH (m)-[:SIGN_IN]->(other:Account {_workspace_id:$workspace_id}) WHERE other.acct_no <> $acct_no
+      RETURN DISTINCT other.acct_no AS shared_account ORDER BY shared_account LIMIT $limit
+
+  - id: blocked_medium_exposure
+    domain: fraud_investigation
+    difficulty: medium
+    real_world_case: "Security operations assess whether a customer accessed from a blocked device."
+    user_request: "How many blocked login media have signed in to account {acct_no}?"
+    parameters: {}
+    physical: {nodes: [Account, Medium], relationships: [SIGN_IN], properties: [Medium.is_blocked], directions: ["Medium-SIGN_IN->Account"]}
+    semantic_terms: [demand_deposit_account]
+    result: {shape: scalar, columns: {blocked_media: integer}, aggregation: "count distinct"}
+    verification: ["Medium is the SIGN_IN source", "is_blocked is a node property, not an edge property"]
+    plan_risk: {class: anchored_expand, scope: indexed_account_anchor, expansion_bound: 1}
+    gold: >-
+      MATCH (m:Medium {_workspace_id:$workspace_id})-[:SIGN_IN]->(:Account {_workspace_id:$workspace_id,acct_no:$acct_no})
+      WHERE m.is_blocked = true RETURN count(DISTINCT m) AS blocked_media LIMIT $limit
+
+  - id: high_risk_rail_and_medium
+    domain: aml_alert_triage
+    difficulty: hard
+    real_world_case: "An investigator reviews a customer's high-risk payment rails."
+    user_request: "For account {acct_no}, list payment rails with risk at least {risk_weight} and the number of transactions."
+    parameters: {risk_weight: {type: integer, source: user, minimum: 1, maximum: 5}}
+    physical: {nodes: [Account, Channel], relationships: [USES_CHANNEL], properties: [Channel.code, Channel.risk_weight, USES_CHANNEL.tx_count], directions: ["Account-USES_CHANNEL->Channel"]}
+    semantic_terms: [demand_deposit_account, electronic_funds_transfer_service]
+    result: {shape: list, columns: {rail: string, transactions: integer}, ordering: "transactions descending, rail ascending"}
+    verification: ["rail risk is Channel.risk_weight", "volume is sum(USES_CHANNEL.tx_count)"]
+    plan_risk: {class: anchored_dimension_aggregate, scope: indexed_account_anchor, expansion_bound: 1}
+    gold: >-
+      MATCH (:Account {_workspace_id:$workspace_id,acct_no:$acct_no})-[u:USES_CHANNEL]->(c:Channel {_workspace_id:$workspace_id})
+      WHERE c.risk_weight >= $risk_weight RETURN c.code AS rail, sum(u.tx_count) AS transactions
+      ORDER BY transactions DESC, rail LIMIT $limit
+
+  - id: common_owner_device_link
+    domain: fraud_investigation
+    difficulty: hard
+    real_world_case: "An investigator tests whether a counterparty is linked by both shared device and common owner."
+    user_request: "List accounts sharing both an owner and a login medium with account {acct_no}."
+    parameters: {}
+    physical: {nodes: [Account, Person, Company, Medium], relationships: [OWN, SIGN_IN], properties: [Account.acct_no], directions: ["Person|Company-OWN->Account", "Medium-SIGN_IN->Account"]}
+    semantic_terms: [demand_deposit_account, natural_person, corporation]
+    result: {shape: list, columns: {linked_account: integer}, ordering: "ascending account number", uniqueness: distinct}
+    verification: ["same owner and same medium are both required", "candidate differs from anchor"]
+    plan_risk: {class: four_hop_intersection, scope: indexed_account_anchor, expansion_bound: 4}
+    validation_seed: >-
+      MATCH (o:Person|Company {_workspace_id:$workspace_id})-[:OWN]->(a:Account {_workspace_id:$workspace_id})
+      MATCH (o)-[:OWN]->(other:Account {_workspace_id:$workspace_id}) WHERE other <> a
+      MATCH (m:Medium {_workspace_id:$workspace_id})-[:SIGN_IN]->(a) MATCH (m)-[:SIGN_IN]->(other)
+      RETURN a.acct_no AS acct_no LIMIT 1
+    gold: >-
+      MATCH (o:Person|Company {_workspace_id:$workspace_id})-[:OWN]->(:Account {_workspace_id:$workspace_id,acct_no:$acct_no})
+      MATCH (o)-[:OWN]->(other:Account {_workspace_id:$workspace_id}) WHERE other.acct_no <> $acct_no
+      MATCH (m:Medium {_workspace_id:$workspace_id})-[:SIGN_IN]->(:Account {_workspace_id:$workspace_id,acct_no:$acct_no})
+      MATCH (m)-[:SIGN_IN]->(other) RETURN DISTINCT other.acct_no AS linked_account ORDER BY linked_account LIMIT $limit
+
+  - id: loan_applicant_facilities
+    domain: credit_risk_review
+    difficulty: hard
+    real_world_case: "Credit underwriting connects an account owner to facilities they applied for."
+    user_request: "For the owner of account {acct_no}, list loans they applied for and each principal."
+    parameters: {}
+    physical: {nodes: [Account, Person, Company, Loan], relationships: [OWN, APPLY, DEPOSIT], properties: [Loan.id, Loan.principal], directions: ["Person|Company-OWN->Account", "Person|Company-APPLY->Loan", "Loan-DEPOSIT->Account"]}
+    semantic_terms: [demand_deposit_account, committed_credit_facility, natural_person, corporation]
+    result: {shape: list, columns: {loan: string, principal_krw: integer}, ordering: "loan id ascending", uniqueness: distinct, unit: KRW}
+    verification: ["account owner is the APPLY source", "APPLY target is Loan", "principal is a Loan property"]
+    plan_risk: {class: party_to_facility_join, scope: indexed_account_anchor, expansion_bound: 2}
+    validation_seed: >-
+      MATCH (p:Person|Company {_workspace_id:$workspace_id})-[:OWN]->(a:Account {_workspace_id:$workspace_id})
+      MATCH (p)-[:APPLY]->(:Loan {_workspace_id:$workspace_id}) RETURN a.acct_no AS acct_no LIMIT 1
+    gold: >-
+      MATCH (p:Person|Company {_workspace_id:$workspace_id})-[:OWN]->(:Account {_workspace_id:$workspace_id,acct_no:$acct_no})
+      MATCH (p)-[:APPLY]->(l:Loan {_workspace_id:$workspace_id})
+      RETURN DISTINCT l.id AS loan, l.principal AS principal_krw ORDER BY loan LIMIT $limit
+
+  - id: repayment_ratio_policy
+    domain: collections
+    difficulty: hard
+    real_world_case: "Collections identifies facilities whose observed repayments fall below a policy ratio."
+    user_request: "For loans paid by account {acct_no}, return each loan whose paid amount is below {repaid_ratio} of principal."
+    parameters: {repaid_ratio: {type: number, source: user, exclusive_minimum: 0, maximum: 1}}
+    physical: {nodes: [Account, Loan], relationships: [REPAY], properties: [REPAY.amount, Loan.principal, Loan.id], directions: ["Account-REPAY->Loan"]}
+    semantic_terms: [committed_credit_facility, demand_deposit_account]
+    result: {shape: list, columns: {loan: string, principal_krw: integer, repaid_krw: integer}, ordering: "repaid amount ascending", unit: KRW}
+    verification: ["repaid_krw is sum(REPAY.amount), not Loan.total_repaid", "policy ratio is bound as $repaid_ratio", "no amount literal is inlined"]
+    plan_risk: {class: anchored_grouped_aggregate, scope: indexed_account_anchor, expansion_bound: 1}
+    validation_seed: >-
+      MATCH (a:Account {_workspace_id:$workspace_id})-[:REPAY]->(l:Loan {_workspace_id:$workspace_id})
+      RETURN a.acct_no AS acct_no LIMIT 1
+    gold: >-
+      MATCH (:Account {_workspace_id:$workspace_id,acct_no:$acct_no})-[r:REPAY]->(l:Loan {_workspace_id:$workspace_id})
+      WITH l, sum(r.amount) AS repaid_krw WHERE repaid_krw < l.principal * $repaid_ratio
+      RETURN l.id AS loan, l.principal AS principal_krw, repaid_krw ORDER BY repaid_krw, loan LIMIT $limit
+
+  - id: guarantor_of_applicant
+    domain: credit_risk_review
+    difficulty: hard
+    real_world_case: "Underwriting checks guarantees given by the applicant behind a customer account."
+    user_request: "How many parties does the owner of account {acct_no} guarantee, and how many guarantees are there?"
+    parameters: {}
+    physical: {nodes: [Account, Person, Company], relationships: [OWN, GUARANTEE], properties: [], directions: ["Person|Company-OWN->Account", "Person|Company-GUARANTEE->Person|Company"]}
+    semantic_terms: [guaranty, natural_person, corporation, demand_deposit_account]
+    result: {shape: scalar, columns: {guarantees: integer, guaranteed_parties: integer}, aggregation: "count + count distinct"}
+    verification: ["account owner is GUARANTEE source", "GUARANTEE never has Account endpoint"]
+    plan_risk: {class: party_layer_expansion, scope: indexed_account_anchor, expansion_bound: 2}
+    gold: >-
+      MATCH (p:Person|Company {_workspace_id:$workspace_id})-[:OWN]->(:Account {_workspace_id:$workspace_id,acct_no:$acct_no})
+      MATCH (p)-[g:GUARANTEE]->(q:Person|Company {_workspace_id:$workspace_id})
+      RETURN count(g) AS guarantees, count(DISTINCT q) AS guaranteed_parties LIMIT $limit
+
+  - id: cash_exit_after_inflow
+    domain: aml_alert_triage
+    difficulty: hard
+    real_world_case: "AML investigates rapid exit: funds arrive, then leave through a cash-withdrawal edge."
+    user_request: "How many accounts that sent money to account {acct_no} later received a withdrawal from it?"
+    parameters: {}
+    physical: {nodes: [Account], relationships: [TRANSFER, WITHDRAW], properties: [], directions: ["Account-TRANSFER->Account", "Account-WITHDRAW->Account"]}
+    semantic_terms: [demand_deposit_account, individual_transaction]
+    result: {shape: scalar, columns: {counterparties: integer}, aggregation: "count distinct"}
+    verification: ["same counterparty is transfer sender and withdrawal destination", "anchor is TRANSFER target and WITHDRAW source"]
+    plan_risk: {class: two_relation_cycle, scope: indexed_account_anchor, expansion_bound: 2}
+    gold: >-
+      MATCH (src:Account {_workspace_id:$workspace_id})-[:TRANSFER]->(:Account {_workspace_id:$workspace_id,acct_no:$acct_no})
+      MATCH (:Account {_workspace_id:$workspace_id,acct_no:$acct_no})-[:WITHDRAW]->(src)
+      RETURN count(DISTINCT src) AS counterparties LIMIT $limit
+
+  - id: layered_inflow_from_flagged
+    domain: aml_alert_triage
+    difficulty: hard
+    real_world_case: "A SAR investigator searches a bounded transfer path from a flagged account to the subject."
+    user_request: "Count flagged accounts that can reach account {acct_no} in one to three transfers."
+    parameters: {}
+    physical: {nodes: [Account], relationships: [TRANSFER], properties: [Account.flagged], directions: ["Account-TRANSFER->Account"]}
+    semantic_terms: [demand_deposit_account]
+    result: {shape: scalar, columns: {flagged_sources: integer}, aggregation: "count distinct"}
+    verification: ["variable path upper bound is a fixed policy cap of 3", "source flagged=true", "target is bound account"]
+    plan_risk: {class: bounded_variable_length, scope: indexed_account_anchor, expansion_bound: 3, degree_warning: "TRANSFER is heavy-tailed"}
+    gold: >-
+      MATCH (src:Account {_workspace_id:$workspace_id,flagged:true})-[:TRANSFER*1..3]->(:Account {_workspace_id:$workspace_id,acct_no:$acct_no})
+      RETURN count(DISTINCT src) AS flagged_sources LIMIT $limit
+
+  - id: corporate_investor_account_exposure
+    domain: kyc_ubo_review
+    difficulty: hard
+    real_world_case: "KYC maps investors in a company to the company accounts they may influence."
+    user_request: "For company {company_id}, list investors and the number of accounts owned by that company."
+    parameters: {company_id: {type: string, source: user, pattern: "^C[0-9]+$"}}
+    physical: {nodes: [Person, Company, Account], relationships: [INVEST, OWN], properties: [Company.id, Person.id], directions: ["Person|Company-INVEST->Company", "Company-OWN->Account"]}
+    semantic_terms: [corporation, natural_person]
+    result: {shape: list, columns: {investor: string, company_accounts: integer}, ordering: "company_accounts descending, investor ascending"}
+    verification: ["INVEST is candidate holding evidence, not legal control", "account count is for selected company", "investor may be Person or Company"]
+    plan_risk: {class: company_anchor_grouped_aggregate, scope: indexed_entity_id, expansion_bound: 2}
+    validation_seed: >-
+      MATCH (:Person|Company {_workspace_id:$workspace_id})-[:INVEST]->(c:Company {_workspace_id:$workspace_id})-[:OWN]->(:Account {_workspace_id:$workspace_id})
+      RETURN c.id AS company_id LIMIT 1
+    gold: >-
+      MATCH (i:Person|Company {_workspace_id:$workspace_id})-[:INVEST]->(c:Company {_workspace_id:$workspace_id,id:$company_id})
+      MATCH (c)-[:OWN]->(a:Account {_workspace_id:$workspace_id})
+      RETURN i.id AS investor, count(a) AS company_accounts ORDER BY company_accounts DESC, investor LIMIT $limit
