@@ -1,0 +1,72 @@
+{
+  "schema_version": "finbench.agent-traversal-contract-validation.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T11:28:34+00:00",
+    "git_commit": "6ded08403f922e10f166b8e888e09df0d938282d",
+    "git_dirty": true,
+    "argv": [
+      "scripts/analysis/validate_finbench_traversal_contract.py",
+      "--out",
+      "results/analysis/finbench_agent_traversal_contract_v1_validation.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "512M",
+    "db_heap_max": "",
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "434",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "validation": "FinBench traversal contract"
+  },
+  "policies": [
+    {
+      "policy": "interactive_recent_counterparties",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "policy": "aml_complete_counterparty_investigation",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "policy": "bounded_layering_triage",
+      "valid": true,
+      "errors": []
+    },
+    {
+      "policy": "payment_insertion",
+      "valid": true,
+      "errors": []
+    }
+  ],
+  "errors": [],
+  "valid": true
+}

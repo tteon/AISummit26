@@ -1,0 +1,36 @@
+# New arm: maps LDBC FinBench hub-truncation semantics onto the agent <-> middleware boundary.
+# It is not an official FinBench result and never replaces the published scale arms.
+contract_version: 1
+source: "LDBC FinBench v0.2.0-alpha §4.2 hub-vertex truncation"
+defaults:
+  truncation_order: TIMESTAMP_DESCENDING
+  execution_budget: {max_graph_trips: 1, max_hops: 1, max_rows: 100, max_repair_calls: 0}
+policies:
+  interactive_recent_counterparties:
+    workload_class: transaction_simple_read
+    user_intent: "Show the most recent counterparties for a customer account."
+    completeness: bounded_deterministic_sample
+    traversal_policy: {truncation_limit: 100, truncation_order: TIMESTAMP_DESCENDING, max_hops: 1}
+    required_result_envelope: [applied_limit, applied_order, has_more, continuation_cursor, execution_receipt]
+    on_budget_exhaustion: return_partial
+  aml_complete_counterparty_investigation:
+    workload_class: transaction_complex_read
+    user_intent: "Investigate all counterparties of a subject account."
+    completeness: complete_required
+    traversal_policy: {truncation_limit: null, truncation_order: null, max_hops: 1}
+    required_result_envelope: [completeness, execution_receipt, estimated_fanout]
+    on_budget_exhaustion: escalate_async
+  bounded_layering_triage:
+    workload_class: transaction_complex_read
+    user_intent: "Triage recent downstream layering from a subject account."
+    completeness: bounded_deterministic_sample
+    traversal_policy: {truncation_limit: 50, truncation_order: TIMESTAMP_DESCENDING, max_hops: 3}
+    required_result_envelope: [applied_limit, applied_order, has_more, execution_receipt]
+    on_budget_exhaustion: refuse
+  payment_insertion:
+    workload_class: transaction_write
+    user_intent: "Record a new payment after authorization."
+    completeness: not_applicable
+    traversal_policy: {truncation_limit: null, truncation_order: null, max_hops: 0}
+    required_result_envelope: [write_receipt, idempotency_key, transaction_outcome]
+    on_budget_exhaustion: refuse
