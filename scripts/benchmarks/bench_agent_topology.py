@@ -72,6 +72,7 @@ from harness.llm import add_provider_args, model_config  # noqa: E402
 from harness.seocho_bridge import (  # noqa: E402
     _ensure_seocho_on_path, enable_observability, make_llm_backend,
 )
+from harness.system_monitor import SystemMetricsSampler  # noqa: E402
 from harness.tracing import init_tracing, shutdown_tracing, span  # noqa: E402
 
 
@@ -188,6 +189,28 @@ def _profile_db_hits(plan: Any) -> int:
     return hits
 
 
+def _profile_tree(plan: Any) -> Optional[Dict[str, Any]]:
+    """Serialize the complete Bolt PROFILE tree without changing its cost denominator."""
+    if plan is None:
+        return None
+    if isinstance(plan, dict):
+        operator = plan.get("operatorType") or plan.get("operator_type")
+        args = plan.get("args", {})
+        identifiers = plan.get("identifiers", [])
+        children = plan.get("children", [])
+    else:
+        operator = getattr(plan, "operator_type", None)
+        args = getattr(plan, "arguments", None) or {}
+        identifiers = getattr(plan, "identifiers", None) or []
+        children = getattr(plan, "children", None) or []
+    return {
+        "operator_type": operator,
+        "identifiers": list(identifiers),
+        "arguments": dict(args),
+        "children": [_profile_tree(child) for child in children],
+    }
+
+
 def _usage_dict(response: Any, *, stage: str, elapsed_ms: float) -> Dict[str, Any]:
     usage = dict(getattr(response, "usage", None) or {})
     return {
@@ -237,6 +260,7 @@ def _execute_profile(driver: Any, *, database: str, cypher: str,
             fetched = [dict(row) for _, row in zip(range(take), result)]
             t_hydrated = time.perf_counter()
             summary = result.consume()
+            profile_tree = _profile_tree(getattr(summary, "profile", None))
     elapsed_ms = (time.perf_counter() - t0) * 1000
     has_more: Optional[bool]
     if exact_completeness:
@@ -271,6 +295,7 @@ def _execute_profile(driver: Any, *, database: str, cypher: str,
         "params": effective_params,
         "rows": len(rows),
         "db_hits": _profile_db_hits(getattr(summary, "profile", None)),
+        "profile_tree": profile_tree,
         "elapsed_ms": round(elapsed_ms, 3),
         "submit_ms": round((t_available - t_submit) * 1000, 3),
         "hydrate_ms": round((t_hydrated - t_available) * 1000, 3),
@@ -701,6 +726,13 @@ async def main_async(args: Any) -> None:
         backend="otlp", endpoint=args.otlp_endpoint,
         service_name="seocho-agent-topology", source=args.seocho_src,
         enable_metrics=False)
+    system_metrics_path = output_dir / "system_metrics.jsonl"
+    system_sampler = None
+    if not args.no_system_metrics:
+        system_sampler = SystemMetricsSampler(
+            system_metrics_path, interval_s=args.system_metrics_interval_s,
+            db_container=args.db_container)
+        system_sampler.start()
 
     run_header = {
         "schema_version": "seocho.finbench.agent-topology.v1",
@@ -708,6 +740,12 @@ async def main_async(args: Any) -> None:
         "manifest": manifest,
         "endpoint": cfg.descriptor(),
         "observability": observability,
+        "system_monitor": {
+            "enabled": system_sampler is not None,
+            "path": str(system_metrics_path) if system_sampler is not None else None,
+            "interval_s": args.system_metrics_interval_s,
+            "scope": "local client host and database container; hosted model server excluded",
+        },
         "config": {k: v for k, v in vars(args).items() if k != "password"},
         "graph": {f"{db}:sf{sf}": {"anchor": prepared[(db, questions[0]['id'])]["anchor"]}
                   for db, sf in targets},
@@ -822,6 +860,9 @@ async def main_async(args: Any) -> None:
                               f"trips={rec.get('graph_trips', 0)} "
                               f"{rec.get('error', '')[:80]}", flush=True)
 
+    system_monitor_receipt = (system_sampler.stop() if system_sampler is not None else {
+        "schema_version": "seocho.system-monitor-receipt.v1", "complete": False,
+        "reason": "disabled"})
     driver.close()
     try:
         from seocho.tracing import flush_tracing
@@ -836,6 +877,7 @@ async def main_async(args: Any) -> None:
     report = {
         **run_header,
         "trace_receipt": trace_receipt,
+        "system_monitor_receipt": system_monitor_receipt,
         "summary": {arm: _aggregate(usable, arm) for arm in arms},
         "samples": rows_out,
     }
@@ -872,6 +914,8 @@ def main() -> None:
     parser.add_argument("--output-dir", default="results/episodes/agent_topology")
     parser.add_argument("--otlp-endpoint", default="http://127.0.0.1:4317")
     parser.add_argument("--tempo-url", default="http://127.0.0.1:3200")
+    parser.add_argument("--system-metrics-interval-s", type=float, default=5.0)
+    parser.add_argument("--no-system-metrics", action="store_true")
     parser.add_argument("--validate-only", action="store_true")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--samples", default=None)

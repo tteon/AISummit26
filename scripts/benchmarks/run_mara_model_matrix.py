@@ -92,6 +92,8 @@ def main() -> None:
     parser.add_argument("--db-container", default="aisummit-simtest")
     parser.add_argument("--otlp-endpoint", default="http://127.0.0.1:4317")
     parser.add_argument("--tempo-url", default="http://127.0.0.1:3200")
+    parser.add_argument("--system-metrics-interval-s", type=float, default=5.0)
+    parser.add_argument("--no-system-metrics", action="store_true")
     parser.add_argument("--run-id", default=None)
     parser.add_argument("--output-dir", default="results/episodes/agent_model_matrix")
     parser.add_argument("--resume", action="store_true")
@@ -129,6 +131,12 @@ def main() -> None:
         "row_cap": args.row_cap, "decision_tokens": args.decision_tokens,
         "executor_tokens": args.executor_tokens, "request_timeout_s": args.request_timeout_s,
         "temperature": 0.0, "seed": args.seed, "verifier_mode": "advisory",
+        "telemetry": {
+            "profile_operator_tree": True,
+            "local_system_metrics": not args.no_system_metrics,
+            "system_metrics_interval_s": args.system_metrics_interval_s,
+            "hosted_model_server": "unavailable_by_endpoint",
+        },
     }
     header = {
         "schema_version": "seocho.finbench.agent-model-matrix.v1",
@@ -161,7 +169,10 @@ def main() -> None:
             "--db-container", args.db_container, "--otlp-endpoint", args.otlp_endpoint,
             "--tempo-url", args.tempo_url, "--run-id", child_id,
             "--output-dir", str(models_root),
+            "--system-metrics-interval-s", str(args.system_metrics_interval_s),
         ]
+        if args.no_system_metrics:
+            command.append("--no-system-metrics")
         if args.resume:
             command.append("--resume")
         print(f"\n=== model {model_id} ({child_id}) ===", flush=True)
