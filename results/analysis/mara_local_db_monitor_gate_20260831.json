@@ -1,9 +1,9 @@
 {
   "schema_version": "seocho.local-db-monitor-analysis.v1",
   "manifest": {
-    "timestamp_utc": "2026-08-31T05:58:28+00:00",
-    "git_commit": "30485337e84055c6f3e8ee242089046f66d8a66b",
-    "git_dirty": true,
+    "timestamp_utc": "2026-08-31T05:59:36+00:00",
+    "git_commit": "7862489d9df6e9093358c025aa1206e9677d737e",
+    "git_dirty": false,
     "argv": [
       "scripts/analysis/analyze_local_db_monitor.py",
       "--report",
@@ -37,7 +37,7 @@
   },
   "source": {
     "report": "results/episodes/agent_topology/20260831T_mara_local_db_monitor_gate_v1/report.json",
-    "metrics": "/home/hadry/lab/AIsummit26/results/episodes/agent_topology/20260831T_mara_local_db_monitor_gate_v1/system_metrics.jsonl"
+    "metrics": "/tmp/aisummit26-db-analysis.jQlNj4/results/episodes/agent_topology/20260831T_mara_local_db_monitor_gate_v1/system_metrics.jsonl"
   },
   "endpoint": {
     "provider": "mara",
