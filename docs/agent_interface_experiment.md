@@ -233,6 +233,12 @@ python3 scripts/analysis/analyze_repair_loop_ledger.py \
   --out results/analysis/<run-id>-repair-loop.json
 ```
 
+The initial auto-repair start is retained as an invalid rate-limit artifact at
+`results/episodes/invalid_mara_repair_loop/20260831T_mara_repair_sweep_sf1_sf100_auto_v1/`.
+Its planner call completed but its first executor call received HTTP 429, leaving zero graph
+trips and zero completed repair loops. It is audit evidence only and is excluded from every
+aggregate; retry only after MARA quota is available.
+
 ## Exploratory pilot results
 
 ### Single agent, role agents and context isolation
@@ -344,6 +350,8 @@ Primary artifacts:
 - retrieval ledger: `results/analysis/mara_retrieval_ledger_sf1_sf100_20260831.json`
 - periodic DB-window analysis:
   `results/analysis/mara_retrieval_system_windows_sf1_sf100_20260831.json`
+- invalid MARA repair-loop rate-limit receipt:
+  `results/episodes/invalid_mara_repair_loop/20260831T_mara_repair_sweep_sf1_sf100_auto_v1/`
 
 Invalid and interrupted gates are retained under `results/episodes/invalid_*` with an
 `INVALID_REASON.md`; they are not included in any aggregate.

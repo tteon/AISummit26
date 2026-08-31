@@ -1,0 +1,19 @@
+{
+  "schema_version": "seocho.trace-receipt.v1",
+  "trace_ids": [
+    "7a8341415e477250e1517ef482043915"
+  ],
+  "local_jsonl": "results/episodes/agent_topology/20260831T_mara_repair_sweep_sf1_sf100_auto_v1/spans.jsonl",
+  "local_span_counts": {
+    "7a8341415e477250e1517ef482043915": 3
+  },
+  "local_complete": true,
+  "tempo_url": "http://127.0.0.1:3200",
+  "tempo": {
+    "7a8341415e477250e1517ef482043915": {
+      "found": true,
+      "detail": "batches=4"
+    }
+  },
+  "tempo_complete": true
+}
