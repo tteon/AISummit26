@@ -1,0 +1,8 @@
+{
+  "schema_version": "seocho.preexisting-dirty-scope.v1",
+  "manifest_git_dirty": true,
+  "cause": "The persistent tmux launcher created its stdout/stderr runner log in the worktree before the benchmark captured runmeta.manifest().",
+  "paths": ["results/episodes/agent_topology/repair_sweep_advisory_v1.runner.log"],
+  "source_modified": false,
+  "measurement_effect": "The log file is outside this raw run directory and contains no source edit. It dirtied provenance metadata only; raw samples, PROFILE trees, endpoint descriptor, trace receipt and system-monitor receipt remain immutable."
+}

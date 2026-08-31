@@ -1,0 +1,121 @@
+{
+  "schema_version": "seocho.trace-receipt.v1",
+  "trace_ids": [
+    "10728ac709840c19d5ca26cf3788fbb0",
+    "1a1eacf7a63746e6e532b3fd4fbcfa43",
+    "26bcd39747d6a2e12f04c187d0add92f",
+    "3c10a0dc640c692670c15d55c7a6e1d2",
+    "64ab832d84cfd975d1cd13b9292612d0",
+    "6c53c258de82c0b9fa1f8914ab3c15cc",
+    "79720aceefddc5495f562a338a77ddb4",
+    "85b94d06b96513731dd09cdd645112c5",
+    "9460abb48cd1b54e607eacf6c236e642",
+    "9cb7f7a0d36ae8bd327c3ef0507f1cad",
+    "b4fb2943cf096c80e5210e670fb047a1",
+    "beb46d8f38415f9b5aae7721b5569ec2",
+    "c319f4abd47ee86d25396e86a9471849",
+    "cc865efa97822c4eafe718e061581c54",
+    "ce67f749892bb12dc5aad1c95a07fb72",
+    "e0e2cf43272527697ae6e35a9ed8f93f",
+    "ea946a03cf04cc93c0eec7236f430eab",
+    "f6e00c43c7fa93fbc99f69a3643df59f"
+  ],
+  "local_jsonl": "results/episodes/agent_topology/20260831T_mara_repair_sweep_sf1_sf100_advisory_v1/spans.jsonl",
+  "local_span_counts": {
+    "cc865efa97822c4eafe718e061581c54": 4,
+    "85b94d06b96513731dd09cdd645112c5": 5,
+    "f6e00c43c7fa93fbc99f69a3643df59f": 4,
+    "beb46d8f38415f9b5aae7721b5569ec2": 5,
+    "3c10a0dc640c692670c15d55c7a6e1d2": 4,
+    "79720aceefddc5495f562a338a77ddb4": 5,
+    "e0e2cf43272527697ae6e35a9ed8f93f": 5,
+    "9460abb48cd1b54e607eacf6c236e642": 5,
+    "ce67f749892bb12dc5aad1c95a07fb72": 4,
+    "10728ac709840c19d5ca26cf3788fbb0": 6,
+    "c319f4abd47ee86d25396e86a9471849": 5,
+    "6c53c258de82c0b9fa1f8914ab3c15cc": 6,
+    "b4fb2943cf096c80e5210e670fb047a1": 5,
+    "1a1eacf7a63746e6e532b3fd4fbcfa43": 4,
+    "ea946a03cf04cc93c0eec7236f430eab": 5,
+    "64ab832d84cfd975d1cd13b9292612d0": 6,
+    "9cb7f7a0d36ae8bd327c3ef0507f1cad": 6,
+    "26bcd39747d6a2e12f04c187d0add92f": 4
+  },
+  "local_complete": true,
+  "tempo_url": "http://127.0.0.1:3200",
+  "tempo": {
+    "10728ac709840c19d5ca26cf3788fbb0": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "1a1eacf7a63746e6e532b3fd4fbcfa43": {
+      "found": true,
+      "detail": "batches=2"
+    },
+    "26bcd39747d6a2e12f04c187d0add92f": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "3c10a0dc640c692670c15d55c7a6e1d2": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "64ab832d84cfd975d1cd13b9292612d0": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "6c53c258de82c0b9fa1f8914ab3c15cc": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "79720aceefddc5495f562a338a77ddb4": {
+      "found": true,
+      "detail": "batches=2"
+    },
+    "85b94d06b96513731dd09cdd645112c5": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "9460abb48cd1b54e607eacf6c236e642": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "9cb7f7a0d36ae8bd327c3ef0507f1cad": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "b4fb2943cf096c80e5210e670fb047a1": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "beb46d8f38415f9b5aae7721b5569ec2": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "c319f4abd47ee86d25396e86a9471849": {
+      "found": true,
+      "detail": "batches=2"
+    },
+    "cc865efa97822c4eafe718e061581c54": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "ce67f749892bb12dc5aad1c95a07fb72": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "e0e2cf43272527697ae6e35a9ed8f93f": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "ea946a03cf04cc93c0eec7236f430eab": {
+      "found": true,
+      "detail": "batches=4"
+    },
+    "f6e00c43c7fa93fbc99f69a3643df59f": {
+      "found": true,
+      "detail": "batches=4"
+    }
+  },
+  "tempo_complete": true
+}

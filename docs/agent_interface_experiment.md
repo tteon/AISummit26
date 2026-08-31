@@ -239,6 +239,40 @@ Its planner call completed but its first executor call received HTTP 429, leavin
 trips and zero completed repair loops. It is audit evidence only and is excluded from every
 aggregate; retry only after MARA quota is available.
 
+### Observed authority control (one paired repeat)
+
+MARA DeepSeek-V3.1 completed the nine-request catalog at SF1 and SF100 in both authority
+conditions (18 cells each). Endpoint, model, schema, request text, bound parameters and row
+cap were fixed. The initial Cypher was identical in all 18 paired cells, so the subsequent
+difference is attributable to the verifier's execution authority for this sampled run, not a
+different first query. This is still one repeat, not an interval estimate.
+
+Both raw manifests carry a scoped dirty bit: the persistent launcher wrote its stdout/stderr
+log into the temporary worktree just before `runmeta.manifest()` ran. The corresponding
+`PREEXISTING_DIRTY_SCOPE.json` proves that the only dirty path was that external runner log,
+not a source edit; future persistent runs write launcher logs under `/tmp` before manifest
+capture.
+
+| SF | Auto − advisory correctness | extra model calls | extra prompt tokens | extra graph trips | extra DB hits | applied verifier repairs |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 0 | 4 | 4,943 | 0 | 0 | 0 |
+| 100 | −1 | 4 | 4,852 | 3 | 289 | 3 |
+
+Across the balanced 18-cell ledger, auto repair spent 8 more model calls and 9,795 more prompt
+tokens, created 3 more graph trips and 289 more DB hits, and finished with one fewer correct
+answer. Its repair-model stages account for 21.813 seconds of observed API elapsed time and
+14,291 prompt tokens; no GPU seconds or GPU dollars are inferred. The hosted endpoint's
+wall-clock difference is deliberately not interpreted because queue/service variation can
+move it independently of this authority intervention.
+
+This is the actionable interface finding: the verifier must return a typed, executable
+`VerificationDecision` with reason codes and a cost budget, rather than an unbounded natural-
+language correction. The six matched schema rejections (invented `Transaction`/`Transfer`
+labels or unavailable `owner_type`/`total_repaid` properties) were identical in both arms.
+They are not a reason to tune this model; they identify a schema-contract requirement for
+Agentic FinBench: semantic aliases, physical names, parameter names, unsupported terms and
+repair authority must be explicit at the Agent API ↔ graph boundary.
+
 ## Exploratory pilot results
 
 ### Single agent, role agents and context isolation
