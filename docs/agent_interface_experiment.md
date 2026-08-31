@@ -204,6 +204,35 @@ name. In this pilot the point plans used `NodeIndexSeek` and the sweep plans use
 still required because the separate grammar-plan experiment shows that an indexed tenant
 scope can produce a seek-named operator with sweep-scale estimated rows.
 
+## Next sweep: per-user-request repair-loop ledger
+
+The next MARA sweep treats a user request — not one model completion — as the cost unit. Its
+trace is `plan → validated Cypher generation (including grammar retries) → PROFILE/Bolt →
+verification → optional verifier-directed repair → repaired PROFILE/Bolt`. Each raw episode
+now records total observed API time/tokens and the incremental repair component: retries past
+the first executor generation, repair API elapsed time and tokens, additional graph trips,
+DB hits and DB milliseconds, plus initial-versus-final correctness. Hosted MARA does not
+expose GPU seconds, so no GPU dollars are inferred from these fields.
+
+The declarative workload is
+`configs/agentic_request_repair_sweep.yaml`: nine request types spanning customer service,
+AML alert triage, KYC/UBO, payments operations, and credit-risk/collections. Each request
+declares its real-world case, physical schema facets, anticipated repair risks and typed user
+parameter contract. The harness, not the model, still binds workspace, anchor and row cap.
+All nine Gold queries validate on both locally available SF1 and SF100 before a paid call.
+
+Run `multi_typed` with `--verifier-mode auto` first, holding endpoint, model, schema, row cap,
+questions and scale fixed. Then run the same cells with `--verifier-mode advisory` as the
+authority control. The difference isolates the cost and outcome of allowing a verification
+decision to create a repair; neither arm should be described as an improvement unless final
+correctness and the observed cost ledger support it. Build the resulting analysis with:
+
+```bash
+python3 scripts/analysis/analyze_repair_loop_ledger.py \
+  --report results/episodes/agent_topology/<run-id>/report.json \
+  --out results/analysis/<run-id>-repair-loop.json
+```
+
 ## Exploratory pilot results
 
 ### Single agent, role agents and context isolation
