@@ -1,0 +1,1891 @@
+{
+  "schema_version": "finbench.topology-anchor-workload.v1",
+  "manifest": {
+    "timestamp_utc": "2026-08-31T11:09:56+00:00",
+    "git_commit": "8c9dde60f6fab591facf0ee4e281666f5ffb53e0",
+    "git_dirty": true,
+    "argv": [
+      "scripts/analysis/build_topology_anchor_workload.py",
+      "--snapshot",
+      "1:outputs/finbench/sf1/manifest.json",
+      "--snapshot",
+      "100:outputs/finbench/sf100/manifest.json",
+      "--database",
+      "1:finbenchl1",
+      "--database",
+      "100:finbenchl100",
+      "--password",
+      "<redacted>",
+      "--out",
+      "results/analysis/topology_anchor_workload_sf1_sf100_v1.json"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "512M",
+    "db_heap_max": "",
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "410",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "validation": "DB-only topology-stratified request workload"
+  },
+  "method": {
+    "unit": "request \u00d7 SF \u00d7 curated anchor band",
+    "bands": [
+      "median",
+      "p99",
+      "p99.9",
+      "hub"
+    ],
+    "excluded": "requests without an account anchor",
+    "note": "This freezes executable Gold cells only; no model/API call is made."
+  },
+  "catalog": "configs/agentic_request_schema_contracts_v2.yaml",
+  "anchors": [
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "band": "hub",
+      "account_id": 9000100,
+      "degree": 421
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "band": "p99.9",
+      "account_id": 514,
+      "degree": 24
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "band": "p99",
+      "account_id": 9000708,
+      "degree": 19
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "band": "median",
+      "account_id": 506,
+      "degree": 9
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "band": "hub",
+      "account_id": 9000100,
+      "degree": 421
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "band": "p99.9",
+      "account_id": 71325,
+      "degree": 21
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "band": "p99",
+      "account_id": 82158,
+      "degree": 18
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "band": "median",
+      "account_id": 132716,
+      "degree": 10
+    }
+  ],
+  "samples": [
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "inbound_amount_band",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50,
+        "min_amount": 0
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 13.051
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "outgoing_cross_border_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 2.033
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "shared_medium_access",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50,
+        "result_limit": 1
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "shared_account"
+      ],
+      "db_only_elapsed_ms": 1.895
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "blocked_medium_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "blocked_media"
+      ],
+      "db_only_elapsed_ms": 1.997
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "high_risk_rail_and_medium",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50,
+        "risk_weight": 1
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "rail",
+        "transactions"
+      ],
+      "db_only_elapsed_ms": 1.688
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "common_owner_device_link",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "linked_account"
+      ],
+      "db_only_elapsed_ms": 1.351
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "loan_applicant_facilities",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "loan",
+        "principal_krw"
+      ],
+      "db_only_elapsed_ms": 1.314
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "repayment_ratio_policy",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50,
+        "repaid_ratio": 0
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "loan",
+        "principal_krw",
+        "repaid_krw"
+      ],
+      "db_only_elapsed_ms": 1.278
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "guarantor_of_applicant",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "guarantees",
+        "guaranteed_parties"
+      ],
+      "db_only_elapsed_ms": 1.562
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "cash_exit_after_inflow",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "counterparties"
+      ],
+      "db_only_elapsed_ms": 1.981
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "layered_inflow_from_flagged",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "flagged_sources"
+      ],
+      "db_only_elapsed_ms": 3.711
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99.9",
+      "anchor": 514,
+      "anchor_transfer_degree": 24,
+      "request_id": "inbound_amount_band",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 514,
+        "limit": 50,
+        "min_amount": 0
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 2.094
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99.9",
+      "anchor": 514,
+      "anchor_transfer_degree": 24,
+      "request_id": "outgoing_cross_border_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 514,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 2.343
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99.9",
+      "anchor": 514,
+      "anchor_transfer_degree": 24,
+      "request_id": "shared_medium_access",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 514,
+        "limit": 50,
+        "result_limit": 1
+      },
+      "ok": true,
+      "row_count": 29,
+      "columns": [
+        "shared_account"
+      ],
+      "db_only_elapsed_ms": 2.314
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99.9",
+      "anchor": 514,
+      "anchor_transfer_degree": 24,
+      "request_id": "blocked_medium_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 514,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "blocked_media"
+      ],
+      "db_only_elapsed_ms": 2.332
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99.9",
+      "anchor": 514,
+      "anchor_transfer_degree": 24,
+      "request_id": "high_risk_rail_and_medium",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 514,
+        "limit": 50,
+        "risk_weight": 1
+      },
+      "ok": true,
+      "row_count": 6,
+      "columns": [
+        "rail",
+        "transactions"
+      ],
+      "db_only_elapsed_ms": 2.41
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99.9",
+      "anchor": 514,
+      "anchor_transfer_degree": 24,
+      "request_id": "common_owner_device_link",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 514,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "linked_account"
+      ],
+      "db_only_elapsed_ms": 2.16
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99.9",
+      "anchor": 514,
+      "anchor_transfer_degree": 24,
+      "request_id": "loan_applicant_facilities",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 514,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "loan",
+        "principal_krw"
+      ],
+      "db_only_elapsed_ms": 2.435
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99.9",
+      "anchor": 514,
+      "anchor_transfer_degree": 24,
+      "request_id": "repayment_ratio_policy",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 514,
+        "limit": 50,
+        "repaid_ratio": 0
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "loan",
+        "principal_krw",
+        "repaid_krw"
+      ],
+      "db_only_elapsed_ms": 3.272
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99.9",
+      "anchor": 514,
+      "anchor_transfer_degree": 24,
+      "request_id": "guarantor_of_applicant",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 514,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "guarantees",
+        "guaranteed_parties"
+      ],
+      "db_only_elapsed_ms": 2.349
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99.9",
+      "anchor": 514,
+      "anchor_transfer_degree": 24,
+      "request_id": "cash_exit_after_inflow",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 514,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "counterparties"
+      ],
+      "db_only_elapsed_ms": 1.868
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99.9",
+      "anchor": 514,
+      "anchor_transfer_degree": 24,
+      "request_id": "layered_inflow_from_flagged",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 514,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "flagged_sources"
+      ],
+      "db_only_elapsed_ms": 2.81
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99",
+      "anchor": 9000708,
+      "anchor_transfer_degree": 19,
+      "request_id": "inbound_amount_band",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000708,
+        "limit": 50,
+        "min_amount": 0
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 2.39
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99",
+      "anchor": 9000708,
+      "anchor_transfer_degree": 19,
+      "request_id": "outgoing_cross_border_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000708,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 2.313
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99",
+      "anchor": 9000708,
+      "anchor_transfer_degree": 19,
+      "request_id": "shared_medium_access",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000708,
+        "limit": 50,
+        "result_limit": 1
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "shared_account"
+      ],
+      "db_only_elapsed_ms": 1.769
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99",
+      "anchor": 9000708,
+      "anchor_transfer_degree": 19,
+      "request_id": "blocked_medium_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000708,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "blocked_media"
+      ],
+      "db_only_elapsed_ms": 1.459
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99",
+      "anchor": 9000708,
+      "anchor_transfer_degree": 19,
+      "request_id": "high_risk_rail_and_medium",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000708,
+        "limit": 50,
+        "risk_weight": 1
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "rail",
+        "transactions"
+      ],
+      "db_only_elapsed_ms": 1.261
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99",
+      "anchor": 9000708,
+      "anchor_transfer_degree": 19,
+      "request_id": "common_owner_device_link",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000708,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "linked_account"
+      ],
+      "db_only_elapsed_ms": 1.872
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99",
+      "anchor": 9000708,
+      "anchor_transfer_degree": 19,
+      "request_id": "loan_applicant_facilities",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000708,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "loan",
+        "principal_krw"
+      ],
+      "db_only_elapsed_ms": 1.931
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99",
+      "anchor": 9000708,
+      "anchor_transfer_degree": 19,
+      "request_id": "repayment_ratio_policy",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000708,
+        "limit": 50,
+        "repaid_ratio": 0
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "loan",
+        "principal_krw",
+        "repaid_krw"
+      ],
+      "db_only_elapsed_ms": 1.243
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99",
+      "anchor": 9000708,
+      "anchor_transfer_degree": 19,
+      "request_id": "guarantor_of_applicant",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000708,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "guarantees",
+        "guaranteed_parties"
+      ],
+      "db_only_elapsed_ms": 1.174
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99",
+      "anchor": 9000708,
+      "anchor_transfer_degree": 19,
+      "request_id": "cash_exit_after_inflow",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000708,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "counterparties"
+      ],
+      "db_only_elapsed_ms": 1.248
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "p99",
+      "anchor": 9000708,
+      "anchor_transfer_degree": 19,
+      "request_id": "layered_inflow_from_flagged",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000708,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "flagged_sources"
+      ],
+      "db_only_elapsed_ms": 3.368
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "median",
+      "anchor": 506,
+      "anchor_transfer_degree": 9,
+      "request_id": "inbound_amount_band",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 506,
+        "limit": 50,
+        "min_amount": 0
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 2.44
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "median",
+      "anchor": 506,
+      "anchor_transfer_degree": 9,
+      "request_id": "outgoing_cross_border_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 506,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 1.686
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "median",
+      "anchor": 506,
+      "anchor_transfer_degree": 9,
+      "request_id": "shared_medium_access",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 506,
+        "limit": 50,
+        "result_limit": 1
+      },
+      "ok": true,
+      "row_count": 24,
+      "columns": [
+        "shared_account"
+      ],
+      "db_only_elapsed_ms": 2.213
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "median",
+      "anchor": 506,
+      "anchor_transfer_degree": 9,
+      "request_id": "blocked_medium_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 506,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "blocked_media"
+      ],
+      "db_only_elapsed_ms": 1.502
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "median",
+      "anchor": 506,
+      "anchor_transfer_degree": 9,
+      "request_id": "high_risk_rail_and_medium",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 506,
+        "limit": 50,
+        "risk_weight": 1
+      },
+      "ok": true,
+      "row_count": 3,
+      "columns": [
+        "rail",
+        "transactions"
+      ],
+      "db_only_elapsed_ms": 2.148
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "median",
+      "anchor": 506,
+      "anchor_transfer_degree": 9,
+      "request_id": "common_owner_device_link",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 506,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "linked_account"
+      ],
+      "db_only_elapsed_ms": 1.641
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "median",
+      "anchor": 506,
+      "anchor_transfer_degree": 9,
+      "request_id": "loan_applicant_facilities",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 506,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "loan",
+        "principal_krw"
+      ],
+      "db_only_elapsed_ms": 1.957
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "median",
+      "anchor": 506,
+      "anchor_transfer_degree": 9,
+      "request_id": "repayment_ratio_policy",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 506,
+        "limit": 50,
+        "repaid_ratio": 0
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "loan",
+        "principal_krw",
+        "repaid_krw"
+      ],
+      "db_only_elapsed_ms": 1.679
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "median",
+      "anchor": 506,
+      "anchor_transfer_degree": 9,
+      "request_id": "guarantor_of_applicant",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 506,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "guarantees",
+        "guaranteed_parties"
+      ],
+      "db_only_elapsed_ms": 1.522
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "median",
+      "anchor": 506,
+      "anchor_transfer_degree": 9,
+      "request_id": "cash_exit_after_inflow",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 506,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "counterparties"
+      ],
+      "db_only_elapsed_ms": 2.093
+    },
+    {
+      "sf": 1,
+      "database": "finbenchl1",
+      "anchor_band": "median",
+      "anchor": 506,
+      "anchor_transfer_degree": 9,
+      "request_id": "layered_inflow_from_flagged",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 506,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "flagged_sources"
+      ],
+      "db_only_elapsed_ms": 1.843
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "inbound_amount_band",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50,
+        "min_amount": 0
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 3.207
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "outgoing_cross_border_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 1.906
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "shared_medium_access",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50,
+        "result_limit": 1
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "shared_account"
+      ],
+      "db_only_elapsed_ms": 1.879
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "blocked_medium_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "blocked_media"
+      ],
+      "db_only_elapsed_ms": 1.5
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "high_risk_rail_and_medium",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50,
+        "risk_weight": 1
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "rail",
+        "transactions"
+      ],
+      "db_only_elapsed_ms": 1.861
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "common_owner_device_link",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "linked_account"
+      ],
+      "db_only_elapsed_ms": 1.424
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "loan_applicant_facilities",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "loan",
+        "principal_krw"
+      ],
+      "db_only_elapsed_ms": 1.362
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "repayment_ratio_policy",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50,
+        "repaid_ratio": 0
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "loan",
+        "principal_krw",
+        "repaid_krw"
+      ],
+      "db_only_elapsed_ms": 1.38
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "guarantor_of_applicant",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "guarantees",
+        "guaranteed_parties"
+      ],
+      "db_only_elapsed_ms": 1.481
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "cash_exit_after_inflow",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "counterparties"
+      ],
+      "db_only_elapsed_ms": 1.503
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "hub",
+      "anchor": 9000100,
+      "anchor_transfer_degree": 421,
+      "request_id": "layered_inflow_from_flagged",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 9000100,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "flagged_sources"
+      ],
+      "db_only_elapsed_ms": 2.221
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99.9",
+      "anchor": 71325,
+      "anchor_transfer_degree": 21,
+      "request_id": "inbound_amount_band",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 71325,
+        "limit": 50,
+        "min_amount": 0
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 1.618
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99.9",
+      "anchor": 71325,
+      "anchor_transfer_degree": 21,
+      "request_id": "outgoing_cross_border_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 71325,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 1.676
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99.9",
+      "anchor": 71325,
+      "anchor_transfer_degree": 21,
+      "request_id": "shared_medium_access",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 71325,
+        "limit": 50,
+        "result_limit": 1
+      },
+      "ok": true,
+      "row_count": 37,
+      "columns": [
+        "shared_account"
+      ],
+      "db_only_elapsed_ms": 2.731
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99.9",
+      "anchor": 71325,
+      "anchor_transfer_degree": 21,
+      "request_id": "blocked_medium_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 71325,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "blocked_media"
+      ],
+      "db_only_elapsed_ms": 2.372
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99.9",
+      "anchor": 71325,
+      "anchor_transfer_degree": 21,
+      "request_id": "high_risk_rail_and_medium",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 71325,
+        "limit": 50,
+        "risk_weight": 1
+      },
+      "ok": true,
+      "row_count": 5,
+      "columns": [
+        "rail",
+        "transactions"
+      ],
+      "db_only_elapsed_ms": 2.548
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99.9",
+      "anchor": 71325,
+      "anchor_transfer_degree": 21,
+      "request_id": "common_owner_device_link",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 71325,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "linked_account"
+      ],
+      "db_only_elapsed_ms": 2.56
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99.9",
+      "anchor": 71325,
+      "anchor_transfer_degree": 21,
+      "request_id": "loan_applicant_facilities",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 71325,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "loan",
+        "principal_krw"
+      ],
+      "db_only_elapsed_ms": 1.783
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99.9",
+      "anchor": 71325,
+      "anchor_transfer_degree": 21,
+      "request_id": "repayment_ratio_policy",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 71325,
+        "limit": 50,
+        "repaid_ratio": 0
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "loan",
+        "principal_krw",
+        "repaid_krw"
+      ],
+      "db_only_elapsed_ms": 1.843
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99.9",
+      "anchor": 71325,
+      "anchor_transfer_degree": 21,
+      "request_id": "guarantor_of_applicant",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 71325,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "guarantees",
+        "guaranteed_parties"
+      ],
+      "db_only_elapsed_ms": 1.777
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99.9",
+      "anchor": 71325,
+      "anchor_transfer_degree": 21,
+      "request_id": "cash_exit_after_inflow",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 71325,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "counterparties"
+      ],
+      "db_only_elapsed_ms": 3.223
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99.9",
+      "anchor": 71325,
+      "anchor_transfer_degree": 21,
+      "request_id": "layered_inflow_from_flagged",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 71325,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "flagged_sources"
+      ],
+      "db_only_elapsed_ms": 3.139
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99",
+      "anchor": 82158,
+      "anchor_transfer_degree": 18,
+      "request_id": "inbound_amount_band",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 82158,
+        "limit": 50,
+        "min_amount": 0
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 2.572
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99",
+      "anchor": 82158,
+      "anchor_transfer_degree": 18,
+      "request_id": "outgoing_cross_border_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 82158,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 2.274
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99",
+      "anchor": 82158,
+      "anchor_transfer_degree": 18,
+      "request_id": "shared_medium_access",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 82158,
+        "limit": 50,
+        "result_limit": 1
+      },
+      "ok": true,
+      "row_count": 11,
+      "columns": [
+        "shared_account"
+      ],
+      "db_only_elapsed_ms": 2.537
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99",
+      "anchor": 82158,
+      "anchor_transfer_degree": 18,
+      "request_id": "blocked_medium_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 82158,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "blocked_media"
+      ],
+      "db_only_elapsed_ms": 2.226
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99",
+      "anchor": 82158,
+      "anchor_transfer_degree": 18,
+      "request_id": "high_risk_rail_and_medium",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 82158,
+        "limit": 50,
+        "risk_weight": 1
+      },
+      "ok": true,
+      "row_count": 7,
+      "columns": [
+        "rail",
+        "transactions"
+      ],
+      "db_only_elapsed_ms": 3.141
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99",
+      "anchor": 82158,
+      "anchor_transfer_degree": 18,
+      "request_id": "common_owner_device_link",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 82158,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "linked_account"
+      ],
+      "db_only_elapsed_ms": 3.297
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99",
+      "anchor": 82158,
+      "anchor_transfer_degree": 18,
+      "request_id": "loan_applicant_facilities",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 82158,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "loan",
+        "principal_krw"
+      ],
+      "db_only_elapsed_ms": 4.444
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99",
+      "anchor": 82158,
+      "anchor_transfer_degree": 18,
+      "request_id": "repayment_ratio_policy",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 82158,
+        "limit": 50,
+        "repaid_ratio": 0
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "loan",
+        "principal_krw",
+        "repaid_krw"
+      ],
+      "db_only_elapsed_ms": 2.534
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99",
+      "anchor": 82158,
+      "anchor_transfer_degree": 18,
+      "request_id": "guarantor_of_applicant",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 82158,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "guarantees",
+        "guaranteed_parties"
+      ],
+      "db_only_elapsed_ms": 2.942
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99",
+      "anchor": 82158,
+      "anchor_transfer_degree": 18,
+      "request_id": "cash_exit_after_inflow",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 82158,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "counterparties"
+      ],
+      "db_only_elapsed_ms": 2.673
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "p99",
+      "anchor": 82158,
+      "anchor_transfer_degree": 18,
+      "request_id": "layered_inflow_from_flagged",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 82158,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "flagged_sources"
+      ],
+      "db_only_elapsed_ms": 2.2
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "median",
+      "anchor": 132716,
+      "anchor_transfer_degree": 10,
+      "request_id": "inbound_amount_band",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 132716,
+        "limit": 50,
+        "min_amount": 0
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 1.986
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "median",
+      "anchor": 132716,
+      "anchor_transfer_degree": 10,
+      "request_id": "outgoing_cross_border_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 132716,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "count",
+        "total_amount_krw"
+      ],
+      "db_only_elapsed_ms": 2.18
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "median",
+      "anchor": 132716,
+      "anchor_transfer_degree": 10,
+      "request_id": "shared_medium_access",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 132716,
+        "limit": 50,
+        "result_limit": 1
+      },
+      "ok": true,
+      "row_count": 18,
+      "columns": [
+        "shared_account"
+      ],
+      "db_only_elapsed_ms": 2.694
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "median",
+      "anchor": 132716,
+      "anchor_transfer_degree": 10,
+      "request_id": "blocked_medium_exposure",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 132716,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "blocked_media"
+      ],
+      "db_only_elapsed_ms": 2.604
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "median",
+      "anchor": 132716,
+      "anchor_transfer_degree": 10,
+      "request_id": "high_risk_rail_and_medium",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 132716,
+        "limit": 50,
+        "risk_weight": 1
+      },
+      "ok": true,
+      "row_count": 3,
+      "columns": [
+        "rail",
+        "transactions"
+      ],
+      "db_only_elapsed_ms": 2.497
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "median",
+      "anchor": 132716,
+      "anchor_transfer_degree": 10,
+      "request_id": "common_owner_device_link",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 132716,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "linked_account"
+      ],
+      "db_only_elapsed_ms": 1.724
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "median",
+      "anchor": 132716,
+      "anchor_transfer_degree": 10,
+      "request_id": "loan_applicant_facilities",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 132716,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "loan",
+        "principal_krw"
+      ],
+      "db_only_elapsed_ms": 1.743
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "median",
+      "anchor": 132716,
+      "anchor_transfer_degree": 10,
+      "request_id": "repayment_ratio_policy",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 132716,
+        "limit": 50,
+        "repaid_ratio": 0
+      },
+      "ok": true,
+      "row_count": 0,
+      "columns": [
+        "loan",
+        "principal_krw",
+        "repaid_krw"
+      ],
+      "db_only_elapsed_ms": 2.183
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "median",
+      "anchor": 132716,
+      "anchor_transfer_degree": 10,
+      "request_id": "guarantor_of_applicant",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 132716,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "guarantees",
+        "guaranteed_parties"
+      ],
+      "db_only_elapsed_ms": 1.976
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "median",
+      "anchor": 132716,
+      "anchor_transfer_degree": 10,
+      "request_id": "cash_exit_after_inflow",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 132716,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "counterparties"
+      ],
+      "db_only_elapsed_ms": 2.685
+    },
+    {
+      "sf": 100,
+      "database": "finbenchl100",
+      "anchor_band": "median",
+      "anchor": 132716,
+      "anchor_transfer_degree": 10,
+      "request_id": "layered_inflow_from_flagged",
+      "params": {
+        "workspace_id": "default",
+        "acct_no": 132716,
+        "limit": 50
+      },
+      "ok": true,
+      "row_count": 1,
+      "columns": [
+        "flagged_sources"
+      ],
+      "db_only_elapsed_ms": 3.216
+    }
+  ],
+  "valid": true
+}

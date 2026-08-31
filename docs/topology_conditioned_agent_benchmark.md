@@ -74,3 +74,18 @@ This gives the middleware narrative: a graph database should expose a bounded to
 agent should return a typed plan request under that budget, while the database returns
 PROFILE/Bolt evidence.  The contract lets a service refuse an unsafe hub expansion before it
 becomes an expensive repair loop.
+
+## Frozen anchor-band preflight
+
+The first DB-only workload has now frozen 88 executable cells: 2 scales × 4 curated account
+bands (median, p99, p99.9, hub) × 11 account-anchored requests.  Its raw manifest and every
+per-cell parameter/result-shape receipt are in
+[topology_anchor_workload_sf1_sf100_v1.json](../results/analysis/topology_anchor_workload_sf1_sf100_v1.json).
+All cells completed; this is an admission gate for a later paid agent arm, not an agent result.
+
+There is an important generator constraint: the curated hub is account `9000100` with transfer
+degree 421 in **both** SF1 and SF100.  Consequently, this workload can contrast topology bands
+within each scale, but cannot attribute a hub effect to scale.  To make the latter claim, a new
+generator regime must vary hub degree/multiplicity/closure while holding total scale and query
+template fixed.  That would be a new dataset and a new experimental arm, never a replacement
+for the existing scale results.
