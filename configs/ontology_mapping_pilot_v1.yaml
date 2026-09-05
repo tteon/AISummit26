@@ -37,6 +37,7 @@ budget:
   semantic_repairs: 0
 decision:
   phase: exploratory_pilot
+  thresholds: {paired_outcomes: 12, min_wins: 2, max_losses: 0, max_token_ratio: 1.5}
   primary: Paired exact-column, typed-value, order-aware Gold result agreement; guardrail rejections remain failures.
   success: Advance only if business_mapping gains at least 2 of 12 paired outcomes, regresses 0, and total prompt+completion tokens are at most 1.5 times the control on complete pairs.
   reject: Reject this configuration if business_mapping has fewer correct paired outcomes or exceeds 1.5 times the control token cost without a correctness gain.

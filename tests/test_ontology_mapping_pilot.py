@@ -69,6 +69,6 @@ def test_partial_or_invalid_pair_cannot_support_a_positive_decision():
              "prompt_tokens": 10, "completion_tokens": 5},
             {"question_id": "q", "repeat": 0, "arm": "b", "correct": True, "valid": False,
              "prompt_tokens": 10, "completion_tokens": 5}]
-    report = pilot.summarize(rows, ["a", "b"])
+    report = pilot.summarize(rows, ["a", "b"], {"paired_outcomes": 12, "min_wins": 2, "max_losses": 0, "max_token_ratio": 1.5})
     assert report["complete_valid_pairs"] == 0
     assert report["conclusion"] == "inconclusive"

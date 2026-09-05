@@ -315,7 +315,7 @@ def prepare(protocol, driver, validator, policy, snapshot):
             "mapping_validation": validation, "cases": prepared}
 
 
-def summarize(samples, arms):
+def summarize(samples, arms, thresholds):
     result = {}
     for arm in arms:
         rows = [s for s in samples if s["arm"] == arm]
@@ -334,10 +334,10 @@ def summarize(samples, arms):
     tokens = [sum((p[a].get("prompt_tokens") or 0)+(p[a].get("completion_tokens") or 0) for p in pairs) for a in arms]
     ratio = tokens[1]/tokens[0] if tokens[0] else None
     conclusion = "inconclusive"
-    if len(pairs) == 12 and ratio is not None:
-        if wins >= 2 and losses == 0 and ratio <= 1.5:
+    if len(pairs) == thresholds["paired_outcomes"] and ratio is not None:
+        if wins >= thresholds["min_wins"] and losses <= thresholds["max_losses"] and ratio <= thresholds["max_token_ratio"]:
             conclusion = "advance_to_confirmation"
-        elif losses > wins or (ratio > 1.5 and wins <= losses):
+        elif losses > wins or (ratio > thresholds["max_token_ratio"] and wins <= losses):
             conclusion = "reject_configuration"
     return {"arms": result, "complete_valid_pairs": len(pairs), "wins": wins, "losses": losses,
             "token_ratio": ratio, "conclusion": conclusion,
@@ -364,9 +364,11 @@ def run(args):
     endpoint = cfg.descriptor() | {"reasoning_effort": protocol["model"]["reasoning_effort"], "sdk_max_retries": 0}
     output = args.output_dir
     sources = {name: sha(ROOT / protocol[name]) for name in ("catalog", "physical", "mapping", "projection")}
+    code_files = ["scripts/benchmarks/run_ontology_mapping_pilot.py", "harness/llm.py", "harness/config.py",
+                  "harness/environment.py", "scripts/analysis/runmeta.py", "scripts/analysis/validate_business_request_mapping.py"]
     fingerprint = {"protocol": sha(args.protocol), "sources": sources, "endpoint": endpoint,
                    "snapshot": sha(args.snapshot_manifest), "dependency_archive": sha(args.seocho_archive),
-                   "dependency_tree": dependency_tree}
+                   "dependency_tree": dependency_tree, "code": {p: sha(ROOT / p) for p in code_files}}
     previous = None
     if output.exists():
         if not args.resume:
@@ -380,6 +382,8 @@ def run(args):
         "graph": protocol["graph"], "semantic_source": yaml.safe_load((ROOT / protocol["projection"]).read_text())["semantic_source"]}
     if args.execute and manifest["manifest"]["git_dirty"]:
         raise ValueError("Paid run requires a clean source commit")
+    if args.execute and subprocess.check_output(["git", "-C", str(ROOT), "status", "--porcelain"], text=True).strip():
+        raise ValueError("Current source checkout must be clean for execution or resume")
     output.mkdir(parents=True, exist_ok=True)
     if not previous:
         write(output / "manifest.json", manifest)
@@ -422,6 +426,7 @@ def run(args):
             raise ValueError("Requested model absent from endpoint model list")
         write(output / "endpoint_models.json", {"checked_at": datetime.now(timezone.utc).isoformat(), "models": available})
         start = time.monotonic()
+        prior_seconds = sum(s.get("wall_ms", 0) for s in samples)/1000 + len(samples)*protocol["budget"]["delay_seconds"]
         run_status = "completed"
         stop_reason = None
         budget = protocol["budget"]
@@ -438,7 +443,7 @@ def run(args):
                     if (len(attempts) >= budget["max_model_calls"] or
                         sum(a["prompt_bytes"] for a in attempts)+prompt_bytes > budget["max_total_prompt_bytes"] or
                         sum(s.get("completion_tokens") or 0 for s in samples)+cfg.max_tokens > budget["max_completion_tokens"] or
-                        time.monotonic()-start+cfg.request_timeout_s > budget["max_wall_seconds"]):
+                        prior_seconds+time.monotonic()-start+cfg.request_timeout_s > budget["max_wall_seconds"]):
                         run_status, stop_reason = "budget_exhausted", "pre-call budget gate"
                         break
                     attempt = {"episode_id": eid, "attempt_index": len(attempts), "prompt_bytes": prompt_bytes,
@@ -522,7 +527,7 @@ def run(args):
                     samples.append(sample)
                     completed.add(eid)
                     write(output / "report.json", {**manifest, "run_status": "running" if run_status == "completed" else run_status, "stop_reason": stop_reason,
-                        "summary": summarize(samples, protocol["arms"]), "samples": samples})
+                        "summary": summarize(samples, protocol["arms"], protocol["decision"]["thresholds"]), "samples": samples})
                     print(f"[episode] {case['id']} r{repeat} {arm} valid={sample['valid']} correct={sample['correct']} error={sample.get('error','')[:150]}", flush=True)
                     if run_status != "completed":
                         break
@@ -532,8 +537,8 @@ def run(args):
             if run_status != "completed":
                 break
         write(output / "report.json", {**manifest, "run_status": run_status, "stop_reason": stop_reason,
-            "summary": summarize(samples, protocol["arms"]), "samples": samples})
-        print(f"[finished] status={run_status} samples={len(samples)} {stable(summarize(samples,protocol['arms']))}", flush=True)
+            "summary": summarize(samples, protocol["arms"], protocol["decision"]["thresholds"]), "samples": samples})
+        print(f"[finished] status={run_status} samples={len(samples)} {stable(summarize(samples,protocol['arms'],protocol['decision']['thresholds']))}", flush=True)
     except Exception as exc:
         write(output / "failure.json", {"phase": "preflight_or_run", "error": f"{type(exc).__name__}: {exc}"})
         raise
