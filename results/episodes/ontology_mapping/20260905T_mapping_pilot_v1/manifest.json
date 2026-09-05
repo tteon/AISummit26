@@ -1,0 +1,281 @@
+{
+  "schema_version": "finance.ontology-mapping-pilot.v1",
+  "run_id": "20260905T_mapping_pilot_v1",
+  "manifest": {
+    "timestamp_utc": "2026-09-05T07:29:57+00:00",
+    "git_commit": "c28c674219418bf814a62ead3d45e07508420b78",
+    "git_dirty": false,
+    "argv": [
+      "scripts/benchmarks/run_ontology_mapping_pilot.py",
+      "--env-file",
+      "/home/hadry/lab/AIsummit26/.env",
+      "--snapshot-manifest",
+      "/home/hadry/lab/AIsummit26/outputs/finbench/sf1/manifest.json",
+      "--seocho-src",
+      "/tmp/ontology-pilot-seocho-source/src",
+      "--seocho-archive",
+      "/tmp/ontology-pilot-seocho-source.tar.gz",
+      "--output-dir",
+      "/home/hadry/lab/AIsummit26/results/episodes/ontology_mapping/20260905T_mapping_pilot_v1",
+      "--execute"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "512M",
+    "db_heap_max": "",
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "601",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "experiment": "ontology-mapping-pilot"
+  },
+  "endpoint": {
+    "provider": "mara",
+    "model_name": "gemma-4-31B-it",
+    "base_url": "https://api.cloud.mara.com/v1",
+    "temperature": 0.0,
+    "max_tokens": 1500,
+    "request_timeout_s": 90,
+    "extra_body": null,
+    "api_key_present": true,
+    "context": {
+      "native": null,
+      "max_model_len": null,
+      "effective": null,
+      "position_interpolation_factor": null,
+      "rope_scaling": null
+    },
+    "reasoning_effort": null,
+    "sdk_max_retries": 0
+  },
+  "fingerprint": {
+    "protocol": "08cde84cd35b4df071954be6aebec6f5613e46d89a2db52f531c186dfe36f297",
+    "sources": {
+      "catalog": "804659d1a3bfdcf1bee3a9d0f48c0ee0c9915757be6471f359d6e0b3724c698b",
+      "physical": "38d4d16a714a24d72736f656a770bcbfba18075ebf2f246032ea4dc585e3bcbd",
+      "mapping": "5257ec6e74027a6a3eed47d5aeb9af0f8f162f41b393c35b9a3ab7d536eb03ef",
+      "projection": "7577649e6acd4dd9a0e1edd052a53343992593fc59f36b103b422961b6514338"
+    },
+    "endpoint": {
+      "provider": "mara",
+      "model_name": "gemma-4-31B-it",
+      "base_url": "https://api.cloud.mara.com/v1",
+      "temperature": 0.0,
+      "max_tokens": 1500,
+      "request_timeout_s": 90,
+      "extra_body": null,
+      "api_key_present": true,
+      "context": {
+        "native": null,
+        "max_model_len": null,
+        "effective": null,
+        "position_interpolation_factor": null,
+        "rope_scaling": null
+      },
+      "reasoning_effort": null,
+      "sdk_max_retries": 0
+    },
+    "snapshot": "8d317c0796145f3436d26abd771aa22c693a851a076ed142755538c71759e7b9",
+    "dependency_archive": "90fe8efd58e6c0bd903df0a6fa73afa1c413f965c9f02a832bfafb2d2fbea7d0",
+    "dependency_tree": "68e887781b03c6c0981861dad1ac7e022f65597e992ee6136557371519b22983",
+    "code": {
+      "scripts/benchmarks/run_ontology_mapping_pilot.py": "0cd32c9ff5fb5fc035f0e05800ac6af28aab606c388aa78693c7b63f6127eaf3",
+      "harness/llm.py": "c527eff27e42859c88d2dc327ff308e5a783468c88b13bc7419b2c1c578162fd",
+      "harness/config.py": "ea844dc5a257277851a0c5a817e0d76f508d577f9771f26071590eaef4f90682",
+      "harness/environment.py": "95799e19a5db3a9411a8740d2552cf6bd8a8fa1d0fb8cd918a95b91ab797f5ba",
+      "scripts/analysis/runmeta.py": "da7e5b553c4a81bedeed323e1d8922a07fdd856e5517f1f1f54476662106700e",
+      "scripts/analysis/validate_business_request_mapping.py": "4af33d5d0f120344a2552582290eb76bae5d71f95f78b41e65166a7a7cd64b2f"
+    }
+  },
+  "config": {
+    "schema_version": "finance.ontology-mapping-pilot.v1",
+    "suite": "ontology_mapping_pilot_v1",
+    "issue": "AIsummit26-uqa",
+    "intent": "Evaluate the incremental benefit and cost of explicit business-to-physical mappings over a complete physical schema on supported financial requests.",
+    "catalog": "configs/agentic_request_schema_contracts_v2.yaml",
+    "physical": "ontology/finbench.ontology.yaml",
+    "mapping": "ontology/business_request_finbench.mapping.yaml",
+    "projection": "ontology/fibo_finbench.projection.yaml",
+    "arms": [
+      "physical_schema",
+      "business_mapping"
+    ],
+    "repeats": 2,
+    "model": {
+      "provider": "mara",
+      "name": "gemma-4-31B-it",
+      "temperature": 0.0,
+      "reasoning_effort": null,
+      "max_tokens": 1500,
+      "request_timeout_s": 90
+    },
+    "graph": {
+      "uri": "bolt://127.0.0.1:7687",
+      "database": "finbenchsf1v2",
+      "container": "graphrag-neo4j",
+      "sf": 1,
+      "workspace_id": "default",
+      "anchor": 108,
+      "row_cap": 50,
+      "query_timeout_s": 2,
+      "max_leaf_estimated_rows": 5000,
+      "max_graph_hops": 4
+    },
+    "budget": {
+      "max_model_calls": 24,
+      "max_prompt_bytes_per_call": 10000,
+      "max_total_prompt_bytes": 240000,
+      "max_completion_tokens": 36000,
+      "max_wall_seconds": 1800,
+      "delay_seconds": 2,
+      "transport_retries": 0,
+      "semantic_repairs": 0
+    },
+    "decision": {
+      "phase": "exploratory_pilot",
+      "thresholds": {
+        "paired_outcomes": 12,
+        "min_wins": 2,
+        "max_losses": 0,
+        "max_token_ratio": 1.5
+      },
+      "primary": "Paired exact-column, typed-value, order-aware Gold result agreement; guardrail rejections remain failures.",
+      "success": "Advance only if business_mapping gains at least 2 of 12 paired outcomes, regresses 0, and total prompt+completion tokens are at most 1.5 times the control on complete pairs.",
+      "reject": "Reject this configuration if business_mapping has fewer correct paired outcomes or exceeds 1.5 times the control token cost without a correctness gain.",
+      "otherwise": "Inconclusive; no claim of statistical significance or a general ontology effect.",
+      "limits": "This is a new model/protocol arm, not a rerun of the earlier full/retrieved FIBO comparison. All six requests are supported; refusal-policy and legal-control cases require their own experiment. Both arms receive the same physical names, property types, edge directions, user parameters, expected columns and harness rules. Only business_mapping receives the same fixed business vocabulary mapping; no Gold query or values are included. The mapping is local/partial FIBO projection, not formal ontology reasoning or FIBO conformance."
+    },
+    "cases": [
+      {
+        "id": "inbound_amount_band",
+        "params": {
+          "min_amount": 10000
+        }
+      },
+      {
+        "id": "high_risk_rail_and_medium",
+        "params": {
+          "risk_weight": 3
+        }
+      },
+      {
+        "id": "shared_medium_access",
+        "params": {
+          "result_limit": 10
+        },
+        "row_cap": 10
+      },
+      {
+        "id": "loan_applicant_facilities",
+        "params": {},
+        "seed": "MATCH (p:Person|Company {_workspace_id:$workspace_id})-[:OWN]->(a:Account {_workspace_id:$workspace_id}) MATCH (p)-[:APPLY]->(:Loan {_workspace_id:$workspace_id}) RETURN a.acct_no AS acct_no ORDER BY acct_no LIMIT 1"
+      },
+      {
+        "id": "repayment_ratio_policy",
+        "params": {
+          "repaid_ratio": 0.75
+        },
+        "seed": "MATCH (a:Account {_workspace_id:$workspace_id})-[r:REPAY]->(l:Loan {_workspace_id:$workspace_id}) WITH a, l, sum(r.amount) AS repaid WHERE repaid < l.principal * $repaid_ratio RETURN a.acct_no AS acct_no ORDER BY acct_no LIMIT 1"
+      },
+      {
+        "id": "corporate_investor_account_exposure",
+        "params": {},
+        "parameter_overrides": {
+          "company_id": {
+            "type": "string",
+            "source": "user",
+            "pattern": "^Company:[0-9]+$"
+          }
+        },
+        "seed": "MATCH (:Person|Company {_workspace_id:$workspace_id})-[:INVEST]->(c:Company {_workspace_id:$workspace_id})-[:OWN]->(:Account {_workspace_id:$workspace_id}) RETURN c.id AS company_id ORDER BY company_id LIMIT 1"
+      }
+    ]
+  },
+  "graph": {
+    "uri": "bolt://127.0.0.1:7687",
+    "database": "finbenchsf1v2",
+    "container": "graphrag-neo4j",
+    "sf": 1,
+    "workspace_id": "default",
+    "anchor": 108,
+    "row_cap": 50,
+    "query_timeout_s": 2,
+    "max_leaf_estimated_rows": 5000,
+    "max_graph_hops": 4
+  },
+  "semantic_source": {
+    "status": "pinned_term_verified_projection_not_conformant",
+    "repository": "https://github.com/edmcouncil/fibo",
+    "release": "master_2026Q2",
+    "commit": "f59157fe156e3d91b1c045222d0a7dc06b7d78a2",
+    "note": "Referenced terms were checked against the pinned official release. Mappings remain explicit FinBench projections/proxies, not a claim that the synthetic graph conforms to FIBO.",
+    "terms": {
+      "demand_deposit_account": {
+        "curie": "fibo-fbc-pas-caa:DemandDepositAccount",
+        "file": "FBC/ProductsAndServices/ClientsAndAccounts.rdf",
+        "status": "proxy"
+      },
+      "natural_person": {
+        "curie": "fibo-be-le-lp:LegallyCompetentNaturalPerson",
+        "file": "BE/LegalEntities/LegalPersons.rdf",
+        "status": "proxy"
+      },
+      "corporation": {
+        "curie": "fibo-be-le-cb:Corporation",
+        "file": "BE/LegalEntities/CorporateBodies.rdf",
+        "status": "proxy"
+      },
+      "committed_credit_facility": {
+        "curie": "fibo-fbc-dae-dbt:CommittedCreditFacility",
+        "file": "FBC/DebtAndEquities/Debt.rdf",
+        "status": "proxy"
+      },
+      "guaranty": {
+        "curie": "fibo-fbc-dae-gty:Guaranty",
+        "file": "FBC/DebtAndEquities/Guaranty.rdf",
+        "status": "proxy"
+      },
+      "clearing_and_settlement": {
+        "curie": "fibo-bp-prc-fcp:ClearingAndSettlement",
+        "file": "BP/Process/FinancialContextAndProcess.rdf",
+        "status": "informative_only"
+      },
+      "electronic_funds_transfer_service": {
+        "curie": "fibo-fbc-fct-fse:ElectronicFundsTransferService",
+        "file": "FBC/FunctionalEntities/FinancialServicesEntities.rdf",
+        "status": "informative_only"
+      },
+      "individual_transaction": {
+        "curie": "fibo-fbc-pas-caa:IndividualTransaction",
+        "file": "FBC/ProductsAndServices/ClientsAndAccounts.rdf",
+        "status": "informative_only"
+      }
+    }
+  }
+}

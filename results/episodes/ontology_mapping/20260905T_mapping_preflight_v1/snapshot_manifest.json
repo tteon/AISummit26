@@ -1,0 +1,87 @@
+{
+  "schema_version": "seocho.finbench.duckdb.v1",
+  "scale_factor": 1,
+  "seed": 0.42,
+  "hub_skew": 1.0,
+  "dup_share": 0.0,
+  "closure_share": 0.0,
+  "cycle_share": 0.0,
+  "counts": {
+    "person": 1000,
+    "company": 100,
+    "account": 2470,
+    "loan": 201,
+    "channel": 12,
+    "medium": 300,
+    "transfer": 10895,
+    "own": 2029,
+    "deposit": 201,
+    "repay": 201,
+    "uses_channel": 7875,
+    "apply": 200,
+    "invest": 151,
+    "guarantee": 400,
+    "withdraw": 1500,
+    "sign_in": 4002
+  },
+  "checksums": {
+    "nodes/Account.parquet": "sha256:10393b75be16a25fa93944802b6b80c30242dcd62380d1fed504c29286b49bb3",
+    "nodes/Person.parquet": "sha256:e7f801d60dcf7b237c506fef88df84d8909007d3381914b5bc1d9a48cb16d82c",
+    "nodes/Company.parquet": "sha256:047d178d8a4223a547b4c565665b439aa054218511042f7712debe29f4065dc8",
+    "nodes/Loan.parquet": "sha256:f3d6339ff9a3c01c1dc9a01d5f0b59d99ffad8f587836a0a8cf7483cfb34ab0d",
+    "nodes/Channel.parquet": "sha256:6e29f195255c95b71743ea6bab553e163c13610122d27d17411370ee4ee2f314",
+    "nodes/Medium.parquet": "sha256:796f0dbbddc5c9b463c7ffefd8d76e97167a639abb852a9b5f2d827e05e418d5",
+    "edges/transfer.parquet": "sha256:4995df9b5a3a5ff6c00e6a9283f8613913fcccb26003c01d66cb6cbed072b250",
+    "edges/own.parquet": "sha256:5d7f01910021af882f1ff814ac306de7b121c76fa08f8afb53489a9458c7625a",
+    "edges/deposit.parquet": "sha256:3dd62105de8a009685791b782154ccd9146cb2c9871f243a04b6cf664052e044",
+    "edges/repay.parquet": "sha256:c0802abcf8a8d3b928828cd9ef4e1d81e4c197a9dd1d812a5d22efdd7e9616fc",
+    "edges/uses_channel.parquet": "sha256:03937eda0503caa90428a834c2b18759165d1421f8149ade6b17b946e777746c",
+    "edges/apply.parquet": "sha256:95d070ea6f9d73872eae5a8fe243eebc65ab579da23e4b4b764f14d81bf46430",
+    "edges/invest.parquet": "sha256:1f7dbe247db3a849776f4987f9fedd1b78ef0b383c17d5f39ffde94aec343122",
+    "edges/guarantee.parquet": "sha256:928902ba7f717f8d31ac9e65bb0a796917add020450f2044ec4ffabc876178e5",
+    "edges/withdraw.parquet": "sha256:c42a093f40335ab0f1590ade85e3ee19d76b01bce65a963aef9d24919375e7f0",
+    "edges/sign_in.parquet": "sha256:6f29d51dc14fb42f638838ca29ca701b88c6ce056c3bf5f206dce41735dd30d3"
+  },
+  "planted_id_base": 9000000,
+  "degree_profile": {
+    "measured_on": "transfer edges (in + out)",
+    "nodes_with_edges": 2470,
+    "mean": 8.822,
+    "max": 421,
+    "p50": 9,
+    "p99": 19,
+    "p999": 24,
+    "p9999": 421,
+    "max_over_mean": 47.72,
+    "curated_anchors": [
+      {
+        "band": "hub",
+        "account_id": 9000100,
+        "degree": 421
+      },
+      {
+        "band": "p99.9",
+        "account_id": 514,
+        "degree": 24
+      },
+      {
+        "band": "p99",
+        "account_id": 9000708,
+        "degree": 19
+      },
+      {
+        "band": "median",
+        "account_id": 506,
+        "degree": 9
+      }
+    ]
+  },
+  "multiplicity_profile": {
+    "edges": 10895,
+    "distinct_pairs": 10882,
+    "redundancy": 1.0012,
+    "max_multiplicity": 2,
+    "duplicate_pairs": 13,
+    "pct_edges_in_duplicate_pairs": 0.239
+  }
+}

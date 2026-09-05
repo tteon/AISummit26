@@ -1,0 +1,76 @@
+{
+  "title": "업무 의미 매핑의 정확도·비용 파일럿 v1",
+  "decision": "완전한 물리 스키마에 명시적인 금융 업무 의미 매핑을 추가할지 판단한다.",
+  "hypothesis": "업무 용어 매핑이 일부 쿼리 오류를 줄일 수 있지만, 추가 문맥 비용이나 회귀를 만들 수도 있다.",
+  "input_spec": "finbenchsf1v2 / SF1 / workspace default. 입금·지급 채널·공유 기기는 계좌 108, 대출 신청은 계좌 1, 상환 비율은 계좌 30, 기업 투자자는 Company:1000. min_amount=10000, risk_weight=3, result_limit=10, repaid_ratio=0.75. 사전 선택 규칙과 Gold 영수증: results/episodes/ontology_mapping/20260905T_mapping_preflight_v1/preflight.json",
+  "expected_output": "정확한 열 이름·타입·값·순서를 가진 Gold 일치 결과. 실제 Cypher, 바인딩, PROFILE/Bolt 반환 행, 서버 usage와 inference-id, 실패 사유를 표본별로 보존한다.",
+  "intervention": "모델 입력에 고정된 업무 용어 매핑 사전을 추가하는지 여부",
+  "baseline": "physical_schema: 전체 물리 이름·속성 타입·관계 방향 + 요청별 입력·출력 계약",
+  "treatment": "business_mapping: baseline의 동일 입력 + business_request_finbench.mapping.yaml의 업무 의미 사전",
+  "fixed_conditions": "MARA gemma-4-31B-it / temperature 0 / reasoning_effort 미지정. 같은 DB·계좌·기업·threshold·Gold·guardrail·row cap. 요청 6개 × 조건 2개 × 반복 2회. 둘째 반복은 A/B 순서를 반대로. repair와 SDK retry는 0.",
+  "acceptance": "12개 유효 A/B 쌍을 모두 확보해야 판정. 개선 2건 이상·회귀 0건·prompt+completion 비율 1.5 이하이면 후속 확인 실험. 정답 감소 또는 정답 증가 없이 토큰 비율 1.5 초과면 이 설정 기각. 그 외 판단 보류.",
+  "cost_budget": "모델 호출 최대 24회, 호출별 출력 1500 tokens, 전체 출력 36000 tokens. 요청 payload 호출별 10000 UTF-8 bytes/총 240000 bytes(토큰 측정과 별도). 실행 1800초, API timeout 90초, DB query timeout 2초.",
+  "stop_rule": "타입별 snapshot counts 불일치, anchor·인덱스·Gold·plan gate 실패 시 모델 호출 0회. endpoint 오류나 서버 usage/inference-id 누락이면 중단·무효 기록. 모든 재시도는 0회.",
+  "observation": "20260905T_mapping_pilot_v1: 요청 6개 × 조건 2개 × 반복 2회, 24개 유효 표본. 물리 스키마 정답 4/12, 업무 매핑 정답 8/12. 개선 4쌍·회귀 0쌍. prompt+completion 9,548 → 21,144 tokens (2.2145배). 실행된 PROFILE 6종 재검증에서 결과 행·DB hits 일치; 추가 모델 호출 0. resume existing=24 new=0 확인.",
+  "interpretation": "사전 기준상 판단 보류: 개선은 있으나 토큰 비율 1.5배 상한 초과. 지급 채널에서는 Channel.label/share 대신 Channel.code와 USES_CHANNEL.tx_count를 선택하여 의미 매핑의 이점을 관측했다. 입금 개선은 기준 계좌를 MATCH 안에 쓰도록 한 규칙 준수의 차이이므로 독립적인 의미 이해 개선으로 해석하지 않는다. 대출·기업 요청은 양쪽 조건 모두 실행 규칙에서 거절되었다.",
+  "limitation": "여섯 고정 요청을 두 번 반복한 탐색 파일럿으로 독립적인 12개 업무 사례가 아니다. 단일 모델·SF1·조건당 고정 바인딩만 측정했다. 상환 입력은 한 상환 행이라 합산 오류와 정렬 tie를 구별하지 못한다. 결과 일치는 해당 입력의 Gold 일치이며 일반적인 쿼리 정당성을 보증하지 않는다. DB hits 합계 498/588은 실행된 PROFILE 6/8건의 합계이며, 거절 6/4건의 0은 PROFILE 미실행이다. 지연 개선·정식 OWL 추론·금융기관 운영 성과·일반 온톨로지 우월성을 주장하지 않는다.",
+  "conclusion": "inconclusive",
+  "id": "semantic-boundary",
+  "evidence": [
+    {
+      "run": "78660f5d042f5107",
+      "episode": "20260905T_mapping_pilot_v1:inbound_amount_band:r0:physical_schema"
+    },
+    {
+      "run": "78660f5d042f5107",
+      "episode": "20260905T_mapping_pilot_v1:inbound_amount_band:r0:business_mapping"
+    },
+    {
+      "run": "78660f5d042f5107",
+      "episode": "20260905T_mapping_pilot_v1:high_risk_rail_and_medium:r0:physical_schema"
+    },
+    {
+      "run": "78660f5d042f5107",
+      "episode": "20260905T_mapping_pilot_v1:high_risk_rail_and_medium:r0:business_mapping"
+    },
+    {
+      "run": "78660f5d042f5107",
+      "episode": "20260905T_mapping_pilot_v1:shared_medium_access:r0:physical_schema"
+    },
+    {
+      "run": "78660f5d042f5107",
+      "episode": "20260905T_mapping_pilot_v1:shared_medium_access:r0:business_mapping"
+    },
+    {
+      "run": "78660f5d042f5107",
+      "episode": "20260905T_mapping_pilot_v1:loan_applicant_facilities:r0:physical_schema"
+    },
+    {
+      "run": "78660f5d042f5107",
+      "episode": "20260905T_mapping_pilot_v1:loan_applicant_facilities:r0:business_mapping"
+    },
+    {
+      "run": "78660f5d042f5107",
+      "episode": "20260905T_mapping_pilot_v1:repayment_ratio_policy:r0:physical_schema"
+    },
+    {
+      "run": "78660f5d042f5107",
+      "episode": "20260905T_mapping_pilot_v1:repayment_ratio_policy:r0:business_mapping"
+    },
+    {
+      "run": "78660f5d042f5107",
+      "episode": "20260905T_mapping_pilot_v1:corporate_investor_account_exposure:r0:physical_schema"
+    },
+    {
+      "run": "78660f5d042f5107",
+      "episode": "20260905T_mapping_pilot_v1:corporate_investor_account_exposure:r0:business_mapping"
+    }
+  ],
+  "version": 2,
+  "saved_at": "2026-09-05T07:44:28.469613+00:00",
+  "readiness": {
+    "missing": [],
+    "complete": true,
+    "meaning": "계약 문서의 필수 항목 확인입니다. 실행·Gold·예산 검증이나 실행 승인을 뜻하지 않습니다."
+  }
+}

@@ -1,5 +1,12 @@
 # Finance Ontology Lab
 
+2026-09-05 실행한 [업무 의미 매핑 파일럿 v1](../docs/ontology_mapping_pilot_v1_results.md)은
+`실행 근거`의 `20260905T_mapping_pilot_v1`에서 볼 수 있습니다. 전체 프로토콜 판정과
+사례별 실제 입력·반환 행·Gold·서버 사용량을 함께 표시합니다. 로컬 실행 화면은
+`http://127.0.0.1:8765/#evidence?run=78660f5d042f5107`이며, 사전 계약과 사후 판정은
+`#contracts?id=semantic-boundary`에 저장했습니다. 계약 revision은 로컬 상태이고,
+공유 가능한 두 snapshot은 해당 run 폴더에 보존했습니다.
+
 금융 온톨로지 연구를 위한 개인용 로컬 웹 워크스페이스입니다. 실험 의도, 업무 요청,
 입출력, 변경 조건, 실제 측정 기록, 연구자의 판정을 연결합니다.
 

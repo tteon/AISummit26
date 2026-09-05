@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-09-05T07:29:59.143574+00:00",
+  "models": [
+    "DeepSeek-V3.1",
+    "DeepSeek-V3.2",
+    "MiniMax-M2.7",
+    "gemma-4-31B-it",
+    "gpt-oss-120b"
+  ]
+}

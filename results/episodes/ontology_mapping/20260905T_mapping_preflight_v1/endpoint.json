@@ -1,0 +1,19 @@
+{
+  "provider": "mara",
+  "model_name": "gemma-4-31B-it",
+  "base_url": "https://api.cloud.mara.com/v1",
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "request_timeout_s": 90,
+  "extra_body": null,
+  "api_key_present": true,
+  "context": {
+    "native": null,
+    "max_model_len": null,
+    "effective": null,
+    "position_interpolation_factor": null,
+    "rope_scaling": null
+  },
+  "reasoning_effort": null,
+  "sdk_max_retries": 0
+}

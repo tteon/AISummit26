@@ -1,0 +1,12 @@
+{
+  "valid": true,
+  "ledger_samples_checked": 24,
+  "unique_queries_replayed": 6,
+  "execution_samples_covered": 14,
+  "rejected_samples_not_executed": 10,
+  "summary_reproduced": true,
+  "prompts_reproduced": true,
+  "db_gates_passed": true,
+  "model_calls": 0,
+  "scope": "Output and DB-hit reproducibility only. This does not establish semantic generalization, statistical significance or a latency effect."
+}

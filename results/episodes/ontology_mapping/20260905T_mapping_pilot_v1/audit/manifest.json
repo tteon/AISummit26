@@ -1,0 +1,63 @@
+{
+  "manifest": {
+    "timestamp_utc": "2026-09-05T07:41:57+00:00",
+    "git_commit": "74d0be3a5460cb3ac7b12ea6e3c98695f24abe10",
+    "git_dirty": false,
+    "argv": [
+      "scripts/analysis/audit_ontology_mapping_pilot.py",
+      "--run-dir",
+      "/home/hadry/lab/AIsummit26/results/episodes/ontology_mapping/20260905T_mapping_pilot_v1",
+      "--output-dir",
+      "/home/hadry/lab/AIsummit26/results/episodes/ontology_mapping/20260905T_mapping_pilot_v1/audit",
+      "--seocho-src",
+      "/tmp/ontology-pilot-seocho-source/src"
+    ],
+    "python": "3.10.12",
+    "venv": "/usr",
+    "kernel": "6.8.0-138-generic",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+    "cpu_count": 16,
+    "neo4j_driver": "6.1.0",
+    "neo4j_rust_ext": "6.1.0.0",
+    "packstream_decoder": "rust",
+    "db_container_image": "graphstack/dozerdb:5.26.3.0",
+    "db_pagecache": "512M",
+    "db_heap_max": "",
+    "db_container_id": "a7a1023f1fdd",
+    "db_container": "graphrag-neo4j",
+    "accelerator": {
+      "present": true,
+      "count": 1,
+      "gpus": [
+        {
+          "index": "0",
+          "name": "NVIDIA GeForce RTX 3070",
+          "memory.total": "8192",
+          "memory.used": "601",
+          "driver_version": "595.84",
+          "compute_cap": "8.6",
+          "pci.bus_id": "00000000:01:00.0"
+        }
+      ],
+      "cuda_visible_devices": null
+    },
+    "host_context": {
+      "in_container": false,
+      "provider_hint": "local"
+    },
+    "inference": null,
+    "experiment": "ontology-mapping-db-replay-audit"
+  },
+  "source_run": "20260905T_mapping_pilot_v1",
+  "source_hashes": {
+    "manifest.json": "5859ba1249f3bcd7c8f7452677460040a782aa394f15924fa0cf560829c158ff",
+    "report.json": "310b220798cd09973c71492ba544f255891579922b3aeaaee4e558f561b12a41",
+    "samples.jsonl": "f613388a56f4c704f96dc7250ca3c19fcc2aabe3eeaf143f34084939255dd601",
+    "conversations.jsonl": "f04901bb0bff330eb26bb5132c0488dc687275a45887e7696e336a85a058933e",
+    "attempts.jsonl": "27d60a14bb9a07276e0a3b79a632444966d374d28bc0013c5e52cd57ffcd4889",
+    "preflight.json": "8fb9f7f17dcc7a0f96c914abbf4b4976aeae7af421fa252587a1eb50fb250b3c"
+  },
+  "audit_script_sha256": "4679bcd00128305632acbb5c0cd720c73684b186074daea78737126ac48c80c8",
+  "model_calls": 0,
+  "scope": "Replay each unique admitted query with its exact parameters once. Preserve rejected queries without executing them. Timing is a replay receipt, not a pooled latency sample."
+}
