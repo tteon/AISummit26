@@ -123,6 +123,7 @@ def test_observed_output_is_from_recorded_envelope_not_gold():
     assert module.observed_output(conv)["record"]["rows"] == rows
     assert module.observed_output({"score": {"gold": rows}}) is None
     assert module.observed_output({"stages": [{"role": "verifier", "user": "not JSON"}]}) is None
+    assert module.observed_output({"observed_output": {"rows": rows}})["record"]["rows"] == rows
 
 
 def test_source_endpoint_only_serves_registered_files_and_rejects_symlinks(workspace):

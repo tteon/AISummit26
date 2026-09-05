@@ -51,6 +51,10 @@ def readiness(contract):
 
 def observed_output(conversation):
     """Use only an explicitly recorded return payload, never the scorer's Gold."""
+    recorded = conversation.get("observed_output")
+    if isinstance(recorded, dict) and isinstance(recorded.get("rows"), list):
+        return {"record": recorded, "source_role": "database", "source_field": "observed_output",
+                "meaning": "conversations.jsonl에 기록된 PROFILE/Bolt 실제 결과 행입니다."}
     for stage in reversed(conversation.get("stages", [])):
         if stage.get("role") != "verifier":
             continue
@@ -144,6 +148,7 @@ class Workspace:
 
     def run_paths(self):
         paths = set(self.root.glob("results/episodes/fibo_schema_context/*/report.json"))
+        paths.update(self.root.glob("results/episodes/ontology_mapping/*/report.json"))
         paths.update(self.root.glob("results/episodes/agent_model_matrix/*/models/*/report.json"))
         paths.update(self.root.glob("results/episodes/agent_topology/*/report.json"))
         # Whitelisted families exclude explicitly invalid runs and matrix parent summaries.
@@ -192,7 +197,7 @@ class Workspace:
             flags.append("실행 상태: " + str(d["run_status"]))
         return {
             "key": key, "name": path.parent.name, "source": str(path.relative_to(self.root)),
-            "family": "ontology" if "fibo_schema_context" in path.parts else "agent",
+            "family": "ontology" if {"fibo_schema_context", "ontology_mapping"}.intersection(path.parts) else "agent",
             "endpoint": {k: endpoint.get(k) for k in (
                 "provider", "model_name", "base_url", "reasoning_effort", "temperature", "max_tokens")},
             "graph": graph, "sample_count": len(samples), "flags": flags,
@@ -200,6 +205,8 @@ class Workspace:
             "commit": manifest.get("git_commit"), "date": manifest.get("timestamp_utc"),
             "suite": config.get("suite"), "row_cap": config.get("row_cap"),
             "semantic_source": d.get("semantic_source"),
+            "run_status": d.get("run_status", "recorded"),
+            "protocol": config if config.get("schema_version") == "finance.ontology-mapping-pilot.v1" else None,
             "receipt_note": "기존 측정 기록입니다. 플랫폼에서 재실행하거나 인과관계를 재검증하지 않았습니다.",
         }
 
@@ -225,7 +232,7 @@ class Workspace:
         graph = d.get("graph") or {}
         fields = ("episode_id", "arm", "question_id", "repeat", "correct", "error",
                   "prompt_tokens", "completion_tokens", "reasoning_tokens", "db_hits", "db_ms",
-                  "wall_ms", "generate_ms", "server_total_latency_ms", "model_calls", "verifier_pass")
+                  "wall_ms", "generate_ms", "server_total_latency_ms", "model_calls", "verifier_pass", "valid")
         for s in d.get("samples", []):
             row = {k: s.get(k) for k in fields}
             row.update(sf=s.get("sf"), database=s.get("database", graph.get("database")),
@@ -255,6 +262,7 @@ class Workspace:
         sources = [str(p.relative_to(self.root)) for p in (
             path, conv_path, path.parent / "manifest.json", path.parent / "samples.jsonl",
             path.parent / "trace_receipt.json", path.parent / "PREEXISTING_DIRTY_SCOPE.json",
+            path.parent / "protocol.yaml", path.parent / "preflight.json", path.parent / "endpoint.json",
         ) if p.exists()]
         return {"sample": sample, "conversation": conv, "observed_output": observed_output(conv), "meta": self.run_meta(key, path),
                 "sources": sources}
@@ -263,10 +271,11 @@ class Workspace:
         # A repository file server must never expose .env, .git, or arbitrary symlink targets.
         permitted = {c["source"] for c in self.cases()}
         permitted.update({"ontology/business_request_finbench.mapping.yaml",
-                          "ontology/fibo_finbench.projection.yaml", "docs/request_schema_contract.md"})
+                          "ontology/fibo_finbench.projection.yaml", "docs/request_schema_contract.md",
+                          "configs/ontology_mapping_pilot_v1.yaml"})
         for path in self.run_paths().values():
             for name in ("report.json", "samples.jsonl", "manifest.json", "conversations.jsonl",
-                         "trace_receipt.json", "PREEXISTING_DIRTY_SCOPE.json"):
+                         "trace_receipt.json", "PREEXISTING_DIRTY_SCOPE.json", "protocol.yaml", "preflight.json", "endpoint.json"):
                 permitted.add(str((path.parent / name).relative_to(self.root)))
         path = (self.root / relative).resolve()
         if relative not in permitted or not path.is_relative_to(self.root) or path != self.root / relative:
