@@ -10,7 +10,7 @@ const pre = x => `<pre>${esc(typeof x === "string" ? x : pretty(x))}</pre>`;
 const labels = {overview:"연구 개요", cases:"금융 업무 사례", contracts:"실험 설계", evidence:"실행 근거 · 비교", talk:"발표 구성"};
 const verdicts = {unreviewed:"검토 전", adopt:"채택", reject:"기각", inconclusive:"판단 보류"};
 const armNames = {physical_schema:"물리 스키마", business_mapping:"업무 의미 매핑 추가", physical_only:"물리 스키마만", compiled_fibo:"전체 FIBO 매핑", retrieved_fibo:"검색한 FIBO 매핑", direct_single:"단일 에이전트", multi_typed:"역할 분리 · typed", multi_envelope:"역할 분리 · envelope"};
-const titles = {in_transfer_total:"입금 건수와 총액", customer_inflow_summary:"고객 계좌 입금 요약", two_hop_reach:"송금 경로의 도달 범위", owner_portfolio:"계좌 소유자의 보유 계좌", recent_page:"최근 송금 내역", ubo_chain:"기업 계좌 뒤의 투자자", ubo_depth:"다수 계좌를 보유한 소유자", guarantee_chain:"연쇄 보증 관계", rail_mix:"지급 채널별 거래 구성", structuring_fanin:"반복 입금 계좌 탐색", loan_layering:"대출금 이동 경로", inbound_amount_band:"일정 금액 이상의 입금", outgoing_cross_border_exposure:"국경 간 송금 노출", shared_medium_access:"동일 접속 기기 사용 계좌", blocked_medium_exposure:"차단 기기 접속 이력", high_risk_rail_and_medium:"위험 지급 채널 조회", common_owner_device_link:"소유자와 기기가 같은 계좌", loan_applicant_facilities:"계좌 소유자의 대출 신청", repayment_ratio_policy:"상환 비율 미달 대출", guarantor_of_applicant:"신청자의 보증 관계"};
+const titles = {in_transfer_total:"입금 건수와 총액", customer_inflow_summary:"고객 계좌 입금 요약", two_hop_reach:"송금 경로의 도달 범위", owner_portfolio:"계좌 소유자의 보유 계좌", recent_page:"최근 송금 내역", ubo_chain:"기업 계좌 뒤의 투자자", ubo_depth:"다수 계좌를 보유한 소유자", guarantee_chain:"연쇄 보증 관계", rail_mix:"지급 채널별 거래 구성", structuring_fanin:"반복 입금 계좌 탐색", loan_layering:"대출금 이동 경로", inbound_amount_band:"일정 금액 이상의 입금", outgoing_cross_border_exposure:"국경 간 송금 노출", shared_medium_access:"동일 접속 기기 사용 계좌", blocked_medium_exposure:"차단 기기 접속 이력", high_risk_rail_and_medium:"위험 지급 채널 조회", common_owner_device_link:"소유자와 기기가 같은 계좌", loan_applicant_facilities:"계좌 소유자의 대출 신청", repayment_ratio_policy:"상환 비율 미달 대출", guarantor_of_applicant:"신청자의 보증 관계", corporate_investor_account_exposure:"기업 투자자와 보유 계좌"};
 const state = {catalog:null, dirty:false, contract:null, run:null, runKey:null, route:"", version:0};
 
 async function api(path, body) {
@@ -128,6 +128,7 @@ function drawRun(data,params) {
   $("#run-content").className="";
   $("#run-content").innerHTML=`<div class="meta-grid"><div><small>MODEL / EFFORT</small><b>${esc(meta.endpoint.model_name)} / ${esc(meta.endpoint.reasoning_effort ?? "미지정")}</b></div><div><small>ENDPOINT</small><b>${esc(meta.endpoint.provider)} · ${esc(meta.endpoint.base_url)}</b></div><div><small>COMMIT</small><b>${esc(meta.commit?.slice(0,12) || "미기록")}</b></div><div><small>RAW SAMPLES</small><b>${samples.length}건 · ${linkSource(meta.source,"report 원본 ↗")}</b></div></div><div class="flags">${meta.flags.map(f=>badge(f,"amber")).join("")}${badge(meta.family==="ontology" ? "의미 문맥 비교":"agent 계약 비교")}</div><p class="run-note">${esc(meta.receipt_note)} ${meta.family!=="ontology" ? "이 실행은 ontology의 독립 효과를 측정하는 비교가 아닙니다.":"매핑의 이점과 회귀를 같은 요청에서 함께 확인하세요."}</p>
   ${meta.protocol ? `<details><summary>이번 실험의 고정된 설계 · ${esc(meta.run_status)}</summary>${pre({intent:meta.protocol.intent,decision:meta.protocol.decision,budget:meta.protocol.budget,cases:meta.protocol.cases})}</details>` : ""}
+  ${meta.protocol_summary ? `<section class="panel" id="protocol-outcome"><h3>전체 프로토콜 판정 · ${{inconclusive:"판단 보류",advance_to_confirmation:"후속 확인 실험으로 진행",reject_configuration:"이 설정 기각"}[meta.protocol_summary.conclusion] || "미판정"}</h3><p>${Object.entries(meta.protocol_summary.arms).map(([arm,r])=>`${esc(armNames[arm] || arm)}: 정답 ${r.correct}/${r.n}`).join(" · ")}</p><p>유효한 쌍 ${num(meta.protocol_summary.complete_valid_pairs)}개 · 개선 ${num(meta.protocol_summary.wins)} · 회귀 ${num(meta.protocol_summary.losses)} · 전체 토큰 비율 ${num(meta.protocol_summary.token_ratio)}배</p><p class="small">전체 고정 요청과 반복의 판정입니다. 아래 필터의 비교와 범위가 다릅니다. 합격은 실행 규칙 준수와 해당 입력의 Gold 일치를 함께 요구하며, 일반적인 온톨로지 효과를 뜻하지 않습니다. DB hits는 실행된 PROFILE의 합계이며, 거절된 요청의 0은 PROFILE 미실행을 뜻합니다.</p>${linkSource(meta.source,"판정 원본 ↗")}</section>` : ""}
   ${!questionExists ? `<div class="note amber">선택한 요청 ${esc(wanted)}은 이 실행에 없습니다. 다른 실행 묶음을 선택하세요. 유사한 이름의 요청을 같은 측정으로 대체하지 않습니다.</div>`:""}
   <div class="toolbar"><label class="grow">그래프·anchor 조건<select id="scope-filter">${partitions.map(([key,s])=>`<option value="${esc(key)}">${esc(partitionName(s))}</option>`).join("")}</select></label><label>업무 요청<select id="question-filter"><option value="">모든 요청</option>${!questionExists ? `<option value="${esc(wanted)}" selected>${esc(wanted)} (이 실행에 없음)</option>`:""}${questions.map(q=>`<option value="${esc(q)}" ${wanted===q ? "selected":""}>${esc(titles[q] || q)}</option>`).join("")}</select></label><label>반복<select id="repeat-filter"><option value="">모든 반복</option>${[...new Set(samples.map(s=>s.repeat))].sort().map(r=>`<option value="${r}">repeat ${r}</option>`).join("")}</select></label></div><div id="comparison"></div><div class="section-top"><h2>사례별 실행 기록</h2><small>클릭하면 실제 입력 → 쿼리 → 결과 → 판정</small></div><div id="sample-table"></div>`;
   function filter() {
@@ -146,7 +147,16 @@ function drawRun(data,params) {
     $("#sample-table").innerHTML=sorted.length ? `<div class="table-wrap"><table><thead><tr><th>요청 / 반복</th><th>조건</th><th>원본 판정</th><th>모델 호출</th><th>DB hits</th><th>DB ms</th></tr></thead><tbody>${sorted.map(s=>`<tr><td><button class="table-button" data-episode="${esc(s.episode_id)}">${esc(titles[s.question_id] || s.question_id)}</button><br><small class="muted">${esc(s.question_id)} · r${s.repeat}</small></td><td>${esc(armNames[s.arm] || s.arm)}</td><td>${badge(s.error ? "오류" : s.correct===true ? "정답" : s.correct===false ? "오답":"판정 없음",s.error ? "amber":s.correct===true ? "green":"red")}</td><td class="numeric">${num(s.model_calls)}</td><td class="numeric">${num(s.db_hits)}</td><td class="numeric">${num(s.db_ms)}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">이 조건에 해당하는 기록이 없습니다.</div>`;
     document.querySelectorAll("[data-episode]").forEach(b=>b.onclick=()=>showEpisode(meta.key,b.dataset.episode));
   }
-  ["#scope-filter","#question-filter","#repeat-filter"].forEach(id=>$(id).onchange=filter);filter();
+  function selectQuestionScope() {
+    const question=$("#question-filter").value;
+    if(question && !samples.some(s=>s.question_id===question && partition(s)===$("#scope-filter").value)) {
+      const found=samples.find(s=>s.question_id===question);
+      if(found) $("#scope-filter").value=partition(found);
+    }
+  }
+  $("#question-filter").onchange=()=>{selectQuestionScope();filter();};
+  ["#scope-filter","#repeat-filter"].forEach(id=>$(id).onchange=filter);
+  selectQuestionScope();filter();
 }
 
 async function showEpisode(key,id) {

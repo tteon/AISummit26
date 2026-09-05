@@ -74,6 +74,21 @@ try{
     await screenshot("episode");
     await evaluate("document.querySelector('#close-dialog').click()");
   }
+  const pilot=catalog.runs.find(r=>r.name==="20260905T_mapping_pilot_v1");
+  if(pilot){
+    await route(`evidence?run=${pilot.key}&question=high_risk_rail_and_medium`,"document.querySelector('#protocol-outcome')");
+    assert.ok(await evaluate("document.querySelector('#protocol-outcome').innerText.includes('판단 보류')"));
+    await evaluate("[...document.querySelectorAll('[data-episode]')].find(b=>b.dataset.episode.endsWith('business_mapping')).click()");
+    await waitFor("document.querySelector('#pin-episode')");
+    assert.ok(await evaluate("document.querySelector('#episode-content').innerText.includes('OPEN_BANKING')"));
+    assert.ok(await evaluate("document.querySelector('#episode-content').innerText.includes('PROFILE')"));
+    await screenshot("pilot-output");
+    await evaluate("document.querySelector('#close-dialog').click()");
+    await route(`evidence?run=${pilot.key}&question=loan_applicant_facilities`,"document.querySelector('#question-filter')?.value==='loan_applicant_facilities' && document.querySelector('[data-episode]')");
+    assert.ok(await evaluate("document.querySelector('#scope-filter').selectedOptions[0].textContent.includes('anchor 1')"));
+    assert.equal(await evaluate("document.querySelectorAll('[data-episode]').length"),4);
+    await screenshot("pilot-protocol");
+  }
   await route("talk","document.querySelector('.talk-title')");
   assert.ok(await evaluate("document.querySelector('main').innerText.includes('mapped_with_limitation')"));
   await send("Emulation.setDeviceMetricsOverride",{width:390,height:844,deviceScaleFactor:1,mobile:true});

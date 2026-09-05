@@ -207,6 +207,7 @@ class Workspace:
             "semantic_source": d.get("semantic_source"),
             "run_status": d.get("run_status", "recorded"),
             "protocol": config if config.get("schema_version") == "finance.ontology-mapping-pilot.v1" else None,
+            "protocol_summary": d.get("summary") if config.get("schema_version") == "finance.ontology-mapping-pilot.v1" else None,
             "receipt_note": "기존 측정 기록입니다. 플랫폼에서 재실행하거나 인과관계를 재검증하지 않았습니다.",
         }
 
@@ -263,6 +264,7 @@ class Workspace:
             path, conv_path, path.parent / "manifest.json", path.parent / "samples.jsonl",
             path.parent / "trace_receipt.json", path.parent / "PREEXISTING_DIRTY_SCOPE.json",
             path.parent / "protocol.yaml", path.parent / "preflight.json", path.parent / "endpoint.json",
+            path.parent / "audit/audit.json", path.parent / "audit/replay_samples.jsonl", path.parent / "audit/manifest.json",
         ) if p.exists()]
         return {"sample": sample, "conversation": conv, "observed_output": observed_output(conv), "meta": self.run_meta(key, path),
                 "sources": sources}
@@ -275,7 +277,8 @@ class Workspace:
                           "configs/ontology_mapping_pilot_v1.yaml"})
         for path in self.run_paths().values():
             for name in ("report.json", "samples.jsonl", "manifest.json", "conversations.jsonl",
-                         "trace_receipt.json", "PREEXISTING_DIRTY_SCOPE.json", "protocol.yaml", "preflight.json", "endpoint.json"):
+                         "trace_receipt.json", "PREEXISTING_DIRTY_SCOPE.json", "protocol.yaml", "preflight.json", "endpoint.json",
+                         "audit/audit.json", "audit/replay_samples.jsonl", "audit/manifest.json"):
                 permitted.add(str((path.parent / name).relative_to(self.root)))
         path = (self.root / relative).resolve()
         if relative not in permitted or not path.is_relative_to(self.root) or path != self.root / relative:
